@@ -162,14 +162,12 @@ export class CerebroRepo {
   async recordCanonAttempt(memberId: string, attemptedName: string, windowMinutes: number): Promise<number> {
     const t = this.t.cerebroCanonAttempts;
     const now = this.clock.now();
-    await this.db.orm
-      .insert(t)
-      .values({
-        id: this.newId(),
-        memberId,
-        attemptedName: attemptedName.slice(0, 100),
-        createdAt: now.toISOString(),
-      });
+    await this.db.orm.insert(t).values({
+      id: this.newId(),
+      memberId,
+      attemptedName: attemptedName.slice(0, 100),
+      createdAt: now.toISOString(),
+    });
     const since = new Date(now.getTime() - windowMinutes * 60_000).toISOString();
     const [row] = await this.db.orm
       .select({ n: count() })

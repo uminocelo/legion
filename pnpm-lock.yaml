@@ -41,6 +41,9 @@ importers:
       '@legion/core':
         specifier: workspace:*
         version: link:../core
+      discord.js:
+        specifier: ^14.28.1
+        version: 14.28.1
       drizzle-orm:
         specifier: ^0.45.4
         version: 0.45.4(@libsql/client@0.18.0)(@types/pg@8.23.1)(pg@8.23.1)

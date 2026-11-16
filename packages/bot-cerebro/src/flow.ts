@@ -1,0 +1,448 @@
+import {
+  type BotContext,
+  GatewayError,
+  type GuildMember,
+  type IncomingInteraction,
+  isArchetype,
+  type Locale,
+  type Responder,
+} from '@legion/core';
+import { z } from 'zod';
+import type { CerebroConfig } from './config.js';
+import { CerebroRepo, type MemberRow, toMemberView } from './db/repo.js';
+import { validateCodename } from './domain/codename.js';
+import { expectedRoles, transition } from './domain/onboarding.js';
+import { CerebroUi, channelMention } from './ui.js';
+
+const stepOf = (row: MemberRow) => toMemberView(row).onboardingStep;
+
+export const RECONCILE_JOB = 'cerebro.reconcile-member';
+const RANK_KEYS = ['rank_recruta', 'rank_agente', 'rank_veterano'];
+
+/** Onboarding, profile and role flows. Handlers stay thin; every state change is read from and written to the DB. */
+export class CerebroFlow {
+  readonly repo: CerebroRepo;
+  readonly ui: CerebroUi;
+
+  constructor(readonly ctx: BotContext<CerebroConfig>) {
+    this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
+    this.ui = new CerebroUi(ctx.i18n, ctx.botConfig, {
+      channels: ctx.config.channels,
+      factions: ctx.config.factions.map((f) => ({ key: f.key, emoji: f.emoji })),
+    });
+  }
+
+  private get cfg() {
+    return this.ctx.botConfig;
+  }
+  private t(key: string, vars: Record<string, string | number> = {}, locale?: Locale) {
+    return this.ctx.i18n.t(`cerebro.${key}`, vars, locale);
+  }
+  locale(userId: string) {
+    return this.ctx.i18n.localeFor(userId);
+  }
+  factionRoleKey(faction: string | null): string | null {
+    return this.ctx.config.factions.find((f) => f.key === faction)?.roleKey ?? null;
+  }
+  private factionRoleKeys(): string[] {
+    return this.ctx.config.factions.map((f) => f.roleKey);
+  }
+
+  // ---------- join / leave ----------
+
+  async memberJoined(member: GuildMember): Promise<void> {
+    if (member.isBot) return;
+    const { row, isRejoin } = await this.ctx.bus.transaction(async (tx) => {
+      const before = await this.repo.memberByDiscordId(member.userId, tx);
+      const { row: ensured } = await this.repo.ensureMember(member.userId, tx);
+      const row = ensured.leftAt
+        ? ((await this.repo.updateMember(ensured.id, { leftAt: null }, tx)) ?? ensured)
+        : ensured;
+      await this.ctx.bus.emit(tx, 'member.joined', {
+        discordUserId: member.userId,
+        accountCreatedAt: member.accountCreatedAt,
+        isRejoin: Boolean(before),
+      });
+      if (row.onboardingStep === 'registered')
+        await this.ctx.bus.emit(tx, 'player.rejoined', { memberId: row.id, discordUserId: member.userId });
+      return { row, isRejoin: Boolean(before) };
+    });
+    this.ctx.log.info({ userId: member.userId, step: row.onboardingStep, isRejoin }, 'member joined');
+    await this.applyExpectedRoles(row);
+    const welcome = this.ctx.config.channels.welcome;
+    if (!welcome) return;
+    if (row.onboardingStep === 'registered') {
+      const mutant = await this.repo.mutantByMemberId(row.id);
+      await this.safeSend(welcome, this.ui.welcomeBack(mutant?.codename ?? `<@${member.userId}>`));
+    } else {
+      await this.safeSend(welcome, this.ui.welcome(member.userId));
+    }
+  }
+
+  async memberLeft(userId: string): Promise<void> {
+    const row = await this.repo.memberByDiscordId(userId);
+    if (row && !row.leftAt)
+      await this.repo.updateMember(row.id, { leftAt: this.ctx.clock.now().toISOString() });
+  }
+
+  private async safeSend(channelId: string, msg: Parameters<BotContext['gateway']['sendMessage']>[1]) {
+    try {
+      return await this.ctx.gateway.sendMessage(channelId, msg);
+    } catch (err) {
+      this.ctx.log.warn({ err, channelId }, 'could not post message; check channel permissions');
+      return null;
+    }
+  }
+
+  // ---------- roles ----------
+
+  /** Brings a member's Discord roles to what the DB says. Throws on Discord errors (the job retries). */
+  async reconcileRoles(row: MemberRow): Promise<void> {
+    const view = toMemberView(row);
+    const factionKey = this.factionRoleKey(row.faction);
+    const { add, remove } = expectedRoles({
+      onboardingStep: view.onboardingStep,
+      factionRoleKey: factionKey,
+      rank: view.rank,
+      optIns: view.optIns,
+    });
+    const reason = 'Legion: registro do Cérebro';
+    if (view.onboardingStep === 'registered') {
+      await this.ctx.roles.setExactlyOne(row.discordUserId, this.factionRoleKeys(), factionKey, reason);
+      await this.ctx.roles.setExactlyOne(row.discordUserId, RANK_KEYS, `rank_${view.rank}`, reason);
+    }
+    await this.ctx.roles.reconcileMember(row.discordUserId, add, remove, reason);
+  }
+
+  /** Like reconcileRoles, but on failure logs and schedules the retry job. Returns false on failure. */
+  async applyExpectedRoles(row: MemberRow): Promise<boolean> {
+    try {
+      await this.reconcileRoles(row);
+      return true;
+    } catch (err) {
+      this.ctx.log.warn(
+        { err, userId: row.discordUserId, hint: 'drag the bot role above the Legion roles' },
+        'role update failed; scheduling reconcile',
+      );
+      await this.ctx.scheduler.enqueue(
+        RECONCILE_JOB,
+        { memberId: row.id },
+        { runAt: new Date(this.ctx.clock.now().getTime() + 5_000), maxAttempts: 3 },
+      );
+      return false;
+    }
+  }
+
+  async reconcileJob(payload: { memberId: string }): Promise<void> {
+    const row = await this.repo.memberById(payload.memberId);
+    if (!row || row.leftAt) return;
+    await this.reconcileRoles(row);
+  }
+
+  async onRankChanged(memberId: string, to: string): Promise<void> {
+    const row = await this.repo.memberById(memberId);
+    if (!row) {
+      this.ctx.log.warn({ memberId }, 'rank.changed for an unknown member');
+      return;
+    }
+    const updated = row.rank === to ? row : ((await this.repo.updateMember(row.id, { rank: to })) ?? row);
+    if (updated.leftAt) return;
+    await this.ctx.roles.setExactlyOne(updated.discordUserId, RANK_KEYS, `rank_${to}`, 'Legion: novo rank');
+  }
+
+  // ---------- onboarding screens ----------
+
+  /** The screen for a member's current step (used by "start", old buttons and resumes). */
+  async currentScreen(row: MemberRow, locale: Locale, prefix?: string) {
+    switch (row.onboardingStep) {
+      case 'signal':
+        return this.ui.rules(locale, prefix);
+      case 'rules_accepted':
+        return this.ui.faction(locale, row.faction, prefix);
+      case 'faction_chosen':
+        return this.ui.archetype(locale, row.pendingArchetype, prefix);
+      default:
+        return this.profileOrOptIns(row, locale);
+    }
+  }
+
+  private async profileOrOptIns(row: MemberRow, locale: Locale) {
+    const mutant = await this.repo.mutantByMemberId(row.id);
+    const header = mutant ? this.ui.profileEmbed(row, mutant, locale) : undefined;
+    return this.ui.optIns(locale, toMemberView(row).optIns, header);
+  }
+
+  private async loadOrCreate(userId: string): Promise<MemberRow> {
+    const { row, created } = await this.repo.ensureMember(userId);
+    if (created) await this.applyExpectedRoles(row);
+    return row;
+  }
+
+  /** `cerebro:v1:start` — on the public welcome message, so the answer is a new ephemeral reply. */
+  async start(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    await r.reply(await this.currentScreen(row, locale));
+  }
+
+  async acceptRules(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    const res = transition(stepOf(row), 'accept_rules');
+    if (!res.ok) return r.update(await this.currentScreen(row, locale));
+    const next = res.changed
+      ? ((await this.repo.updateMember(row.id, {
+          onboardingStep: res.next,
+          rulesAcceptedAt: this.ctx.clock.now().toISOString(),
+        })) ?? row)
+      : row;
+    await r.update(await this.currentScreen(next, locale));
+  }
+
+  async chooseFaction(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    const faction = i.values?.[0];
+    if (!faction || !this.ctx.config.factions.some((f) => f.key === faction))
+      return r.update(await this.currentScreen(row, locale, this.t('errors.invalid_choice', {}, locale)));
+    const res = transition(stepOf(row), 'choose_faction');
+    if (!res.ok)
+      return r.update(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
+    const next = (await this.repo.updateMember(row.id, { onboardingStep: res.next, faction })) ?? row;
+    await r.update(await this.currentScreen(next, locale));
+  }
+
+  async chooseArchetype(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    const archetype = i.values?.[0] ?? '';
+    const res = transition(stepOf(row), 'choose_archetype');
+    if (!res.ok)
+      return r.update(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
+    if (!isArchetype(archetype) || !this.cfg.archetypes.includes(archetype))
+      return r.update(await this.currentScreen(row, locale, this.t('errors.invalid_choice', {}, locale)));
+    await this.repo.updateMember(row.id, { pendingArchetype: archetype });
+    await r.showModal(this.ui.mutantModal(locale));
+  }
+
+  /** `cerebro:v1:reopen` — shows the modal again (after an error or a restart). */
+  async reopen(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    if (row.onboardingStep !== 'faction_chosen' || !row.pendingArchetype)
+      return r.reply(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
+    await r.showModal(this.ui.mutantModal(locale));
+  }
+
+  async submitMutant(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    await r.defer(true);
+    const row = await this.loadOrCreate(i.userId);
+    const res = transition(stepOf(row), 'submit_mutant');
+    if (!res.ok || !row.pendingArchetype || !row.faction) {
+      const prefix = res.ok ? this.t('errors.continue', {}, locale) : undefined;
+      const screen = await this.currentScreen(
+        res.ok ? { ...row, pendingArchetype: null } : row,
+        locale,
+        prefix,
+      );
+      return r.send(screen);
+    }
+
+    const fields = i.fields ?? {};
+    const name = validateCodename(fields.codinome ?? '', this.cfg.codename);
+    if (!name.ok) {
+      if (name.error === 'canon') await this.trackCanonAttempt(row, name.codename, i.userId);
+      const msg =
+        name.error === 'canon'
+          ? this.t('errors.canon_name', { codename: name.codename }, locale)
+          : name.error === 'length'
+            ? this.t('errors.codename_length', this.cfg.codename, locale)
+            : this.t('errors.codename_chars', {}, locale);
+      return r.send(this.ui.modalError(locale, msg));
+    }
+    const power = z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .safeParse(fields.poder ?? '');
+    if (!power.success) return r.send(this.ui.modalError(locale, this.t('errors.power_length', {}, locale)));
+    const origin = z
+      .string()
+      .trim()
+      .min(1)
+      .max(300)
+      .safeParse(fields.origem ?? '');
+    if (!origin.success)
+      return r.send(this.ui.modalError(locale, this.t('errors.origin_length', {}, locale)));
+    if (await this.repo.codenameTaken(name.normalized))
+      return r.send(
+        this.ui.modalError(locale, this.t('errors.codename_taken', { codename: name.codename }, locale)),
+      );
+
+    const archetype = row.pendingArchetype;
+    const faction = row.faction;
+    let result:
+      | { member: MemberRow; mutant: Awaited<ReturnType<CerebroRepo['insertMutant']>> }
+      | 'already'
+      | 'taken';
+    try {
+      result = await this.ctx.bus.transaction(async (tx) => {
+        const fresh = await this.repo.memberById(row.id, tx);
+        if (!fresh || fresh.onboardingStep === 'registered') return 'already' as const;
+        const mutant = await this.repo.insertMutant(
+          {
+            memberId: row.id,
+            codename: name.codename,
+            codenameNormalized: name.normalized,
+            power: power.data,
+            archetype,
+            origin: origin.data,
+          },
+          tx,
+        );
+        const member = await this.repo.updateMember(
+          row.id,
+          { onboardingStep: 'registered', rank: 'recruta', pendingArchetype: null },
+          tx,
+        );
+        if (!member) throw new Error('member vanished');
+        await this.ctx.bus.emit(tx, 'player.created', {
+          memberId: member.id,
+          discordUserId: member.discordUserId,
+          mutantId: mutant.id,
+          codename: mutant.codename,
+          archetype: mutant.archetype,
+          faction,
+        });
+        return { member, mutant };
+      });
+    } catch (err) {
+      // A concurrent registration took the codename (unique index) between the check and the insert.
+      if (await this.repo.codenameTaken(name.normalized)) result = 'taken';
+      else throw err;
+    }
+    if (result === 'taken')
+      return r.send(
+        this.ui.modalError(locale, this.t('errors.codename_taken', { codename: name.codename }, locale)),
+      );
+    if (result === 'already') {
+      const fresh = (await this.repo.memberById(row.id)) ?? row;
+      return r.send(await this.currentScreen(fresh, locale));
+    }
+
+    const { member, mutant } = result;
+    this.ctx.log.info({ userId: i.userId, memberId: member.id }, 'mutant registered');
+    const rolesOk = await this.applyExpectedRoles(member);
+    const header = this.ui.registeredEmbed(locale, mutant.codename);
+    const reply = this.ui.optIns(locale, [], header);
+    if (!rolesOk) reply.content = this.t('errors.role_permission', {}, locale);
+    await r.send(reply);
+    if (this.cfg.publicRegistryCard) {
+      const channel = this.ctx.config.channels.registry ?? this.ctx.config.channels.welcome;
+      if (channel) await this.safeSend(channel, this.ui.publicRegistryCard(member, mutant));
+    }
+  }
+
+  private async trackCanonAttempt(row: MemberRow, attempted: string, userId: string) {
+    const { count, windowMinutes } = this.cfg.canonAttemptFlag;
+    const n = await this.repo.recordCanonAttempt(row.id, attempted, windowMinutes);
+    if (n !== count) return;
+    await this.ctx.bus.transaction((tx) =>
+      this.ctx.bus.emit(tx, 'report.flagged', {
+        reportId: this.ctx.newId(),
+        reporter: 'cerebro',
+        reporterDiscordUserId: null,
+        subjectDiscordUserId: userId,
+        reason: 'canon_name_attempts',
+        severity: 'low',
+        details: `${n} canon-name attempts in ${windowMinutes} min; last: ${attempted}`.slice(0, 500),
+        refs: { memberId: row.id },
+      }),
+    );
+  }
+
+  // ---------- opt-ins, profile ----------
+
+  async toggleOptIn(i: IncomingInteraction, r: Responder, roleKey: string): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.repo.memberByDiscordId(i.userId);
+    if (row?.onboardingStep !== 'registered') return r.reply(await this.notRegisteredSelf(locale));
+    if (!this.cfg.optInRoles.includes(roleKey))
+      return r.update(this.ui.optIns(locale, toMemberView(row).optIns));
+    const current = toMemberView(row).optIns;
+    const enabling = !current.includes(roleKey);
+    const optIns = enabling ? [...current, roleKey] : current.filter((k) => k !== roleKey);
+    await this.ctx.bus.transaction(async (tx) => {
+      await this.repo.updateMember(row.id, { optIns: JSON.stringify(optIns) }, tx);
+      await this.ctx.bus.emit(tx, 'player.optins_changed', { memberId: row.id, optIns });
+    });
+    try {
+      if (enabling) await this.ctx.roles.assign(i.userId, roleKey, 'Legion: preferência');
+      else await this.ctx.roles.remove(i.userId, roleKey, 'Legion: preferência');
+    } catch (err) {
+      this.ctx.log.warn({ err, roleKey }, 'opt-in role change failed');
+      await this.applyExpectedRoles({ ...row, optIns: JSON.stringify(optIns) });
+    }
+    await r.update(this.ui.optIns(locale, optIns));
+  }
+
+  async preferences(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.repo.memberByDiscordId(i.userId);
+    if (row?.onboardingStep !== 'registered') return r.reply(await this.notRegisteredSelf(locale));
+    await r.reply(this.ui.optIns(locale, toMemberView(row).optIns));
+  }
+
+  private async notRegisteredSelf(locale: Locale) {
+    const channel = channelMention(
+      this.ctx.config.channels.welcome,
+      this.t('errors.no_welcome_channel', {}, locale),
+    );
+    return this.ui.text(this.t('errors.not_registered_self', { channel }, locale));
+  }
+
+  async profile(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const targetId = typeof i.options?.membro === 'string' ? i.options.membro : i.userId;
+    const row = await this.repo.memberByDiscordId(targetId);
+    const mutant =
+      row && row.onboardingStep === 'registered' ? await this.repo.mutantByMemberId(row.id) : null;
+    if (!row || !mutant) {
+      return r.reply(
+        targetId === i.userId
+          ? await this.notRegisteredSelf(locale)
+          : this.ui.text(this.t('profile.not_registered', {}, locale)),
+      );
+    }
+    const extra = await this.ctx.profile.render(
+      { memberId: row.id, discordUserId: row.discordUserId },
+      locale,
+      (bot, err) => this.ctx.log.warn({ err, section: bot }, 'profile section failed'),
+    );
+    await r.reply(this.ui.profile(row, mutant, locale, extra));
+  }
+
+  async share(i: IncomingInteraction, r: Responder, memberId: string): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.repo.memberById(memberId);
+    const mutant = row ? await this.repo.mutantByMemberId(row.id) : null;
+    if (!row || !mutant) return r.reply(this.ui.text(this.t('profile.not_registered', {}, locale)));
+    const extra = await this.ctx.profile.render(
+      { memberId: row.id, discordUserId: row.discordUserId },
+      this.ctx.i18n.defaultLocale,
+    );
+    try {
+      await this.ctx.gateway.sendMessage(i.channelId, {
+        persona: 'cerebro',
+        embeds: [this.ui.profileEmbed(row, mutant, undefined, extra)],
+      });
+      await r.reply(this.ui.text(this.t('profile.shared', {}, locale)));
+    } catch (err) {
+      if (!(err instanceof GatewayError)) throw err;
+      this.ctx.log.warn({ err }, 'could not share profile');
+      await r.reply(this.ui.text(this.ctx.i18n.t('core.errors.generic', {}, locale)));
+    }
+  }
+}
