@@ -1,0 +1,130 @@
+{
+  "cerebro": {
+    "welcome": {
+      "title": "🧠 Cérebro detected a new mutant signal…",
+      "body": "{mention}, your genetic signature just showed up on our sensors. To join the Legion, register: it takes less than a minute.",
+      "persistent_body": "Just arrived? Click the button below to start your mutant registration.",
+      "start_button": "Start registration",
+      "back": "🧠 Signal recognized. Welcome back, **{codename}**! Your roles were restored."
+    },
+    "rules": {
+      "title": "📜 Legion rules",
+      "summary": "1. Respect everyone.\n2. No spam, no self-promotion without permission.\n3. Original characters only: no Marvel hero or villain names.\n4. Follow staff guidance.",
+      "link": "Read the full rules in {channel}.",
+      "accept_button": "I accept the rules"
+    },
+    "faction": {
+      "title": "⚔️ Choose your faction",
+      "body": "Every mutant fights alongside a faction. Pick one (you can't switch on your own later, for now).",
+      "placeholder": "Choose your faction",
+      "xmen": { "name": "X-Men", "description": "They protect a world that fears them." },
+      "brotherhood": { "name": "Brotherhood", "description": "Mutants first, whatever it takes." },
+      "independent": { "name": "Independent", "description": "No flag: you walk your own path." }
+    },
+    "archetype": {
+      "title": "🧬 Choose your archetype",
+      "body": "Your archetype sets your base stats. Then you describe your power in your own words.",
+      "placeholder": "Choose your archetype",
+      "reopen_button": "Fill in the mutant sheet",
+      "Telepata": "Sharp mind: high focus, low defense.",
+      "Elemental": "Commands an element: strong attack.",
+      "Metamorfo": "Shapeshifter: balanced in everything.",
+      "Velocista": "Too fast to be caught.",
+      "Tanque": "Takes every hit: lots of HP and defense.",
+      "Tecnopata": "Talks to machines: focus and defense."
+    },
+    "modal": {
+      "title": "Mutant sheet",
+      "codename": "Codename (original!)",
+      "codename_placeholder": "E.g. Crimson Spark",
+      "power": "Power",
+      "power_placeholder": "E.g. Creates sparks that blind enemies",
+      "origin": "Origin",
+      "origin_placeholder": "How did your powers awaken?"
+    },
+    "errors": {
+      "canon_name": "🚫 **{codename}** looks like a Marvel character name. The Legion only accepts **original** mutants: invent a codename of your own!",
+      "codename_length": "The codename must have between {min} and {max} characters.",
+      "codename_chars": "Use only letters, numbers, spaces, hyphens and apostrophes in the codename.",
+      "codename_taken": "The codename **{codename}** already belongs to another mutant. Pick another one.",
+      "power_length": "Describe your power in up to 100 characters.",
+      "origin_length": "Tell your origin in up to 300 characters.",
+      "invalid_choice": "That option is not available. Try again.",
+      "continue": "Let's continue where you left off:",
+      "not_staff": "Only staff (Professor X or the Council) can use this command.",
+      "role_permission": "I couldn't adjust your roles right now. Staff can see it in the logs, and I'll try again shortly.",
+      "not_registered_self": "You are not a registered mutant yet. Start in {channel}.",
+      "no_welcome_channel": "the welcome channel"
+    },
+    "registered": {
+      "title": "✅ Mutant registered!",
+      "body": "Welcome to the Legion, **{codename}**. The server is now unlocked for you.",
+      "public_title": "🧬 Mutant registered!",
+      "public_body": "A new mutant joined the Legion: **{codename}**."
+    },
+    "profile": {
+      "title": "🧬 {codename}",
+      "archetype": "Archetype",
+      "faction": "Faction",
+      "rank": "Rank",
+      "power": "Power",
+      "origin": "Origin",
+      "share_button": "Share",
+      "shared": "Sheet shared in the channel!",
+      "not_registered": "That member is not a registered mutant yet."
+    },
+    "ranks": { "recruta": "Recruit", "agente": "Agent", "veterano": "Veteran" },
+    "optins": {
+      "title": "🔔 Preferences",
+      "body": "Turn the optional roles on or off. Click again to switch.",
+      "live_ping": "Live alerts",
+      "rivals_vanguard": "Vanguard",
+      "rivals_duelist": "Duelist",
+      "rivals_strategist": "Strategist"
+    },
+    "setup": {
+      "dry_run": "🔎 **Dry run** (nothing changed). Run with `aplicar: true` to apply.",
+      "applied": "✅ **Applied.**",
+      "roles_create": "Create role: {name}",
+      "roles_color": "Fix color: {name}",
+      "roles_none": "Roles: nothing to change.",
+      "channel_hide": "#{channel}: hide from @everyone",
+      "channel_show": "#{channel}: open to Registered Mutant",
+      "channels_none": "Channels: nothing to change.",
+      "welcome_message": "Persistent welcome message: {status}",
+      "welcome_posted": "posted",
+      "welcome_refreshed": "refreshed",
+      "welcome_missing_channel": "set channels.welcome",
+      "reconciled": "Roles re-applied for {count} registered mutant(s).",
+      "hierarchy_warning": "⚠️ My role is below these roles, so I can't assign them: {roles}. Drag the bot role above them in Server Settings → Roles.",
+      "errors": "Errors: {errors}",
+      "truncated": "… and {count} more item(s)."
+    },
+    "status": {
+      "title": "📊 Cérebro status",
+      "steps": "Steps",
+      "last_sync": "Last role sync",
+      "never": "never",
+      "missing_roles": "Registered without the {role} role",
+      "none": "none",
+      "left": "Left the server"
+    },
+    "help": {
+      "perfil": "Shows your mutant sheet (or another member's).",
+      "preferencias": "Turns optional roles on and off, like Live alerts.",
+      "setup": "Syncs roles and, if asked, channel visibility.",
+      "status": "Shows how many members are at each registration step."
+    },
+    "commands": {
+      "perfil": { "description": "Shows a mutant sheet", "membro": "Member (default: you)" },
+      "cerebro": {
+        "description": "Cérebro commands",
+        "preferencias": "Turn optional roles on and off",
+        "setup": "Sync roles and channels (staff)",
+        "aplicar": "Apply the changes (default: dry run)",
+        "canais": "Also adjust channel visibility",
+        "status": "Registration status (staff)"
+      }
+    }
+  }
+}
