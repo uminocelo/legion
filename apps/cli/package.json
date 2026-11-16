@@ -4,6 +4,19 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@legion/core": "workspace:*"
+    "@clack/prompts": "^1.9.0",
+    "@legion/bot-cerebro": "workspace:*",
+    "@legion/core": "workspace:*",
+    "@legion/runner": "workspace:*",
+    "commander": "^15.1.0",
+    "discord.js": "^14.28.1",
+    "drizzle-orm": "^0.45.4",
+    "yaml": "^2.9.1"
+  },
+  "bin": {
+    "legion": "./dist/index.js"
+  },
+  "scripts": {
+    "start": "node dist/index.js"
   }
 }

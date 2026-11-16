@@ -139,6 +139,14 @@ export class CoreRuntime {
     });
   }
 
+  get db(): LegionDb {
+    return this.o.db;
+  }
+
+  async close(): Promise<void> {
+    await this.o.db.close();
+  }
+
   async migrateCore(): Promise<void> {
     await this.o.db.migrate('core', CORE_MIGRATIONS_DIR);
   }
