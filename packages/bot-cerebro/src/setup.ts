@@ -66,22 +66,27 @@ export class CerebroSetup {
       channels: await this.ctx.gateway.fetchChannels(),
       everyoneRoleId: this.ctx.guildId,
       registeredRoleId: registered?.id ?? 'registered-role-not-created-yet',
+      botUserId: this.ctx.gateway.botUserId,
       welcomeId: welcome,
       rulesId: rules,
       excludeIds: this.ctx.botConfig.setup.excludeChannelIds,
     });
     if (plan.length === 0) return [this.t('channels_none')];
     const lines: string[] = [];
+    const failed = new Set<string>();
     for (const c of plan) {
-      lines.push(
-        `• ${this.t(c.kind === 'hide_from_everyone' ? 'channel_hide' : 'channel_show', { channel: c.channelName })}`,
-      );
-      if (!apply || !registered) continue;
+      if (c.kind !== 'keep_bot_access')
+        lines.push(
+          `• ${this.t(c.kind === 'hide_from_everyone' ? 'channel_hide' : 'channel_show', { channel: c.channelName })}`,
+        );
+      // Stop at the first failure in a channel: never deny @everyone after the earlier steps failed.
+      if (!apply || !registered || failed.has(c.channelId)) continue;
       try {
         await this.ctx.gateway.setChannelPermissionOverwrite(c.channelId, c.overwrite);
       } catch (err) {
+        failed.add(c.channelId);
         this.ctx.log.warn({ err, channelId: c.channelId }, 'could not set channel overwrite');
-        lines.push(`  ⚠️ ${(err as Error).message}`);
+        lines.push(`  ⚠️ #${c.channelName}: ${(err as Error).message}`);
       }
     }
     return lines;
@@ -130,7 +135,14 @@ export class CerebroSetup {
     const out: string[] = [opts.apply ? this.t('applied') : this.t('dry_run')];
     out.push(...(await this.syncRoles(opts.apply)).lines);
     if (opts.channels) out.push(...(await this.channels(opts.apply)));
-    if (opts.apply && this.ctx.botConfig.persistentWelcome) out.push(await this.persistentWelcome());
+    if (opts.apply && this.ctx.botConfig.persistentWelcome) {
+      out.push(
+        await this.persistentWelcome().catch((err: Error) => {
+          this.ctx.log.warn({ err }, 'could not post the persistent welcome message');
+          return this.t('welcome_message', { status: `⚠️ ${err.message}` });
+        }),
+      );
+    }
     if (opts.apply) {
       const missing = await this.membersMissingRoles();
       for (const memberId of missing) {

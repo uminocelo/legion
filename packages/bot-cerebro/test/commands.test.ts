@@ -217,6 +217,7 @@ describe('/cerebro setup and status', () => {
     });
     expect(t.gateway.lastReply(apply)?.content).toContain('Mensagem fixa de boas-vindas: publicada');
     expect(t.gateway.channels.get(CH.general)?.overwrites.map((o) => o.deny.concat(o.allow))).toEqual([
+      ['ViewChannel', 'SendMessages', 'EmbedLinks', 'ReadMessageHistory'],
       ['ViewChannel'],
       ['ViewChannel'],
     ]);
@@ -233,6 +234,27 @@ describe('/cerebro setup and status', () => {
     expect(text).toContain('Cargos: nada a mudar.');
     expect(text).toContain('Canais: nada a mudar.');
     expect(text).toContain('Mensagem fixa de boas-vindas: atualizada');
+  });
+
+  it('never hides a channel from @everyone after an earlier step failed, and reports a failed welcome post', async () => {
+    t = await setupCerebro();
+    t.gateway.addMember({ userId: '12', roleIds: [staffRoleId(t)] });
+    t.gateway.failNext('setChannelPermissionOverwrite', new GatewayError('Missing Access', 50001));
+    t.gateway.failNext('sendMessage', new GatewayError('Missing Access', 50001));
+    const id = await t.interact({
+      kind: 'command',
+      userId: '12',
+      commandName: 'cerebro',
+      subcommand: 'setup',
+      options: { aplicar: true, canais: true },
+    });
+    const text = t.gateway.lastReply(id)?.content ?? '';
+    expect(text).toContain('⚠️ #registry: Missing Access');
+    expect(text).toContain('Mensagem fixa de boas-vindas: ⚠️ Missing Access');
+    const everyoneDeny = (id: string) =>
+      t?.gateway.channels.get(id)?.overwrites.find((o) => o.id === t?.gateway.guildId)?.deny ?? [];
+    expect(everyoneDeny(CH.registry)).not.toContain('ViewChannel'); // stopped after the failure
+    expect(everyoneDeny(CH.general)).toContain('ViewChannel'); // other channels still applied
   });
 
   it('the guild owner can run setup without a staff role, and status reports steps and missing roles', async () => {
