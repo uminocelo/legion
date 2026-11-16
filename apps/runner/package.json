@@ -4,6 +4,21 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@legion/core": "workspace:*"
+    "@legion/bot-cerebro": "workspace:*",
+    "@legion/core": "workspace:*",
+    "discord.js": "^14.28.1",
+    "yaml": "^2.9.1"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "legion-runner": "./dist/main.js"
+  },
+  "scripts": {
+    "start": "node --enable-source-maps dist/main.js"
   }
 }
