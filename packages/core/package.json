@@ -17,6 +17,7 @@
   "dependencies": {
     "@libsql/client": "^0.18.0",
     "cron-parser": "^5.10.6",
+    "discord.js": "^14.28.1",
     "drizzle-orm": "^0.45.4",
     "pg": "^8.23.1",
     "pino": "^10.4.0",
