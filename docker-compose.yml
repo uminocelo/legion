@@ -1,0 +1,29 @@
+services:
+  legion:
+    image: ghcr.io/uminocelo/legion:${LEGION_VERSION:-latest}
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./legion.config.yaml:/app/legion.config.yaml:ro
+      - ./locales:/app/locales:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  # Optional Postgres: set DATABASE_URL=postgres://legion:legion@postgres:5432/legion in .env and run
+  #   docker compose --profile postgres up -d
+  postgres:
+    profiles: [postgres]
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: legion
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-legion}
+      POSTGRES_DB: legion
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U legion"]
+      interval: 5s
+      retries: 10

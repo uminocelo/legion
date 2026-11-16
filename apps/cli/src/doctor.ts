@@ -1,0 +1,303 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+  type AnyLegionBot,
+  CORE_MIGRATIONS_DIR,
+  ConfigError,
+  CoreRuntime,
+  createDb,
+  type DoctorStatus,
+  type Env,
+  FakeRandomSource,
+  type LegionConfig,
+  type LegionDb,
+  type Locale,
+  parseEnv,
+  silentLogger,
+  systemClock,
+} from '@legion/core';
+import { loadConfigAndBots } from '@legion/runner';
+import { PermissionFlagsBits } from 'discord.js';
+import { count } from 'drizzle-orm';
+import { integer as pgInteger, pgTable } from 'drizzle-orm/pg-core';
+import { integer, sqliteTable } from 'drizzle-orm/sqlite-core';
+import { type MessageKey, msg } from './messages.js';
+import { channelPermissions, missingPermissions } from './permissions.js';
+import { type DiscordRest, RestError } from './rest.js';
+import { createRestGateway } from './rest-gateway.js';
+
+export interface CheckResult {
+  id: string;
+  title: string;
+  status: DoctorStatus | 'skip';
+  message: string;
+  fix?: string;
+}
+
+export interface DoctorOptions {
+  locale: Locale;
+  envSource: Record<string, string | undefined>;
+  configPath: string;
+  rest: (token: string) => DiscordRest;
+  /** Opens the DB without migrating (defaults to createDb). */
+  openDb?: (url: string) => Promise<LegionDb>;
+}
+
+const GATEWAY_GUILD_MEMBERS = 1 << 14;
+const GATEWAY_GUILD_MEMBERS_LIMITED = 1 << 15;
+const CHANNEL_PERMS = {
+  'Ver canal': PermissionFlagsBits.ViewChannel,
+  'Enviar mensagens': PermissionFlagsBits.SendMessages,
+  'Inserir links': PermissionFlagsBits.EmbedLinks,
+};
+
+/** Number of migrations a package ships vs. how many the DB recorded. */
+async function pendingMigrations(db: LegionDb, packageId: string, dir: string): Promise<boolean> {
+  const journal = join(dir, db.dialect === 'pg' ? 'pg' : 'sqlite', 'meta', '_journal.json');
+  if (!existsSync(journal)) return false;
+  const shipped = (JSON.parse(readFileSync(journal, 'utf8')) as { entries: unknown[] }).entries.length;
+  const table =
+    db.dialect === 'pg'
+      ? (pgTable(`__migrations_${packageId}`, { id: pgInteger('id') }) as unknown as ReturnType<
+          typeof sqliteTable
+        >)
+      : sqliteTable(`__migrations_${packageId}`, { id: integer('id') });
+  try {
+    const [row] = await db.orm.select({ n: count() }).from(table);
+    return Number(row?.n ?? 0) < shipped;
+  } catch {
+    return true; // table does not exist yet
+  }
+}
+
+/** Runs every check and returns the results (✅ ok, ⚠️ warn, ❌ fail). Never throws. */
+export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
+  const L = o.locale;
+  const t = (k: MessageKey, v: Record<string, string | number> = {}) => msg(L, k, v);
+  const results: CheckResult[] = [];
+  const add = (r: CheckResult) => results.push(r);
+  const skip = (id: string, title: string) => add({ id, title, status: 'skip', message: t('skipped') });
+
+  // 1. env
+  let env: Env | null = null;
+  try {
+    env = parseEnv(o.envSource, L);
+    add({ id: 'env', title: t('check.env'), status: 'ok', message: t('check.env.ok') });
+  } catch (err) {
+    const lines = err instanceof ConfigError ? err.lines.join('; ') : String(err);
+    add({ id: 'env', title: t('check.env'), status: 'fail', message: lines, fix: t('check.env.fix') });
+  }
+
+  // 2. config
+  let config: LegionConfig | null = null;
+  let bots: AnyLegionBot[] = [];
+  try {
+    ({ config, bots } = await loadConfigAndBots(o.configPath));
+    add({
+      id: 'config',
+      title: t('check.config'),
+      status: 'ok',
+      message: t('check.config.ok', { bots: config.bots.join(', ') }),
+    });
+  } catch (err) {
+    const message = err instanceof ConfigError ? err.lines.join('\n') : (err as Error).message;
+    add({ id: 'config', title: t('check.config'), status: 'fail', message, fix: t('check.config.fix') });
+  }
+
+  // 3. Discord: token, application, intents, guild
+  let botUserId: string | null = null;
+  let applicationId: string | null = null;
+  let inGuild = false;
+  const rest = env ? o.rest(env.DISCORD_TOKEN) : null;
+  if (!env || !rest) {
+    for (const [id, k] of [
+      ['token', 'check.token'],
+      ['app', 'check.app'],
+      ['intents', 'check.intents'],
+      ['guild', 'check.guild'],
+    ] as const)
+      skip(id, t(k));
+  } else {
+    try {
+      const me = await rest.me();
+      botUserId = me.id;
+      add({
+        id: 'token',
+        title: t('check.token'),
+        status: 'ok',
+        message: t('check.token.ok', { name: me.username }),
+      });
+    } catch (err) {
+      const status = err instanceof RestError ? err.status : 0;
+      add({
+        id: 'token',
+        title: t('check.token'),
+        status: 'fail',
+        message: status === 401 ? t('check.token.fail') : (err as Error).message,
+        fix: t('check.token.fix'),
+      });
+    }
+    if (botUserId) {
+      const app = await rest.application();
+      applicationId = app.id;
+      if (app.id === env.DISCORD_CLIENT_ID)
+        add({ id: 'app', title: t('check.app'), status: 'ok', message: t('check.app.ok') });
+      else
+        add({
+          id: 'app',
+          title: t('check.app'),
+          status: 'fail',
+          message: t('check.app.fail', { given: env.DISCORD_CLIENT_ID, actual: app.id }),
+          fix: t('check.app.fix'),
+        });
+      const needsMembers = bots.some((b) => b.intents.includes(2 /* GuildMembers */));
+      const hasMembers = ((app.flags ?? 0) & (GATEWAY_GUILD_MEMBERS | GATEWAY_GUILD_MEMBERS_LIMITED)) !== 0;
+      if (!needsMembers || hasMembers)
+        add({ id: 'intents', title: t('check.intents'), status: 'ok', message: t('check.intents.ok') });
+      else
+        add({
+          id: 'intents',
+          title: t('check.intents'),
+          status: 'fail',
+          message: t('check.intents.fail'),
+          fix: t('check.intents.fix'),
+        });
+      const member = await rest.guildMember(env.DISCORD_GUILD_ID, botUserId);
+      if (member) {
+        inGuild = true;
+        const guild = await rest.guild(env.DISCORD_GUILD_ID);
+        add({
+          id: 'guild',
+          title: t('check.guild'),
+          status: 'ok',
+          message: t('check.guild.ok', { name: guild.name }),
+        });
+      } else
+        add({
+          id: 'guild',
+          title: t('check.guild'),
+          status: 'fail',
+          message: t('check.guild.fail', { guild: env.DISCORD_GUILD_ID }),
+          fix: t('check.guild.fix'),
+        });
+    } else {
+      skip('app', t('check.app'));
+      skip('intents', t('check.intents'));
+      skip('guild', t('check.guild'));
+    }
+  }
+
+  // 4. channels
+  if (env && rest && config && botUserId && inGuild) {
+    const [channels, roles, member] = await Promise.all([
+      rest.guildChannels(env.DISCORD_GUILD_ID),
+      rest.guildRoles(env.DISCORD_GUILD_ID),
+      rest.guildMember(env.DISCORD_GUILD_ID, botUserId),
+    ]);
+    const problems: string[] = [];
+    let checked = 0;
+    for (const [key, id] of Object.entries(config.channels)) {
+      if (!id) continue;
+      checked++;
+      const ch = channels.find((c) => c.id === id);
+      if (!ch) {
+        problems.push(t('check.channels.missing', { key, id }));
+        continue;
+      }
+      const perms = channelPermissions(
+        env.DISCORD_GUILD_ID,
+        { ...(member ?? { roles: [] }), id: botUserId },
+        roles,
+        ch,
+      );
+      const missing = missingPermissions(perms, CHANNEL_PERMS);
+      if (missing.length)
+        problems.push(t('check.channels.perms', { key, name: ch.name, perms: missing.join(', ') }));
+    }
+    if (problems.length)
+      add({
+        id: 'channels',
+        title: t('check.channels'),
+        status: 'fail',
+        message: problems.join('\n'),
+        fix: t('check.channels.fix'),
+      });
+    else
+      add({
+        id: 'channels',
+        title: t('check.channels'),
+        status: 'ok',
+        message: t('check.channels.ok', { count: checked }),
+      });
+  } else skip('channels', t('check.channels'));
+
+  // 5. database (no migrations are applied here)
+  let db: LegionDb | null = null;
+  if (env) {
+    try {
+      db = await (o.openDb ?? createDb)(env.DATABASE_URL);
+      const pending: string[] = [];
+      if (await pendingMigrations(db, 'core', CORE_MIGRATIONS_DIR)) pending.push('core');
+      for (const b of bots)
+        if (b.migrationsDir && (await pendingMigrations(db, b.id, b.migrationsDir))) pending.push(b.id);
+      add({
+        id: 'db',
+        title: t('check.db'),
+        status: pending.length ? 'warn' : 'ok',
+        message: pending.length
+          ? t('check.db.pending', { dialect: db.dialect, pkgs: pending.join(', ') })
+          : t('check.db.ok', { dialect: db.dialect }),
+      });
+    } catch (err) {
+      add({
+        id: 'db',
+        title: t('check.db'),
+        status: 'fail',
+        message: t('check.db.fail', { error: (err as Error).message }),
+        fix: t('check.db.fix'),
+      });
+    }
+  } else skip('db', t('check.db'));
+
+  // 6. each enabled bot's own checks (read-only REST gateway; nothing is written to Discord or the DB)
+  if (env && rest && config && db && botUserId && applicationId && inGuild) {
+    const runtime = new CoreRuntime({
+      config,
+      db,
+      gateway: createRestGateway(rest, env.DISCORD_GUILD_ID, botUserId, applicationId),
+      clock: systemClock,
+      random: new FakeRandomSource(),
+      log: silentLogger(),
+      guildId: env.DISCORD_GUILD_ID,
+    });
+    for (const bot of bots) {
+      for (const check of bot.doctorChecks?.(runtime.contextFor(bot)) ?? []) {
+        try {
+          add({ id: check.id, title: check.title, ...(await check.run()) });
+        } catch (err) {
+          add({ id: check.id, title: check.title, status: 'fail', message: (err as Error).message });
+        }
+      }
+    }
+  }
+  await db?.close().catch(() => {});
+  return results;
+}
+
+const ICON: Record<CheckResult['status'], string> = { ok: '✅', warn: '⚠️ ', fail: '❌', skip: '⏭️ ' };
+
+export function formatDoctor(results: CheckResult[], locale: Locale): string {
+  const lines = [msg(locale, 'doctor.title'), ''];
+  for (const r of results) {
+    lines.push(`${ICON[r.status]} ${r.title}: ${r.message.split('\n').join('\n     ')}`);
+    if (r.fix && r.status !== 'ok') lines.push(`   → ${r.fix}`);
+  }
+  const failed = results.filter((r) => r.status === 'fail').length;
+  lines.push(
+    '',
+    failed ? msg(locale, 'doctor.summary_fail', { count: failed }) : msg(locale, 'doctor.summary_ok'),
+  );
+  return lines.join('\n');
+}
+
+export const doctorExitCode = (results: CheckResult[]) => (results.some((r) => r.status === 'fail') ? 1 : 0);

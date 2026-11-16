@@ -102,6 +102,13 @@ describe('codename validation', () => {
 describe('planChannelVisibility', () => {
   const EVERYONE = '1000';
   const REG = '2000';
+  const BOT = '3000';
+  const BOT_OW = {
+    id: BOT,
+    type: 'member' as const,
+    allow: ['ViewChannel', 'SendMessages', 'EmbedLinks', 'ReadMessageHistory'],
+    deny: [],
+  };
   const ch = (
     id: string,
     name: string,
@@ -117,6 +124,7 @@ describe('planChannelVisibility', () => {
   const base = {
     everyoneRoleId: EVERYONE,
     registeredRoleId: REG,
+    botUserId: BOT,
     welcomeId: '1',
     rulesId: '2',
     excludeIds: ['5'],
@@ -130,13 +138,22 @@ describe('planChannelVisibility', () => {
       ch('4', 'staff', [{ id: EVERYONE, type: 'role', allow: [], deny: ['ViewChannel'] }]),
       ch('5', 'excluido'),
       ch('6', 'thread', [], 'thread'),
+      ch('7', 'categoria', [], 'category'),
+      ch('8', 'server-hub', [], 'other'),
+      ch('9', 'voz', [], 'voice'),
     ];
     const plan = planChannelVisibility({ ...base, channels });
+    // The bot keeps access first and @everyone is denied last, so the bot never locks itself out.
     expect(plan.map((c) => `${c.channelName}:${c.kind}`)).toEqual([
-      'geral:hide_from_everyone',
+      'geral:keep_bot_access',
       'geral:show_to_registered',
+      'geral:hide_from_everyone',
+      'voz:keep_bot_access',
+      'voz:show_to_registered',
+      'voz:hide_from_everyone',
     ]);
-    expect(plan[0]?.overwrite).toEqual({
+    expect(plan[0]?.overwrite).toEqual(BOT_OW);
+    expect(plan[2]?.overwrite).toEqual({
       id: EVERYONE,
       type: 'role',
       allow: ['SendMessages'],
@@ -148,7 +165,19 @@ describe('planChannelVisibility', () => {
     const applied = ch('3', 'geral', [
       { id: EVERYONE, type: 'role', allow: [], deny: ['ViewChannel'] },
       { id: REG, type: 'role', allow: ['ViewChannel'], deny: [] },
+      BOT_OW,
     ]);
     expect(planChannelVisibility({ ...base, channels: [applied] })).toEqual([]);
+  });
+
+  it('finishes a half-applied channel instead of mistaking it for a staff channel', () => {
+    const half = ch('3', 'geral', [
+      { id: EVERYONE, type: 'role', allow: [], deny: ['ViewChannel'] },
+      { ...BOT_OW, allow: ['ViewChannel'] },
+    ]);
+    expect(planChannelVisibility({ ...base, channels: [half] }).map((c) => c.kind)).toEqual([
+      'keep_bot_access',
+      'show_to_registered',
+    ]);
   });
 });

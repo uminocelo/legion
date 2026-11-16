@@ -19,6 +19,7 @@ const MESSAGES: Record<Locale, Messages> = {
     'config.env_required': 'obrigatório; preencha no arquivo .env',
     'config.yaml_syntax': 'o YAML é inválido',
     'config.file_missing': 'arquivo não encontrado; copie legion.config.example.yaml para legion.config.yaml',
+    required: 'obrigatório',
     invalid_type: 'tipo inválido (esperado {expected})',
     invalid_value: 'valor inválido; use um de: {values}',
     too_small: 'valor muito pequeno (mínimo {minimum})',
@@ -41,6 +42,7 @@ const MESSAGES: Record<Locale, Messages> = {
     'config.env_required': 'required; fill it in .env',
     'config.yaml_syntax': 'the YAML is invalid',
     'config.file_missing': 'file not found; copy legion.config.example.yaml to legion.config.yaml',
+    required: 'required',
     invalid_type: 'invalid type (expected {expected})',
     invalid_value: 'invalid value; use one of: {values}',
     too_small: 'value too small (minimum {minimum})',
@@ -83,6 +85,8 @@ export function describeIssue(issue: z.core.$ZodIssue, locale: Locale): string {
         keys: ((anyIssue.keys as string[]) ?? []).join(', '),
       });
     case 'invalid_type':
+      if (String(issue.message).includes('received undefined')) return configMessage(locale, 'required');
+      return configMessage(locale, issue.code, anyIssue);
     case 'too_small':
     case 'too_big':
     case 'invalid_format':
