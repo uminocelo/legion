@@ -12,8 +12,9 @@
     "test": "vitest run",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "dev": "pnpm --filter @legion/runner dev",
-    "legion": "pnpm --filter @legion/cli exec legion"
+    "dev": "tsc -b && node --enable-source-maps apps/runner/dist/main.js",
+    "legion": "node apps/cli/dist/index.js",
+    "start": "node --enable-source-maps apps/runner/dist/main.js"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",

@@ -1,0 +1,44 @@
+# Configuração do Legion. Copie para legion.config.yaml e ajuste.
+# Segredos (token etc.) ficam no .env, nunca aqui.
+# Referência completa: docs/CONFIG.md
+
+# Idioma padrão das mensagens: pt-BR ou en
+locale: pt-BR
+# Fuso usado para "dias" (streaks, diárias)
+timezone: America/Sao_Paulo
+
+# Bots ligados. O Cérebro é obrigatório quando qualquer outro está ligado.
+# Nesta versão (v0.1.0) só o cerebro está disponível.
+bots:
+  - cerebro
+
+# IDs dos canais (Discord → Configurações → Avançado → Modo desenvolvedor;
+# depois botão direito no canal → Copiar ID). Use aspas.
+channels:
+  welcome: null # boas-vindas: onde o Cérebro recebe quem chega
+  rules: null # regras
+  registry: null # cartões públicos de novos mutantes (vazio = usa welcome)
+  # tutorial, trivia, events, modQueue, combat: usados por bots futuros
+# Cargos: os padrões cobrem tudo. Para renomear ou mudar cores, copie a lista
+# COMPLETA de docs/CONFIG.md para cá (a lista substitui a padrão inteira).
+# O código usa sempre a "key"; o nome é só o que aparece no Discord.
+# roles: [...]
+
+cerebro:
+  welcomePing: true # menciona o membro na mensagem de boas-vindas
+  persistentWelcome: true # mantém uma mensagem fixa com o botão "Começar"
+  publicRegistryCard: true # posta um cartão público quando alguém se registra
+  codename:
+    min: 2
+    max: 32
+  # Arquétipos oferecidos no cadastro
+  archetypes: [Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata]
+  # Cargos que o membro pode ligar/desligar sozinho
+  optInRoles: [live_ping, rivals_vanguard, rivals_duelist, rivals_strategist]
+  # Avisa a staff (report.flagged) após N tentativas de nome canon em X minutos
+  canonAttemptFlag:
+    count: 3
+    windowMinutes: 10
+  setup:
+    # Canais que o "/cerebro setup canais:true" nunca deve tocar
+    excludeChannelIds: []

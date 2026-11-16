@@ -31,7 +31,7 @@ export function configFile(a: InitAnswers): string {
     locale: a.locale,
     timezone: 'America/Sao_Paulo',
     bots: a.bots.filter((b) => AVAILABLE_BOTS.includes(b)),
-    channels: { welcome: '', rules: '', registry: '' },
+    channels: { welcome: null, rules: null, registry: null },
   };
   return `# Gerado por "legion init". Veja docs/CONFIG.md para todas as opções.\n# Preencha os IDs dos canais (modo desenvolvedor → botão direito → Copiar ID).\n${stringify(doc)}`;
 }
