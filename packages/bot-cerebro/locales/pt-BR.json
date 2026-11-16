@@ -1,0 +1,130 @@
+{
+  "cerebro": {
+    "welcome": {
+      "title": "🧠 Cérebro detectou um novo sinal mutante…",
+      "body": "{mention}, sua assinatura genética acabou de aparecer nos nossos sensores. Para entrar na Legião, faça seu registro: leva menos de um minuto.",
+      "persistent_body": "Chegou agora? Clique no botão abaixo para começar seu registro de mutante.",
+      "start_button": "Iniciar registro",
+      "back": "🧠 Sinal reconhecido. Bem-vindo de volta, **{codename}**! Seus cargos foram restaurados."
+    },
+    "rules": {
+      "title": "📜 Regras da Legião",
+      "summary": "1. Respeite todo mundo.\n2. Sem spam, sem divulgação sem permissão.\n3. Use apenas personagens originais: nada de nomes de heróis ou vilões da Marvel.\n4. Siga as orientações da staff.",
+      "link": "Leia as regras completas em {channel}.",
+      "accept_button": "Aceito as regras"
+    },
+    "faction": {
+      "title": "⚔️ Escolha sua facção",
+      "body": "Cada mutante luta ao lado de uma facção. Escolha uma (por enquanto não dá para trocar sozinho depois).",
+      "placeholder": "Escolha sua facção",
+      "xmen": { "name": "X-Men", "description": "Protegem um mundo que os teme." },
+      "brotherhood": { "name": "Irmandade", "description": "Mutantes primeiro, custe o que custar." },
+      "independent": { "name": "Independente", "description": "Sem bandeira: você faz o próprio caminho." }
+    },
+    "archetype": {
+      "title": "🧬 Escolha seu arquétipo",
+      "body": "Seu arquétipo define seus atributos base. Depois você descreve seu poder com suas palavras.",
+      "placeholder": "Escolha seu arquétipo",
+      "reopen_button": "Preencher ficha do mutante",
+      "Telepata": "Mente afiada: foco alto, pouca defesa.",
+      "Elemental": "Domina um elemento: ataque forte.",
+      "Metamorfo": "Muda de forma: equilibrado em tudo.",
+      "Velocista": "Rápido demais para ser alcançado.",
+      "Tanque": "Aguenta tudo: muita vida e defesa.",
+      "Tecnopata": "Conversa com máquinas: foco e defesa."
+    },
+    "modal": {
+      "title": "Ficha do mutante",
+      "codename": "Codinome (original!)",
+      "codename_placeholder": "Ex.: Faísca Rubra",
+      "power": "Poder",
+      "power_placeholder": "Ex.: Cria faíscas que cegam inimigos",
+      "origin": "Origem",
+      "origin_placeholder": "Como seus poderes despertaram?"
+    },
+    "errors": {
+      "canon_name": "🚫 **{codename}** parece nome de um personagem da Marvel. A Legião só aceita mutantes **originais**: invente um codinome só seu!",
+      "codename_length": "O codinome precisa ter entre {min} e {max} caracteres.",
+      "codename_chars": "Use só letras, números, espaços, hífen e apóstrofo no codinome.",
+      "codename_taken": "O codinome **{codename}** já pertence a outro mutante. Escolha outro.",
+      "power_length": "Descreva seu poder em até 100 caracteres.",
+      "origin_length": "Conte sua origem em até 300 caracteres.",
+      "invalid_choice": "Essa opção não está disponível. Tente de novo.",
+      "continue": "Vamos continuar de onde você parou:",
+      "not_staff": "Apenas a staff (Professor X ou Conselho) pode usar este comando.",
+      "role_permission": "Não consegui ajustar seus cargos agora. A staff já foi avisada nos logs, e vou tentar de novo em instantes.",
+      "not_registered_self": "Você ainda não é um mutante registrado. Comece pelo canal {channel}.",
+      "no_welcome_channel": "o canal de boas-vindas"
+    },
+    "registered": {
+      "title": "✅ Mutante registrado!",
+      "body": "Bem-vindo à Legião, **{codename}**. O servidor foi liberado para você.",
+      "public_title": "🧬 Mutante registrado!",
+      "public_body": "Um novo mutante entrou para a Legião: **{codename}**."
+    },
+    "profile": {
+      "title": "🧬 {codename}",
+      "archetype": "Arquétipo",
+      "faction": "Facção",
+      "rank": "Rank",
+      "power": "Poder",
+      "origin": "Origem",
+      "share_button": "Compartilhar",
+      "shared": "Ficha compartilhada no canal!",
+      "not_registered": "Esse membro ainda não é um mutante registrado."
+    },
+    "ranks": { "recruta": "Recruta", "agente": "Agente", "veterano": "Veterano" },
+    "optins": {
+      "title": "🔔 Preferências",
+      "body": "Ative ou desative os cargos opcionais. Clique de novo para trocar.",
+      "live_ping": "Aviso de Live",
+      "rivals_vanguard": "Vanguarda",
+      "rivals_duelist": "Duelista",
+      "rivals_strategist": "Estrategista"
+    },
+    "setup": {
+      "dry_run": "🔎 **Simulação** (nada foi alterado). Rode com `aplicar: true` para aplicar.",
+      "applied": "✅ **Aplicado.**",
+      "roles_create": "Criar cargo: {name}",
+      "roles_color": "Ajustar cor: {name}",
+      "roles_none": "Cargos: nada a mudar.",
+      "channel_hide": "#{channel}: esconder de @everyone",
+      "channel_show": "#{channel}: liberar para Mutante Registrado",
+      "channels_none": "Canais: nada a mudar.",
+      "welcome_message": "Mensagem fixa de boas-vindas: {status}",
+      "welcome_posted": "publicada",
+      "welcome_refreshed": "atualizada",
+      "welcome_missing_channel": "configure channels.welcome",
+      "reconciled": "Cargos reaplicados para {count} mutante(s) registrado(s).",
+      "hierarchy_warning": "⚠️ Meu cargo está abaixo destes cargos, então não consigo atribuí-los: {roles}. Arraste o cargo do bot para cima deles em Configurações do servidor → Cargos.",
+      "errors": "Erros: {errors}",
+      "truncated": "… e mais {count} item(ns)."
+    },
+    "status": {
+      "title": "📊 Status do Cérebro",
+      "steps": "Etapas",
+      "last_sync": "Última sincronização de cargos",
+      "never": "nunca",
+      "missing_roles": "Registrados sem o cargo {role}",
+      "none": "nenhum",
+      "left": "Saíram do servidor"
+    },
+    "help": {
+      "perfil": "Mostra a ficha do seu mutante (ou de outro membro).",
+      "preferencias": "Liga e desliga cargos opcionais, como Aviso de Live.",
+      "setup": "Sincroniza cargos e, se pedido, a visibilidade dos canais.",
+      "status": "Mostra quantos membros estão em cada etapa do registro."
+    },
+    "commands": {
+      "perfil": { "description": "Mostra a ficha de um mutante", "membro": "Membro (padrão: você)" },
+      "cerebro": {
+        "description": "Comandos do Cérebro",
+        "preferencias": "Liga e desliga cargos opcionais",
+        "setup": "Sincroniza cargos e canais (staff)",
+        "aplicar": "Aplicar as mudanças (padrão: só simular)",
+        "canais": "Também ajustar a visibilidade dos canais",
+        "status": "Status do registro (staff)"
+      }
+    }
+  }
+}
