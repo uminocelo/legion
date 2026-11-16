@@ -1,0 +1,25 @@
+{
+  "name": "legion",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "dev": "pnpm --filter @legion/runner dev",
+    "legion": "pnpm --filter @legion/cli exec legion"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.8",
+    "@types/node": "^22.20.5",
+    "fast-check": "^4.10.2",
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
+  }
+}

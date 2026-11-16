@@ -1,0 +1,18 @@
+{
+  "core": {
+    "errors": {
+      "generic": "Algo deu errado, tente novamente.",
+      "expired_component": "Este botão expirou. Use o comando de novo.",
+      "rate_limited": "Calma, mutante! Tente de novo em {seconds}s.",
+      "not_staff": "Apenas a staff pode usar este comando."
+    },
+    "personas": {
+      "cerebro": "Cérebro",
+      "jarvis": "J.A.R.V.I.S.",
+      "herbie": "H.E.R.B.I.E.",
+      "sentinel": "Sentinel",
+      "ultron": "ULTRON",
+      "footer": "Legion · projeto de fã sem fins lucrativos"
+    }
+  }
+}
