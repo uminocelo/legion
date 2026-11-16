@@ -1,5 +1,18 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
+
+/**
+ * YAML integers come in as bigint so unquoted Discord IDs (19 digits, above 2^53) keep every digit.
+ * Safe integers become numbers again; larger ones become strings.
+ */
+function unbigint(v: unknown): unknown {
+  if (typeof v === 'bigint') return Number.isSafeInteger(Number(v)) ? Number(v) : v.toString();
+  if (Array.isArray(v)) return v.map(unbigint);
+  if (v && typeof v === 'object')
+    return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, unbigint(x)]));
+  return v;
+}
+
 import type { z } from 'zod';
 import { type Env, envSchema } from './env.js';
 import { ConfigError, configMessage, formatIssues } from './errors.js';
@@ -37,7 +50,7 @@ export function parseConfig(
 export function parseConfigText(text: string, botSchemas: BotSchemas = {}, file = 'legion.config.yaml') {
   let raw: unknown;
   try {
-    raw = parseYaml(text) ?? {};
+    raw = unbigint(parseYaml(text, { intAsBigInt: true })) ?? {};
   } catch (err) {
     const where = err instanceof YAMLParseError && err.linePos ? ` (linha ${err.linePos[0].line})` : '';
     throw new ConfigError([

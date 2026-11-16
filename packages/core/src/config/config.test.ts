@@ -90,3 +90,14 @@ describe('parseEnv', () => {
     expect(lines.some((l) => l.startsWith('.env → DISCORD_TOKEN:'))).toBe(true);
   });
 });
+
+describe('unquoted Discord IDs', () => {
+  it('keeps every digit of 19-digit IDs and leaves small numbers as numbers', () => {
+    const cfg = parseConfigText(
+      'channels:\n  welcome: 1572018586715824168\nscheduler:\n  pollIntervalMs: 1000\n',
+      {},
+    );
+    expect(cfg.channels.welcome).toBe('1572018586715824168');
+    expect(cfg.scheduler.pollIntervalMs).toBe(1000);
+  });
+});
