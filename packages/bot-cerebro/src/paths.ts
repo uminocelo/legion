@@ -1,0 +1,4 @@
+import { fileURLToPath } from 'node:url';
+
+export const CEREBRO_MIGRATIONS_DIR = fileURLToPath(new URL('../drizzle', import.meta.url));
+export const CEREBRO_LOCALES_DIR = fileURLToPath(new URL('../locales', import.meta.url));

@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@legion/core': src('./packages/core/src/index.ts'),
+      '@legion/bot-cerebro': src('./packages/bot-cerebro/src/index.ts'),
     },
   },
   test: {
