@@ -22,7 +22,8 @@ const configOpt = ['-c, --config <path>', 'legion.config.yaml', DEFAULT_CONFIG_P
 program
   .command('init')
   .description('Cria .env e legion.config.yaml com perguntas')
-  .action(async () => {
+  .option('-o, --out <dir>', 'pasta onde escrever os arquivos', '.')
+  .action(async (o: { out: string }) => {
     const L = cliLocale();
     p.intro(msg(L, 'init.intro'));
     const ask = async <T>(v: Promise<T | symbol>): Promise<Exclude<T, symbol>> => {
@@ -56,10 +57,8 @@ program
         required: true,
       }),
     );
-    const results = await writeInitFiles(
-      process.cwd(),
-      { token, clientId, guildId, locale, bots },
-      async (file) => ask(p.confirm({ message: msg(L, 'init.overwrite', { file }), initialValue: false })),
+    const results = await writeInitFiles(o.out, { token, clientId, guildId, locale, bots }, async (file) =>
+      ask(p.confirm({ message: msg(L, 'init.overwrite', { file }), initialValue: false })),
     );
     for (const r of results) p.log.info(msg(L, r.written ? 'init.written' : 'init.kept', { file: r.file }));
     p.outro(msg(L, 'init.done'));
@@ -69,7 +68,8 @@ program
   .command('doctor')
   .description('Confere token, intents, servidor, canais, banco e config')
   .option(...configOpt)
-  .action(async (o: { config: string }) => {
+  .option('--json', 'saída em JSON')
+  .action(async (o: { config: string; json?: boolean }) => {
     loadDotEnv();
     const configLocale = await loadConfigAndBots(o.config)
       .then((c) => c.config.locale)
@@ -81,7 +81,11 @@ program
       configPath: o.config,
       rest: (t) => createDiscordRest(t),
     });
-    console.log(formatDoctor(results, L));
+    console.log(
+      o.json
+        ? JSON.stringify({ ok: doctorExitCode(results) === 0, checks: results }, null, 2)
+        : formatDoctor(results, L),
+    );
     process.exitCode = doctorExitCode(results);
   });
 
