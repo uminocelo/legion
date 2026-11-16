@@ -1,0 +1,155 @@
+# Canon Marvel names that players, enemies and AI text must not use.
+# One name per line, Portuguese and English variants. Lines starting with # are ignored.
+Wolverine
+Logan
+Tempestade
+Storm
+Magneto
+Jean Grey
+Ciclope
+Cyclops
+Vampira
+Rogue
+Gambit
+Gambito
+Noturno
+Nightcrawler
+Deadpool
+Fera
+Beast
+Homem de Gelo
+Iceman
+Colossus
+Colosso
+Mistica
+Mystique
+Professor X
+Charles Xavier
+Xavier
+Apocalipse
+Apocalypse
+Fenix
+Phoenix
+Kitty Pryde
+Lince Negra
+Shadowcat
+Psylocke
+Cable
+Bishop
+Jubileu
+Jubilee
+Dentes de Sabre
+Sabretooth
+Juggernaut
+Fanatico
+Emma Frost
+Rainha Branca
+White Queen
+Mercurio
+Quicksilver
+Feiticeira Escarlate
+Scarlet Witch
+Wanda Maximoff
+Polaris
+Havok
+Destrutor
+Archangel
+Arcanjo
+Warren Worthington
+Domino
+Banshee
+Forge
+Sr Sinistro
+Senhor Sinistro
+Mister Sinister
+Mr Sinister
+Sentinela Mestre
+Master Mold
+Bastion
+Omega Red
+Omega Vermelho
+X-23
+Laura Kinney
+Wolfsbane
+Lupina
+Magik
+Illyana Rasputina
+Cannonball
+Dazzler
+Northstar
+Estrela Polar
+Multiple Man
+Homem Multiplo
+Blob
+Groxo
+Toad
+Pyro
+Avalanche
+Mojo
+Selene
+Exodus
+Exodo
+Onslaught
+Stryfe
+Legion
+Legiao
+David Haller
+Moira MacTaggert
+Thunderbird
+Passaro Trovejante
+Sunfire
+Solaris
+Wolverina
+Tony Stark
+Homem de Ferro
+Iron Man
+Capitao America
+Captain America
+Steve Rogers
+Thor
+Loki
+Hulk
+Bruce Banner
+Homem-Aranha
+Spider-Man
+Peter Parker
+Viuva Negra
+Black Widow
+Thanos
+Ultron
+Doutor Destino
+Doctor Doom
+Dr Destino
+Galactus
+Venom
+Carnificina
+Carnage
+Pantera Negra
+Black Panther
+Doutor Estranho
+Doctor Strange
+Gaviao Arqueiro
+Hawkeye
+Visao
+Vision
+Kang
+Red Skull
+Caveira Vermelha
+Nick Fury
+Groot
+Rocket Raccoon
+Star-Lord
+Senhor das Estrelas
+Gamora
+Drax
+Mantis
+Namor
+Blade
+Motoqueiro Fantasma
+Ghost Rider
+Justiceiro
+Punisher
+Demolidor
+Daredevil
+Elektra
+Wade Wilson
