@@ -1,4 +1,17 @@
 {
   "files": [],
-  "references": [{ "path": "packages/core" }, { "path": "apps/runner" }, { "path": "apps/cli" }]
+  "references": [
+    {
+      "path": "packages/core"
+    },
+    {
+      "path": "packages/bot-cerebro"
+    },
+    {
+      "path": "apps/runner"
+    },
+    {
+      "path": "apps/cli"
+    }
+  ]
 }
