@@ -35,6 +35,7 @@ const withView = (
   return { id, type, allow, deny };
 };
 
+const MANAGED_KINDS = new Set<GuildChannel['kind']>(['text', 'voice', 'announcement', 'forum']);
 const BOT_PERMS = [VIEW, 'SendMessages', 'EmbedLinks', 'ReadMessageHistory'];
 
 /**
@@ -43,7 +44,7 @@ const BOT_PERMS = [VIEW, 'SendMessages', 'EmbedLinks', 'ReadMessageHistory'];
  *
  * Per channel the order matters: first the bot gets its own member overwrite (otherwise hiding the
  * channel from `@everyone` would lock the bot out mid-way), then Registered is allowed, and only then
- * `@everyone` is denied. Skips threads, categories (their channels are handled one by one), excluded
+ * `@everyone` is denied. Skips threads, categories (their channels are handled one by one), unknown channel kinds, excluded
  * channels, and staff channels: hidden from `@everyone`, not opened to Registered, and never touched by
  * the bot (no bot overwrite). Keeps every other permission bit. Already-correct channels produce no change.
  */
@@ -51,8 +52,10 @@ export function planChannelVisibility(input: ChannelPlanInput): ChannelChange[] 
   const changes: ChannelChange[] = [];
   const open = new Set([input.welcomeId, input.rulesId].filter(Boolean));
   for (const ch of input.channels) {
-    if (ch.kind === 'thread' || ch.kind === 'category' || open.has(ch.id) || input.excludeIds.includes(ch.id))
-      continue;
+    // Only channel kinds we understand. Threads follow their parent, categories would cascade to synced
+    // children (Discord copies a category's overwrites to them), and unknown kinds (Discord-managed hubs,
+    // new types) are left alone.
+    if (!MANAGED_KINDS.has(ch.kind) || open.has(ch.id) || input.excludeIds.includes(ch.id)) continue;
     const everyone = ch.overwrites.find((o) => o.id === input.everyoneRoleId);
     const registered = ch.overwrites.find((o) => o.id === input.registeredRoleId);
     const bot = ch.overwrites.find((o) => o.id === input.botUserId);

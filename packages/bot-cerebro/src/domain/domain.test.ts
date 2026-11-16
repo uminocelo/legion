@@ -139,6 +139,8 @@ describe('planChannelVisibility', () => {
       ch('5', 'excluido'),
       ch('6', 'thread', [], 'thread'),
       ch('7', 'categoria', [], 'category'),
+      ch('8', 'server-hub', [], 'other'),
+      ch('9', 'voz', [], 'voice'),
     ];
     const plan = planChannelVisibility({ ...base, channels });
     // The bot keeps access first and @everyone is denied last, so the bot never locks itself out.
@@ -146,6 +148,9 @@ describe('planChannelVisibility', () => {
       'geral:keep_bot_access',
       'geral:show_to_registered',
       'geral:hide_from_everyone',
+      'voz:keep_bot_access',
+      'voz:show_to_registered',
+      'voz:hide_from_everyone',
     ]);
     expect(plan[0]?.overwrite).toEqual(BOT_OW);
     expect(plan[2]?.overwrite).toEqual({
