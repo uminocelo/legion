@@ -97,6 +97,11 @@ export interface LegionBot<C = unknown> {
   register: (ctx: BotContext<C>) => void | Promise<void>;
   onReady?: (ctx: BotContext<C>) => Promise<void>;
   doctorChecks?: (ctx: BotContext<C>) => DoctorCheck[];
+  /**
+   * Channels this bot posts to beyond `config.channels` (e.g. a tips channel). `legion doctor` checks
+   * that the app hosting the bot can view, send and embed there.
+   */
+  doctorChannels?: (botConfig: C) => { key: string; id: string | null }[];
   shutdown?: () => Promise<void>;
 }
 

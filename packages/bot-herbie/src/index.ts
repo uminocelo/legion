@@ -3,6 +3,7 @@ import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { herbieCommands } from './commands.js';
 import { type HerbieConfig, herbieConfigSchema } from './config.js';
 import { registerConsumers } from './consumers.js';
+import { herbieDoctorChecks } from './doctor.js';
 import { HERBIE_LOCALES_DIR, HERBIE_MIGRATIONS_DIR } from './paths.js';
 import { herbieServices } from './services.js';
 import { V } from './tutorial.js';
@@ -12,6 +13,8 @@ export * from './content.js';
 export * from './db/repo.js';
 export * from './db/tables.js';
 export * from './domain/quest.js';
+export * from './domain/search.js';
+export { HerbieHelp, helpIds } from './help.js';
 export { HERBIE_CONTENT_DIR, HERBIE_LOCALES_DIR, HERBIE_MIGRATIONS_DIR } from './paths.js';
 export * from './services.js';
 export { HerbieTutorial, tutorialIds } from './tutorial.js';
@@ -37,14 +40,32 @@ export const herbie: LegionBot<HerbieConfig> = {
       { action: 'tutorial', version: V, handle: (i, r) => s.tutorial.command(i, r, false) },
       { action: 'skip', version: V, handle: (i, r) => s.tutorial.askSkip(i, r) },
       { action: 'skip-confirm', version: V, handle: (i, r) => s.tutorial.skip(i, r) },
+      { action: 'glossary', version: V, handle: (i, r, [page]) => s.help.glossaryPage(i, r, Number(page)) },
     ];
   },
   register: (ctx) => {
     const s = herbieServices(ctx);
     s.tutorial.reload();
+    s.help.reload();
     registerConsumers(ctx, s);
-    ctx.help.add({ bot: 'herbie', command: '/tutorial', descriptionKey: 'herbie.help.tutorial' });
+    ctx.provide('localeResolver', s.help.localeResolver);
+    if (ctx.botConfig.tips.enabled)
+      ctx.scheduler.every('herbie.daily-tip', ctx.botConfig.tips.cron, async () => {
+        await s.help.postTip();
+      });
+    for (const [command, key, adminOnly] of [
+      ['/ajuda', 'ajuda', false],
+      ['/regras', 'regras', false],
+      ['/tutorial', 'tutorial', false],
+      ['/idioma', 'idioma', false],
+      ['/herbie', 'herbie', true],
+    ] as const)
+      ctx.help.add({ bot: 'herbie', command, descriptionKey: `herbie.help.${key}`, adminOnly });
   },
+  doctorChecks: (ctx) => herbieDoctorChecks(ctx),
+  doctorChannels: (cfg) => [
+    { key: 'herbie.tips.channelId', id: cfg.tips.enabled ? cfg.tips.channelId : null },
+  ],
 };
 
 export default herbie;

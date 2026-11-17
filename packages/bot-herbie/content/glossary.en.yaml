@@ -1,0 +1,131 @@
+# /regras glossary (en). Override in ./data/content/glossary.en.yaml.
+- id: faccoes
+  term: "Factions"
+  aliases: [faction, x-men, brotherhood, independent]
+  summary: "Every mutant picks a side when registering — X-Men, Brotherhood or Independent. It becomes a role and shows in /perfil and /ranking."
+  details: "The faction is chosen during registration with Cérebro and, for now, only staff can change it. It adds to the faction total in /ranking. It does not change your powers or who you play with."
+  related: [arquetipos, rank]
+  bot: cerebro
+- id: arquetipos
+  term: "Archetypes"
+  aliases: [archetype, class]
+  summary: "Your mutant's type (by default Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Chosen at registration."
+  details: "The archetype describes your mutant's style and shows on the sheet. Staff can change the list. In future versions it affects combat."
+  related: [faccoes, codinome]
+  bot: cerebro
+- id: codinome
+  term: "Codename"
+  aliases: [name, nickname]
+  summary: "Your mutant's name. It must be unique on the server and original — no names of existing heroes or villains."
+  details: "A codename has 2 to 32 characters (configurable). Cérebro refuses known characters' names, with or without accents, digits for letters or spaces. Repeated attempts notify staff."
+  related: [mutante-original]
+  bot: cerebro
+- id: mutante-original
+  term: "Original mutant"
+  aliases: [original character, oc, canon]
+  summary: "Here you create your own mutant. Existing Marvel characters cannot be used as a codename or sheet."
+  details: "The rule applies to codenames, sheets and bot texts. Be inspired, but invent — name, power and origin must be yours. Staff may ask you to change."
+  related: [codinome]
+- id: xp
+  term: "XP"
+  aliases: [experience, points]
+  summary: "Points you earn by playing (trivia, streaks, tutorial, events). They add up to your level and rank."
+  details: "Every XP change is recorded in a history, so nothing is lost or counted twice. Trivia has a daily XP limit. Staff can adjust XP with a reason."
+  related: [nivel, rank, sequencia, trivia]
+  bot: jarvis
+- id: nivel
+  term: "Level"
+  aliases: [lvl]
+  summary: "Goes up with your total XP. Level n needs 50 × (n−1)² XP (level 2 at 50, level 3 at 200…)."
+  details: "The level shows in /perfil and /ranking with a progress bar. Staff can adjust the formula in the config."
+  related: [xp, rank]
+  bot: jarvis
+- id: rank
+  term: "Rank"
+  aliases: [recruit, agent, veteran]
+  summary: "Recruit, Agent (500 XP) and Veteran (2000 XP). Cérebro swaps the role automatically when you cross the threshold."
+  details: "Rank depends only on total XP. If XP drops below the threshold (staff adjustment), the rank and role go back too."
+  related: [xp, nivel]
+  bot: jarvis
+- id: sequencia
+  term: "Streak"
+  aliases: [days in a row]
+  summary: "Days in a row in which you earned XP. Each active day gives a bonus that grows up to 7 days. See it with /sequencia."
+  details: "Days follow the server timezone. A correct trivia answer counts even above the daily limit. If you skip a day, the streak restarts; your best is kept."
+  related: [xp, trivia]
+  bot: jarvis
+- id: trivia
+  term: "Trivia"
+  aliases: [quiz, question, questions]
+  summary: "Quick questions about comics, Marvel Rivals and general culture. Use /trivia; answering fast earns more XP."
+  details: "Each question is yours alone and has a time limit. There is a wait between questions and you won't get the same question for a while. Every question has a source."
+  related: [xp, cooldown, sequencia]
+  bot: jarvis
+- id: cooldown
+  term: "Cooldown"
+  aliases: [wait, limit]
+  summary: "Waiting time between uses of a command, to prevent spam (for example, between trivia questions)."
+  details: "If you use a command too fast, the bot tells you how many seconds are left. Staff sets the times in the config."
+  related: [trivia]
+- id: tutorial
+  term: "Tutorial"
+  aliases: [first steps, steps]
+  summary: "Short steps H.E.R.B.I.E. gives newcomers. See them with /tutorial."
+  details: "Each completed step gives XP (with J.A.R.V.I.S. enabled). You can skip and restart later with /tutorial reiniciar, without earning XP again for what you already did."
+  related: [xp]
+- id: combate
+  term: "Combat"
+  aliases: [fight, battle, duel]
+  summary: "Turn-based fights between mutants, decided by attributes and a bit of luck."
+  details: "Combat arrives in a future version. It uses your mutant's power, defense, speed and focus."
+  related: [poder, defesa, velocidade, foco]
+  bot: sentinel
+- id: poder
+  term: "Power"
+  aliases: [attack, strength]
+  summary: "Combat attribute that sets the damage of your hits."
+  details: "Part of the combat system of a future version."
+  related: [combate]
+  bot: sentinel
+- id: defesa
+  term: "Defense"
+  aliases: [resistance, armor]
+  summary: "Combat attribute that reduces damage taken."
+  details: "Part of the combat system of a future version."
+  related: [combate]
+  bot: sentinel
+- id: velocidade
+  term: "Speed"
+  aliases: [initiative]
+  summary: "Combat attribute that decides who acts first."
+  details: "Part of the combat system of a future version."
+  related: [combate]
+  bot: sentinel
+- id: foco
+  term: "Focus"
+  aliases: [concentration, precision]
+  summary: "Combat attribute tied to hits and special effects."
+  details: "Part of the combat system of a future version."
+  related: [combate]
+  bot: sentinel
+- id: evento-mundial
+  term: "World event"
+  aliases: [invasion, event]
+  summary: "Happenings that affect the whole server, announced by ULTRON. Everyone can join."
+  details: "ULTRON announces the event in the events channel and H.E.R.B.I.E. explains how to join. Arrives in a future version."
+  related: [raid]
+  bot: ultron
+- id: raid
+  term: "Raid"
+  aliases: [group attack, boss]
+  summary: "A group event against a strong enemy, with a time limit."
+  details: "Part of ULTRON's world events, in a future version."
+  related: [evento-mundial]
+  bot: ultron
+- id: denuncia
+  term: "Report"
+  aliases: [denuncia, flag]
+  summary: "How to privately tell staff about something wrong on the server."
+  details: "Sentinel receives reports and forwards them to the staff queue. Arrives in a future version; until then, talk to staff directly."
+  related: [cooldown]
+  bot: sentinel

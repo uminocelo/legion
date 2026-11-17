@@ -1,0 +1,132 @@
+# Glossário do /regras (pt-BR). Sobrescreva em ./data/content/glossary.pt-BR.yaml.
+# bot: o termo só aparece quando esse bot está ligado.
+- id: faccoes
+  term: "Facções"
+  aliases: [faccao, facção, x-men, irmandade, independente]
+  summary: "Todo mutante escolhe um lado ao se registrar — X-Men, Irmandade ou Independente. A facção vira um cargo e aparece no /perfil e no /ranking."
+  details: "A facção é escolhida no cadastro com o Cérebro e, por enquanto, só a staff pode trocar. Ela soma pontos para o total da facção no /ranking. Não muda seus poderes nem limita com quem você joga."
+  related: [arquetipos, rank]
+  bot: cerebro
+- id: arquetipos
+  term: "Arquétipos"
+  aliases: [arquetipo, arquétipo, classe]
+  summary: "O tipo do seu mutante (Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Escolhido no cadastro."
+  details: "O arquétipo descreve o estilo do seu mutante e aparece na ficha. A lista pode ser mudada pela staff do servidor. Em versões futuras ele influencia o combate."
+  related: [faccoes, codinome]
+  bot: cerebro
+- id: codinome
+  term: "Codinome"
+  aliases: [nome, apelido, codename]
+  summary: "O nome do seu mutante. Precisa ser único no servidor e original — nada de nomes de heróis ou vilões existentes."
+  details: "O codinome tem entre 2 e 32 caracteres (configurável). O Cérebro recusa nomes de personagens conhecidos, com ou sem acentos, números no lugar de letras ou espaços. Tentativas repetidas avisam a staff."
+  related: [mutante-original]
+  bot: cerebro
+- id: mutante-original
+  term: "Mutante original"
+  aliases: [personagem original, oc, canon]
+  summary: "Aqui você cria seu próprio mutante. Personagens existentes da Marvel não podem ser usados como codinome ou ficha."
+  details: "A regra vale para codinomes, fichas e textos dos bots. Inspire-se à vontade, mas invente: nome, poder e origem precisam ser seus. A staff pode pedir para você trocar."
+  related: [codinome]
+- id: xp
+  term: "XP"
+  aliases: [experiencia, experiência, pontos]
+  summary: "Pontos que você ganha jogando (trivia, sequência, tutorial, eventos). Somam para o nível e o rank."
+  details: "Todo XP fica registrado num histórico, então nada se perde nem é contado duas vezes. A trivia tem um limite diário de XP. A staff pode ajustar XP com motivo."
+  related: [nivel, rank, sequencia, trivia]
+  bot: jarvis
+- id: nivel
+  term: "Nível"
+  aliases: [nivel, level, lvl]
+  summary: "Sobe conforme seu XP total. O nível n pede 50 × (n−1)² XP (nível 2 com 50, nível 3 com 200…)."
+  details: "O nível aparece no /perfil e no /ranking, com uma barra de progresso. A fórmula pode ser ajustada pela staff na configuração."
+  related: [xp, rank]
+  bot: jarvis
+- id: rank
+  term: "Rank"
+  aliases: [patente, recruta, agente, veterano]
+  summary: "Recruta, Agente (500 XP) e Veterano (2000 XP). O Cérebro troca o cargo automaticamente quando você cruza o limite."
+  details: "O rank depende só do XP total. Se o XP cair abaixo do limite (ajuste da staff), o rank volta e o cargo também."
+  related: [xp, nivel]
+  bot: jarvis
+- id: sequencia
+  term: "Sequência"
+  aliases: [streak, dias seguidos]
+  summary: "Dias seguidos em que você ganhou XP. Cada dia ativo dá um bônus que cresce até 7 dias. Veja com /sequencia."
+  details: "O dia segue o fuso do servidor. Uma trivia certa já conta, mesmo acima do limite diário. Se você pular um dia, a sequência recomeça; a melhor fica guardada."
+  related: [xp, trivia]
+  bot: jarvis
+- id: trivia
+  term: "Trivia"
+  aliases: [quiz, pergunta, perguntas]
+  summary: "Perguntas rápidas sobre quadrinhos, Marvel Rivals e cultura geral. Use /trivia; responder rápido vale mais XP."
+  details: "Cada pergunta é só sua e tem tempo limite. Há uma espera entre perguntas e você não recebe a mesma pergunta por um tempo. Toda pergunta tem uma fonte."
+  related: [xp, cooldown, sequencia]
+  bot: jarvis
+- id: cooldown
+  term: "Cooldown"
+  aliases: [espera, tempo de espera, limite]
+  summary: "Tempo de espera entre usos de um comando, para evitar spam (por exemplo, entre perguntas de trivia)."
+  details: "Se você usar um comando rápido demais, o bot diz quantos segundos faltam. Os tempos são definidos pela staff na configuração."
+  related: [trivia]
+- id: tutorial
+  term: "Tutorial"
+  aliases: [missões iniciais, passos]
+  summary: "Passos curtos que o H.E.R.B.I.E. passa para quem acabou de chegar. Veja com /tutorial."
+  details: "Cada passo concluído dá XP (com o J.A.R.V.I.S. ligado). Dá para pular e recomeçar depois com /tutorial reiniciar, sem ganhar XP de novo pelo que já fez."
+  related: [xp]
+- id: combate
+  term: "Combate"
+  aliases: [luta, batalha, duelo]
+  summary: "Disputas entre mutantes em turnos, decididas por atributos e um pouco de sorte."
+  details: "O combate chega numa próxima versão. Ele usa poder, defesa, velocidade e foco do seu mutante."
+  related: [poder, defesa, velocidade, foco]
+  bot: sentinel
+- id: poder
+  term: "Poder"
+  aliases: [ataque, força]
+  summary: "Atributo de combate que define o dano dos seus golpes."
+  details: "Faz parte do sistema de combate de uma próxima versão."
+  related: [combate]
+  bot: sentinel
+- id: defesa
+  term: "Defesa"
+  aliases: [resistência, armadura]
+  summary: "Atributo de combate que reduz o dano recebido."
+  details: "Faz parte do sistema de combate de uma próxima versão."
+  related: [combate]
+  bot: sentinel
+- id: velocidade
+  term: "Velocidade"
+  aliases: [rapidez, iniciativa]
+  summary: "Atributo de combate que define quem age primeiro."
+  details: "Faz parte do sistema de combate de uma próxima versão."
+  related: [combate]
+  bot: sentinel
+- id: foco
+  term: "Foco"
+  aliases: [concentração, precisão]
+  summary: "Atributo de combate ligado a acertos e efeitos especiais."
+  details: "Faz parte do sistema de combate de uma próxima versão."
+  related: [combate]
+  bot: sentinel
+- id: evento-mundial
+  term: "Evento mundial"
+  aliases: [invasão, evento, world event]
+  summary: "Acontecimentos que afetam o servidor inteiro, anunciados pelo ULTRON. Todo mundo pode participar."
+  details: "O ULTRON anuncia o evento no canal de eventos e o H.E.R.B.I.E. explica como participar. Chega numa próxima versão."
+  related: [raid]
+  bot: ultron
+- id: raid
+  term: "Raid"
+  aliases: [ataque em grupo, chefe]
+  summary: "Evento em grupo contra um inimigo forte, com tempo limitado."
+  details: "Faz parte dos eventos mundiais do ULTRON, numa próxima versão."
+  related: [evento-mundial]
+  bot: ultron
+- id: denuncia
+  term: "Denúncia"
+  aliases: [report, reportar, denunciar]
+  summary: "Como avisar a staff sobre algo errado no servidor, de forma privada."
+  details: "O Sentinel recebe denúncias e encaminha para a fila da staff. Chega numa próxima versão; até lá, fale com a staff diretamente."
+  related: [cooldown]
+  bot: sentinel

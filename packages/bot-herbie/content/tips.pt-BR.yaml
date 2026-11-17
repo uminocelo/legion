@@ -1,0 +1,20 @@
+# Dicas do dia (pt-BR). bot: só aparece com esse bot ligado.
+- {
+    id: perfil,
+    text: "Use /perfil para ver sua ficha de mutante — e /perfil membro:@alguém para ver a de outra pessoa.",
+  }
+- {
+    id: preferencias,
+    text: "Em /cerebro preferencias você liga e desliga cargos opcionais, como o aviso de live.",
+    bot: cerebro,
+  }
+- { id: trivia-rapida, text: "Na /trivia, responder rápido dá até 5 XP de bônus.", bot: jarvis }
+- {
+    id: sequencia,
+    text: "Ganhe XP todo dia para manter sua /sequencia: o bônus cresce até 7 dias seguidos.",
+    bot: jarvis,
+  }
+- { id: ranking, text: "O /ranking da semana zera toda segunda-feira. Ainda dá tempo!", bot: jarvis }
+- { id: regras, text: "Não sabe o que é um termo? Use /regras e digite: o H.E.R.B.I.E. completa para você." }
+- { id: idioma, text: "Prefere inglês? Use /idioma en e os bots respondem em inglês só para você." }
+- { id: tutorial, text: "Pulou o tutorial? /tutorial reiniciar continua de onde você parou." }

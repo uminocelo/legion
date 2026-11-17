@@ -18,7 +18,9 @@ channels:
   welcome: null # boas-vindas: onde o Cérebro recebe quem chega
   rules: null # regras
   registry: null # cartões públicos de novos mutantes (vazio = usa welcome)
-  # tutorial, trivia, events, modQueue, combat: usados por bots futuros
+  tutorial: null # H.E.R.B.I.E.: tutorial de quem tem DM fechada (vazio = usa welcome)
+  events: null # eventos do ULTRON (o H.E.R.B.I.E. explica os anúncios aqui)
+  # trivia, modQueue, combat: usados por bots futuros
 # Cargos: os padrões cobrem tudo. Para renomear ou mudar cores, copie a lista
 # COMPLETA de docs/CONFIG.md para cá (a lista substitui a padrão inteira).
 # O código usa sempre a "key"; o nome é só o que aparece no Discord.
@@ -63,3 +65,15 @@ jarvis:
   leaderboard:
     size: 10
     channelCooldownSeconds: 15
+
+# H.E.R.B.I.E.: tutorial, /ajuda, /regras, /idioma e dicas. Ligue com bots: [cerebro, jarvis, herbie].
+herbie:
+  delivery: dm # dm (com canal de reserva) ou channel
+  tutorial:
+    enabled: true
+    allowSkip: true
+  tips:
+    enabled: false # dica diária
+    channelId: null
+    cron: '0 12 * * *' # no timezone acima
+  explainWorldEvents: true

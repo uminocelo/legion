@@ -45,9 +45,7 @@ describe('one Discord app per bot', () => {
     const s = servicesOf(t);
     const attempt = await s.repo.attempt(attemptId);
     const q = attempt ? await s.repo.question(attempt.questionId) : null;
-    const display = (JSON.parse(attempt?.choiceOrder ?? '[]') as number[]).findIndex(
-      (o) => o === q?.answerIndex,
-    );
+    const display = (JSON.parse(attempt?.choiceOrder ?? '[]') as number[]).indexOf(q?.answerIndex);
     const a = await t.interact(
       { kind: 'component', userId: '111', customId: `jarvis:v1:trivia:${attemptId}:${display}` },
       'jarvis',
