@@ -4,6 +4,17 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- J.A.R.V.I.S. missions: `/missao lista | iniciar | abandonar`. Branching stories in a thread with button choices, solo or in a party of up to 4 (lobby with join/leave/start, majority vote, leader breaks ties). Daily, weekly and story missions with XP through the ledger (`reason: mission`), limits and timeouts in `jarvis.missions`, and restart recovery.
+- Mission fights: a combat scene sends `mission.started` (`missionType: combat`, `missionId = <runId>:<sceneId>`) so ULTRON spawns the enemies and Sentinel runs the fight in the mission thread; the story continues on the win or lose branch. Fight missions are hidden when ULTRON or Sentinel is off.
+- 4 original missions (pt-BR and en); server missions in `data/content/missions/*.yaml` (`docs/MISSIONS.md`).
+- `channels.missions`; `legion doctor` checks mission files, the missions channel and whether fights can run.
+- H.E.R.B.I.E.: the "first mission" tutorial step is on by default; `/regras` glossary entry for missions.
+
+### Changed
+- J.A.R.V.I.S. asks for Create Public Threads and Send Messages in Threads (mission threads).
+- Sentinel keeps a fight in the channel quietly when that channel is already a thread.
+
 ## [0.4.0] - 2026-11-17
 
 ### Added

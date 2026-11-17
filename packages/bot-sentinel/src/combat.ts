@@ -140,10 +140,12 @@ export class CombatService {
         )
       ).threadId;
     } catch (err) {
-      this.ctx.log.warn(
-        { err, combatId: combat.id },
-        'could not create the combat thread; posting in the channel',
-      );
+      // 50024: the channel is already a thread (e.g. a J.A.R.V.I.S. mission): the fight stays in it.
+      if ((err as { code?: number }).code !== 50024)
+        this.ctx.log.warn(
+          { err, combatId: combat.id },
+          'could not create the combat thread; posting in the channel',
+        );
     }
     await this.repo.updateCombat(combat.id, { threadId: where });
     const players = (await this.repo.combatants(combat.id)).filter((c) => c.kind === 'player');
