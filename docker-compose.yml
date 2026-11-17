@@ -11,6 +11,15 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
 
+  # Optional local AI for ULTRON's flavor text (see docs/SELF_HOSTING.md):
+  #   docker compose --profile ai up -d && docker compose exec ollama ollama pull llama3.2
+  ollama:
+    profiles: [ai]
+    image: ollama/ollama:0.12.6
+    restart: unless-stopped
+    volumes:
+      - ./data/ollama:/root/.ollama
+
   # Optional Postgres: set DATABASE_URL=postgres://legion:legion@postgres:5432/legion in .env and run
   #   docker compose --profile postgres up -d
   postgres:

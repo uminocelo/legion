@@ -1,0 +1,58 @@
+# Inimigos do ULTRON. Todos originais: nomes de personagens existentes são recusados.
+# Sobrescreva ou acrescente em ./data/content/enemies.yaml (mesmo id = substitui).
+- id: drone-vigia
+  name: "Drone Vigia"
+  tier: minion
+  minLevel: 1
+  base: { hp: 60, atk: 8, def: 5, spd: 9, foc: 6 }
+  powerCooldownMax: 4
+  tauntKeys: [ultron.taunt.drone.1, ultron.taunt.drone.2]
+- id: enxame-de-nanites
+  name: "Enxame de Nanites"
+  tier: minion
+  minLevel: 1
+  base: { hp: 45, atk: 7, def: 3, spd: 12, foc: 5 }
+  powerCooldownMax: 4
+  tauntKeys: [ultron.taunt.nanites.1, ultron.taunt.nanites.2]
+- id: sentinela-de-sucata
+  name: "Sentinela de Sucata"
+  tier: minion
+  minLevel: 2
+  base: { hp: 80, atk: 9, def: 8, spd: 6, foc: 4 }
+  powerCooldownMax: 4
+  tauntKeys: [ultron.taunt.sucata.1]
+- id: espectro-de-dados
+  name: "Espectro de Dados"
+  tier: minion
+  minLevel: 3
+  base: { hp: 55, atk: 6, def: 4, spd: 11, foc: 11 }
+  powerCooldownMax: 3
+  tauntKeys: [ultron.taunt.espectro.1]
+- id: cacador-sintetico
+  name: "Caçador Sintético"
+  tier: elite
+  minLevel: 5
+  base: { hp: 120, atk: 12, def: 9, spd: 10, foc: 10 }
+  powerCooldownMax: 3
+  tauntKeys: [ultron.taunt.cacador.1]
+- id: unidade-omega
+  name: "Unidade Ômega"
+  tier: elite
+  minLevel: 8
+  base: { hp: 140, atk: 11, def: 12, spd: 8, foc: 12 }
+  powerCooldownMax: 3
+  tauntKeys: [ultron.taunt.omega.1]
+- id: bastiao-prime
+  name: "Bastião Prime"
+  tier: boss
+  minLevel: 1
+  base: { hp: 0, atk: 16, def: 12, spd: 8, foc: 14 }
+  powerCooldownMax: 3
+  tauntKeys: [ultron.taunt.bastiao.1, ultron.taunt.bastiao.2]
+- id: nucleo-carmesim
+  name: "Núcleo Carmesim"
+  tier: boss
+  minLevel: 1
+  base: { hp: 0, atk: 14, def: 10, spd: 11, foc: 17 }
+  powerCooldownMax: 3
+  tauntKeys: [ultron.taunt.nucleo.1]

@@ -123,6 +123,17 @@ Com `sentinel` em `bots:`:
 
 Staff: `/sentinel replay | denuncias | historico`. Para os timeouts, o cargo do bot precisa da permissão **Moderar membros**. Deixe `channels.modQueue` visível só para a staff.
 
+### ULTRON (inimigos e eventos mundiais)
+
+Com `ultron` em `bots:` (precisa do `sentinel`) e `channels.events` definido:
+
+- Inimigos originais escalados para o nível do grupo em missões de combate; a staff testa com `/ultron spawn`.
+- Invasão semanal (sábado 20:00 por padrão) em que todas as facções atacam o mesmo HP, e raids com chefe num tópico. Cada **Atacar** é uma luta rápida no Sentinel; vitória ou derrota dá XP pelo J.A.R.V.I.S.
+- `/ameaca` para todos. Staff: `/ultron evento agendar | iniciar | cancelar`, `/ultron status`.
+- Frases por IA opcionais (Ollama ou API compatível com OpenAI), desligadas por padrão.
+
+Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
+
 ## Desenvolvimento
 
 Node 22+, pnpm 10. `pnpm install && pnpm build && pnpm test`. Veja [CONTRIBUTING.md](CONTRIBUTING.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) e [docs/EVENTS.md](docs/EVENTS.md).

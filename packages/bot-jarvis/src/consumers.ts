@@ -29,7 +29,8 @@ export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServic
         amount,
         reason: 'grant',
         note: reason,
-        sourceKey: `grant:${sourceEventId}:${reason}`,
+        // One entry per member: a world event pays every participant from the same source event.
+        sourceKey: `grant:${sourceEventId}:${reason}:${memberId}`,
       }),
     );
   });

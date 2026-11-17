@@ -17,6 +17,9 @@
       "path": "packages/bot-sentinel"
     },
     {
+      "path": "packages/bot-ultron"
+    },
+    {
       "path": "apps/runner"
     },
     {

@@ -12,6 +12,8 @@ const MESSAGES: Record<Locale, Messages> = {
     'config.timezone': 'use um fuso horário IANA, como "America/Sao_Paulo"',
     'config.cerebro_required':
       'o Cérebro é obrigatório quando qualquer outro bot está ligado; use por exemplo bots: [cerebro, jarvis]',
+    'config.sentinel_required':
+      'o ULTRON precisa do Sentinel, que resolve os combates; use por exemplo bots: [cerebro, jarvis, sentinel, ultron]',
     'config.duplicate_key': 'esta chave já existe na lista; cada chave deve ser única',
     'config.tiktok_managed':
       'o cargo "tiktok_sub" pertence à integração do TikTok; use managedBy: integration',
@@ -35,6 +37,8 @@ const MESSAGES: Record<Locale, Messages> = {
     'config.timezone': 'use an IANA timezone like "America/Sao_Paulo"',
     'config.cerebro_required':
       'Cérebro is required when any other bot is enabled; for example bots: [cerebro, jarvis]',
+    'config.sentinel_required':
+      'ULTRON needs Sentinel, which resolves the fights; for example bots: [cerebro, jarvis, sentinel, ultron]',
     'config.duplicate_key': 'this key already exists in the list; each key must be unique',
     'config.tiktok_managed':
       'the "tiktok_sub" role belongs to the TikTok integration; use managedBy: integration',

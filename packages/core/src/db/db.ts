@@ -53,9 +53,9 @@ const isBusy = (err: unknown) =>
   /SQLITE_BUSY|database is locked/i.test(String((err as { code?: string })?.code ?? err));
 
 /**
- * While a libSQL transaction is open, the client runs other statements on a fresh connection that
- * has busy_timeout = 0, so they fail at once with SQLITE_BUSY. Retry those with a short backoff
- * (up to ~5 s, like busy_timeout would). Transactions themselves are untouched.
+ * While a libSQL transaction is open, other statements run on another pooled connection and fail at
+ * once with SQLITE_BUSY (timeout 0). Retry those with a short async backoff (up to ~5 s), so the event
+ * loop stays free for the transaction to finish. Transactions themselves are untouched.
  */
 export function retryOnBusy<C extends Client>(client: C): C {
   const wrap =
@@ -81,22 +81,60 @@ export function retryOnBusy<C extends Client>(client: C): C {
   });
 }
 
+const READ_ONLY = /^\s*(select|with\s[\s\S]*?\)\s*select|pragma\s+\w+\s*$|explain)\b/i;
+const sqlOf = (stmt: unknown) =>
+  typeof stmt === 'string' ? stmt : String((stmt as { sql?: string })?.sql ?? '');
+
+/** Routes every statement that may write (and every batch) through `queued`. Reads run at once. */
+export function queueWrites<C extends Client>(client: C, queued: <T>(fn: () => Promise<T>) => Promise<T>): C {
+  return new Proxy(client, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (typeof value !== 'function') return value;
+      const bound = value.bind(target);
+      if (prop === 'execute')
+        return (stmt: unknown, ...rest: unknown[]) =>
+          READ_ONLY.test(sqlOf(stmt)) ? bound(stmt, ...rest) : queued(() => bound(stmt, ...rest));
+      if (prop === 'batch' || prop === 'executeMultiple')
+        return (...args: unknown[]) => queued(() => bound(...args));
+      return bound;
+    },
+  });
+}
+
 export async function createDb(url: string, opts: CreateDbOptions = {}): Promise<LegionDb> {
   if (dialectOf(url) === 'sqlite') {
     if (url.startsWith('file:')) mkdirSync(dirname(resolve(url.slice('file:'.length))), { recursive: true });
-    const client = createClient({ url });
-    await client.execute('PRAGMA journal_mode = WAL');
-    await client.execute('PRAGMA busy_timeout = 5000');
-    await client.execute('PRAGMA foreign_keys = ON');
-    const orm = drizzleLibsql(retryOnBusy(client));
-    // SQLite has one writer. libSQL opens a new connection per transaction (without our busy_timeout),
-    // so two concurrent transactions fail with SQLITE_BUSY. Queue them in-process instead (ADR 0002).
+    // libSQL runs SQLite synchronously from a pool of connections, so a SQLite busy wait blocks the event
+    // loop (the transaction holding the lock can't finish), and a statement that fails with SQLITE_BUSY
+    // is left open on its pooled connection (a later COMMIT there fails with "statements in progress").
+    // So this process never makes SQLite wait on itself: transactions run one at a time (ADR 0002) and
+    // plain writes queue behind them. timeout 0 + retryOnBusy only cover other processes (the CLI).
     let queue: Promise<unknown> = Promise.resolve();
     const serial = <T>(fn: () => Promise<T>): Promise<T> => {
       const run = queue.then(fn, fn);
       queue = run.catch(() => {});
       return run;
     };
+    /** Waits for open transactions (at most 5 s, so a stray write inside a transaction fails, not hangs). */
+    const queued = <T>(fn: () => Promise<T>): Promise<T> =>
+      new Promise<T>((resolve, reject) => {
+        let p: Promise<T> | undefined;
+        const go = () => {
+          p ??= fn();
+          p.then(resolve, reject);
+          return p;
+        };
+        const timer = setTimeout(go, BUSY_RETRY_MS);
+        void serial(() => {
+          clearTimeout(timer);
+          return go().catch(() => {});
+        });
+      });
+    const client = createClient({ url, timeout: 0 });
+    await client.execute('PRAGMA journal_mode = WAL');
+    await client.execute('PRAGMA foreign_keys = ON');
+    const orm = drizzleLibsql(queueWrites(retryOnBusy(client), queued));
     return {
       dialect: 'sqlite',
       orm,
