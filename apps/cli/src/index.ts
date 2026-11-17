@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as p from '@clack/prompts';
-import { type BotId, ConfigError, type Locale, parseEnv } from '@legion/core';
+import { type BotId, ConfigError, type Locale, parseEnv, planApps } from '@legion/core';
 import {
   AVAILABLE_BOTS,
   DEFAULT_CONFIG_PATH,
@@ -57,8 +57,33 @@ program
         required: true,
       }),
     );
-    const results = await writeInitFiles(o.out, { token, clientId, guildId, locale, bots }, async (file) =>
-      ask(p.confirm({ message: msg(L, 'init.overwrite', { file }), initialValue: false })),
+    const ownApps: Partial<Record<BotId, { token: string; clientId: string }>> = {};
+    if (bots.length > 1) {
+      const split = await ask(
+        p.select<'one' | 'split'>({
+          message: msg(L, 'init.apps'),
+          options: [
+            { value: 'one', label: msg(L, 'init.apps.one') },
+            { value: 'split', label: msg(L, 'init.apps.split') },
+          ],
+        }),
+      );
+      if (split === 'split')
+        for (const bot of bots.filter((b) => b !== 'cerebro')) {
+          const botToken = await ask(
+            p.password({
+              message: msg(L, 'init.bot_token', { bot }),
+              validate: (v) => (v ? undefined : msg(L, 'init.required')),
+            }),
+          );
+          const botClient = await ask(p.text({ message: msg(L, 'init.bot_client', { bot }), validate: id }));
+          ownApps[bot] = { token: botToken, clientId: botClient };
+        }
+    }
+    const results = await writeInitFiles(
+      o.out,
+      { token, clientId, guildId, locale, bots, ownApps },
+      async (file) => ask(p.confirm({ message: msg(L, 'init.overwrite', { file }), initialValue: false })),
     );
     for (const r of results) p.log.info(msg(L, r.written ? 'init.written' : 'init.kept', { file: r.file }));
     p.outro(msg(L, 'init.done'));
@@ -97,10 +122,11 @@ program
     loadDotEnv();
     const L = cliLocale();
     const env = parseEnv(process.env, L);
-    const names = await registerCommands(env, o.config, createDiscordRest(env.DISCORD_TOKEN));
-    console.log(
-      msg(L, 'commands.registered', { count: names.length, names: names.map((n) => `/${n}`).join(', ') }),
-    );
+    const apps = await registerCommands(env, o.config, (token) => createDiscordRest(token));
+    for (const { app, names } of apps)
+      console.log(
+        `${apps.length > 1 ? `[${app}] ` : ''}${msg(L, 'commands.registered', { count: names.length, names: names.map((n) => `/${n}`).join(', ') })}`,
+      );
   });
 
 program
@@ -109,10 +135,21 @@ program
   .option(...configOpt)
   .action(async (o: { config: string }) => {
     loadDotEnv();
-    const clientId = process.env.DISCORD_CLIENT_ID;
-    if (!clientId) throw new ConfigError(['DISCORD_CLIENT_ID: obrigatório (rode "legion init")']);
+    const env = parseEnv(process.env, cliLocale());
     const { bots } = await loadConfigAndBots(o.config);
-    console.log(inviteUrl(clientId, bots));
+    const plan = planApps(
+      env,
+      bots.map((b) => b.id),
+    );
+    if (plan.errors.length) throw new ConfigError(plan.errors.map((e) => `.env → ${e}`));
+    // One link per app, each with only its bots' permissions.
+    for (const a of plan.apps) {
+      const url = inviteUrl(
+        a.clientId,
+        bots.filter((b) => a.bots.includes(b.id)),
+      );
+      console.log(plan.apps.length > 1 ? `${a.bots.join(', ')}: ${url}` : url);
+    }
   });
 
 program.parseAsync().catch((err) => {

@@ -1,5 +1,5 @@
 import { existsSync, writeFileSync } from 'node:fs';
-import type { BotId, Locale } from '@legion/core';
+import { type BotId, botClientIdVar, botTokenVar, type Locale } from '@legion/core';
 import { AVAILABLE_BOTS } from '@legion/runner';
 import { stringify } from 'yaml';
 
@@ -9,6 +9,8 @@ export interface InitAnswers {
   guildId: string;
   locale: Locale;
   bots: BotId[];
+  /** Bots with their own Discord app (optional). */
+  ownApps?: Partial<Record<BotId, { token: string; clientId: string }>>;
 }
 
 export const isSnowflake = (v: string) => /^\d{17,20}$/.test(v.trim());
@@ -19,6 +21,11 @@ export function envFile(a: InitAnswers): string {
     `DISCORD_TOKEN=${a.token.trim()}`,
     `DISCORD_CLIENT_ID=${a.clientId.trim()}`,
     `DISCORD_GUILD_ID=${a.guildId.trim()}`,
+    ...Object.entries(a.ownApps ?? {}).flatMap(([bot, app]) => [
+      `# ${bot}: app própria no Discord`,
+      `${botTokenVar(bot as BotId)}=${app.token.trim()}`,
+      `${botClientIdVar(bot as BotId)}=${app.clientId.trim()}`,
+    ]),
     'DATABASE_URL=file:./data/legion.db',
     'LOG_LEVEL=info',
     'HEALTH_PORT=8080',

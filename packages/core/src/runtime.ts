@@ -4,7 +4,7 @@ import type { LegionDb } from './db/db.js';
 import { KvStore } from './db/kv.js';
 import { syncCommands } from './discord/command-sync.js';
 import type { DiscordGateway } from './discord/gateway.js';
-import { InteractionRouter, type RouterLimits } from './discord/router.js';
+import { InteractionRouter, MAIN_APP, type RouterLimits } from './discord/router.js';
 import type { GuildMember, IncomingInteraction } from './discord/types.js';
 import { withPersonas } from './discord/with-personas.js';
 import { InProcessEventBus } from './events/bus.js';
@@ -69,6 +69,11 @@ export interface CoreRuntimeOptions {
   localesOverrideDir?: string;
   roleGuard?: 'throw' | 'skip';
   routerLimits?: RouterLimits;
+  /**
+   * Extra Discord apps for bots with their own token. `gateway` above is the `main` app (the one hosting
+   * Cérebro): it manages roles and receives member events. Bots not listed here use `main`.
+   */
+  apps?: { key: string; gateway: DiscordGateway; bots: BotId[] }[];
 }
 
 /** Shared services plus the bot loading/boot steps used by the runner and by tests. */
@@ -84,6 +89,9 @@ export class CoreRuntime {
   readonly router: InteractionRouter;
   readonly guildEvents: GuildEventHub;
   readonly gateway: DiscordGateway;
+  /** Persona-wrapped gateway per app key (`main` included). */
+  readonly gateways = new Map<string, DiscordGateway>();
+  private readonly botApps = new Map<BotId, string>();
   readonly newId: () => string;
   readonly bots: { bot: AnyLegionBot; ctx: BotContext<unknown> }[] = [];
 
@@ -93,6 +101,12 @@ export class CoreRuntime {
     this.i18n = new I18n(config.locale, log);
     this.i18n.addDir(CORE_LOCALES_DIR);
     this.gateway = withPersonas(o.gateway, this.i18n);
+    this.gateways.set(MAIN_APP, this.gateway);
+    for (const app of o.apps ?? []) {
+      if (app.key === MAIN_APP) throw new Error('extra apps cannot use the key "main"');
+      this.gateways.set(app.key, withPersonas(app.gateway, this.i18n));
+      for (const b of app.bots) this.botApps.set(b, app.key);
+    }
     this.kv = new KvStore(db, () => clock.now());
     this.scheduler = new DbScheduler({
       db,
@@ -125,6 +139,8 @@ export class CoreRuntime {
       i18n: this.i18n,
       log: log.child({ component: 'router' }),
       rateLimiter: () => this.providers.get('rateLimiter') ?? new InMemoryRateLimiter(clock),
+      appOf: (bot) => this.appOf(bot),
+      gatewayFor: (key) => this.gateways.get(key) ?? this.gateway,
       ...(o.routerLimits ? { limits: o.routerLimits } : {}),
       onCommandExecuted: async (i, bot) => {
         const member = await read.members.getByDiscordId(i.userId);
@@ -137,6 +153,11 @@ export class CoreRuntime {
         });
       },
     });
+  }
+
+  /** The app key a bot talks through (`main` unless it has its own app). */
+  appOf(bot: BotId): string {
+    return this.botApps.get(bot) ?? MAIN_APP;
   }
 
   get db(): LegionDb {
@@ -170,7 +191,7 @@ export class CoreRuntime {
       scheduler: this.scheduler,
       i18n: this.i18n,
       log: this.o.log.child({ bot: bot.id }),
-      gateway: this.gateway,
+      gateway: this.gateways.get(this.appOf(bot.id)) ?? this.gateway,
       roles: this.roles,
       help: this.help,
       profile: this.profile,
@@ -213,8 +234,10 @@ export class CoreRuntime {
 
   /** After the Discord client is ready: commands, replay, recurring jobs, polling, onReady. */
   async ready(opts: { startPolling?: boolean } = {}): Promise<void> {
-    const res = await syncCommands(this.gateway, this.kv, this.router.commandJson());
-    this.o.log.info({ changed: res.changed }, 'slash commands checked');
+    for (const [key, gateway] of this.gateways) {
+      const res = await syncCommands(gateway, this.kv, this.router.commandJson(key), false, key);
+      this.o.log.info({ discordApp: key, changed: res.changed }, 'slash commands checked');
+    }
     const replayed = await this.bus.replayPending();
     if (replayed) this.o.log.info({ replayed }, 'replayed pending events');
     await this.scheduler.ensureRecurring();

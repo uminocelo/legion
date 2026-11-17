@@ -1,6 +1,6 @@
 # Configuração (`legion.config.yaml`)
 
-Segredos ficam no `.env` (veja o README). Tudo aqui tem padrão; um arquivo com só `bots: [cerebro]` e os canais já funciona. Erros aparecem como `legion.config.yaml → caminho.da.chave: motivo` e impedem o boot.
+Segredos ficam no `.env` (veja o README; tokens por bot em [SELF_HOSTING](SELF_HOSTING.md#um-app-por-bot-opcional)). Tudo aqui tem padrão; um arquivo com só `bots: [cerebro]` e os canais já funciona. Erros aparecem como `legion.config.yaml → caminho.da.chave: motivo` e impedem o boot.
 
 ## Chaves gerais
 

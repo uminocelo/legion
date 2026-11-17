@@ -20,11 +20,18 @@ export const hashCommands = (commands: unknown[]): string =>
   createHash('sha256').update(canonicalJson(commands)).digest('hex');
 
 /** Registers guild commands only when their JSON changed (or when forced). */
-export async function syncCommands(gateway: DiscordGateway, kv: KvStore, commands: unknown[], force = false) {
+export async function syncCommands(
+  gateway: DiscordGateway,
+  kv: KvStore,
+  commands: unknown[],
+  force = false,
+  appKey = 'main',
+) {
+  const key = appKey === 'main' ? COMMAND_HASH_KEY : `${COMMAND_HASH_KEY}:${appKey}`;
   const hash = hashCommands(commands);
-  const prev = await kv.get<string>(COMMAND_HASH_KEY);
+  const prev = await kv.get<string>(key);
   if (!force && prev === hash) return { changed: false, hash };
   await gateway.registerCommands(commands);
-  await kv.set(COMMAND_HASH_KEY, hash);
+  await kv.set(key, hash);
   return { changed: true, hash };
 }

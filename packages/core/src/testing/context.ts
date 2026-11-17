@@ -1,6 +1,6 @@
 import type { AnyLegionBot, LegionBot } from '../bot.js';
 import { parseConfig } from '../config/load.js';
-import type { LegionConfig } from '../config/schema.js';
+import type { BotId, LegionConfig } from '../config/schema.js';
 import { FakeDiscordGateway } from '../discord/fake-gateway.js';
 import type { IncomingInteraction } from '../discord/types.js';
 import { FakeRandomSource } from '../game/random.js';
@@ -14,6 +14,8 @@ export interface TestContextOptions {
   bots?: AnyLegionBot[];
   start?: string;
   seed?: number;
+  /** Extra Discord apps (own fake gateway each) for bots with their own token. */
+  apps?: { key: string; bots: BotId[] }[];
 }
 
 /**
@@ -27,7 +29,12 @@ export async function createTestContext(opts: TestContextOptions = {}) {
   const bots = opts.bots ?? [];
   const schemas = Object.fromEntries(bots.map((b) => [b.id, b.configSchema]));
   const config: LegionConfig = parseConfig({ bots: bots.map((b) => b.id), ...opts.config }, schemas);
+  const apps = (opts.apps ?? []).map((a, n) => ({
+    ...a,
+    gateway: new FakeDiscordGateway(`90000000000000010${n}`, gateway.guildId),
+  }));
   const runtime = new CoreRuntime({
+    ...(apps.length ? { apps } : {}),
     config,
     db,
     gateway,
@@ -40,18 +47,24 @@ export async function createTestContext(opts: TestContextOptions = {}) {
   await runtime.loadBots(bots);
   let seq = 0;
   /** Builds an interaction and routes it; returns its id (read replies with gateway.repliesTo). */
-  const interact = async (i: Partial<IncomingInteraction> & Pick<IncomingInteraction, 'kind' | 'userId'>) => {
+  const interact = async (
+    i: Partial<IncomingInteraction> & Pick<IncomingInteraction, 'kind' | 'userId'>,
+    app = 'main',
+  ) => {
     const id = `int-${++seq}`;
     const member = gateway.members.get(i.userId);
-    await runtime.router.handle({
-      id,
-      guildId: gateway.guildId,
-      channelId: '200000000000000001',
-      memberRoleIds: member?.roleIds ?? [],
-      isGuildOwner: false,
-      locale: null,
-      ...i,
-    });
+    await runtime.router.handle(
+      {
+        id,
+        guildId: gateway.guildId,
+        channelId: '200000000000000001',
+        memberRoleIds: member?.roleIds ?? [],
+        isGuildOwner: false,
+        locale: null,
+        ...i,
+      },
+      app,
+    );
     await runtime.bus.drain();
     return id;
   };
@@ -59,6 +72,8 @@ export async function createTestContext(opts: TestContextOptions = {}) {
     db,
     clock,
     gateway,
+    /** Fake gateway of each extra app, by key. */
+    appGateways: new Map(apps.map((a) => [a.key, a.gateway])),
     runtime,
     config,
     interact,
