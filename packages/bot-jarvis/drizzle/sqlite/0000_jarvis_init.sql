@@ -60,4 +60,5 @@ CREATE TABLE `jarvis_xp_ledger` (
 --> statement-breakpoint
 CREATE UNIQUE INDEX `jarvis_xp_ledger_source_unique` ON `jarvis_xp_ledger` (`source_key`);--> statement-breakpoint
 CREATE INDEX `jarvis_xp_ledger_guild_created_idx` ON `jarvis_xp_ledger` (`guild_id`,`created_at`);--> statement-breakpoint
-CREATE INDEX `jarvis_xp_ledger_member_idx` ON `jarvis_xp_ledger` (`member_id`);
+CREATE INDEX `jarvis_xp_ledger_member_idx` ON `jarvis_xp_ledger` (`member_id`);--> statement-breakpoint
+CREATE INDEX `jarvis_xp_ledger_guild_day_idx` ON `jarvis_xp_ledger` (`guild_id`,`day`);

@@ -37,6 +37,7 @@ export const jarvisXpLedger = table(
     uniqueIndex('jarvis_xp_ledger_source_unique').on(t.sourceKey),
     index('jarvis_xp_ledger_guild_created_idx').on(t.guildId, t.createdAt),
     index('jarvis_xp_ledger_member_idx').on(t.memberId),
+    index('jarvis_xp_ledger_guild_day_idx').on(t.guildId, t.day),
   ],
 );
 

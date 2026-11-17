@@ -1,1 +1,96 @@
-{ "jarvis": { "persona": "J.A.R.V.I.S." } }
+{
+  "jarvis": {
+    "errors": {
+      "not_registered": "You are not a registered mutant yet. Start in {welcome}.",
+      "not_staff": "Only staff can use this command.",
+      "cooldown": "Easy, agent. Next question in {seconds}s.",
+      "no_questions": "There are no questions available{category} right now. Let the staff know.",
+      "not_your_question": "This question belongs to someone else. Use /trivia for yours.",
+      "unknown_attempt": "I couldn't find this question. Use /trivia for a new one.",
+      "unknown_member": "That member is not a registered mutant yet.",
+      "ranking_cooldown": "The leaderboard was just shown here. Try again in {seconds}s."
+    },
+    "trivia": {
+      "title": "🧠 {category} trivia",
+      "difficulty": { "facil": "Easy", "normal": "Normal", "dificil": "Hard" },
+      "category": { "quadrinhos": "Comics", "rivals": "Marvel Rivals", "geral": "General" },
+      "meta": "Difficulty: {difficulty} · Answer within {seconds}s",
+      "correct": "✅ Correct!",
+      "wrong": "❌ Wrong.",
+      "expired": "⏱️ Time's up.",
+      "answer_was": "Right answer: **{answer}**",
+      "xp_gained": "+{xp} XP",
+      "xp_capped": "You already earned today's trivia XP limit ({cap}). The answer still counts for stats and streaks.",
+      "xp_partial": "+{xp} XP (daily trivia limit reached)",
+      "streak_bonus": "🔥 {streak}-day streak: +{bonus} bonus XP",
+      "level_up": "⬆️ Level {level}!",
+      "progress": "Level {level} {bar} {xp} XP",
+      "next": "Next question",
+      "source": "Source"
+    },
+    "ranking": {
+      "title": "🏆 Leaderboard — {period}",
+      "title_faction": "🏆 Leaderboard — {period} · {faction}",
+      "period": { "semana": "this week", "mes": "this month", "total": "all time" },
+      "line": "**{pos}.** {emoji} {codename} — {xp} XP · level {level}",
+      "you": "You: **#{pos}** with {xp} XP",
+      "you_none": "You have no XP in this period yet.",
+      "empty": "Nobody earned XP in this period yet. How about a /trivia?",
+      "factions": "Factions: {totals}"
+    },
+    "streak": {
+      "title": "🔥 Your streak",
+      "current": "Current",
+      "best": "Best",
+      "days": "{count} day(s)",
+      "today_done": "✅ Today already counts for your streak.",
+      "today_pending": "⏳ Today doesn't count yet. Earn XP (for example with /trivia) before midnight.",
+      "tomorrow": "Tomorrow's bonus: +{bonus} XP"
+    },
+    "profile": {
+      "level": "Level",
+      "xp": "XP",
+      "streak": "Streak",
+      "streak_value": "{current} (best: {best})"
+    },
+    "staff": {
+      "xp_done": "XP adjusted: {amount} for {member} (reason: {reason}). Total: {total} XP, level {level}, rank {rank}.",
+      "xp_invalid": "The amount must be between -1000 and 1000 and not 0.",
+      "reload": "Questions reloaded: {added} new, {updated} updated, {deactivated} deactivated, {unchanged} unchanged.",
+      "reload_errors": "Errors ({count}):",
+      "reload_errors_kept": "Because of the errors, no question was deactivated.",
+      "stats_title": "📊 Trivia — statistics",
+      "stats_per_category": "Active questions per category",
+      "stats_lowest": "Lowest accuracy (min. 3 answers)",
+      "stats_lowest_line": "`{id}` {rate}% ({n} answers)",
+      "stats_today": "Attempts today",
+      "stats_none": "—",
+      "recalc": "Progress of {member} rebuilt from the ledger: {before} → {after} XP, level {level}, rank {rank}."
+    },
+    "help": {
+      "trivia": "Answer a quick question and earn XP.",
+      "ranking": "See who earned the most XP this week, this month or all time.",
+      "sequencia": "See your active-day streak and tomorrow's bonus."
+    },
+    "commands": {
+      "trivia": { "description": "Answer a question and earn XP", "categoria": "Question category" },
+      "ranking": {
+        "description": "XP leaderboard",
+        "periodo": "Period (default: week)",
+        "faccao": "Filter by faction"
+      },
+      "sequencia": { "description": "Your active-day streak" },
+      "jarvis": {
+        "description": "J.A.R.V.I.S. staff tools",
+        "xp": "Add or remove XP from a member",
+        "membro": "Member",
+        "quantidade": "Amount (-1000 to 1000)",
+        "motivo": "Reason",
+        "trivia": "Trivia tools",
+        "recarregar": "Reload questions from the files",
+        "estatisticas": "Question statistics",
+        "recalcular": "Rebuild a member's progress from the ledger"
+      }
+    }
+  }
+}

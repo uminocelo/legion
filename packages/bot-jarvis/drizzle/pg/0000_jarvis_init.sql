@@ -60,4 +60,5 @@ CREATE INDEX "jarvis_trivia_attempts_member_idx" ON "jarvis_trivia_attempts" USI
 CREATE INDEX "jarvis_trivia_questions_pick_idx" ON "jarvis_trivia_questions" USING btree ("locale","category","active");--> statement-breakpoint
 CREATE UNIQUE INDEX "jarvis_xp_ledger_source_unique" ON "jarvis_xp_ledger" USING btree ("source_key");--> statement-breakpoint
 CREATE INDEX "jarvis_xp_ledger_guild_created_idx" ON "jarvis_xp_ledger" USING btree ("guild_id","created_at");--> statement-breakpoint
-CREATE INDEX "jarvis_xp_ledger_member_idx" ON "jarvis_xp_ledger" USING btree ("member_id");
+CREATE INDEX "jarvis_xp_ledger_member_idx" ON "jarvis_xp_ledger" USING btree ("member_id");--> statement-breakpoint
+CREATE INDEX "jarvis_xp_ledger_guild_day_idx" ON "jarvis_xp_ledger" USING btree ("guild_id","day");
