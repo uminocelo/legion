@@ -1,0 +1,28 @@
+# Tutorial do H.E.R.B.I.E. Pode ser sobrescrito por ./data/content/tutorial.yaml.
+# Os textos ficam nos locales (titleKey/bodyKey). Veja docs/CONFIG.md.
+chain: boas-vindas
+steps:
+  - id: perfil
+    titleKey: herbie.quest.perfil.title
+    bodyKey: herbie.quest.perfil.body
+    trigger: { event: command.executed, where: { command: perfil } }
+    rewardXp: 20
+  - id: primeira-trivia
+    titleKey: herbie.quest.trivia.title
+    bodyKey: herbie.quest.trivia.body
+    requiresBot: jarvis
+    trigger: { event: trivia.answered } # qualquer resposta conta, certa ou errada
+    rewardXp: 30
+  - id: primeira-missao
+    titleKey: herbie.quest.missao.title
+    bodyKey: herbie.quest.missao.body
+    requiresBot: jarvis
+    requiresFeature: missions
+    trigger: { event: mission.completed }
+    fallback:
+      id: preferencias
+      titleKey: herbie.quest.preferencias.title
+      bodyKey: herbie.quest.preferencias.body
+      trigger: { event: command.executed, where: { command: cerebro, subcommand: preferencias } }
+    rewardXp: 50
+completionRewardXp: 50

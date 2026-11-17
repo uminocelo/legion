@@ -1,0 +1,17 @@
+# Tips of the day (en).
+- { id: perfil, text: "Use /perfil to see your mutant sheet — and /perfil membro:@someone to see theirs." }
+- {
+    id: preferencias,
+    text: "In /cerebro preferencias you turn optional roles on and off, like the live ping.",
+    bot: cerebro,
+  }
+- { id: trivia-rapida, text: "In /trivia, answering fast gives up to 5 bonus XP.", bot: jarvis }
+- {
+    id: sequencia,
+    text: "Earn XP every day to keep your /sequencia: the bonus grows up to 7 days in a row.",
+    bot: jarvis,
+  }
+- { id: ranking, text: "The weekly /ranking resets every Monday. There's still time!", bot: jarvis }
+- { id: regras, text: "Don't know a term? Use /regras and start typing: H.E.R.B.I.E. completes it for you." }
+- { id: idioma, text: "Prefer Portuguese? Use /idioma pt-BR and the bots answer you in Portuguese." }
+- { id: tutorial, text: "Skipped the tutorial? /tutorial reiniciar continues where you stopped." }

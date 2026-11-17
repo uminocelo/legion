@@ -2,6 +2,7 @@ import { and, asc, eq, gte } from 'drizzle-orm';
 import type { Logger } from 'pino';
 import { type CoreTables, coreTables } from '../db/core-tables.js';
 import type { Executor, LegionDb } from '../db/db.js';
+import { KvStore } from '../db/kv.js';
 import { RETRY_BACKOFF_MS, type Scheduler } from '../scheduler/scheduler.js';
 import type { Clock } from '../time/clock.js';
 import {
@@ -26,6 +27,8 @@ export interface EventBus {
 /** Max retries after the first failure, then the consumption is marked failed. */
 export const MAX_EVENT_RETRIES = RETRY_BACKOFF_MS.length;
 const RETRY_JOB = 'core.event-retry';
+/** KV map consumerId → ISO time the consumer was first seen at startup. */
+export const CONSUMERS_SINCE_KEY = 'core.consumersSince';
 
 interface Subscriber {
   consumerId: string;
@@ -212,8 +215,36 @@ export class InProcessEventBus {
   }
 
   /**
+   * When each subscribed consumer was first seen. A consumer seen for the first time (e.g. a bot that was
+   * just enabled) starts now, so replay never feeds it events from before it existed. On the first boot
+   * with this map, consumers that already have consumption rows count as known from the start.
+   */
+  private async consumersSince(): Promise<Map<string, string>> {
+    const kv = new KvStore(this.o.db, () => this.o.clock.now());
+    const stored = await kv.get<Record<string, string>>(CONSUMERS_SINCE_KEY);
+    const map = new Map(Object.entries(stored ?? {}));
+    let legacy: Set<string> | null = null;
+    if (!stored) {
+      const cons = coreTables(this.o.db).coreEventConsumption;
+      const rows = await this.o.db.orm.selectDistinct({ id: cons.consumerId }).from(cons);
+      legacy = new Set(rows.map((r) => r.id));
+    }
+    const now = this.o.clock.now().toISOString();
+    let changed = !stored;
+    for (const list of this.subs.values())
+      for (const { consumerId } of list) {
+        if (map.has(consumerId)) continue;
+        map.set(consumerId, legacy?.has(consumerId) ? new Date(0).toISOString() : now);
+        changed = true;
+      }
+    if (changed) await kv.set(CONSUMERS_SINCE_KEY, Object.fromEntries(map));
+    return map;
+  }
+
+  /**
    * Delivers every logged event (within the lookback window) that a current subscriber has not consumed,
-   * oldest first. Pending retries are left to their scheduled job. Returns the number of deliveries.
+   * oldest first. Events from before a consumer was first seen are skipped. Pending retries are left to
+   * their scheduled job. Returns the number of deliveries.
    */
   async replayPending(): Promise<number> {
     const log = coreTables(this.o.db).coreEventLog;
@@ -221,6 +252,7 @@ export class InProcessEventBus {
     const since = new Date(
       this.o.clock.now().getTime() - (this.o.replayLookbackDays ?? 7) * 86_400_000,
     ).toISOString();
+    const firstSeen = await this.consumersSince();
     const rows = await this.o.db.orm
       .select()
       .from(log)
@@ -236,6 +268,7 @@ export class InProcessEventBus {
       if (!event) continue;
       for (const sub of this.subs.get(event.type) ?? []) {
         if (seen.has(`${sub.consumerId}|${event.id}`)) continue;
+        if (event.occurredAt < (firstSeen.get(sub.consumerId) ?? '')) continue;
         await this.deliver(event, sub);
         count++;
       }

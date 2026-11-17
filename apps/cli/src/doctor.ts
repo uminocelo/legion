@@ -216,6 +216,13 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
       fix: t('check.apps.fix'),
     });
   const several = (plan?.apps.length ?? 0) > 1;
+  const appInfos: {
+    key: string;
+    bots: string[];
+    rest: DiscordRest;
+    botUserId: string | null;
+    inGuild: boolean;
+  }[] = [];
   if (!env || !plan) {
     for (const [id, k] of [
       ['token', 'check.token'],
@@ -237,38 +244,54 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
         add,
         skip,
       );
+      appInfos.push({
+        key: a.key,
+        bots: a.bots,
+        rest: appRest,
+        botUserId: res.botUserId,
+        inGuild: res.inGuild,
+      });
       if (a.key === 'main') {
         rest = appRest;
         ({ botUserId, applicationId, inGuild } = res);
       }
     }
 
-  // 4. channels
+  // 4. channels: config.channels with the main app, plus each bot's own channels with the app hosting it
   if (env && rest && config && botUserId && inGuild) {
-    const [channels, roles, member] = await Promise.all([
+    const [channels, roles] = await Promise.all([
       rest.guildChannels(env.DISCORD_GUILD_ID),
       rest.guildRoles(env.DISCORD_GUILD_ID),
-      rest.guildMember(env.DISCORD_GUILD_ID, botUserId),
     ]);
+    const cfg = config;
+    const targets: { key: string; id: string; app: (typeof appInfos)[number] | undefined }[] = [];
+    const main = appInfos.find((x) => x.key === 'main');
+    for (const [key, id] of Object.entries(cfg.channels)) if (id) targets.push({ key, id, app: main });
+    for (const b of bots)
+      for (const c of b.doctorChannels?.((cfg as Record<string, unknown>)[b.id]) ?? [])
+        if (c.id) targets.push({ key: c.key, id: c.id, app: appInfos.find((x) => x.bots.includes(b.id)) });
+    const members = new Map<string, Awaited<ReturnType<DiscordRest['guildMember']>>>();
     const problems: string[] = [];
-    let checked = 0;
-    for (const [key, id] of Object.entries(config.channels)) {
-      if (!id) continue;
-      checked++;
+    for (const { key, id, app } of targets) {
       const ch = channels.find((c) => c.id === id);
       if (!ch) {
         problems.push(t('check.channels.missing', { key, id }));
         continue;
       }
+      if (!app?.botUserId || !app.inGuild) continue; // that app's own checks already failed
+      if (!members.has(app.key))
+        members.set(app.key, await app.rest.guildMember(env.DISCORD_GUILD_ID, app.botUserId));
+      const member = members.get(app.key);
       const perms = channelPermissions(
         env.DISCORD_GUILD_ID,
-        { ...(member ?? { roles: [] }), id: botUserId },
+        { ...(member ?? { roles: [] }), id: app.botUserId },
         roles,
         ch,
       );
       const missing = missingPermissions(perms, CHANNEL_PERMS);
+      const label = several && app.key !== 'main' ? `${key} (app ${app.key})` : key;
       if (missing.length)
-        problems.push(t('check.channels.perms', { key, name: ch.name, perms: missing.join(', ') }));
+        problems.push(t('check.channels.perms', { key: label, name: ch.name, perms: missing.join(', ') }));
     }
     if (problems.length)
       add({
@@ -283,7 +306,7 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
         id: 'channels',
         title: t('check.channels'),
         status: 'ok',
-        message: t('check.channels.ok', { count: checked }),
+        message: t('check.channels.ok', { count: targets.length }),
       });
   } else skip('channels', t('check.channels'));
 

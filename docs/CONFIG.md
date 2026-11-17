@@ -12,7 +12,9 @@ Segredos ficam no `.env` (veja o README; tokens por bot em [SELF_HOSTING](SELF_H
 | `channels.welcome` | `null` | Canal de boas-vindas (Cérebro) |
 | `channels.rules` | `null` | Canal de regras |
 | `channels.registry` | `null` | Cartões públicos de cadastro (`null` = usa `welcome`) |
-| `channels.tutorial` / `trivia` / `events` / `modQueue` / `combat` | `null` | Usados por bots futuros |
+| `channels.tutorial` | `null` | H.E.R.B.I.E.: tutorial de quem tem DM fechada (vazio = usa `welcome`) |
+| `channels.events` | `null` | Eventos do ULTRON; o H.E.R.B.I.E. explica cada anúncio aqui |
+| `channels.trivia` / `modQueue` / `combat` | `null` | Usados por bots futuros |
 | `roles` | lista abaixo | Cargos gerenciados. Se definida, **substitui** a lista padrão inteira |
 | `factions` | xmen, brotherhood, independent | `{ key, roleKey, emoji }` |
 | `events.replayLookbackDays` | `7` | Quantos dias de eventos reprocessar no boot |
@@ -104,4 +106,26 @@ As perguntas vêm de `packages/bot-jarvis/content/trivia/*.yaml` (30 em pt-BR) e
 ```
 
 Ao iniciar, e com `/jarvis trivia recarregar`, as perguntas são sincronizadas pelo `id`: novas entram, alteradas são atualizadas e as que sumiram dos arquivos ficam inativas (nunca apagadas, para o histórico continuar válido). Se algum arquivo tiver erro, nada é desativado e a staff vê a lista de erros.
+
+## `herbie`
+
+| Chave | Padrão | Descrição |
+|---|---|---|
+| `delivery` | `dm` | `dm`: tutorial por DM (canal de reserva se a DM falhar); `channel`: sempre no canal |
+| `tutorial.enabled` | `true` | Liga o tutorial para quem se registra |
+| `tutorial.allowSkip` | `true` | Mostra o botão "Pular tutorial" |
+| `tips.enabled` | `false` | Dica diária num canal |
+| `tips.channelId` | `null` | Canal das dicas (obrigatório se ligadas) |
+| `tips.cron` | `0 12 * * *` | Horário da dica, no `timezone` do servidor |
+| `explainWorldEvents` | `true` | Explica anúncios do ULTRON em `channels.events` |
+
+### Conteúdo do H.E.R.B.I.E.
+
+Os arquivos vêm em `packages/bot-herbie/content/`. Para personalizar, copie o arquivo para `./data/content/` com o mesmo nome; o do servidor tem prioridade. Se ele tiver erro, o H.E.R.B.I.E. avisa no log e continua com a versão anterior.
+
+- `tutorial.yaml`: os passos. Cada passo tem `id`, `titleKey`/`bodyKey` (textos nos locales), `trigger` (`event` entre `command.executed`, `trivia.answered`, `mission.completed`, `level.changed`, `streak.updated`, e `where` com campos exatos do evento), `rewardXp`, e opcionalmente `requiresBot`, `requiresFeature: missions` e `fallback` (passo usado quando o bot/recurso não está ligado). `completionRewardXp` é o bônus final.
+- `glossary.pt-BR.yaml` / `glossary.en.yaml`: termos do `/regras` (`id`, `term`, `aliases`, `summary` até 300 caracteres, `details` até 1500, `related`, `bot` opcional para esconder quando o bot está desligado). Use aspas nos textos com `:`.
+- `tips.pt-BR.yaml` / `tips.en.yaml`: dicas (`id`, `text`, `bot` opcional), postadas em rodízio sem repetir.
+
+Textos dos passos (`herbie.quest.*`) podem ser trocados pela pasta `./locales` (veja `locales/README.txt`).
 
