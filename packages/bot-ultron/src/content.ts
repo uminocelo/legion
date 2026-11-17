@@ -44,32 +44,9 @@ export function readEnemies(files: string[]): { enemies: EnemyTemplate[]; errors
   const errors: string[] = [];
   for (const file of files) {
     if (!existsSync(file)) continue;
-    const name = file.split('/').slice(-2).join('/');
-    let raw: unknown;
-    try {
-      raw = parseYaml(readFileSync(file, 'utf8')) ?? [];
-    } catch (err) {
-      const pos = err instanceof YAMLParseError ? ` (linha ${err.linePos?.[0]?.line ?? 0})` : '';
-      errors.push(`${name}${pos}: YAML inválido: ${(err as Error).message.split('\n')[0]}`);
-      continue;
-    }
-    if (!Array.isArray(raw)) {
-      errors.push(`${name}: o arquivo deve ser uma lista de inimigos (- id: ...)`);
-      continue;
-    }
-    const seen = new Set<string>();
-    raw.forEach((item, idx) => {
-      const r = enemySchema.safeParse(item);
-      const label = `${name} → item ${idx + 1}${(item as { id?: string })?.id ? ` (${(item as { id: string }).id})` : ''}`;
-      if (!r.success) {
-        for (const iss of r.error.issues)
-          errors.push(`${label} → ${iss.path.join('.') || '?'}: ${iss.message}`);
-        return;
-      }
-      if (seen.has(r.data.id)) errors.push(`${label}: id repetido no mesmo arquivo`);
-      seen.add(r.data.id);
-      byId.set(r.data.id, r.data);
-    });
+    const res = parseEnemiesYaml(readFileSync(file, 'utf8'), file.split('/').slice(-2).join('/'));
+    errors.push(...res.errors);
+    for (const e of res.enemies) byId.set(e.id, e);
   }
   const enemies = [...byId.values()];
   for (const tier of TIERS) {
@@ -84,3 +61,35 @@ export const contentHash = (e: EnemyTemplate) =>
   createHash('sha256')
     .update(JSON.stringify([e.name, e.tier, e.minLevel, e.base, e.powerCooldownMax, e.tauntKeys]))
     .digest('hex');
+
+/** Parses one enemy list (a file or an attachment). Errors carry the YAML line or the field path. */
+export function parseEnemiesYaml(text: string, name: string): { enemies: EnemyTemplate[]; errors: string[] } {
+  const errors: string[] = [];
+  let raw: unknown;
+  try {
+    raw = parseYaml(text) ?? [];
+  } catch (err) {
+    const pos = err instanceof YAMLParseError ? ` (linha ${err.linePos?.[0]?.line ?? 0})` : '';
+    return {
+      enemies: [],
+      errors: [`${name}${pos}: YAML inválido: ${(err as Error).message.split('\n')[0]}`],
+    };
+  }
+  if (!Array.isArray(raw))
+    return { enemies: [], errors: [`${name}: o arquivo deve ser uma lista de inimigos (- id: ...)`] };
+  const enemies: EnemyTemplate[] = [];
+  const seen = new Set<string>();
+  raw.forEach((item, idx) => {
+    const r = enemySchema.safeParse(item);
+    const label = `${name} → item ${idx + 1}${(item as { id?: string })?.id ? ` (${(item as { id: string }).id})` : ''}`;
+    if (!r.success) {
+      for (const iss of r.error.issues)
+        errors.push(`${label} → ${iss.path.join('.') || '?'}: ${iss.message}`);
+      return;
+    }
+    if (seen.has(r.data.id)) errors.push(`${label}: id repetido no mesmo arquivo`);
+    seen.add(r.data.id);
+    enemies.push(r.data);
+  });
+  return { enemies, errors };
+}

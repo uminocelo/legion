@@ -1,4 +1,5 @@
 import type {
+  CommandPermissionOverwrite,
   GuildChannel,
   GuildMember,
   GuildRole,
@@ -54,6 +55,13 @@ export interface DiscordGateway {
   fetchChannels(): Promise<GuildChannel[]>;
   setChannelPermissionOverwrite(channelId: string, overwrite: PermissionOverwrite): Promise<void>;
   timeoutMember(userId: string, durationMs: number, reason?: string): Promise<void>;
+  /**
+   * Downloads an attachment as text. Only Discord's CDN, at most `maxBytes`.
+   * Throws a GatewayError on other hosts, oversize files or network errors.
+   */
+  fetchAttachment(url: string, maxBytes: number): Promise<string>;
+  /** Command permission overwrites by command name; `*` holds the app-wide ones. */
+  fetchCommandPermissions(): Promise<Record<string, CommandPermissionOverwrite[]>>;
   /** Registers the guild's slash commands (replaces the whole set). */
   registerCommands(commands: unknown[]): Promise<void>;
 }

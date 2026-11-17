@@ -1,4 +1,4 @@
-import type { LegionBot } from '@legion/core';
+import { type LegionBot, staffCommandsCheck } from '@legion/core';
 import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { ultronCommands } from './commands.js';
 import { type UltronConfig, ultronConfigSchema } from './config.js';
@@ -15,6 +15,7 @@ export * from './db/tables.js';
 export * from './domain/scaling.js';
 export * from './domain/when.js';
 export { EncounterService, playerCombatantId } from './encounters.js';
+export { ENEMY_IMPORT_MAX_BYTES, EnemyImports, enemyImportIds } from './enemy-imports.js';
 export { AI_PROVIDER, type AiEnv, type FlavorKind, FlavorText, filterFlavor } from './flavor.js';
 export { ULTRON_CONTENT_DIR, ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 export * from './services.js';
@@ -38,6 +39,11 @@ export const ultron: LegionBot<UltronConfig> = {
   migrationsDir: ULTRON_MIGRATIONS_DIR,
   commands: (ctx) => ultronCommands(ctx, ultronServices(ctx)),
   components: (ctx) => [
+    {
+      action: 'enemy-import',
+      version: V,
+      handle: (i, r, args) => ultronServices(ctx).imports.decide(i, r, args),
+    },
     {
       action: 'strike',
       version: V,
@@ -70,7 +76,7 @@ export const ultron: LegionBot<UltronConfig> = {
       adminOnly: true,
     });
   },
-  doctorChecks: (ctx) => ultronDoctorChecks(ctx),
+  doctorChecks: (ctx) => [...ultronDoctorChecks(ctx), staffCommandsCheck(ctx, ['ultron'])],
   onReady: async (ctx) => {
     await ultronServices(ctx).world.planRecurring();
   },

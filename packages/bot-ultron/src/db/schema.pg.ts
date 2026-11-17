@@ -24,6 +24,11 @@ export const ultronEnemyTemplates = table('ultron_enemy_templates', {
   contentHash: text('content_hash').notNull(),
   active: integer('active').notNull().default(1),
   updatedAt: text('updated_at').notNull(),
+  // file | staff (imported in Discord; file reloads never touch it)
+  origin: text('origin').notNull().default('file'),
+  importedBy: text('imported_by'),
+  // Staff turned it off: stays off across reloads.
+  disabledBy: text('disabled_by'),
 });
 
 export const ultronEncounters = table(

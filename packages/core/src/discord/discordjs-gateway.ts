@@ -1,5 +1,6 @@
 import {
   ApplicationCommandOptionType,
+  type Attachment,
   type Client,
   DiscordAPIError,
   type Guild,
@@ -9,13 +10,16 @@ import {
   PermissionFlagsBits,
   type RepliableInteraction,
 } from 'discord.js';
+import { isDiscordCdn } from './attachments.js';
 import { type DiscordGateway, GatewayError, type SentMessage } from './gateway.js';
 import type {
   ActionRow,
   ChannelKind,
+  CommandPermissionOverwrite,
   GuildChannel,
   GuildMember,
   GuildRole,
+  IncomingAttachment,
   IncomingInteraction,
   Modal,
   OutgoingMessage,
@@ -152,6 +156,7 @@ export class DiscordJsGateway implements DiscordGateway {
     };
     if (i.isChatInputCommand() || i.isAutocomplete()) {
       const options: Record<string, string | number | boolean | null> = {};
+      const attachments: Record<string, IncomingAttachment> = {};
       let subcommand: string | null = null;
       const collect = (
         data: readonly { name: string; type: number; value?: unknown; options?: readonly unknown[] }[],
@@ -163,10 +168,21 @@ export class DiscordJsGateway implements DiscordGateway {
           ) {
             subcommand = subcommand ? `${subcommand} ${o.name}` : o.name;
             collect((o.options ?? []) as typeof data);
-          } else options[o.name] = (o.value as string | number | boolean | undefined) ?? null;
+          } else {
+            options[o.name] = (o.value as string | number | boolean | undefined) ?? null;
+            const file = (o as { attachment?: Attachment }).attachment;
+            if (o.type === ApplicationCommandOptionType.Attachment && file)
+              attachments[o.name] = {
+                url: file.url,
+                name: file.name,
+                size: file.size,
+                contentType: file.contentType ?? null,
+              };
+          }
         }
       };
       collect(i.options.data);
+      const att = Object.keys(attachments).length ? { attachments } : {};
       if (i.isAutocomplete()) {
         const f = i.options.getFocused(true);
         return {
@@ -178,7 +194,7 @@ export class DiscordJsGateway implements DiscordGateway {
           focused: { name: f.name, value: String(f.value) },
         };
       }
-      return { ...base, kind: 'command', commandName: i.commandName, subcommand, options };
+      return { ...base, kind: 'command', commandName: i.commandName, subcommand, options, ...att };
     }
     if (i.isMessageContextMenuCommand()) {
       return {
@@ -416,6 +432,37 @@ export class DiscordJsGateway implements DiscordGateway {
     const m = await guild.members.fetch(userId).catch(wrapError);
     await m.timeout(durationMs, reason).catch(wrapError);
   }
+  async fetchAttachment(url: string, maxBytes: number): Promise<string> {
+    if (!isDiscordCdn(url)) throw new GatewayError('Attachment is not on the Discord CDN', null);
+    const res = await fetch(url, { redirect: 'error' }).catch((err: Error) => {
+      throw new GatewayError(`Download failed: ${err.message}`, null);
+    });
+    if (!res.ok) throw new GatewayError(`Download failed: HTTP ${res.status}`, res.status);
+    const declared = Number(res.headers.get('content-length') ?? 0);
+    if (declared > maxBytes) throw new GatewayError('Attachment too large', null);
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (buf.byteLength > maxBytes) throw new GatewayError('Attachment too large', null);
+    return buf.toString('utf8');
+  }
+
+  async fetchCommandPermissions(): Promise<Record<string, CommandPermissionOverwrite[]>> {
+    const guild = await this.guild();
+    const commands = await guild.commands.fetch().catch(wrapError);
+    const perms = await guild.commands.permissions.fetch({}).catch(wrapError);
+    const appId = this.client.application?.id;
+    const out: Record<string, CommandPermissionOverwrite[]> = {};
+    for (const [id, list] of perms) {
+      const key = id === appId ? '*' : commands.get(id)?.name;
+      if (!key) continue;
+      out[key] = list.map((p) => ({
+        id: p.id,
+        type: p.type === 1 ? 'role' : p.type === 2 ? 'user' : 'channel',
+        allow: p.permission,
+      }));
+    }
+    return out;
+  }
+
   async registerCommands(commands: unknown[]) {
     const guild = await this.guild();
     // biome-ignore lint/suspicious/noExplicitAny: command JSON is validated by Discord

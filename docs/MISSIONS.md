@@ -8,6 +8,10 @@ Missões são histórias curtas com escolhas. Um membro registrado usa `/missao 
 - **Limites:** por padrão, 1 missão diária por dia, 1 semanal por semana (segunda a domingo) e cada história uma vez (`jarvis.missions.limits`). Cada membro do grupo gasta o seu limite. Um grupo que fecha sem começar não conta.
 - **Reinício:** o progresso fica no banco. Ao reiniciar, a cena que faltava postar é postada uma vez e os prazos continuam.
 
+## Importar pelo Discord
+
+A staff pode importar um arquivo de missão sem acesso ao servidor: `/jarvis missao importar` e anexe o `.yaml`. Veja [STAFF.md](STAFF.md#missões).
+
 ## Escrever uma missão
 
 Crie um arquivo por missão em `./data/content/missions/<id>.yaml` (no Docker, `data/` é o volume do servidor). Um arquivo com o mesmo `id` de uma missão que vem com o Legion a substitui. Reinicie o Legion para carregar. Rode `legion doctor` para ver erros.

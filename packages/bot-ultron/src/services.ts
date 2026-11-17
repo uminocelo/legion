@@ -3,6 +3,7 @@ import type { UltronConfig } from './config.js';
 import { EventsRepo } from './db/events-repo.js';
 import { UltronRepo } from './db/repo.js';
 import { EncounterService } from './encounters.js';
+import { EnemyImports } from './enemy-imports.js';
 import { type AiEnv, FlavorText } from './flavor.js';
 import { StatusService } from './status.js';
 import { WorldEventService } from './world-events.js';
@@ -14,6 +15,7 @@ export interface UltronServices {
   encounters: EncounterService;
   world: WorldEventService;
   status: StatusService;
+  imports: EnemyImports;
 }
 
 const cache = new WeakMap<object, UltronServices>();
@@ -43,6 +45,7 @@ export function ultronServices(ctx: BotContext<UltronConfig>): UltronServices {
       encounters,
       world: new WorldEventService(ctx, eventsRepo, repo, flavor),
       status: new StatusService(ctx, repo, eventsRepo, encounters, flavor),
+      imports: new EnemyImports(ctx, repo),
     };
     cache.set(ctx.i18n, s);
   }

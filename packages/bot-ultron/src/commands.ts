@@ -146,7 +146,56 @@ export function ultronCommands(ctx: BotContext<UltronConfig>, s: UltronServices)
             ],
           },
           { type: 1, name: 'status', ...desc(i18n, 'ultron.commands.ultron.status') },
+          {
+            type: 2,
+            name: 'inimigo',
+            name_localizations: { 'en-US': 'enemy' },
+            ...desc(i18n, 'ultron.commands.ultron.inimigo'),
+            options: [
+              {
+                type: 1,
+                name: 'importar',
+                name_localizations: { 'en-US': 'import' },
+                ...desc(i18n, 'ultron.commands.ultron.importar'),
+                options: [
+                  {
+                    type: 11,
+                    name: 'arquivo',
+                    name_localizations: { 'en-US': 'file' },
+                    required: true,
+                    ...desc(i18n, 'ultron.commands.ultron.arquivo'),
+                  },
+                ],
+              },
+              {
+                type: 1,
+                name: 'lista',
+                name_localizations: { 'en-US': 'list' },
+                ...desc(i18n, 'ultron.commands.ultron.lista'),
+              },
+              ...(['desativar', 'ativar'] as const).map((name) => ({
+                type: 1,
+                name,
+                name_localizations: { 'en-US': { desativar: 'disable', ativar: 'enable' }[name] },
+                ...desc(i18n, `ultron.commands.ultron.${name}`),
+                options: [
+                  {
+                    type: 3,
+                    name: 'inimigo',
+                    name_localizations: { 'en-US': 'enemy' },
+                    required: true,
+                    autocomplete: true,
+                    ...desc(i18n, 'ultron.commands.ultron.inimigo_opt'),
+                  },
+                ],
+              })),
+            ],
+          },
         ],
+      },
+      autocomplete: async (i, r) => {
+        if (!(await ctx.isStaff(i))) return r.autocomplete([]);
+        return s.imports.autocomplete(i, r);
       },
       execute: async (i, r) => {
         if (!(await ctx.isStaff(i)))
@@ -157,6 +206,10 @@ export function ultronCommands(ctx: BotContext<UltronConfig>, s: UltronServices)
           });
         if (i.subcommand?.startsWith('evento ')) return evento(i, r);
         if (i.subcommand === 'status') return s.status.reply(i, r);
+        if (i.subcommand === 'inimigo importar') return s.imports.import(i, r);
+        if (i.subcommand === 'inimigo lista') return s.imports.list(i, r);
+        if (i.subcommand === 'inimigo desativar') return s.imports.setActive(i, r, false);
+        if (i.subcommand === 'inimigo ativar') return s.imports.setActive(i, r, true);
         return s.encounters.spawnCommand(i, r);
       },
     },

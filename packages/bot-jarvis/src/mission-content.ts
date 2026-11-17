@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { eq, notInArray } from 'drizzle-orm';
+import { and, eq, notInArray } from 'drizzle-orm';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 import type { JarvisRepo, MissionRow } from './db/repo.js';
 import { hasCombat, type Mission, missionSchema } from './domain/mission.js';
@@ -71,7 +71,10 @@ export interface MissionSyncResult {
 /** Upserts by id. Missions gone from the files become inactive, but only when every file was valid. */
 export async function syncMissions(repo: JarvisRepo, loaded: MissionLoadResult): Promise<MissionSyncResult> {
   const t = repo.t.jarvisMissions;
-  const existing = new Map((await repo.allMissions()).map((r) => [r.id, r]));
+  const all = await repo.allMissions();
+  // Imported missions win over files with the same id and are never deactivated by a reload.
+  const staff = new Set(all.filter((r) => r.origin === 'staff').map((r) => r.id));
+  const existing = new Map(all.filter((r) => r.origin === 'file').map((r) => [r.id, r]));
   const res: MissionSyncResult = {
     added: 0,
     updated: 0,
@@ -82,6 +85,7 @@ export async function syncMissions(repo: JarvisRepo, loaded: MissionLoadResult):
   const now = repo.now();
   await repo.db.transaction(async (tx) => {
     for (const m of loaded.missions) {
+      if (staff.has(m.id)) continue;
       const hash = missionHash(m);
       const row = {
         kind: m.kind,
@@ -95,10 +99,11 @@ export async function syncMissions(repo: JarvisRepo, loaded: MissionLoadResult):
         updatedAt: now,
       };
       const prev = existing.get(m.id);
+      if (prev?.disabledBy) row.active = 0;
       if (!prev) {
         await tx.insert(t).values({ id: m.id, ...row });
         res.added++;
-      } else if (prev.contentHash !== hash || prev.active !== 1) {
+      } else if (prev.contentHash !== hash || prev.active !== row.active) {
         await tx.update(t).set(row).where(eq(t.id, m.id));
         res.updated++;
       } else res.unchanged++;
@@ -110,7 +115,7 @@ export async function syncMissions(repo: JarvisRepo, loaded: MissionLoadResult):
         await tx
           .update(t)
           .set({ active: 0, updatedAt: now })
-          .where(keep.length ? notInArray(t.id, keep) : undefined);
+          .where(and(eq(t.origin, 'file'), keep.length ? notInArray(t.id, keep) : undefined));
       res.deactivated = gone.length;
     }
   });

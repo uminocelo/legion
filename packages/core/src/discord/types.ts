@@ -148,4 +148,20 @@ export interface IncomingInteraction {
   focused?: { name: string; value: string };
   /** Context-menu target (message commands). */
   target?: { messageId: string; channelId: string; authorId: string };
+  /** Attachment options by option name. */
+  attachments?: Record<string, IncomingAttachment>;
+}
+
+export interface IncomingAttachment {
+  url: string;
+  name: string;
+  size: number;
+  contentType: string | null;
+}
+
+/** Who may use a slash command beyond its default permissions (Server Settings → Integrations). */
+export interface CommandPermissionOverwrite {
+  id: string;
+  type: 'role' | 'user' | 'channel';
+  allow: boolean;
 }

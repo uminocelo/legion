@@ -1,6 +1,7 @@
 import type { DiscordGateway, SentMessage } from './gateway.js';
 import { GatewayError } from './gateway.js';
 import type {
+  CommandPermissionOverwrite,
   GuildChannel,
   GuildMember,
   GuildRole,
@@ -139,6 +140,23 @@ export class FakeDiscordGateway implements DiscordGateway {
     const threadId = this.nextId();
     this.addChannel({ id: threadId, name, kind: 'thread', parentId: channelId });
     return { threadId };
+  }
+
+  /** Files the fake CDN serves (url → text), and command permission overwrites by command name. */
+  readonly cdn = new Map<string, string>();
+  commandPermissions: Record<string, CommandPermissionOverwrite[]> = {};
+
+  async fetchAttachment(url: string, maxBytes: number): Promise<string> {
+    this.record('fetchAttachment', [url, maxBytes]);
+    const text = this.cdn.get(url);
+    if (text === undefined) throw new GatewayError('Download failed: HTTP 404', 404);
+    if (Buffer.byteLength(text) > maxBytes) throw new GatewayError('Attachment too large', null);
+    return text;
+  }
+
+  async fetchCommandPermissions(): Promise<Record<string, CommandPermissionOverwrite[]>> {
+    this.record('fetchCommandPermissions', []);
+    return this.commandPermissions;
   }
 
   // ---- interactions ----
