@@ -236,7 +236,7 @@ export class CoreRuntime {
   async ready(opts: { startPolling?: boolean } = {}): Promise<void> {
     for (const [key, gateway] of this.gateways) {
       const res = await syncCommands(gateway, this.kv, this.router.commandJson(key), false, key);
-      this.o.log.info({ app: key, changed: res.changed }, 'slash commands checked');
+      this.o.log.info({ discordApp: key, changed: res.changed }, 'slash commands checked');
     }
     const replayed = await this.bus.replayPending();
     if (replayed) this.o.log.info({ replayed }, 'replayed pending events');

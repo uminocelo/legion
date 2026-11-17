@@ -42,8 +42,8 @@ export function wireClient(
     if (!normalized) return;
     rt.router.handle(normalized, appKey).catch((err) => log.error({ err }, 'router crashed'));
   });
-  client.on(Events.Error, (err) => log.error({ err, app: appKey }, 'discord client error'));
-  client.on(Events.Warn, (msg) => log.warn({ msg, app: appKey }, 'discord client warning'));
+  client.on(Events.Error, (err) => log.error({ err, discordApp: appKey }, 'discord client error'));
+  client.on(Events.Warn, (msg) => log.warn({ msg, discordApp: appKey }, 'discord client warning'));
   if (appKey !== 'main') return;
   client.on(Events.GuildMemberAdd, (m) => {
     if (m.guild.id === guildId) runtime()?.guildEvents.memberAdded(toMember(m));

@@ -64,7 +64,7 @@ async function main(): Promise<void> {
   });
   const main = apps.find((a) => a.key === 'main') ?? apps[0];
   if (!main) return fatal(new Error('nenhum bot ligado'));
-  log.info({ apps: apps.map((a) => ({ app: a.key, bots: a.bots })) }, 'discord apps planned');
+  log.info({ apps: apps.map((a) => ({ discordApp: a.key, bots: a.bots })) }, 'discord apps planned');
 
   runtime = await buildRuntime({
     env,
@@ -82,10 +82,10 @@ async function main(): Promise<void> {
   const connected = new Set<string>();
   for (const a of apps)
     a.client.once(Events.ClientReady, async (c) => {
-      log.info({ app: a.key, user: c.user.tag }, 'connected to Discord');
+      log.info({ discordApp: a.key, user: c.user.tag }, 'connected to Discord');
       if (!c.guilds.cache.has(env.DISCORD_GUILD_ID))
         log.error(
-          { app: a.key, guildId: env.DISCORD_GUILD_ID },
+          { discordApp: a.key, guildId: env.DISCORD_GUILD_ID },
           'this app is not in the guild; invite it with "legion invite-url"',
         );
       connected.add(a.key);
