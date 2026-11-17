@@ -77,6 +77,18 @@ Detalhes:
 | Membros não ganham cargos | Cargo do bot está abaixo | Arraste o cargo do bot para cima (`/cerebro status` lista quais) |
 | Comandos não aparecem | Discord ainda não atualizou | `legion register-commands` e reabra o Discord |
 | Container "unhealthy" | Bot não conectou | `docker compose logs` mostra o motivo |
+| Staff não vê `/jarvis`, `/ultron`… | Cargo da staff sem Administrador | Veja abaixo |
+
+### Comandos da staff não aparecem
+
+Os comandos da staff (`/jarvis`, `/herbie`, `/sentinel`, `/ultron`) vêm marcados como "só administradores", e um bot não pode mudar isso sozinho. Se os cargos **Professor X** e **Conselho da Legião** não têm Administrador, libere uma vez:
+
+1. Configurações do servidor → **Integrações**.
+2. Clique no bot (ou no app de cada bot, se usa [um app por bot](#um-app-por-bot-opcional)) → **Gerenciar**.
+3. Em cada comando da staff (`/jarvis`, `/herbie`, `/sentinel`, `/ultron`): **Adicionar cargos ou membros** → escolha Professor X e Conselho da Legião → marque ✅.
+4. Salve. O `legion doctor` passa a mostrar `staff-commands` como ok.
+
+Mesmo vendo o comando, só quem tem esses cargos (ou é dono) consegue usá-lo.
 
 ## Atualizar, backup, parar
 

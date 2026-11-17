@@ -27,6 +27,13 @@ describe('commands', () => {
       ['spawn', 1],
       ['evento', 2],
       ['status', 1],
+      ['inimigo', 2],
+    ]);
+    expect(ultron?.options?.find((o) => o.name === 'inimigo')?.options?.map((o) => o.name)).toEqual([
+      'importar',
+      'lista',
+      'desativar',
+      'ativar',
     ]);
     expect(ultron?.options?.find((o) => o.name === 'evento')?.options?.map((o) => o.name)).toEqual([
       'agendar',

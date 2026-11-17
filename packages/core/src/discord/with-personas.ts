@@ -32,5 +32,7 @@ export function withPersonas(inner: DiscordGateway, i18n: I18n): DiscordGateway 
     setChannelPermissionOverwrite: (...a) => inner.setChannelPermissionOverwrite(...a),
     timeoutMember: (...a) => inner.timeoutMember(...a),
     registerCommands: (...a) => inner.registerCommands(...a),
+    fetchAttachment: (...a) => inner.fetchAttachment(...a),
+    fetchCommandPermissions: () => inner.fetchCommandPermissions(),
   };
 }

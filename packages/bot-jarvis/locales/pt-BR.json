@@ -119,7 +119,13 @@
         "desativar": "Tira uma pergunta de jogo na hora",
         "ativar": "Volta uma pergunta desativada",
         "pergunta": "A pergunta (id ou texto)",
-        "exportar": "Baixa as perguntas da staff em YAML"
+        "exportar": "Baixa as perguntas da staff em YAML",
+        "missao": "Missões criadas pela staff",
+        "importar": "Importa uma missão de um arquivo .yaml",
+        "arquivo": "O arquivo .yaml da missão (veja docs/MISSIONS.md)",
+        "missao_lista": "Lista as missões e de onde vieram",
+        "missao_desativar": "Tira uma missão de jogo",
+        "missao_ativar": "Volta uma missão desativada"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
@@ -220,6 +226,28 @@
       },
       "export_header": "Perguntas criadas pela staff, exportadas em {date}. Guarde como backup.",
       "exported": "{count} pergunta(s) da staff exportadas."
+    },
+    "imports": {
+      "problem": {
+        "missing": "Anexe o arquivo .yaml.",
+        "bad_type": "O arquivo precisa terminar em .yaml ou .yml.",
+        "too_big": "O arquivo passa de {kb} KB.",
+        "bad_host": "Só aceito arquivos enviados pelo próprio Discord.",
+        "download_failed": "Não consegui baixar o arquivo. Tente de novo."
+      },
+      "invalid": "O arquivo tem erros e nada mudou:\n{errors}",
+      "preview": "Prévia",
+      "publish": "Publicar",
+      "cancel": "Cancelar",
+      "replaces": "⚠️ Substitui a missão `{id}` que já existe.",
+      "mission_meta": "`{id}` · {kind} · nível {level}+ · até {party} jogador(es) · {scenes} cenas · {fights} luta(s)",
+      "fights_hidden": "ℹ️ Tem luta: só aparece com o ULTRON e o Sentinel ligados.",
+      "expired": "Esta prévia expirou ou já foi usada. Importe de novo.",
+      "cancelled": "Importação cancelada. Nada mudou.",
+      "published": "✅ Missão `{id}` publicada. Já aparece no /missao.",
+      "mission_list": "Missões ({total})",
+      "disabled": "⛔ Missão `{id}` desativada.",
+      "enabled": "✅ Missão `{id}` ativada."
     }
   }
 }

@@ -10,6 +10,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - 4 original missions (pt-BR and en); server missions in `data/content/missions/*.yaml` (`docs/MISSIONS.md`).
 - `channels.missions`; `legion doctor` checks mission files, the missions channel and whether fights can run.
 - H.E.R.B.I.E.: the "first mission" tutorial step is on by default; `/regras` glossary entry for missions.
+- Staff trivia from Discord: `/jarvis trivia nova` (form with question, choices, answer, explanation and source), `lista | editar | desativar | ativar | exportar`. Live at once, or approved by a second staff member with `jarvis.trivia.review: second_staff`. Edits keep history; file reloads never touch staff questions; disabled questions stay off.
+- Trivia sources may be a reference such as "Shang-Chi #4 (2021)", shown in the footer; extra categories via `jarvis.trivia.categories`.
+- Imports from attachments: `/jarvis missao importar` and `/ultron inimigo importar` validate a `.yaml` (Discord CDN only, 64 KB), show a preview and publish live on **Publicar**. Plus `lista | desativar | ativar` for missions and enemies. Imported content wins over files with the same id and survives restarts and reloads.
+- `legion doctor`: `<bot>.staff-commands` warns when staff roles without Administrator cannot use the staff commands; guide in `docs/SELF_HOSTING.md`. New `docs/STAFF.md`.
 
 ### Changed
 - J.A.R.V.I.S. asks for Create Public Threads and Send Messages in Threads (mission threads).

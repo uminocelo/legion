@@ -290,6 +290,51 @@ export function jarvisCommands(
             ],
           },
           {
+            type: 2,
+            name: 'missao',
+            name_localizations: { 'en-US': 'mission' },
+            ...desc(i18n, 'jarvis.commands.jarvis.missao'),
+            options: [
+              {
+                type: 1,
+                name: 'importar',
+                name_localizations: { 'en-US': 'import' },
+                ...desc(i18n, 'jarvis.commands.jarvis.importar'),
+                options: [
+                  {
+                    type: 11,
+                    name: 'arquivo',
+                    name_localizations: { 'en-US': 'file' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.arquivo'),
+                  },
+                ],
+              },
+              {
+                type: 1,
+                name: 'lista',
+                name_localizations: { 'en-US': 'list' },
+                ...desc(i18n, 'jarvis.commands.jarvis.missao_lista'),
+              },
+              ...(['desativar', 'ativar'] as const).map((name) => ({
+                type: 1,
+                name,
+                name_localizations: { 'en-US': { desativar: 'disable', ativar: 'enable' }[name] },
+                ...desc(i18n, `jarvis.commands.jarvis.missao_${name}`),
+                options: [
+                  {
+                    type: 3,
+                    name: 'missao',
+                    name_localizations: { 'en-US': 'mission' },
+                    required: true,
+                    autocomplete: true,
+                    ...desc(i18n, 'jarvis.commands.missao.missao'),
+                  },
+                ],
+              })),
+            ],
+          },
+          {
             type: 1,
             name: 'recalcular',
             name_localizations: { 'en-US': 'recalculate' },
@@ -308,6 +353,7 @@ export function jarvisCommands(
       },
       autocomplete: async (i, r) => {
         if (!(await ctx.isStaff(i))) return r.autocomplete([]);
+        if (i.focused?.name === 'missao') return s.imports.autocomplete(i, r);
         return s.staffTrivia.autocomplete(i, r);
       },
       execute: async (i, r) => {
@@ -336,6 +382,10 @@ export function jarvisCommands(
         if (sub === 'trivia desativar') return s.staffTrivia.setActive(i, r, false);
         if (sub === 'trivia ativar') return s.staffTrivia.setActive(i, r, true);
         if (sub === 'trivia exportar') return s.staffTrivia.export(i, r);
+        if (sub === 'missao importar') return s.imports.import(i, r);
+        if (sub === 'missao lista') return s.imports.list(i, r);
+        if (sub === 'missao desativar') return s.imports.setActive(i, r, false);
+        if (sub === 'missao ativar') return s.imports.setActive(i, r, true);
         if (sub === 'recalcular') {
           const member = await ctx.read.members.getByDiscordId(String(i.options?.membro ?? ''));
           if (!member) return r.reply(ui.text(ui.t('jarvis.errors.unknown_member', {}, l)));
