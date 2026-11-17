@@ -79,6 +79,10 @@ Detalhes:
 | Container "unhealthy" | Bot não conectou | `docker compose logs` mostra o motivo |
 | Staff não vê `/jarvis`, `/ultron`… | Cargo da staff sem Administrador | Veja abaixo |
 
+### Guia "como jogar" fixado
+
+Depois de configurar os canais, rode `/herbie guia publicar` (por padrão em `channels.rules`). O H.E.R.B.I.E. posta o guia e fixa a primeira mensagem; para fixar ele precisa de **Fixar mensagens** no canal (o convite novo já pede). Ao atualizar o Legion, rode de novo: a mesma mensagem é editada.
+
 ### Comandos da staff não aparecem
 
 Os comandos da staff (`/jarvis`, `/herbie`, `/sentinel`, `/ultron`) vêm marcados como "só administradores", e um bot não pode mudar isso sozinho. Se os cargos **Professor X** e **Conselho da Legião** não têm Administrador, libere uma vez:

@@ -61,6 +61,10 @@ Regras: `tiktok_sub` precisa ter `managedBy: integration` (o Legion nunca toca n
 | `publicRegistryCard` | `true` | Posta um cartão público quando alguém se registra |
 | `codename.min` / `codename.max` | `2` / `32` | Tamanho do codinome |
 | `archetypes` | os 6 | Subconjunto de `Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata` |
+| `powers.enabled` | `true` | Cadastro com o catálogo de poderes ([POWERS.md](POWERS.md)). `false` volta o menu de arquétipos |
+| `powers.maxSecondary` | `2` | Quantos poderes secundários (0 a 2) |
+| `powers.typeToArchetype` | ofensivo→Metamorfo, defensivo→Tanque, psiônico→Telepata, elemental→Elemental, movimento→Velocista, utilitário→Tecnopata | Arquétipo de cada tipo de poder principal. Poderes de tipos cujo arquétipo não está em `archetypes` não aparecem |
+| `powers.allowArchetypeChange` | `false` | `/mutante poderes` pode trocar o arquétipo de quem já se registrou |
 | `optInRoles` | `live_ping`, `rivals_*` | Keys de cargos que o membro liga/desliga sozinho (máx. 20) |
 | `canonAttemptFlag.count` / `.windowMinutes` | `3` / `10` | Tentativas de nome canon antes de avisar a staff |
 | `setup.excludeChannelIds` | `[]` | Canais que `/cerebro setup canais:true` nunca toca |
@@ -140,6 +144,7 @@ Os arquivos vêm em `packages/bot-herbie/content/`. Para personalizar, copie o a
 - `tutorial.yaml`: os passos. Cada passo tem `id`, `titleKey`/`bodyKey` (textos nos locales), `trigger` (`event` entre `command.executed`, `trivia.answered`, `mission.completed`, `level.changed`, `streak.updated`, e `where` com campos exatos do evento), `rewardXp`, e opcionalmente `requiresBot`, `requiresFeature: missions` e `fallback` (passo usado quando o bot/recurso não está ligado). `completionRewardXp` é o bônus final.
 - `glossary.pt-BR.yaml` / `glossary.en.yaml`: termos do `/regras` (`id`, `term`, `aliases`, `summary` até 300 caracteres, `details` até 1500, `related`, `bot` opcional para esconder quando o bot está desligado). Use aspas nos textos com `:`.
 - `tips.pt-BR.yaml` / `tips.en.yaml`: dicas (`id`, `text`, `bot` opcional), postadas em rodízio sem repetir.
+- `guide.pt-BR.yaml` / `guide.en.yaml`: o guia "como jogar" do `/herbie guia publicar`, no idioma do servidor (`id`, `title` até 256 caracteres, `body` até 4000, `bot` opcional). Republique depois de editar.
 
 Textos dos passos (`herbie.quest.*`) podem ser trocados pela pasta `./locales` (veja `locales/README.txt`).
 

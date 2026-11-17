@@ -1,0 +1,64 @@
+# Guia "como jogar" (en) que a staff publica com /herbie guia publicar. Sobrescreva em ./data/content/guide.en.yaml.
+# bot: a seção só aparece quando esse bot está ligado. title até 256 caracteres, body até 4000.
+- id: bem-vindo
+  title: "🧬 Welcome to the Legion"
+  body: |
+    Here you create your own mutant and play with the community right in Discord: trivia, missions, fights and events that shake the whole server. Everything gives XP and raises your level and rank.
+
+    Need help? Use **/help** (commands) and **/rules** (game terms). Change the language with **/language**.
+- id: registro
+  bot: cerebro
+  title: "📝 1. Register your mutant"
+  body: |
+    Click **Start** on the welcome message and follow the steps:
+    1. Accept the rules.
+    2. Choose your **faction**: X-Men, Brotherhood or Independent.
+    3. Choose your **main power**: its type sets your **archetype** and base stats.
+    4. Choose up to **2 secondary powers** (optional).
+    5. Fill in the sheet: an original **codename**, a power description and an origin.
+
+    Names of existing characters are refused: make up your own!
+- id: ficha
+  bot: cerebro
+  title: "🪪 2. Your sheet"
+  body: |
+    **/profile** shows your sheet with codename, faction, archetype, powers, level, rank and stats, plus an image **card**. The **Share** button posts the card in the channel.
+
+    Registered before the power catalog? Use **/mutant powers** once to pick yours.
+- id: poderes
+  bot: cerebro
+  title: "⚡ Powers and archetypes"
+  body: |
+    Powers come in 6 types: offensive, defensive, psionic, elemental, movement and utility. The main power type sets the archetype (Telepata, Elemental, Metamorfo, Velocista, Tanque or Tecnopata), which gives your stats: **HP, Attack, Defense, Speed and Focus**. Secondary powers show on your sheet and do not change numbers, so the game stays fair for everyone.
+- id: progresso
+  bot: jarvis
+  title: "📈 3. XP, level and rank"
+  body: |
+    Everything you play gives **XP**. XP raises your **level** (and your stats) and your **rank**: Recruta, Agente (500 XP) and Veterano (2000 XP). Playing on consecutive days builds your **streak** and gives a bonus.
+
+    See it with **/profile**, **/streak** and **/ranking** (also by faction).
+- id: trivia
+  bot: jarvis
+  title: "❓ Trivia"
+  body: |
+    **/trivia** asks a question about comics, Marvel Rivals or general culture. Right answers give XP, and fast answers give more. Trivia XP has a daily cap.
+- id: missoes
+  bot: jarvis
+  title: "🗺️ Missions"
+  body: |
+    **/mission list** shows the available missions and **/mission start** begins one in your own thread. You choose the path with buttons; in a party (up to 4) the majority votes. There are daily, weekly and story missions, and some end in a fight.
+- id: combate
+  bot: sentinel
+  title: "⚔️ Combat"
+  body: |
+    Fights are turn based, with buttons: **Attack**, **Defend** and **Power**. Your stats decide most of it and a bit of luck does the rest. Practice with **/training** against the Training Drone.
+- id: eventos
+  bot: ultron
+  title: "🌍 World events"
+  body: |
+    **ULTRON** attacks the server: weekly invasions where every faction fights the same enemy, and boss raids in a thread. Each **Attack** is a quick fight that gives XP, win or lose. See the current threat with **/threat**.
+- id: convivencia
+  bot: sentinel
+  title: "🤝 Community"
+  body: |
+    Respect everyone. To tell staff about something wrong, use **/report** or, on a message, **Apps → Report message**; only staff sees it. Staff can mute people who break the rules.

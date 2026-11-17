@@ -4,11 +4,11 @@ Kit de bots de RPG para Discord, **auto-hospedável**, inspirado nos X-Men. Um �
 
 | Bot | Papel | Versão |
 |---|---|---|
-| **Cérebro** | Recepção, cadastro do mutante, facções e cargos | v0.1.0 ✅ |
+| **Cérebro** | Recepção, cadastro do mutante (ficha com poderes e cartão), facções e cargos | v0.1.0 ✅ |
 | J.A.R.V.I.S. | XP, níveis, ranks, trivia, missões | v0.2.0 ✅ |
 | H.E.R.B.I.E. | Tutorial, ajuda e dicas | v0.3.0 ✅ |
-| Sentinel | Combate e moderação | v0.4.0 |
-| ULTRON | Eventos mundiais e raids | v0.4.0 |
+| Sentinel | Combate e moderação | v0.4.0 ✅ |
+| ULTRON | Eventos mundiais e raids | v0.4.0 ✅ |
 
 > 📸 _Capturas de tela em breve._
 
@@ -72,7 +72,9 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose run --rm legion legion register-commands` — registra os comandos de barra agora.
 - `docker compose logs -f` — logs.
 
-No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil`, `/cerebro preferencias`.
+No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/mutante poderes`, `/cerebro preferencias`.
+
+No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e até dois secundários de um catálogo: veja [docs/POWERS.md](docs/POWERS.md).
 
 ## Atualizar
 
@@ -112,7 +114,7 @@ Com `herbie` em `bots:`, quem termina o cadastro recebe uma DM do H.E.R.B.I.E. c
 - `/idioma`: português ou inglês; as respostas privadas de todos os bots seguem a escolha.
 - Dicas diárias opcionais (desligadas por padrão) e explicação dos eventos do ULTRON.
 
-Staff: `/herbie status` (funil do tutorial) e `/herbie dica-agora`. Tutorial, glossário e dicas podem ser personalizados: veja [docs/CONFIG.md](docs/CONFIG.md#herbie).
+Staff: `/herbie status` (funil do tutorial), `/herbie dica-agora` e `/herbie guia publicar` (posta e fixa o guia "como jogar", por padrão em `channels.rules`; publicar de novo atualiza a mesma mensagem). Tutorial, glossário e dicas podem ser personalizados: veja [docs/CONFIG.md](docs/CONFIG.md#herbie).
 
 ### Sentinel (combate e moderação)
 

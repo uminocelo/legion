@@ -1,5 +1,6 @@
 import { type BotContext, type DoctorCheck, TIKTOK_ROLE_NAME } from '@legion/core';
 import type { CerebroConfig } from './config.js';
+import { powerFiles, readPowers } from './powers.js';
 import type { CerebroSetup } from './setup.js';
 
 /**
@@ -8,6 +9,22 @@ import type { CerebroSetup } from './setup.js';
  */
 export function cerebroDoctorChecks(ctx: BotContext<CerebroConfig>, setup: CerebroSetup): DoctorCheck[] {
   return [
+    {
+      id: 'cerebro.powers',
+      title: 'Catálogo de poderes',
+      run: async () => {
+        if (!ctx.botConfig.powers.enabled)
+          return { status: 'ok', message: 'Desligado (registro usa o menu de arquétipos)' };
+        const res = readPowers(powerFiles());
+        if (res.errors.length)
+          return {
+            status: 'fail',
+            message: res.errors.slice(0, 5).join('\n'),
+            fix: 'Corrija data/content/powers.yaml (veja docs/POWERS.md); até lá vale o catálogo anterior',
+          };
+        return { status: 'ok', message: `${res.powers.length} poderes` };
+      },
+    },
     {
       id: 'cerebro.channels',
       title: 'Canais de boas-vindas e regras',

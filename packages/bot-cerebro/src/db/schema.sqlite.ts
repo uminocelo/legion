@@ -10,6 +10,8 @@ export const members = sqliteTable(
     rulesAcceptedAt: text('rules_accepted_at'),
     faction: text('faction'),
     pendingArchetype: text('pending_archetype'),
+    /** JSON { main, secondary[] } while picking powers (registration or /mutante poderes). */
+    pendingPowers: text('pending_powers'),
     rank: text('rank').notNull().default('recruta'),
     optIns: text('opt_ins').notNull().default('[]'),
     leftAt: text('left_at'),
@@ -52,4 +54,18 @@ export const cerebroCanonAttempts = sqliteTable(
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('cerebro_canon_attempts_member_idx').on(t.memberId, t.createdAt)],
+);
+
+/** Catalog powers of a mutant (US-11). One main, up to two secondary; no numeric effect. */
+export const cerebroMutantPowers = sqliteTable(
+  'cerebro_mutant_powers',
+  {
+    id: text('id').primaryKey(),
+    mutantId: text('mutant_id').notNull(),
+    powerId: text('power_id').notNull(),
+    // main | secondary
+    slot: text('slot').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [uniqueIndex('cerebro_mutant_powers_unique').on(t.mutantId, t.powerId)],
 );

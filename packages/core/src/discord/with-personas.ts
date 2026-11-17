@@ -14,6 +14,7 @@ export function withPersonas(inner: DiscordGateway, i18n: I18n): DiscordGateway 
     editMessage: (c, id, m) => inner.editMessage(c, id, p(m)),
     sendDm: (u, m) => inner.sendDm(u, p(m)),
     createThread: (...a) => inner.createThread(...a),
+    pinMessage: (...a) => inner.pinMessage(...a),
     reply: (i, m) => inner.reply(i, p(m)),
     deferReply: (...a) => inner.deferReply(...a),
     deferUpdate: (...a) => inner.deferUpdate(...a),

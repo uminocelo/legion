@@ -14,6 +14,7 @@ export * from './db/repo.js';
 export * from './db/tables.js';
 export * from './domain/quest.js';
 export * from './domain/search.js';
+export { GUIDE_KEY, type GuideSection, guideSchema, HerbieGuide, packEmbeds } from './guide.js';
 export { HerbieHelp, helpIds } from './help.js';
 export { HERBIE_CONTENT_DIR, HERBIE_LOCALES_DIR, HERBIE_MIGRATIONS_DIR } from './paths.js';
 export * from './services.js';
@@ -29,6 +30,7 @@ export const herbie: LegionBot<HerbieConfig> = {
     PermissionFlagsBits.ViewChannel,
     PermissionFlagsBits.SendMessages,
     PermissionFlagsBits.EmbedLinks,
+    PermissionFlagsBits.PinMessages,
     PermissionFlagsBits.UseApplicationCommands,
   ],
   localesDir: HERBIE_LOCALES_DIR,
