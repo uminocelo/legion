@@ -84,7 +84,7 @@ factions: []`;
 });
 
 describe('parseEnv', () => {
-  const base = { DISCORD_TOKEN: 'x', DISCORD_CLIENT_ID: '123456789', DISCORD_GUILD_ID: '987654321' };
+  const base = { CEREBRO_TOKEN: 'x', CEREBRO_CLIENT_ID: '123456789', DISCORD_GUILD_ID: '987654321' };
   it('applies defaults', () => {
     const env = parseEnv({ ...base, DATABASE_URL: '' });
     expect(env.DATABASE_URL).toBe('file:./data/legion.db');
@@ -92,9 +92,26 @@ describe('parseEnv', () => {
     expect(env.AI_MODEL).toBeUndefined();
   });
   it('explains missing secrets', () => {
-    const lines = errorsOf(() => parseEnv({ DISCORD_CLIENT_ID: 'abc' }));
-    expect(lines.some((l) => l.startsWith('.env → DISCORD_CLIENT_ID: use o ID numérico'))).toBe(true);
-    expect(lines.some((l) => l.startsWith('.env → DISCORD_TOKEN:'))).toBe(true);
+    const lines = errorsOf(() => parseEnv({ CEREBRO_CLIENT_ID: 'abc' }));
+    expect(lines.some((l) => l.startsWith('.env → CEREBRO_CLIENT_ID: use o ID numérico'))).toBe(true);
+    expect(lines.some((l) => l.startsWith('.env → CEREBRO_TOKEN: obrigatório'))).toBe(true);
+    const none = errorsOf(() => parseEnv({ DISCORD_GUILD_ID: '987654321' }));
+    expect(none.filter((l) => /CEREBRO_(TOKEN|CLIENT_ID): obrigatório/.test(l))).toHaveLength(2);
+  });
+  it('still accepts the old DISCORD_TOKEN / DISCORD_CLIENT_ID names for the main app, flagged as legacy', () => {
+    const env = parseEnv({
+      DISCORD_TOKEN: 'old',
+      DISCORD_CLIENT_ID: '123456789',
+      DISCORD_GUILD_ID: '987654321',
+    });
+    expect(env.main).toMatchObject({
+      token: 'old',
+      tokenVar: 'DISCORD_TOKEN',
+      clientIdVar: 'DISCORD_CLIENT_ID',
+    });
+    expect(env.legacyVars).toEqual(['DISCORD_TOKEN', 'DISCORD_CLIENT_ID']);
+    expect(parseEnv(base).legacyVars).toEqual([]);
+    expect(parseEnv(base).main.tokenVar).toBe('CEREBRO_TOKEN');
   });
 });
 

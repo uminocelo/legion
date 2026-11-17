@@ -4,6 +4,9 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Changed
+- `.env`: the main app is now `CEREBRO_TOKEN` and `CEREBRO_CLIENT_ID`. Without them, `DISCORD_TOKEN` and `DISCORD_CLIENT_ID` still work as the main app; the log and `legion doctor` warn until you rename them. Set together with `CEREBRO_*`, `DISCORD_*` keeps its old meaning: the shared app for bots without their own. `legion init` writes the new names.
+
 ## [0.7.0] - 2026-11-17
 
 Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which were not released on their own.

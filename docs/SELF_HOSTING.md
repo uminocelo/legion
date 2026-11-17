@@ -51,7 +51,7 @@ No Discord, como staff (ou dono do servidor), rode `/cerebro setup`. Ele mostra 
 
 ## Um app por bot (opcional)
 
-Por padrão todos os bots falam pelo mesmo app do Discord (o do `DISCORD_TOKEN`). Se quiser que cada bot apareça separado, com nome, avatar, status e comandos próprios, crie um app para ele:
+Por padrão todos os bots falam pelo mesmo app do Discord (o do Cérebro, `CEREBRO_TOKEN`). Se quiser que cada bot apareça separado, com nome, avatar, status e comandos próprios, crie um app para ele:
 
 1. No [Developer Portal](https://discord.com/developers/applications), **New Application** (ex.: "J.A.R.V.I.S."), escolha nome e avatar. Em **Bot → Reset Token**, copie o token. Em **General Information**, copie o **Application ID**.
 2. No `.env`, adicione os dois juntos (ou rode `legion init` e escolha "Um app por bot"):
@@ -64,7 +64,7 @@ Por padrão todos os bots falam pelo mesmo app do Discord (o do `DISCORD_TOKEN`)
 5. `legion doctor` confere cada app separadamente.
 
 Detalhes:
-- O app do **Cérebro** é o principal: é ele que cria e troca cargos e vê quem entra. Só ele precisa da **Server Members Intent** e do cargo acima dos cargos gerenciados. Se der `CEREBRO_TOKEN`, faça isso no app dele.
+- O app do **Cérebro** é o principal: é ele que cria e troca cargos e vê quem entra. Só ele precisa da **Server Members Intent** e do cargo acima dos cargos gerenciados. Esse é o app do `CEREBRO_TOKEN`.
 - Tudo continua num processo e num banco; nenhum dado muda. Para voltar a um app só, apague as duas linhas do `.env` e reinicie.
 - Mensagens e botões antigos de um bot continuam no app que os enviou; depois da troca, use o comando de novo.
 
@@ -72,7 +72,7 @@ Detalhes:
 
 | Sintoma | Causa | Correção |
 |---|---|---|
-| `DISCORD_TOKEN inválido` nos logs | Token errado ou trocado | Developer Portal → Bot → Reset Token, atualize o `.env`, `docker compose up -d` |
+| `CEREBRO_TOKEN inválido` nos logs | Token errado ou trocado | Developer Portal → Bot → Reset Token, atualize o `.env`, `docker compose up -d` |
 | `Intents privilegiadas não liberadas` | Server Members Intent desligada | Ligue em Developer Portal → Bot e reinicie |
 | Membros não ganham cargos | Cargo do bot está abaixo | Arraste o cargo do bot para cima (`/cerebro status` lista quais) |
 | Comandos não aparecem | Discord ainda não atualizou | `legion register-commands` e reabra o Discord |

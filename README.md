@@ -33,8 +33,8 @@ Guia passo a passo para quem não é desenvolvedor (Windows, macOS, Linux, Raspb
 ## Criar o app no Discord
 
 1. Abra o [Developer Portal](https://discord.com/developers/applications) → **New Application**.
-2. **General Information** → copie o **Application ID** → `DISCORD_CLIENT_ID`.
-3. **Bot** → **Reset Token** → copie → `DISCORD_TOKEN` (nunca compartilhe).
+2. **General Information** → copie o **Application ID** → `CEREBRO_CLIENT_ID`.
+3. **Bot** → **Reset Token** → copie → `CEREBRO_TOKEN` (nunca compartilhe).
 4. **Bot → Privileged Gateway Intents** → ligue **Server Members Intent** (o Cérebro precisa para ver quem entra) e salve.
 5. No Discord, ative **Configurações → Avançado → Modo desenvolvedor**, clique com o botão direito no servidor → **Copiar ID** → `DISCORD_GUILD_ID`.
 
@@ -55,8 +55,9 @@ O cargo **Assinante TikTok** é da integração do TikTok: o Legion nunca cria, 
 
 | Variável | Obrigatória | Padrão | Para quê |
 |---|---|---|---|
-| `DISCORD_TOKEN` | sim | — | Token do bot |
-| `DISCORD_CLIENT_ID` | sim | — | Application ID |
+| `CEREBRO_TOKEN` | sim | — | Token do app principal (o do Cérebro; os outros bots usam ele se não tiverem app próprio). Antes se chamava `DISCORD_TOKEN`, que ainda funciona |
+| `CEREBRO_CLIENT_ID` | sim | — | Application ID desse app. Antes `DISCORD_CLIENT_ID`, que ainda funciona |
+| `DISCORD_TOKEN` + `DISCORD_CLIENT_ID` | não | app do Cérebro | Nomes antigos do app principal. Junto com `CEREBRO_*`, viram o app compartilhado pelos bots sem app próprio |
 | `DISCORD_GUILD_ID` | sim | — | ID do servidor |
 | `<BOT>_TOKEN` + `<BOT>_CLIENT_ID` | não | — | App próprio para um bot, ex. `JARVIS_TOKEN` e `JARVIS_CLIENT_ID` ([um app por bot](docs/SELF_HOSTING.md#um-app-por-bot-opcional)) |
 | `DATABASE_URL` | não | `file:./data/legion.db` | SQLite (padrão) ou `postgres://…` |

@@ -20,6 +20,8 @@ export const REDACT_PATHS = [
   '*.authorization',
   '*.password',
   'env.DISCORD_TOKEN',
+  'main.token',
+  'env.main.token',
   'env.AI_API_KEY',
 ];
 

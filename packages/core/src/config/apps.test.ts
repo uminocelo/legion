@@ -41,6 +41,22 @@ describe('planApps', () => {
       ['jarvis', ['jarvis'], 'DISCORD_TOKEN'],
     ]);
   });
+  it("with the new names, every bot shares Cérebro's app", () => {
+    const env = parseEnv({ CEREBRO_TOKEN: 'c', CEREBRO_CLIENT_ID: '444444', DISCORD_GUILD_ID: '222222' });
+    expect(planApps(env, ['cerebro', 'jarvis', 'ultron']).apps).toEqual([
+      {
+        key: 'main',
+        token: 'c',
+        clientId: '444444',
+        tokenVar: 'CEREBRO_TOKEN',
+        clientIdVar: 'CEREBRO_CLIENT_ID',
+        bots: ['cerebro', 'jarvis', 'ultron'],
+      },
+    ]);
+  });
+  it('reports a half-set pair by name', () => {
+    expect(() => parseEnv({ ...base, CEREBRO_TOKEN: 'c' })).toThrow(/CEREBRO_CLIENT_ID: obrigatório/);
+  });
   it('merges bots with the same token', () => {
     expect(plan({ JARVIS_TOKEN: 'shared', JARVIS_CLIENT_ID: '111111' }).apps).toHaveLength(1);
   });

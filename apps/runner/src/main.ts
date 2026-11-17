@@ -50,6 +50,11 @@ async function main(): Promise<void> {
     level: env.LOG_LEVEL,
     pretty: Boolean(process.stdout.isTTY) && process.env.NODE_ENV !== 'production',
   });
+  if (env.legacyVars.length)
+    log.warn(
+      { legacyVars: env.legacyVars, use: ['CEREBRO_TOKEN', 'CEREBRO_CLIENT_ID'] },
+      'old .env names still work but are deprecated; rename them to CEREBRO_TOKEN and CEREBRO_CLIENT_ID',
+    );
 
   const plan = planApps(
     env,
