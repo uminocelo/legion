@@ -2,6 +2,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
+  CONSUMERS_SINCE_KEY,
   ConfigError,
   coreTables,
   createTestDb,
@@ -74,7 +75,12 @@ describe('buildRuntime', () => {
       db,
     });
     expect(runtime.enabledBotIds()).toEqual(['cerebro']);
-    // An event logged while the process was down.
+    // A previous boot knew the consumer; an event was logged while the process was down.
+    await db.orm.insert(coreTables(db).coreKv).values({
+      key: CONSUMERS_SINCE_KEY,
+      value: JSON.stringify({ 'cerebro.rank-roles': '2026-11-16T13:00:00.000Z' }),
+      updatedAt: '2026-11-16T13:00:00.000Z',
+    });
     await db.orm.insert(coreTables(db).coreEventLog).values({
       id: '01JDOWN00000000000000000000',
       type: 'rank.changed',
