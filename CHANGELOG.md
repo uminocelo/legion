@@ -4,6 +4,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-17
+
+Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which were not released on their own.
+
 ### Added
 - J.A.R.V.I.S. missions: `/missao lista | iniciar | abandonar`. Branching stories in a thread with button choices, solo or in a party of up to 4 (lobby with join/leave/start, majority vote, leader breaks ties). Daily, weekly and story missions with XP through the ledger (`reason: mission`), limits and timeouts in `jarvis.missions`, and restart recovery.
 - Mission fights: a combat scene sends `mission.started` (`missionType: combat`, `missionId = <runId>:<sceneId>`) so ULTRON spawns the enemies and Sentinel runs the fight in the mission thread; the story continues on the win or lose branch. Fight missions are hidden when ULTRON or Sentinel is off.
@@ -80,7 +84,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/uminocelo/legion/compare/v0.4.0...v0.7.0
 [0.4.0]: https://github.com/uminocelo/legion/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/uminocelo/legion/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/uminocelo/legion/releases/tag/v0.2.0
