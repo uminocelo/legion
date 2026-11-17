@@ -1,0 +1,72 @@
+{
+  "sentinel": {
+    "errors": {
+      "not_participant": "You are not in this combat.",
+      "round_over": "This round is already over.",
+      "downed": "You were downed and cannot act.",
+      "power_cooldown": "Your power is still recharging.",
+      "not_registered": "Register your mutant before training (welcome channel).",
+      "already_fighting": "You are already in a combat: {thread}",
+      "training_cooldown": "The drone is recharging. Try again in {seconds}s.",
+      "combat_not_found": "Combat not found (or still in progress).",
+      "not_staff": "Only staff can use this command."
+    },
+    "combat": {
+      "thread_name": "⚔️ Combat #{id}",
+      "started": "⚔️ Combat started! Participants: {players}",
+      "round_title": "⚔️ Round {round}/{max}",
+      "choose": "Choose your action ({seconds}s). Without a choice, you attack.",
+      "side_players": "Mutants",
+      "side_enemies": "Enemies",
+      "chosen": "Action chosen: **{action}**. You can change it until the round ends.",
+      "action": {
+        "attack": "Attack",
+        "power": "Power",
+        "defend": "Defend"
+      },
+      "result_win": "Victory: {side}!",
+      "result_draw": "Draw!",
+      "result_abandoned": "Combat abandoned: nobody acted for several rounds.",
+      "final_title": "🏁 End of combat #{id}",
+      "rounds": "Rounds",
+      "damage": "Damage (mutants × enemies)",
+      "full_log": "See full log",
+      "log_title": "📜 Combat log #{id} ({page}/{pages})",
+      "training_started": "🤖 Training Drone incoming! The combat opens in a thread.",
+      "no_active": "You are not in a combat right now.",
+      "status_title": "⚔️ Your combat — round {round}/{max}"
+    },
+    "log": {
+      "round": "— Round {round} —",
+      "defend": "🛡️ {actor} defends.",
+      "miss": "💨 {actor} uses {action} on {target} and misses (d20={roll}).",
+      "hit": "⚔️ {actor} uses {action} on {target}: {damage} damage (HP {hp}).",
+      "crit": "💥 {actor} uses {action} on {target}: CRITICAL, {damage} damage (HP {hp}).",
+      "end_wipe": "🏁 Victory: {side}.",
+      "end_max_rounds": "⏱️ Round limit. Result: {side}.",
+      "end_abandoned": "🏳️ Combat abandoned ({side} win)."
+    },
+    "replay": {
+      "ok": "✅ Combat {id} matches: the replay produces the same log (hash {computed}).",
+      "mismatch": "❌ Combat {id} does NOT match: stored {stored}, recomputed {computed}."
+    },
+    "help": {
+      "treino": "Training fight against a drone.",
+      "combate": "Your current combat and combat logs.",
+      "sentinel": "Sentinel staff tools."
+    },
+    "commands": {
+      "treino": "Training fight against the Training Drone",
+      "combate": {
+        "description": "Combats",
+        "status": "Your current combat",
+        "log": "Log of a finished combat",
+        "id": "Combat ID"
+      },
+      "sentinel": {
+        "description": "Sentinel staff tools",
+        "replay": "Check that a combat replays the same"
+      }
+    }
+  }
+}
