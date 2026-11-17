@@ -39,6 +39,11 @@ const pt = {
   'check.config': 'legion.config.yaml',
   'check.config.ok': 'Configuração válida (bots: {bots})',
   'check.config.fix': 'Corrija as linhas acima no legion.config.yaml',
+  'check.perms': 'Permissões no servidor',
+  'check.perms.ok': 'O cargo do bot tem as {count} permissões que {bots} precisa(m)',
+  'check.perms.missing': 'Faltam no cargo do bot: {perms}',
+  'check.perms.fix':
+    'Abra de novo o link de convite deste app (legion invite-url) e autorize, ou dê as permissões ao cargo do bot em Configurações do servidor → Cargos',
   'check.channels': 'Permissões nos canais',
   'check.channels.ok': 'O bot pode ver, enviar e usar embeds em {count} canal(is) configurado(s)',
   'check.channels.missing': 'channels.{key} ({id}) não existe no servidor',
@@ -108,6 +113,11 @@ const en: Record<keyof typeof pt, string> = {
   'check.config': 'legion.config.yaml',
   'check.config.ok': 'Valid configuration (bots: {bots})',
   'check.config.fix': 'Fix the lines above in legion.config.yaml',
+  'check.perms': 'Server permissions',
+  'check.perms.ok': 'The bot role has the {count} permissions {bots} need(s)',
+  'check.perms.missing': 'The bot role is missing: {perms}',
+  'check.perms.fix':
+    "Open this app's invite link again (legion invite-url) and authorize, or give the permissions to the bot role in Server Settings → Roles",
   'check.channels': 'Channel permissions',
   'check.channels.ok': 'The bot can view, send and embed in {count} configured channel(s)',
   'check.channels.missing': 'channels.{key} ({id}) does not exist in the server',

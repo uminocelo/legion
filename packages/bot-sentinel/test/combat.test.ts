@@ -81,7 +81,7 @@ describe('combat sessions', () => {
       subcommand: 'replay',
       options: { combate: 'cbt-1' },
     });
-    expect(t.gateway.lastReply(staff)?.content).toMatch(/^✅ Combate cbt-1 confere/);
+    expect(t.gateway.lastReply(staff)?.content).toMatch(/^✅ Combate #cbt-1 confere/);
     const log = await t.interact({ kind: 'component', userId: '111', customId: 'sentinel:v1:log:cbt-1:0' });
     expect(t.gateway.lastReply(log)?.embeds?.[0]?.title).toMatch(/^📜 Log do combate #cbt-1 \(1\/\d+\)$/);
   });

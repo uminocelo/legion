@@ -4,6 +4,7 @@ import type { LegionDb } from './db/db.js';
 import { KvStore } from './db/kv.js';
 import { syncCommands } from './discord/command-sync.js';
 import type { DiscordGateway } from './discord/gateway.js';
+import { missingGuildPermissions, permissionNames } from './discord/guild-permissions.js';
 import { InteractionRouter, MAIN_APP, type RouterLimits } from './discord/router.js';
 import type { GuildMember, IncomingInteraction } from './discord/types.js';
 import { withPersonas } from './discord/with-personas.js';
@@ -232,11 +233,35 @@ export class CoreRuntime {
     return this.bots.map((b) => b.bot.id);
   }
 
+  /** Server-wide permissions each app's bots need (from their `permissions`). */
+  appPermissions(key: string): string[] {
+    return permissionNames(
+      this.bots.filter((b) => this.appOf(b.bot.id) === key).flatMap((b) => b.bot.permissions),
+    );
+  }
+
+  /** Warns when an app's bot role lacks permissions its bots need (e.g. a bot gained one in an update). */
+  private async checkAppPermissions(key: string, gateway: DiscordGateway): Promise<void> {
+    try {
+      const [me, roles] = await Promise.all([gateway.fetchMember(gateway.botUserId), gateway.fetchRoles()]);
+      if (!me) return;
+      const missing = missingGuildPermissions(this.o.guildId, me, roles, this.appPermissions(key));
+      if (missing?.length)
+        this.o.log.warn(
+          { discordApp: key, missing },
+          'the bot role lacks permissions its bots need; open the invite link again (legion invite-url) or edit the role',
+        );
+    } catch (err) {
+      this.o.log.warn({ err, discordApp: key }, 'could not check the bot permissions');
+    }
+  }
+
   /** After the Discord client is ready: commands, replay, recurring jobs, polling, onReady. */
   async ready(opts: { startPolling?: boolean } = {}): Promise<void> {
     for (const [key, gateway] of this.gateways) {
       const res = await syncCommands(gateway, this.kv, this.router.commandJson(key), false, key);
       this.o.log.info({ discordApp: key, changed: res.changed }, 'slash commands checked');
+      await this.checkAppPermissions(key, gateway);
     }
     const replayed = await this.bus.replayPending();
     if (replayed) this.o.log.info({ replayed }, 'replayed pending events');

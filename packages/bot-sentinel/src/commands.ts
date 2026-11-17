@@ -46,10 +46,19 @@ export function sentinelCommands(
             type: 1,
             name: 'log',
             ...desc(i18n, 'sentinel.commands.combate.log'),
-            options: [{ type: 3, name: 'id', required: true, ...desc(i18n, 'sentinel.commands.combate.id') }],
+            options: [
+              {
+                type: 3,
+                name: 'id',
+                required: true,
+                autocomplete: true,
+                ...desc(i18n, 'sentinel.commands.combate.id'),
+              },
+            ],
           },
         ],
       },
+      autocomplete: (i, r) => s.combat.autocomplete(i, r, true),
       execute: async (i, r) => {
         if (i.subcommand === 'status') return s.combat.statusOf(i, r);
         const page = await s.combat.logPage(
@@ -120,12 +129,48 @@ export function sentinelCommands(
                 name: 'combate',
                 name_localizations: { 'en-US': 'combat' },
                 required: true,
+                autocomplete: true,
                 ...desc(i18n, 'sentinel.commands.combate.id'),
+              },
+            ],
+          },
+          {
+            type: 1,
+            name: 'denuncias',
+            name_localizations: { 'en-US': 'reports' },
+            ...desc(i18n, 'sentinel.commands.sentinel.denuncias'),
+            options: [
+              {
+                type: 3,
+                name: 'status',
+                required: false,
+                choices: ['open', 'resolved', 'ignored'].map((v) => ({
+                  name: i18n.t(`sentinel.mod.status_${v}`, {}, 'pt-BR'),
+                  name_localizations: { 'en-US': i18n.t(`sentinel.mod.status_${v}`, {}, 'en') },
+                  value: v,
+                })),
+                ...desc(i18n, 'sentinel.commands.sentinel.status'),
+              },
+            ],
+          },
+          {
+            type: 1,
+            name: 'historico',
+            name_localizations: { 'en-US': 'history' },
+            ...desc(i18n, 'sentinel.commands.sentinel.historico'),
+            options: [
+              {
+                type: 6,
+                name: 'membro',
+                name_localizations: { 'en-US': 'member' },
+                required: true,
+                ...desc(i18n, 'sentinel.commands.denunciar.membro'),
               },
             ],
           },
         ],
       },
+      autocomplete: (i, r) => s.combat.autocomplete(i, r, false),
       execute: async (i, r) => {
         if (!(await ctx.isStaff(i))) return reply(i, r, 'sentinel.errors.not_staff');
         const l = await i18n.localeFor(i.userId);
@@ -137,7 +182,7 @@ export function sentinelCommands(
         const v = await s.combat.verify(id);
         if (!v) return reply(i, r, 'sentinel.errors.combat_not_found');
         return reply(i, r, v.ok ? 'sentinel.replay.ok' : 'sentinel.replay.mismatch', {
-          id,
+          id: `#${v.id.slice(-6)}`,
           stored: v.stored?.slice(0, 16) ?? '—',
           computed: v.computed.slice(0, 16),
         });

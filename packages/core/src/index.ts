@@ -13,6 +13,7 @@ export * from './discord/custom-id.js';
 export * from './discord/discordjs-gateway.js';
 export * from './discord/fake-gateway.js';
 export * from './discord/gateway.js';
+export * from './discord/guild-permissions.js';
 export * from './discord/persona.js';
 export * from './discord/responder.js';
 export * from './discord/router.js';

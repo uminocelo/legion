@@ -39,7 +39,8 @@
       "log_title": "📜 Combat log #{id} ({page}/{pages})",
       "training_started": "🤖 Training Drone incoming! The combat opens in a thread.",
       "no_active": "You are not in a combat right now.",
-      "status_title": "⚔️ Your combat — round {round}/{max}"
+      "status_title": "⚔️ Your combat — round {round}/{max}",
+      "in_progress": "in progress"
     },
     "log": {
       "round": "— Round {round} —",
@@ -140,11 +141,20 @@
       "warned": "Warning sent by DM.",
       "warn_closed": "DMs closed: warning logged but not delivered.",
       "timed_out": "{time} timeout applied.",
-      "timeout_failed": "Could not apply the timeout (the bot needs the \"Moderate Members\" permission and a role above the member).",
+      "timeout_failed": "Discord refused the timeout. Common causes: the member is the server owner, an administrator, has a role above Sentinel, or the \"Moderate Members\" permission is missing.",
       "history_title": "📋 Report history",
       "history_empty": "No reports.",
       "list_title": "📋 Reports: {status} ({n})",
-      "list_empty": "Nothing here."
+      "list_empty": "Nothing here.",
+      "timeout_no_permission": "The Sentinel role lacks the \"Moderate Members\" permission. Open the invite link again (legion invite-url) or edit the role.",
+      "timeout_admin": "Administrators and the server owner cannot be timed out.",
+      "timeout_hierarchy": "This member's highest role is above (or at) the Sentinel role. Drag the Sentinel role up in Server Settings → Roles."
+    },
+    "modes": {
+      "training": "Training",
+      "duel": "Duel",
+      "party": "Party",
+      "raid_strike": "Raid"
     }
   }
 }

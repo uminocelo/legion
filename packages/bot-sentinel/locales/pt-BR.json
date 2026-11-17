@@ -39,7 +39,8 @@
       "log_title": "📜 Log do combate #{id} ({page}/{pages})",
       "training_started": "🤖 Drone de Treino a caminho! O combate vai abrir num tópico.",
       "no_active": "Você não está em nenhum combate agora.",
-      "status_title": "⚔️ Seu combate — rodada {round}/{max}"
+      "status_title": "⚔️ Seu combate — rodada {round}/{max}",
+      "in_progress": "em andamento"
     },
     "log": {
       "round": "— Rodada {round} —",
@@ -140,11 +141,20 @@
       "warned": "Aviso enviado por DM.",
       "warn_closed": "DM fechada: aviso registrado, mas não entregue.",
       "timed_out": "Timeout de {time} aplicado.",
-      "timeout_failed": "Não consegui aplicar o timeout (o bot precisa da permissão \"Moderar membros\" e de um cargo acima do membro).",
+      "timeout_failed": "O Discord recusou o timeout. Causas comuns: o membro é o dono do servidor, é administrador, tem um cargo acima do Sentinel, ou falta a permissão \"Moderar membros\".",
       "history_title": "📋 Histórico de denúncias",
       "history_empty": "Nenhuma denúncia.",
       "list_title": "📋 Denúncias: {status} ({n})",
-      "list_empty": "Nada por aqui."
+      "list_empty": "Nada por aqui.",
+      "timeout_no_permission": "O cargo do Sentinel não tem a permissão \"Moderar membros\". Abra de novo o link de convite (legion invite-url) ou edite o cargo.",
+      "timeout_admin": "Não dá para aplicar timeout em administradores nem no dono do servidor.",
+      "timeout_hierarchy": "O cargo mais alto deste membro está acima (ou no mesmo nível) do cargo do Sentinel. Arraste o cargo do Sentinel para cima em Configurações do servidor → Cargos."
+    },
+    "modes": {
+      "training": "Treino",
+      "duel": "Duelo",
+      "party": "Grupo",
+      "raid_strike": "Raid"
     }
   }
 }

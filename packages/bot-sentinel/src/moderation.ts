@@ -6,7 +6,13 @@ import type {
   OutgoingMessage,
   Responder,
 } from '@legion/core';
-import { customId, GatewayError } from '@legion/core';
+import {
+  customId,
+  GatewayError,
+  guildPermissionsOf,
+  missingGuildPermissions,
+  topRolePosition,
+} from '@legion/core';
 import { V } from './combat.js';
 import type { SentinelConfig } from './config.js';
 import type { ReportRow, SafetyRepo } from './db/safety-repo.js';
@@ -360,6 +366,8 @@ export class ModerationService {
     const minutes =
       n === undefined ? undefined : this.ctx.botConfig.moderation.timeoutOptionsMinutes[Number(n)];
     if (minutes === undefined) return say('sentinel.errors.report_not_found');
+    const blocked = await this.timeoutBlocker(report.subjectDiscordUserId);
+    if (blocked) return say(`sentinel.mod.${blocked}`);
     try {
       await this.ctx.gateway.timeoutMember(
         report.subjectDiscordUserId,
@@ -376,6 +384,31 @@ export class ModerationService {
       stamp(this.t('sentinel.mod.timed_out', { time: this.minutes(minutes) })),
     );
     return say('sentinel.mod.timed_out', { time: this.minutes(minutes) });
+  }
+
+  /**
+   * Why Discord would refuse a timeout, checked before trying: the bot lacks Moderate Members, the member
+   * is an administrator, or the member's top role is not below the bot's. null = looks possible.
+   */
+  async timeoutBlocker(subject: string): Promise<string | null> {
+    try {
+      const gw = this.ctx.gateway;
+      const [me, target, roles] = await Promise.all([
+        gw.fetchMember(gw.botUserId),
+        gw.fetchMember(subject),
+        gw.fetchRoles(),
+      ]);
+      if (!me || !target) return null;
+      if (!guildPermissionsOf(this.ctx.guildId, me, roles)) return null; // role permissions unknown: let Discord decide
+      if (missingGuildPermissions(this.ctx.guildId, me, roles, ['ModerateMembers'])?.length)
+        return 'timeout_no_permission';
+      if (guildPermissionsOf(this.ctx.guildId, target, roles)?.has('Administrator')) return 'timeout_admin';
+      if (topRolePosition(target, roles) >= topRolePosition(me, roles)) return 'timeout_hierarchy';
+      return null;
+    } catch (err) {
+      this.ctx.log.warn({ err }, 'could not pre-check the timeout');
+      return null;
+    }
   }
 
   // ---------- staff lists ----------
