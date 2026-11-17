@@ -1,0 +1,47 @@
+{
+  "herbie": {
+    "errors": {
+      "not_registered": "Beep! You are not a registered mutant yet. Start in {welcome}."
+    },
+    "quest": {
+      "perfil": { "title": "Meet your mutant", "body": "Use /perfil to see your mutant sheet." },
+      "trivia": {
+        "title": "First trivia",
+        "body": "Use /trivia and answer a question. Right or wrong, it counts!"
+      },
+      "missao": { "title": "First mission", "body": "Complete your first mission with J.A.R.V.I.S." },
+      "preferencias": {
+        "title": "Your preferences",
+        "body": "Use /cerebro preferencias to pick your optional roles."
+      }
+    },
+    "tutorial": {
+      "intro_title": "🤖 Hi! I'm H.E.R.B.I.E.",
+      "intro": "Welcome to the Legion! I prepared {count} quick steps so you learn the basics. The first one:",
+      "show": "See tutorial missions",
+      "skip": "Skip tutorial",
+      "skip_confirm": "Are you sure? You can come back later with /tutorial reiniciar.",
+      "skip_yes": "Yes, skip",
+      "skipped": "Tutorial skipped. To come back: /tutorial reiniciar.",
+      "step_done": "✅ Step done: **{step}**",
+      "xp": "+{xp} XP",
+      "next": "Next step:",
+      "completed": "🎉 Tutorial complete! Now you know the basics. Use /ajuda whenever you need.",
+      "bonus": "Completion bonus: +{xp} XP",
+      "checklist_title": "📋 Tutorial",
+      "status_active": "Progress: {done} of {total}",
+      "status_completed": "🎉 You completed the tutorial.",
+      "status_skipped": "Tutorial skipped. Use /tutorial reiniciar to continue.",
+      "disabled": "The tutorial is turned off on this server."
+    },
+    "help": {
+      "tutorial": "See your tutorial steps (or start over)."
+    },
+    "commands": {
+      "tutorial": {
+        "description": "Your tutorial with H.E.R.B.I.E.",
+        "reiniciar": "Restart a skipped tutorial"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794935863804,
+      "tag": "0000_herbie_init",
+      "breakpoints": true
+    }
+  ]
+}

@@ -129,6 +129,8 @@ export interface IncomingInteraction {
   memberRoleIds: string[];
   isGuildOwner: boolean;
   locale: string | null;
+  /** A button clicked on a message the bot sent by DM (no guild roles known). */
+  inDm?: boolean;
   commandName?: string;
   subcommand?: string | null;
   options?: Record<string, string | number | boolean | null>;

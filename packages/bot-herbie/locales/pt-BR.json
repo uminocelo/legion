@@ -1,0 +1,47 @@
+{
+  "herbie": {
+    "errors": {
+      "not_registered": "Bip! Você ainda não é um mutante registrado. Comece pelo canal {welcome}."
+    },
+    "quest": {
+      "perfil": { "title": "Conheça seu mutante", "body": "Use /perfil para ver sua ficha de mutante." },
+      "trivia": {
+        "title": "Primeira trivia",
+        "body": "Use /trivia e responda uma pergunta. Certa ou errada, vale!"
+      },
+      "missao": { "title": "Primeira missão", "body": "Complete sua primeira missão com o J.A.R.V.I.S." },
+      "preferencias": {
+        "title": "Suas preferências",
+        "body": "Use /cerebro preferencias para escolher seus cargos opcionais."
+      }
+    },
+    "tutorial": {
+      "intro_title": "🤖 Oi! Eu sou o H.E.R.B.I.E.",
+      "intro": "Bem-vindo à Legião! Preparei {count} passos rápidos para você aprender o básico. O primeiro:",
+      "show": "Ver missões do tutorial",
+      "skip": "Pular tutorial",
+      "skip_confirm": "Tem certeza? Dá para voltar depois com /tutorial reiniciar.",
+      "skip_yes": "Sim, pular",
+      "skipped": "Tutorial pulado. Quando quiser voltar: /tutorial reiniciar.",
+      "step_done": "✅ Passo concluído: **{step}**",
+      "xp": "+{xp} XP",
+      "next": "Próximo passo:",
+      "completed": "🎉 Tutorial completo! Agora você sabe o básico. Use /ajuda quando precisar.",
+      "bonus": "Bônus de conclusão: +{xp} XP",
+      "checklist_title": "📋 Tutorial",
+      "status_active": "Progresso: {done} de {total}",
+      "status_completed": "🎉 Você completou o tutorial.",
+      "status_skipped": "Tutorial pulado. Use /tutorial reiniciar para continuar.",
+      "disabled": "O tutorial está desligado neste servidor."
+    },
+    "help": {
+      "tutorial": "Veja seus passos do tutorial (ou recomece)."
+    },
+    "commands": {
+      "tutorial": {
+        "description": "Seu tutorial com o H.E.R.B.I.E.",
+        "reiniciar": "Recomeçar um tutorial pulado"
+      }
+    }
+  }
+}
