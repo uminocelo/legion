@@ -4,6 +4,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-16
+
 ### Added
 - J.A.R.V.I.S.: XP ledger (every change is an entry with a unique source key), levels, ranks (Cérebro swaps the roles), daily streaks with bonus, `xp.grant_requested` consumer.
 - `/trivia` with 30 sourced pt-BR questions, per-member cooldown, no-repeat window, time limit, speed bonus and daily XP cap; idempotent answers that survive restarts.
@@ -23,5 +25,6 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/uminocelo/legion/releases/tag/v0.2.0
 [0.1.0]: https://github.com/uminocelo/legion/releases/tag/v0.1.0
