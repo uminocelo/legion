@@ -1,5 +1,5 @@
 import type { Clock, Executor, LegionDb } from '@legion/core';
-import { and, desc, eq, isNotNull, isNull, notInArray } from 'drizzle-orm';
+import { and, count, desc, eq, gt, isNotNull, isNull, notInArray } from 'drizzle-orm';
 import { contentHash, type EnemyTemplate } from '../content.js';
 import { type UltronTables, ultronTables } from './tables.js';
 
@@ -131,6 +131,34 @@ export class UltronRepo {
       .filter((r) => r.size > 1)
       .slice(0, n)
       .map((r) => r.outcome as 'players' | 'enemies' | 'draw');
+  }
+
+  // ---------- AI flavor log (no prompt or output text stored) ----------
+
+  async logFlavor(o: { kind: string; provider: string; ok: boolean; latencyMs: number }) {
+    await this.db.orm.insert(this.t.ultronFlavorLog).values({
+      id: this.newId(),
+      kind: o.kind,
+      provider: o.provider,
+      ok: o.ok ? 1 : 0,
+      latencyMs: o.latencyMs,
+      createdAt: this.now(),
+    });
+  }
+
+  async flavorCallsSince(sinceIso: string, provider: string): Promise<number> {
+    const f = this.t.ultronFlavorLog;
+    const [row] = await this.db.orm
+      .select({ n: count() })
+      .from(f)
+      .where(and(eq(f.provider, provider), gt(f.createdAt, sinceIso)));
+    return Number(row?.n ?? 0);
+  }
+
+  async flavorStats(sinceIso: string) {
+    const f = this.t.ultronFlavorLog;
+    const rows = await this.db.orm.select().from(f).where(gt(f.createdAt, sinceIso));
+    return { calls: rows.length, ok: rows.filter((r) => r.ok === 1).length };
   }
 
   async recentEncounters(limit = 5): Promise<EncounterRow[]> {

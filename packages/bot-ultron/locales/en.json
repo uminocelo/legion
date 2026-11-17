@@ -3,7 +3,18 @@
     "errors": {
       "not_staff": "Only staff can use this command.",
       "not_registered": "{user} has not registered a mutant yet.",
-      "generic": "Could not create the encounter. Try again."
+      "generic": "Could not create the encounter. Try again.",
+      "bad_when": "I could not read the date. Use YYYY-MM-DD HH:mm (server time) or something like +30m, +2h.",
+      "event_not_found": "Event not found.",
+      "event_not_started": "The event has not started yet ({at}).",
+      "event_over": "The event is already over.",
+      "no_events_channel": "Set channels.events in legion.config.yaml before creating events.",
+      "register_first": "Register your mutant before fighting (welcome channel).",
+      "strike_cooldown": "You are still recovering. Strike again in {time}.",
+      "schedule_overlap": "An event of this kind already exists at that time.",
+      "schedule_past": "That time has already passed.",
+      "schedule_no_template": "Could not find the event enemy; check ultron.invasion.templateId / ultron.raids.templateIds.",
+      "schedule_exists": "That event is already scheduled."
     },
     "difficulty": {
       "facil": "Easy",
@@ -15,14 +26,23 @@
         "description": "ULTRON staff commands",
         "spawn": "Test encounter: scaled enemies for up to 4 members",
         "dificuldade": "Encounter difficulty",
-        "membro": "Member who fights (default: you)"
-      }
+        "membro": "Member who fights (default: you)",
+        "evento": "World events",
+        "agendar": "Schedule an invasion or raid",
+        "iniciar": "Start an invasion or raid now (still announces)",
+        "cancelar": "Cancel the scheduled or running event",
+        "tipo": "Event kind",
+        "quando": "YYYY-MM-DD HH:mm (server time) or +30m",
+        "status": "Next events, results, adaptive difficulty and AI"
+      },
+      "ameaca": "Current or next world event: HP, time left and your damage"
     },
     "spawn": {
       "sent": "🤖 {count} enemy(ies) sent to {channel}: {enemies}"
     },
     "help": {
-      "ultron": "Staff: test encounters, world events and ULTRON status."
+      "ultron": "Staff: test encounters, world events and ULTRON status.",
+      "ameaca": "Shows the current (or next) invasion or raid, its HP and your damage."
     },
     "taunt": {
       "generic": {
@@ -50,12 +70,12 @@
       "omega": {
         "1": "🤖 Unidade Ômega: Final protocol activated."
       },
+      "nucleo": {
+        "1": "🤖 Núcleo Carmesim: My energy never ends. Yours does."
+      },
       "bastiao": {
         "1": "🤖 Bastião Prime: The ground shakes when I arrive.",
         "2": "🤖 Bastião Prime: Bring everyone. It won't matter."
-      },
-      "nucleo": {
-        "1": "🤖 Núcleo Carmesim: My energy never ends. Yours does."
       }
     },
     "flavor": {
@@ -71,6 +91,71 @@
         "1": "🤖 ULTRON: Exactly as I calculated.",
         "2": "🤖 ULTRON: Your resistance was... insufficient."
       }
+    },
+    "kinds": {
+      "invasion": "Invasion",
+      "raid": "Raid"
+    },
+    "events": {
+      "title_invasion": "Invasion: {name}",
+      "title_raid": "Raid: {name}",
+      "announce_invasion": "Every faction fights together. Click **Strike** when the invasion starts.",
+      "announce_raid": "A boss is coming. Whoever wants to fight, click **Strike** when the raid starts.",
+      "active_invasion": "The swarm is here! Each strike is a quick fight against the shared HP. After striking, wait {cooldown} min.",
+      "active_raid": "The boss has arrived! Each strike is a quick fight against the shared HP. After striking, wait {cooldown} min.",
+      "starts": "Starts",
+      "duration": "Duration",
+      "minutes": "{n} min",
+      "hp": "HP",
+      "ends": "Ends",
+      "result": "Result",
+      "participants": "Participants",
+      "outcome_victory": "Victory",
+      "outcome_defeat": "Defeat",
+      "outcome_cancelled": "Cancelled",
+      "strike_button": "Strike",
+      "strike_sent": "Strike sent! The result shows on the event HP. Next strike in {minutes} min.",
+      "total_damage": "Total damage",
+      "top": "Top damage",
+      "by_faction": "Damage by faction",
+      "xp": "XP",
+      "xp_victory": "Victory: {base} XP per participant + up to {bonus} bonus by damage.",
+      "xp_defeat": "Defeat: {xp} XP for taking part.",
+      "cancelled_note": "Staff cancelled this event.",
+      "cancelled": "Event cancelled: {title}.",
+      "nothing_to_cancel": "There is no scheduled or running event.",
+      "scheduled": "Scheduled for {at}. The announcement goes out {announce}.",
+      "started_now": "Event started in {channel}."
+    },
+    "threat": {
+      "none": "No threat on the radar. For now.",
+      "status_scheduled": "Scheduled: starts {at}.",
+      "status_announced": "Announced: starts {at}.",
+      "status_active": "Running: ends {ends}.",
+      "your_damage": "Your damage: {damage} in {strikes} strike(s).",
+      "cooldown": "Next strike {at}.",
+      "ready": "You can strike now.",
+      "go": "Go to the event"
+    },
+    "status": {
+      "title": "🤖 ULTRON · status",
+      "next": "Next events",
+      "last": "Last results",
+      "encounters": "Last encounters",
+      "adaptive": "Adaptive difficulty",
+      "adaptive_off": "off",
+      "adaptive_on": "×{m} ({n} fights; minimum {min})",
+      "ai": "AI text",
+      "ai_none": "off (fixed lines)",
+      "ai_on": "{ok}/{calls} calls ok in the last hour (max {max})",
+      "level": "level {n}",
+      "in_progress": "in progress",
+      "outcome_players": "players won",
+      "outcome_enemies": "enemies won",
+      "outcome_draw": "draw",
+      "state_scheduled": "scheduled",
+      "state_announced": "announced",
+      "state_active": "running"
     }
   }
 }
