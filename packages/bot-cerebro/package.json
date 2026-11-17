@@ -12,6 +12,7 @@
     "dist",
     "locales",
     "content",
+    "assets",
     "drizzle"
   ],
   "scripts": {
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "@legion/core": "workspace:*",
+    "@resvg/resvg-wasm": "2.6.2",
     "discord.js": "^14.28.1",
     "drizzle-orm": "^0.45.4",
     "yaml": "^2.9.1",

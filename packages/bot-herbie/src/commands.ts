@@ -98,11 +98,36 @@ export function herbieCommands(ctx: BotContext<HerbieConfig>, s: HerbieServices)
             ...desc(i18n, 'herbie.commands.herbie.dica'),
           },
           { type: 1, name: 'status', ...desc(i18n, 'herbie.commands.herbie.status') },
+          {
+            type: 2,
+            name: 'guia',
+            name_localizations: { 'en-US': 'guide' },
+            ...desc(i18n, 'herbie.commands.herbie.guia'),
+            options: [
+              {
+                type: 1,
+                name: 'publicar',
+                name_localizations: { 'en-US': 'publish' },
+                ...desc(i18n, 'herbie.commands.herbie.publicar'),
+                options: [
+                  {
+                    type: 7,
+                    name: 'canal',
+                    name_localizations: { 'en-US': 'channel' },
+                    required: false,
+                    channel_types: [0, 5],
+                    ...desc(i18n, 'herbie.commands.herbie.canal'),
+                  },
+                ],
+              },
+            ],
+          },
         ],
       },
       execute: async (i, r) => {
         if (!(await staffOnly(i, r))) return;
         const l = await i18n.localeFor(i.userId);
+        if (i.subcommand === 'guia publicar') return s.guide.command(i, r);
         if (i.subcommand === 'dica-agora') {
           const id = await s.help.postTip();
           return r.reply({

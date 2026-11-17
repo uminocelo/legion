@@ -13,9 +13,15 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Staff trivia from Discord: `/jarvis trivia nova` (form with question, choices, answer, explanation and source), `lista | editar | desativar | ativar | exportar`. Live at once, or approved by a second staff member with `jarvis.trivia.review: second_staff`. Edits keep history; file reloads never touch staff questions; disabled questions stay off.
 - Trivia sources may be a reference such as "Shang-Chi #4 (2021)", shown in the footer; extra categories via `jarvis.trivia.categories`.
 - Imports from attachments: `/jarvis missao importar` and `/ultron inimigo importar` validate a `.yaml` (Discord CDN only, 64 KB), show a preview and publish live on **Publicar**. Plus `lista | desativar | ativar` for missions and enemies. Imported content wins over files with the same id and survives restarts and reloads.
+- Cérebro mutant sheet: registration picks 1 main power and up to 2 secondary ones from a catalog of 32 generic powers in 6 types (`content/powers.yaml`, server override in `data/content/powers.yaml`). The main power type sets the archetype (`cerebro.powers.typeToArchetype`); powers have no numeric effect. `cerebro.powers.enabled: false` brings back the archetype menu. `docs/POWERS.md`.
+- `/mutante poderes`: mutants registered before the catalog pick their powers once; the archetype stays unless `cerebro.powers.allowArchetypeChange`.
+- `/perfil` and **Compartilhar** attach the sheet as a PNG card (codename, faction color, archetype, powers, level, rank, stats). Rendered with resvg (WebAssembly) and bundled OFL fonts, no native dependencies; `cerebro.profileCard: false` turns it off.
+- H.E.R.B.I.E. `/herbie guia publicar [canal]`: posts the "how to play" guide (registration, powers, progress, trivia, missions, combat, events; sections of disabled bots are skipped) and pins it; publishing again edits the same messages. Server copy in `data/content/guide.<locale>.yaml`. Glossary: new "Poderes" entry; combat, events and report entries no longer say "future version".
 - `legion doctor`: `<bot>.staff-commands` warns when staff roles without Administrator cannot use the staff commands; guide in `docs/SELF_HOSTING.md`. New `docs/STAFF.md`.
 
 ### Changed
+- H.E.R.B.I.E. asks for Pin Messages (to pin the guide).
+- The registration form's power field is now "Descreva seu poder" (the free-text description next to the catalog powers).
 - J.A.R.V.I.S. asks for Create Public Threads and Send Messages in Threads (mission threads).
 - Sentinel keeps a fight in the channel quietly when that channel is already a thread.
 

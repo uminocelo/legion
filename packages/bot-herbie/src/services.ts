@@ -1,6 +1,7 @@
 import type { BotContext } from '@legion/core';
 import type { HerbieConfig } from './config.js';
 import { HerbieRepo } from './db/repo.js';
+import { HerbieGuide } from './guide.js';
 import { HerbieHelp } from './help.js';
 import { HerbieTutorial } from './tutorial.js';
 
@@ -8,6 +9,7 @@ export interface HerbieServices {
   repo: HerbieRepo;
   tutorial: HerbieTutorial;
   help: HerbieHelp;
+  guide: HerbieGuide;
 }
 
 const cache = new WeakMap<object, HerbieServices>();
@@ -21,7 +23,7 @@ export function herbieServices(ctx: BotContext<HerbieConfig>): HerbieServices {
   if (!s) {
     const repo = new HerbieRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
     const tutorial = new HerbieTutorial(ctx, repo);
-    s = { repo, tutorial, help: new HerbieHelp(ctx, repo, tutorial) };
+    s = { repo, tutorial, help: new HerbieHelp(ctx, repo, tutorial), guide: new HerbieGuide(ctx) };
     cache.set(ctx.i18n, s);
   }
   return s;

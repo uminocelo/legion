@@ -177,6 +177,16 @@
       "disabled": "The power catalog is off on this server.",
       "saved": "✅ Powers saved: {powers}. Archetype: **{archetype}**.",
       "saved_changed": "✅ Powers saved: {powers}. New archetype: **{archetype}**."
+    },
+    "card": {
+      "title": "CEREBRO · MUTANT SHEET",
+      "level": "Level",
+      "powers": "POWERS",
+      "hp": "HP",
+      "atk": "ATK",
+      "def": "DEF",
+      "spd": "SPD",
+      "foc": "FOC"
     }
   }
 }

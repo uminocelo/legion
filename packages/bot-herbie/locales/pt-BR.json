@@ -55,7 +55,7 @@
       "ajuda": "Ajuda: o que fazer agora e todos os comandos.",
       "regras": "Regras do servidor e glossário de termos.",
       "idioma": "Escolha o idioma das respostas dos bots para você.",
-      "herbie": "Ferramentas da staff do H.E.R.B.I.E."
+      "herbie": "Staff: /herbie status, /herbie dica-agora e /herbie guia publicar (guia \"como jogar\" fixado)"
     },
     "commands": {
       "tutorial": {
@@ -77,7 +77,10 @@
       "herbie": {
         "description": "Ferramentas da staff do H.E.R.B.I.E.",
         "dica": "Postar a próxima dica agora",
-        "status": "Funil do tutorial"
+        "status": "Funil do tutorial",
+        "guia": "Guia \"como jogar\"",
+        "publicar": "Posta (ou atualiza) o guia e fixa a mensagem",
+        "canal": "Canal (padrão: channels.rules)"
       }
     },
     "glossary": {
@@ -119,6 +122,14 @@
       "tips": "Dicas",
       "tips_on": "ligadas em {channel}",
       "tips_off": "desligadas"
+    },
+    "guide": {
+      "posted": "📌 Guia postado em {channel} ({n} mensagem(ns)).",
+      "updated": "📌 Guia atualizado em {channel} ({n} mensagem(ns)).",
+      "not_pinned": "Não consegui fixar: dê ao H.E.R.B.I.E. a permissão **Fixar mensagens** nesse canal, ou fixe à mão (⋯ → Fixar mensagem).",
+      "send_failed": "Não consegui postar em {channel}. Confira se o H.E.R.B.I.E. vê o canal e pode enviar mensagens e links.",
+      "invalid": "O arquivo do guia tem erros:\n{errors}",
+      "server_file_invalid": "⚠️ O guia do servidor (data/content/guide.*.yaml) tem erros, então usei o guia padrão:\n{errors}"
     }
   }
 }

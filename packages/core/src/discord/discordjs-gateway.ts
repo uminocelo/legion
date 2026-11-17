@@ -230,6 +230,17 @@ export class DiscordJsGateway implements DiscordGateway {
       return wrapError(err);
     }
   }
+  async pinMessage(channelId: string, messageId: string): Promise<void> {
+    try {
+      const ch = await this.client.channels.fetch(channelId);
+      if (!ch?.isTextBased()) throw new GatewayError(`Channel ${channelId} is not text based`, 50001);
+      const m = await ch.messages.fetch(messageId);
+      if (!m.pinned) await m.pin();
+    } catch (err) {
+      wrapError(err);
+    }
+  }
+
   async editMessage(channelId: string, messageId: string, msg: OutgoingMessage): Promise<void> {
     try {
       const ch = await this.client.channels.fetch(channelId);

@@ -177,6 +177,16 @@
       "disabled": "O catálogo de poderes está desligado neste servidor.",
       "saved": "✅ Poderes salvos: {powers}. Arquétipo: **{archetype}**.",
       "saved_changed": "✅ Poderes salvos: {powers}. Novo arquétipo: **{archetype}**."
+    },
+    "card": {
+      "title": "CÉREBRO · FICHA DE MUTANTE",
+      "level": "Nível",
+      "powers": "PODERES",
+      "hp": "VIDA",
+      "atk": "ATQ",
+      "def": "DEF",
+      "spd": "VEL",
+      "foc": "FOCO"
     }
   }
 }

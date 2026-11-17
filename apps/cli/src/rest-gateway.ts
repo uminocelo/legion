@@ -85,6 +85,7 @@ export function createRestGateway(
     editMessage: unsupported,
     sendDm: unsupported,
     createThread: unsupported,
+    pinMessage: unsupported,
     reply: unsupported,
     deferReply: unsupported,
     deferUpdate: unsupported,

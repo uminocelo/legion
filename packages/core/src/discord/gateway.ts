@@ -36,6 +36,8 @@ export interface DiscordGateway {
   editMessage(channelId: string, messageId: string, msg: OutgoingMessage): Promise<void>;
   sendDm(userId: string, msg: OutgoingMessage): Promise<SentMessage>;
   createThread(channelId: string, name: string, fromMessageId?: string): Promise<{ threadId: string }>;
+  /** Pins a message (needs Pin Messages in that channel). */
+  pinMessage(channelId: string, messageId: string): Promise<void>;
   // interactions
   reply(interactionId: string, msg: OutgoingMessage): Promise<void>;
   deferReply(interactionId: string, ephemeral: boolean): Promise<void>;

@@ -55,7 +55,7 @@
       "ajuda": "Help: what to do now and every command.",
       "regras": "Server rules and glossary.",
       "idioma": "Choose the language of the bots' replies to you.",
-      "herbie": "H.E.R.B.I.E. staff tools"
+      "herbie": "Staff: /herbie status, /herbie tip-now and /herbie guide publish (pinned \"how to play\" guide)"
     },
     "commands": {
       "tutorial": {
@@ -77,7 +77,10 @@
       "herbie": {
         "description": "H.E.R.B.I.E. staff tools",
         "dica": "Post the next tip now",
-        "status": "Tutorial funnel"
+        "status": "Tutorial funnel",
+        "guia": "\"How to play\" guide",
+        "publicar": "Posts (or updates) the guide and pins it",
+        "canal": "Channel (default: channels.rules)"
       }
     },
     "glossary": {
@@ -119,6 +122,14 @@
       "tips": "Tips",
       "tips_on": "on in {channel}",
       "tips_off": "off"
+    },
+    "guide": {
+      "posted": "📌 Guide posted in {channel} ({n} message(s)).",
+      "updated": "📌 Guide updated in {channel} ({n} message(s)).",
+      "not_pinned": "I could not pin it: give H.E.R.B.I.E. **Pin Messages** in that channel, or pin it by hand (⋯ → Pin message).",
+      "send_failed": "I could not post in {channel}. Check that H.E.R.B.I.E. can see the channel and send messages and links.",
+      "invalid": "The guide file has errors:\n{errors}",
+      "server_file_invalid": "⚠️ The server guide (data/content/guide.*.yaml) has errors, so I used the default guide:\n{errors}"
     }
   }
 }

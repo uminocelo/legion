@@ -15,6 +15,9 @@ export interface Embed {
   author?: { name: string; icon_url?: string };
   footer?: { text: string };
   timestamp?: string;
+  /** `attachment://<file name>` shows a file sent with the message. */
+  image?: { url: string };
+  thumbnail?: { url: string };
 }
 
 export type ButtonStyle = 'primary' | 'secondary' | 'success' | 'danger' | 'link';

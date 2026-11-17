@@ -144,6 +144,7 @@ Os arquivos vêm em `packages/bot-herbie/content/`. Para personalizar, copie o a
 - `tutorial.yaml`: os passos. Cada passo tem `id`, `titleKey`/`bodyKey` (textos nos locales), `trigger` (`event` entre `command.executed`, `trivia.answered`, `mission.completed`, `level.changed`, `streak.updated`, e `where` com campos exatos do evento), `rewardXp`, e opcionalmente `requiresBot`, `requiresFeature: missions` e `fallback` (passo usado quando o bot/recurso não está ligado). `completionRewardXp` é o bônus final.
 - `glossary.pt-BR.yaml` / `glossary.en.yaml`: termos do `/regras` (`id`, `term`, `aliases`, `summary` até 300 caracteres, `details` até 1500, `related`, `bot` opcional para esconder quando o bot está desligado). Use aspas nos textos com `:`.
 - `tips.pt-BR.yaml` / `tips.en.yaml`: dicas (`id`, `text`, `bot` opcional), postadas em rodízio sem repetir.
+- `guide.pt-BR.yaml` / `guide.en.yaml`: o guia "como jogar" do `/herbie guia publicar`, no idioma do servidor (`id`, `title` até 256 caracteres, `body` até 4000, `bot` opcional). Republique depois de editar.
 
 Textos dos passos (`herbie.quest.*`) podem ser trocados pela pasta `./locales` (veja `locales/README.txt`).
 

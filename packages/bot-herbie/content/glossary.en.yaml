@@ -9,9 +9,16 @@
 - id: arquetipos
   term: "Archetypes"
   aliases: [archetype, class]
-  summary: "Your mutant's type (by default Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Chosen at registration."
-  details: "The archetype describes your mutant's style and shows on the sheet. Staff can change the list. In future versions it affects combat."
+  summary: "Your mutant's type (by default Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Set by your main power at registration."
+  details: "The archetype comes from your main power type (or from the menu if the server turned the power catalog off) and sets your base combat stats. Staff can change the list and which power type leads to which archetype."
   related: [faccoes, codinome]
+  bot: cerebro
+- id: poderes
+  term: "Powers"
+  aliases: [catalog, main power, secondary powers, /mutant powers]
+  summary: "When you register you pick 1 main power and up to 2 secondary ones from a catalog. The main power type sets your archetype."
+  details: "There are 6 types: offensive, defensive, psionic, elemental, movement and utility. Secondary powers show on your sheet and on the /profile card without changing stats. Members who registered before the catalog use /mutant powers once. You also describe your power in your own words on the sheet."
+  related: [arquetipos, codinome]
   bot: cerebro
 - id: codinome
   term: "Codename"
@@ -84,55 +91,55 @@
   term: "Combat"
   aliases: [fight, battle, duel]
   summary: "Turn-based fights between mutants, decided by attributes and a bit of luck."
-  details: "Combat arrives in a future version. It uses your mutant's power, defense, speed and focus."
+  details: "Turn-based fights with Attack, Power and Defend buttons. Practice with /training; fight missions, invasions and raids use the same system. Every fight has a seed and staff can check it. Full rules in docs/COMBAT.md."
   related: [poder, defesa, velocidade, foco]
   bot: sentinel
 - id: poder
-  term: "Power"
-  aliases: [attack, strength]
+  term: "Attack (ATK)"
+  aliases: [attack, atk, strength, power]
   summary: "Combat attribute that sets the damage of your hits."
-  details: "Part of the combat system of a future version."
+  details: "Attack (ATK): adds to the damage of the Attack button. Goes up 1 per level; the archetype sets the base."
   related: [combate]
   bot: sentinel
 - id: defesa
   term: "Defense"
   aliases: [resistance, armor]
   summary: "Combat attribute that reduces damage taken."
-  details: "Part of the combat system of a future version."
+  details: "Defense (DEF): removes damage from every hit you take. Defending also halves the damage that round."
   related: [combate]
   bot: sentinel
 - id: velocidade
   term: "Speed"
   aliases: [initiative]
   summary: "Combat attribute that decides who acts first."
-  details: "Part of the combat system of a future version."
+  details: "Speed (SPD): the higher one acts first in the round, and it helps to hit and to dodge."
   related: [combate]
   bot: sentinel
 - id: foco
   term: "Focus"
   aliases: [concentration, precision]
   summary: "Combat attribute tied to hits and special effects."
-  details: "Part of the combat system of a future version."
+  details: "Focus (FOC): sets the damage of the Power button, which then recharges for a few turns."
   related: [combate]
   bot: sentinel
 - id: evento-mundial
   term: "World event"
   aliases: [invasion, event]
   summary: "Happenings that affect the whole server, announced by ULTRON. Everyone can join."
-  details: "ULTRON announces the event in the events channel and H.E.R.B.I.E. explains how to join. Arrives in a future version."
+  details: "ULTRON announces invasions (every week) and boss raids in the events channel. Click Attack for a quick fight that gives XP, win or lose. See the current threat with /threat."
   related: [raid]
   bot: ultron
 - id: raid
   term: "Raid"
   aliases: [group attack, boss]
   summary: "A group event against a strong enemy, with a time limit."
-  details: "Part of ULTRON's world events, in a future version."
+  details: "A boss shows up in a thread for a limited time and everyone attacks the same HP. Each Attack is a quick fight; the group wins if it brings the boss down in time."
   related: [evento-mundial]
   bot: ultron
 - id: denuncia
   term: "Report"
   aliases: [denuncia, flag]
   summary: "How to privately tell staff about something wrong on the server."
-  details: "Sentinel receives reports and forwards them to the staff queue. Arrives in a future version; until then, talk to staff directly."
+  details: "Use /report or, on a message, Apps → Report message. Sentinel sends it to the staff queue, and only staff sees who reported."
   related: [cooldown]
   bot: sentinel
