@@ -6,6 +6,7 @@ const LOADERS: Partial<Record<BotId, () => Promise<AnyLegionBot>>> = {
   jarvis: async () => (await import('@legion/bot-jarvis')).jarvis,
   herbie: async () => (await import('@legion/bot-herbie')).herbie,
   sentinel: async () => (await import('@legion/bot-sentinel')).sentinel,
+  ultron: async () => (await import('@legion/bot-ultron')).ultron,
 };
 
 export const AVAILABLE_BOTS = Object.keys(LOADERS) as BotId[];

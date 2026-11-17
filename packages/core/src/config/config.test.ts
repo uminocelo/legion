@@ -34,6 +34,13 @@ describe('parseConfig', () => {
     expect(lines[0]).toContain('Cérebro é obrigatório');
   });
 
+  it('requires sentinel when ultron is enabled', () => {
+    expect(errorsOf(() => parseConfigText('bots: [cerebro, ultron]'))[0]).toContain(
+      'o ULTRON precisa do Sentinel',
+    );
+    expect(parseConfigText('bots: [cerebro, sentinel, ultron]').bots).toContain('ultron');
+  });
+
   it('gives a readable, localized error with path and example for bad colors', () => {
     const yaml = `roles:
   - { key: a, name: A, group: staff, managedBy: manual }

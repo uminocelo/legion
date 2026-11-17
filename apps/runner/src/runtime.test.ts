@@ -45,10 +45,10 @@ describe('config loading', () => {
     );
   });
 
-  it('refuses bots that are not in this version', async () => {
-    const err = await loadConfigAndBots(write('bots: [cerebro, ultron]\n')).catch((e) => e);
-    expect(err).toBeInstanceOf(UnavailableBotError);
-    expect(err.message).toContain('ultron');
+  it('ships every bot in this version', async () => {
+    const { bots } = await loadConfigAndBots(write('bots: [cerebro, jarvis, herbie, sentinel, ultron]\n'));
+    expect(bots.map((b) => b.id)).toEqual(['cerebro', 'jarvis', 'herbie', 'sentinel', 'ultron']);
+    expect(new UnavailableBotError(['ultron']).message).toContain('ultron');
   });
 
   it('loads the enabled bots', async () => {
