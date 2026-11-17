@@ -88,7 +88,7 @@ export class InteractionRouter {
         const entry = i.commandName ? this.commands.get(i.commandName) : undefined;
         if (!entry || elsewhere(entry.bot)) return await this.expired(i, r);
         bot = entry.bot;
-        if (!(await this.allowed(i, r, `cmd:${i.userId}`, this.limits.commandsPerMinute, 60_000))) return;
+        if (!(await this.allowed(i, r, 'cmd'))) return;
         await entry.def.execute(i, r);
         if (i.kind === 'command')
           await this.o
@@ -100,7 +100,7 @@ export class InteractionRouter {
       const def = parsed && this.components.get(`${parsed.bot}:v${parsed.version}:${parsed.action}`);
       if (!parsed || !def || elsewhere(parsed.bot)) return await this.expired(i, r);
       bot = parsed.bot;
-      if (!(await this.allowed(i, r, `cmp:${i.userId}`, this.limits.componentsPer10Seconds, 10_000))) return;
+      if (!(await this.allowed(i, r, 'cmp'))) return;
       await def.handle(i, r, parsed.args);
     } catch (err) {
       log.error({ err, bot }, 'interaction handler failed');
@@ -122,9 +122,14 @@ export class InteractionRouter {
     return this.o.limits ?? { commandsPerMinute: 20, componentsPer10Seconds: 15 };
   }
 
-  private async allowed(i: IncomingInteraction, r: Responder, key: string, limit: number, windowMs: number) {
+  private async allowed(i: IncomingInteraction, r: Responder, kind: 'cmd' | 'cmp') {
     if (this.o.bypassRateLimit?.(i)) return true;
-    const res = await this.o.rateLimiter().consume(key, limit, windowMs);
+    const limiter = this.o.rateLimiter();
+    const policy = (await limiter.policyFor?.(i)) ?? { bypass: false, ...this.limits };
+    if (policy.bypass) return true;
+    const [limit, windowMs] =
+      kind === 'cmd' ? [policy.commandsPerMinute, 60_000] : [policy.componentsPer10Seconds, 10_000];
+    const res = await limiter.consume(`${kind}:${i.userId}`, limit, windowMs);
     if (res.allowed) return true;
     const locale = await this.o.i18n.localeFor(i.userId);
     const seconds = Math.max(1, Math.ceil(res.retryAfterMs / 1000));

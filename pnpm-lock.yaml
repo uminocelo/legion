@@ -62,6 +62,9 @@ importers:
       '@legion/bot-jarvis':
         specifier: workspace:*
         version: link:../../packages/bot-jarvis
+      '@legion/bot-sentinel':
+        specifier: workspace:*
+        version: link:../../packages/bot-sentinel
       '@legion/core':
         specifier: workspace:*
         version: link:../../packages/core

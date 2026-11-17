@@ -14,7 +14,9 @@ Segredos ficam no `.env` (veja o README; tokens por bot em [SELF_HOSTING](SELF_H
 | `channels.registry` | `null` | Cartões públicos de cadastro (`null` = usa `welcome`) |
 | `channels.tutorial` | `null` | H.E.R.B.I.E.: tutorial de quem tem DM fechada (vazio = usa `welcome`) |
 | `channels.events` | `null` | Eventos do ULTRON; o H.E.R.B.I.E. explica cada anúncio aqui |
-| `channels.trivia` / `modQueue` / `combat` | `null` | Usados por bots futuros |
+| `channels.combat` | `null` | Sentinel: onde os combates abrem tópicos (vazio = canal onde o `/treino` foi usado) |
+| `channels.modQueue` | `null` | Sentinel: fila de denúncias, visível só para a staff |
+| `channels.trivia` | `null` | Usado por bots futuros |
 | `roles` | lista abaixo | Cargos gerenciados. Se definida, **substitui** a lista padrão inteira |
 | `factions` | xmen, brotherhood, independent | `{ key, roleKey, emoji }` |
 | `events.replayLookbackDays` | `7` | Quantos dias de eventos reprocessar no boot |
@@ -128,4 +130,25 @@ Os arquivos vêm em `packages/bot-herbie/content/`. Para personalizar, copie o a
 - `tips.pt-BR.yaml` / `tips.en.yaml`: dicas (`id`, `text`, `bot` opcional), postadas em rodízio sem repetir.
 
 Textos dos passos (`herbie.quest.*`) podem ser trocados pela pasta `./locales` (veja `locales/README.txt`).
+
+## `sentinel`
+
+| Chave | Padrão | Descrição |
+|---|---|---|
+| `combat.maxRounds` | `20` | Rodadas máximas por combate |
+| `combat.roundTimeoutSeconds` | `45` | Tempo para escolher a ação |
+| `combat.powerCooldownRounds` | `3` | Recarga do Poder, em rodadas |
+| `combat.abandonAfterIdleRounds` | `3` | Rodadas seguidas sem ninguém agir até o abandono |
+| `training.cooldownSeconds` | `300` | Espera entre treinos |
+| `training.dummyAtkMultiplier` | `0.7` | Ataque do drone (Tanque no seu nível × este valor) |
+| `rateLimits.commandsPerMinute` | `20` | Comandos por membro por minuto (todos os bots) |
+| `rateLimits.componentsPer10Seconds` | `15` | Botões por membro a cada 10 s |
+| `rateLimits.reportsPerHour` | `3` | Denúncias por membro por hora |
+| `rateLimits.violationsToFlag` | `5` | Bloqueios em 10 min até avisar a staff |
+| `antiCheat.xpAnomalyPerHour` | `600` | XP por hora acima do qual a staff é avisada (ajustes da staff não contam) |
+| `antiCheat.newAccountDays` | `7` | Contas mais novas que isso geram um aviso (`0` desliga) |
+| `moderation.enabled` | `true` | Fila e botões de moderação |
+| `moderation.timeoutOptionsMinutes` | `[10, 60]` | Botões de timeout (1 a 4 opções) |
+
+Regras do combate: [COMBAT.md](COMBAT.md).
 

@@ -9,7 +9,12 @@
       "already_fighting": "You are already in a combat: {thread}",
       "training_cooldown": "The drone is recharging. Try again in {seconds}s.",
       "combat_not_found": "Combat not found (or still in progress).",
-      "not_staff": "Only staff can use this command."
+      "not_staff": "Only staff can use this command.",
+      "report_self": "You cannot report yourself.",
+      "report_bot": "Bots cannot be reported.",
+      "report_unknown": "I could not find that member on the server.",
+      "report_limit": "You sent too many reports. Try again in {minutes} min.",
+      "report_not_found": "Report not found."
     },
     "combat": {
       "thread_name": "⚔️ Combat #{id}",
@@ -53,7 +58,8 @@
     "help": {
       "treino": "Training fight against a drone.",
       "combate": "Your current combat and combat logs.",
-      "sentinel": "Sentinel staff tools."
+      "sentinel": "Sentinel staff tools.",
+      "denunciar": "Report a member or a message to staff."
     },
     "commands": {
       "treino": "Training fight against the Training Drone",
@@ -65,8 +71,80 @@
       },
       "sentinel": {
         "description": "Sentinel staff tools",
-        "replay": "Check that a combat replays the same"
+        "replay": "Check that a combat replays the same",
+        "denuncias": "List reports",
+        "status": "Status (default: open)",
+        "historico": "Reports and actions for a member"
+      },
+      "denunciar": {
+        "description": "Report a member to staff",
+        "membro": "Member",
+        "motivo": "Reason",
+        "detalhes": "Details (optional)"
       }
+    },
+    "flags": {
+      "rate_limit": "{n} blocks for overuse in 10 minutes.",
+      "xp_anomaly": "{xp} XP in the last hour (limit {limit}).",
+      "new_account": "Account created {days} day(s) ago."
+    },
+    "reasons": {
+      "spam": "Spam",
+      "rate_limit": "Overuse",
+      "canon_name_attempts": "Existing character names",
+      "xp_anomaly": "Unusual XP",
+      "new_account": "New account",
+      "user_report": "Member report",
+      "other": "Other"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "motivos": {
+      "spam": "Spam",
+      "assedio": "Harassment or insult",
+      "conteudo": "Inappropriate content",
+      "trapaca": "Cheating",
+      "outro": "Other"
+    },
+    "mod": {
+      "queue_title": "🚨 {reason}",
+      "subject": "Member",
+      "account_age": "Account {days} day(s) old",
+      "severity": "Severity",
+      "count": "Occurrences",
+      "source": "Source",
+      "details": "Details",
+      "links": "Links",
+      "status": "Status",
+      "status_open": "Open",
+      "status_resolved": "Resolved",
+      "status_ignored": "Ignored",
+      "last_action": "{action} by {staff}",
+      "btn": {
+        "resolve": "Resolve",
+        "ignore": "Ignore",
+        "warn": "Warn",
+        "timeout": "Timeout {time}",
+        "history": "History"
+      },
+      "report_received": "Report sent to staff. Thank you!",
+      "modal_title": "Report message",
+      "modal_reason": "What is wrong?",
+      "already_closed": "This report is already {status}.",
+      "done": "Report marked as {status}.",
+      "warn_title": "⚠️ Staff warning",
+      "warn_dm": "Server staff received a report about you ({reason}). Please review the server rules; further reports may lead to a timeout.",
+      "warned": "Warning sent by DM.",
+      "warn_closed": "DMs closed: warning logged but not delivered.",
+      "timed_out": "{time} timeout applied.",
+      "timeout_failed": "Could not apply the timeout (the bot needs the \"Moderate Members\" permission and a role above the member).",
+      "history_title": "📋 Report history",
+      "history_empty": "No reports.",
+      "list_title": "📋 Reports: {status} ({n})",
+      "list_empty": "Nothing here."
     }
   }
 }
