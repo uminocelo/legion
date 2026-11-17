@@ -65,11 +65,18 @@ describe('InProcessEventBus', () => {
 
   it('replays unconsumed events oldest first on startup, once', async () => {
     rt = await createTestRuntime();
+    // A previous boot already knew the consumer.
+    rt.bus.on('player.optins_changed', 'test.late', async () => {
+      throw new Error('process died before handling');
+    });
+    await rt.bus.replayPending();
+    const t = coreTables(rt.db).coreEventConsumption;
     // Events logged while nobody was subscribed (e.g. the process died before dispatch).
     await rt.bus.emit(rt.db.orm, 'player.optins_changed', optIns('m1'));
     rt.clock.advance(1000);
     await rt.bus.emit(rt.db.orm, 'player.optins_changed', optIns('m2'));
     await rt.bus.drain();
+    await rt.db.orm.delete(t); // as if the process died before recording anything
 
     const scheduler = new DbScheduler({
       db: rt.db,
@@ -91,6 +98,69 @@ describe('InProcessEventBus', () => {
     expect(await restarted.replayPending()).toBe(2);
     expect(order).toEqual(['m1', 'm2']);
     expect(await restarted.replayPending()).toBe(0);
+  });
+
+  it('never replays events from before a consumer was first seen (a newly enabled bot)', async () => {
+    rt = await createTestRuntime();
+    rt.bus.on('player.optins_changed', 'test.old', async () => {});
+    await rt.bus.replayPending(); // first boot
+    await rt.bus.emit(rt.db.orm, 'player.optins_changed', optIns('before'));
+    await rt.bus.drain();
+    rt.clock.advance(1000);
+    const scheduler = new DbScheduler({
+      db: rt.db,
+      clock: rt.clock,
+      newId: rt.newId,
+      log: silentLogger(),
+      timezone: 'UTC',
+    });
+    const next = new InProcessEventBus({
+      db: rt.db,
+      scheduler,
+      clock: rt.clock,
+      newId: rt.newId,
+      guildId: 'g',
+      log: silentLogger(),
+    });
+    const seen: string[] = [];
+    next.on('player.optins_changed', 'test.old', async () => {});
+    next.on('player.optins_changed', 'test.new', async (e) => void seen.push(e.payload.memberId));
+    expect(await next.replayPending()).toBe(0);
+    await next.emit(rt.db.orm, 'player.optins_changed', optIns('after'));
+    await next.drain();
+    expect(seen).toEqual(['after']);
+  });
+
+  it('on the first boot with first-seen tracking, consumers with history keep their replay', async () => {
+    rt = await createTestRuntime();
+    rt.bus.on('player.optins_changed', 'test.known', async () => {});
+    await rt.bus.emit(rt.db.orm, 'player.optins_changed', optIns('m1'));
+    await rt.bus.drain();
+    await rt.bus.emit(rt.db.orm, 'player.optins_changed', optIns('m2'));
+    await rt.bus.drain();
+    const t = coreTables(rt.db).coreEventConsumption;
+    const rows = await rt.db.orm.select().from(t);
+    await rt.db.orm.delete(t);
+    await rt.db.orm.insert(t).values(rows.slice(0, 1)); // m2 was never recorded
+    const calls: string[] = [];
+    const scheduler = new DbScheduler({
+      db: rt.db,
+      clock: rt.clock,
+      newId: rt.newId,
+      log: silentLogger(),
+      timezone: 'UTC',
+    });
+    const next = new InProcessEventBus({
+      db: rt.db,
+      scheduler,
+      clock: rt.clock,
+      newId: rt.newId,
+      guildId: 'g',
+      log: silentLogger(),
+    });
+    next.on('player.optins_changed', 'test.known', async (e) => void calls.push(e.payload.memberId));
+    expect(await next.replayPending()).toBe(1);
+    expect(calls).toEqual(['m2']);
   });
 
   it('skips events older than the lookback window', async () => {

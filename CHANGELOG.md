@@ -13,6 +13,7 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Bots can declare extra channels for `legion doctor` (checked with the permissions of the app hosting the bot).
 - Buttons on messages sent by DM now work (handled as a member without roles).
 - ADRs 0017–0019.
+- Event replay on startup no longer feeds a newly enabled bot events from before it was first started.
 
 ## [0.2.0] - 2026-11-16
 
