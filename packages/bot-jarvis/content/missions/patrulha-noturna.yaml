@@ -1,0 +1,56 @@
+# Daily text mission, solo. Format: docs/MISSIONS.md
+id: patrulha-noturna
+kind: daily
+title:
+  pt-BR: Patrulha noturna
+  en: Night patrol
+summary:
+  pt-BR: Um alarme silencioso disparou no porto. Descubra o que está acontecendo antes do amanhecer.
+  en: A silent alarm went off at the docks. Find out what is going on before dawn.
+minLevel: 1
+party: 1
+difficulty: facil
+start: porto
+scenes:
+  porto:
+    text:
+      pt-BR: O porto está quieto demais. Um contêiner aberto pisca uma luz azul, e há pegadas molhadas indo para o armazém 7.
+      en: The docks are too quiet. An open container blinks with a blue light, and wet footprints lead to warehouse 7.
+    choices:
+      - label: { pt-BR: Examinar o contêiner, en: Examine the container }
+        next: conteiner
+      - label: { pt-BR: Seguir as pegadas, en: Follow the footprints }
+        next: armazem
+  conteiner:
+    text:
+      pt-BR: Dentro do contêiner, um rastreador ainda transmite. Alguém quer ser encontrado, ou quer que você perca tempo.
+      en: Inside the container, a tracker is still transmitting. Someone wants to be found, or wants you to waste time.
+    choices:
+      - label: { pt-BR: Desligar o rastreador, en: Switch the tracker off }
+        next: silencio
+      - label: { pt-BR: Rastrear o sinal de volta, en: Trace the signal back }
+        next: armazem
+  armazem:
+    text:
+      pt-BR: No armazém 7, uma jovem mutante assustada tenta esconder caixas de suprimentos médicos. Ela recua quando vê você.
+      en: In warehouse 7, a frightened young mutant tries to hide boxes of medical supplies. She backs away when she sees you.
+    choices:
+      - label: { pt-BR: Falar com calma, en: Talk calmly }
+        next: aliada
+      - label: { pt-BR: Bloquear a saída, en: Block the exit }
+        next: fuga
+  silencio:
+    text:
+      pt-BR: O rastreador apaga, e com ele a única pista. Ao amanhecer, o porto volta ao normal e ninguém sabe o que aconteceu.
+      en: The tracker goes dark, and so does your only lead. At dawn the docks return to normal and nobody knows what happened.
+    end: failure
+  fuga:
+    text:
+      pt-BR: Ela entra em pânico e desaparece num clarão. As caixas ficam para trás, mas a confiança se perdeu.
+      en: She panics and vanishes in a flash. The boxes stay behind, but the trust is gone.
+    end: failure
+  aliada:
+    text:
+      pt-BR: Ela se chama Faísca e leva remédios para uma comunidade escondida. Você promete ajudar. A Legião ganhou uma aliada.
+      en: Her name is Spark and she brings medicine to a hidden community. You promise to help. The Legion gained an ally.
+    end: success

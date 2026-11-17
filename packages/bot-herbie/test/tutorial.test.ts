@@ -93,8 +93,30 @@ describe('tutorial start and delivery', () => {
 });
 
 describe('tutorial steps and XP', () => {
-  it('completes the chain in order and J.A.R.V.I.S. grants XP exactly once per step', async () => {
+  it('with missions on, the third step is the first mission and a finished mission completes it', async () => {
     t = await setupHerbie();
+    const tc = t;
+    const m = await playerCreated(tc, '111');
+    await cmd(t, m, '111', 'perfil');
+    t.clock.advance(1000);
+    await trivia(t, m);
+    t.clock.advance(1000);
+    expect((await servicesOf(t).tutorial.currentFor(m))?.id).toBe('primeira-missao');
+    await t.runtime.bus
+      .forSource('jarvis')
+      .transaction((tx) =>
+        tc.runtime.bus
+          .forSource('jarvis')
+          .emit(tx, 'mission.completed', { missionId: 'run-1', memberIds: [m], outcome: 'success' }),
+      );
+    await t.settle();
+    const done = await servicesOf(t).repo.stepsDone(m);
+    expect(done.map((d) => d.stepId)).toEqual(['perfil', 'primeira-trivia', 'primeira-missao']);
+  });
+
+  it('completes the chain in order and J.A.R.V.I.S. grants XP exactly once per step', async () => {
+    // Missions off: the third step falls back to /cerebro preferencias.
+    t = await setupHerbie({ config: { jarvis: { missions: { enabled: false } } } });
     const m = await playerCreated(t, '111');
     await trivia(t, m); // early: does not count
     expect(await servicesOf(t).repo.stepsDone(m)).toEqual([]);

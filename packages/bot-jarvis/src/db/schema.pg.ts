@@ -1,4 +1,4 @@
-import { index, integer, pgTable as table, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { index, integer, primaryKey, pgTable as table, text, uniqueIndex } from 'drizzle-orm/pg-core';
 
 /** One row per member; every number here can be rebuilt from jarvis_xp_ledger. */
 export const jarvisProgress = table(
@@ -78,4 +78,75 @@ export const jarvisTriviaAttempts = table(
     answeredAt: text('answered_at'),
   },
   (t) => [index('jarvis_trivia_attempts_member_idx').on(t.memberId, t.createdAt)],
+);
+
+/** Missions loaded from content files (definition = the validated mission as JSON). */
+export const jarvisMissions = table('jarvis_missions', {
+  id: text('id').primaryKey(),
+  kind: text('kind').notNull(),
+  minLevel: integer('min_level').notNull(),
+  party: integer('party').notNull(),
+  difficulty: text('difficulty').notNull(),
+  hasCombat: integer('has_combat').notNull(),
+  definition: text('definition').notNull(),
+  contentHash: text('content_hash').notNull(),
+  active: integer('active').notNull().default(1),
+  updatedAt: text('updated_at').notNull(),
+});
+
+/** One play of a mission. `version` grows on every state change (idempotent clicks and timers). */
+export const jarvisMissionRuns = table(
+  'jarvis_mission_runs',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    missionId: text('mission_id').notNull(),
+    kind: text('kind').notNull(),
+    leaderMemberId: text('leader_member_id').notNull(),
+    // lobby | active | fighting | success | failure | abandoned | cancelled
+    status: text('status').notNull(),
+    sceneId: text('scene_id').notNull(),
+    version: integer('version').notNull().default(0),
+    locale: text('locale').notNull(),
+    channelId: text('channel_id').notNull(),
+    threadId: text('thread_id'),
+    // The scene whose message is already in the thread (restart recovery posts the missing one).
+    postedScene: text('posted_scene'),
+    messageId: text('message_id'),
+    day: text('day').notNull(),
+    week: text('week').notNull(),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    endedAt: text('ended_at'),
+  },
+  (t) => [
+    index('jarvis_mission_runs_status_idx').on(t.guildId, t.status),
+    index('jarvis_mission_runs_mission_idx').on(t.missionId),
+  ],
+);
+
+export const jarvisMissionMembers = table(
+  'jarvis_mission_members',
+  {
+    runId: text('run_id').notNull(),
+    memberId: text('member_id').notNull(),
+    joinedAt: text('joined_at').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.runId, t.memberId] }),
+    index('jarvis_mission_members_member_idx').on(t.memberId),
+  ],
+);
+
+/** Choices made in a run: one row per member and scene (a solo run has one per scene). */
+export const jarvisMissionChoices = table(
+  'jarvis_mission_choices',
+  {
+    runId: text('run_id').notNull(),
+    sceneId: text('scene_id').notNull(),
+    memberId: text('member_id').notNull(),
+    choice: integer('choice').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.runId, t.sceneId, t.memberId] })],
 );

@@ -19,6 +19,7 @@ export const channelsSchema = z.object({
   events: optionalChannel,
   modQueue: optionalChannel,
   combat: optionalChannel,
+  missions: optionalChannel,
 });
 
 export const sharedConfigSchema = z

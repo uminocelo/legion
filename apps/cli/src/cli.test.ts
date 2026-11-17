@@ -309,7 +309,7 @@ describe('several Discord apps', () => {
     );
     expect(res.map((r) => r.app)).toEqual(['main', 'jarvis']);
     const byApp = Object.fromEntries(puts.map((p) => [p.app, p.names]));
-    expect(byApp[JAPP]).toEqual(['jarvis', 'ranking', 'sequencia', 'trivia']);
+    expect(byApp[JAPP]).toEqual(['jarvis', 'missao', 'ranking', 'sequencia', 'trivia']);
     expect(byApp[APP]).toEqual(['cerebro', 'perfil']);
   });
 

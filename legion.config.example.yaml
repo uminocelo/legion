@@ -21,6 +21,7 @@ channels:
   tutorial: null # H.E.R.B.I.E.: tutorial de quem tem DM fechada (vazio = usa welcome)
   events: null # eventos do ULTRON (o H.E.R.B.I.E. explica os anúncios aqui)
   combat: null # Sentinel: tópicos de combate
+  missions: null # J.A.R.V.I.S.: tópicos das missões (vazio = channels.combat, senão o canal do comando)
   modQueue: null # Sentinel: fila de denúncias (só a staff vê)
   # trivia: usado por bots futuros
 # Cargos: os padrões cobrem tudo. Para renomear ou mudar cores, copie a lista
@@ -67,6 +68,19 @@ jarvis:
   leaderboard:
     size: 10
     channelCooldownSeconds: 15
+  missions: # /missao: histórias com escolhas, sozinho ou em grupo (docs/MISSIONS.md)
+    enabled: true
+    rewards: # XP por tipo de missão (o arquivo da missão pode definir o seu)
+      daily: { successXp: 40, failureXp: 10 }
+      weekly: { successXp: 120, failureXp: 30 }
+      story: { successXp: 80, failureXp: 20 }
+    limits:
+      dailyPerMember: 1 # missões diárias por membro por dia
+      weeklyPerMember: 1 # missões semanais por membro por semana (segunda a domingo)
+      storyRepeatable: false # cada história só uma vez
+    choiceTimeoutMinutes: 10 # sem escolha → missão abandonada (em grupo, os votos já dados decidem)
+    combatTimeoutMinutes: 15 # sem resultado da luta → fracasso
+    lobbyTimeoutMinutes: 5 # tempo para o grupo se formar
 
 # H.E.R.B.I.E.: tutorial, /ajuda, /regras, /idioma e dicas. Ligue com bots: [cerebro, jarvis, herbie].
 herbie:
