@@ -1,0 +1,729 @@
+{
+  "logHash": "a88148347cf318a7f0916a041bfb1886d31b55bc7ce27527cfcbd78946d245e2",
+  "winnerSide": "players",
+  "rounds": 20,
+  "log": [
+    {
+      "type": "round",
+      "round": 1
+    },
+    {
+      "type": "action",
+      "round": 1,
+      "actorId": "a-player",
+      "action": "power",
+      "targetId": "z-drone",
+      "roll": 20,
+      "hit": true,
+      "crit": true,
+      "damage": 38,
+      "targetHpAfter": 142
+    },
+    {
+      "type": "action",
+      "round": 1,
+      "actorId": "z-drone",
+      "action": "power",
+      "targetId": "a-player",
+      "roll": 5,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 95
+    },
+    {
+      "type": "action",
+      "round": 1,
+      "actorId": "b-player",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "round",
+      "round": 2
+    },
+    {
+      "type": "action",
+      "round": 2,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 7,
+      "hit": true,
+      "crit": false,
+      "damage": 12,
+      "targetHpAfter": 130
+    },
+    {
+      "type": "action",
+      "round": 2,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 16,
+      "hit": true,
+      "crit": false,
+      "damage": 9,
+      "targetHpAfter": 86
+    },
+    {
+      "type": "action",
+      "round": 2,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 1,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 130
+    },
+    {
+      "type": "round",
+      "round": 3
+    },
+    {
+      "type": "action",
+      "round": 3,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 4,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 130
+    },
+    {
+      "type": "action",
+      "round": 3,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 8,
+      "hit": true,
+      "crit": false,
+      "damage": 10,
+      "targetHpAfter": 76
+    },
+    {
+      "type": "action",
+      "round": 3,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 12,
+      "hit": true,
+      "crit": false,
+      "damage": 5,
+      "targetHpAfter": 125
+    },
+    {
+      "type": "round",
+      "round": 4
+    },
+    {
+      "type": "action",
+      "round": 4,
+      "actorId": "a-player",
+      "action": "power",
+      "targetId": "z-drone",
+      "roll": 17,
+      "hit": true,
+      "crit": false,
+      "damage": 17,
+      "targetHpAfter": 108
+    },
+    {
+      "type": "action",
+      "round": 4,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 9,
+      "hit": true,
+      "crit": false,
+      "damage": 12,
+      "targetHpAfter": 64
+    },
+    {
+      "type": "action",
+      "round": 4,
+      "actorId": "b-player",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "round",
+      "round": 5
+    },
+    {
+      "type": "action",
+      "round": 5,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 2,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 108
+    },
+    {
+      "type": "action",
+      "round": 5,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 8,
+      "hit": true,
+      "crit": false,
+      "damage": 12,
+      "targetHpAfter": 52
+    },
+    {
+      "type": "action",
+      "round": 5,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 9,
+      "hit": true,
+      "crit": false,
+      "damage": 6,
+      "targetHpAfter": 102
+    },
+    {
+      "type": "round",
+      "round": 6
+    },
+    {
+      "type": "action",
+      "round": 6,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 6,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 102
+    },
+    {
+      "type": "action",
+      "round": 6,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 12,
+      "hit": true,
+      "crit": false,
+      "damage": 13,
+      "targetHpAfter": 39
+    },
+    {
+      "type": "action",
+      "round": 6,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 4,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 102
+    },
+    {
+      "type": "round",
+      "round": 7
+    },
+    {
+      "type": "action",
+      "round": 7,
+      "actorId": "a-player",
+      "action": "power",
+      "targetId": "z-drone",
+      "roll": 10,
+      "hit": true,
+      "crit": false,
+      "damage": 15,
+      "targetHpAfter": 87
+    },
+    {
+      "type": "action",
+      "round": 7,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 6,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 39
+    },
+    {
+      "type": "action",
+      "round": 7,
+      "actorId": "b-player",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "round",
+      "round": 8
+    },
+    {
+      "type": "action",
+      "round": 8,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 5,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 87
+    },
+    {
+      "type": "action",
+      "round": 8,
+      "actorId": "z-drone",
+      "action": "power",
+      "targetId": "a-player",
+      "roll": 1,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 39
+    },
+    {
+      "type": "action",
+      "round": 8,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 4,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 87
+    },
+    {
+      "type": "round",
+      "round": 9
+    },
+    {
+      "type": "action",
+      "round": 9,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 16,
+      "hit": true,
+      "crit": false,
+      "damage": 13,
+      "targetHpAfter": 74
+    },
+    {
+      "type": "action",
+      "round": 9,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 7,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 39
+    },
+    {
+      "type": "action",
+      "round": 9,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 10,
+      "hit": true,
+      "crit": false,
+      "damage": 5,
+      "targetHpAfter": 69
+    },
+    {
+      "type": "round",
+      "round": 10
+    },
+    {
+      "type": "action",
+      "round": 10,
+      "actorId": "a-player",
+      "action": "power",
+      "targetId": "z-drone",
+      "roll": 4,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 69
+    },
+    {
+      "type": "action",
+      "round": 10,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 14,
+      "hit": true,
+      "crit": false,
+      "damage": 10,
+      "targetHpAfter": 29
+    },
+    {
+      "type": "action",
+      "round": 10,
+      "actorId": "b-player",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "round",
+      "round": 11
+    },
+    {
+      "type": "action",
+      "round": 11,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 16,
+      "hit": true,
+      "crit": false,
+      "damage": 12,
+      "targetHpAfter": 57
+    },
+    {
+      "type": "action",
+      "round": 11,
+      "actorId": "z-drone",
+      "action": "power",
+      "targetId": "a-player",
+      "roll": 16,
+      "hit": true,
+      "crit": false,
+      "damage": 19,
+      "targetHpAfter": 10
+    },
+    {
+      "type": "action",
+      "round": 11,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 20,
+      "hit": true,
+      "crit": true,
+      "damage": 12,
+      "targetHpAfter": 45
+    },
+    {
+      "type": "round",
+      "round": 12
+    },
+    {
+      "type": "action",
+      "round": 12,
+      "actorId": "a-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 11,
+      "hit": true,
+      "crit": false,
+      "damage": 5,
+      "targetHpAfter": 40
+    },
+    {
+      "type": "action",
+      "round": 12,
+      "actorId": "z-drone",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "action",
+      "round": 12,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 12,
+      "hit": true,
+      "crit": false,
+      "damage": 2,
+      "targetHpAfter": 38
+    },
+    {
+      "type": "round",
+      "round": 13
+    },
+    {
+      "type": "action",
+      "round": 13,
+      "actorId": "a-player",
+      "action": "power",
+      "targetId": "z-drone",
+      "roll": 18,
+      "hit": true,
+      "crit": false,
+      "damage": 14,
+      "targetHpAfter": 24
+    },
+    {
+      "type": "action",
+      "round": 13,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "a-player",
+      "roll": 15,
+      "hit": true,
+      "crit": false,
+      "damage": 13,
+      "targetHpAfter": 0
+    },
+    {
+      "type": "action",
+      "round": 13,
+      "actorId": "b-player",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "round",
+      "round": 14
+    },
+    {
+      "type": "action",
+      "round": 14,
+      "actorId": "z-drone",
+      "action": "power",
+      "targetId": "b-player",
+      "roll": 9,
+      "hit": true,
+      "crit": false,
+      "damage": 11,
+      "targetHpAfter": 119
+    },
+    {
+      "type": "action",
+      "round": 14,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 4,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": 24
+    },
+    {
+      "type": "round",
+      "round": 15
+    },
+    {
+      "type": "action",
+      "round": 15,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "b-player",
+      "roll": 19,
+      "hit": true,
+      "crit": false,
+      "damage": 10,
+      "targetHpAfter": 109
+    },
+    {
+      "type": "action",
+      "round": 15,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 15,
+      "hit": true,
+      "crit": false,
+      "damage": 7,
+      "targetHpAfter": 17
+    },
+    {
+      "type": "round",
+      "round": 16
+    },
+    {
+      "type": "action",
+      "round": 16,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "b-player",
+      "roll": 9,
+      "hit": true,
+      "crit": false,
+      "damage": 4,
+      "targetHpAfter": 105
+    },
+    {
+      "type": "action",
+      "round": 16,
+      "actorId": "b-player",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "round",
+      "round": 17
+    },
+    {
+      "type": "action",
+      "round": 17,
+      "actorId": "z-drone",
+      "action": "power",
+      "targetId": "b-player",
+      "roll": 11,
+      "hit": true,
+      "crit": false,
+      "damage": 16,
+      "targetHpAfter": 89
+    },
+    {
+      "type": "action",
+      "round": 17,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 19,
+      "hit": true,
+      "crit": false,
+      "damage": 7,
+      "targetHpAfter": 10
+    },
+    {
+      "type": "round",
+      "round": 18
+    },
+    {
+      "type": "action",
+      "round": 18,
+      "actorId": "z-drone",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "action",
+      "round": 18,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 8,
+      "hit": true,
+      "crit": false,
+      "damage": 4,
+      "targetHpAfter": 6
+    },
+    {
+      "type": "round",
+      "round": 19
+    },
+    {
+      "type": "action",
+      "round": 19,
+      "actorId": "z-drone",
+      "action": "attack",
+      "targetId": "b-player",
+      "roll": 9,
+      "hit": true,
+      "crit": false,
+      "damage": 2,
+      "targetHpAfter": 87
+    },
+    {
+      "type": "action",
+      "round": 19,
+      "actorId": "b-player",
+      "action": "defend",
+      "targetId": null,
+      "roll": null,
+      "hit": false,
+      "crit": false,
+      "damage": 0,
+      "targetHpAfter": null
+    },
+    {
+      "type": "round",
+      "round": 20
+    },
+    {
+      "type": "action",
+      "round": 20,
+      "actorId": "z-drone",
+      "action": "power",
+      "targetId": "b-player",
+      "roll": 16,
+      "hit": true,
+      "crit": false,
+      "damage": 16,
+      "targetHpAfter": 71
+    },
+    {
+      "type": "action",
+      "round": 20,
+      "actorId": "b-player",
+      "action": "attack",
+      "targetId": "z-drone",
+      "roll": 17,
+      "hit": true,
+      "crit": false,
+      "damage": 9,
+      "targetHpAfter": 0
+    },
+    {
+      "type": "end",
+      "round": 20,
+      "winnerSide": "players",
+      "reason": "wipe"
+    }
+  ]
+}
