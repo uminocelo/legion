@@ -1,0 +1,261 @@
+# Perguntas de trivia (pt-BR). Revise antes de publicar: todo fato tem uma fonte.
+# Campos: id (único e estável), category, difficulty (facil|normal|dificil), question,
+# choices (2 a 4), answer (índice em choices, começando em 0), explanation, source.
+
+# ---------- quadrinhos ----------
+- id: quad-0001
+  category: quadrinhos
+  difficulty: facil
+  question: Em que ano os X-Men estrearam nos quadrinhos?
+  choices: ["1961", "1963", "1966", "1970"]
+  answer: 1
+  explanation: X-Men #1 chegou às bancas em 1963.
+  source: https://en.wikipedia.org/wiki/X-Men
+- id: quad-0002
+  category: quadrinhos
+  difficulty: facil
+  question: Quem criou os X-Men?
+  choices:
+    [
+      "Stan Lee e Jack Kirby",
+      "Chris Claremont e John Byrne",
+      "Stan Lee e Steve Ditko",
+      "Jim Lee e Fabian Nicieza",
+    ]
+  answer: 0
+  explanation: Stan Lee e Jack Kirby criaram a equipe em X-Men #1 (1963).
+  source: https://en.wikipedia.org/wiki/X-Men
+- id: quad-0003
+  category: quadrinhos
+  difficulty: facil
+  question: De que metal é revestido o esqueleto do Wolverine?
+  choices: ["Vibranium", "Adamantium", "Uru", "Carbonádio"]
+  answer: 1
+  explanation: O esqueleto do Wolverine é revestido de adamantium.
+  source: https://en.wikipedia.org/wiki/Adamantium
+- id: quad-0004
+  category: quadrinhos
+  difficulty: normal
+  question: Em qual revista o Wolverine fez sua primeira aparição completa?
+  choices: ["X-Men #1", "Giant-Size X-Men #1", "The Incredible Hulk #181", "Marvel Comics Presents #72"]
+  answer: 2
+  explanation: A primeira aparição completa foi em The Incredible Hulk #181 (1974).
+  source: https://en.wikipedia.org/wiki/Wolverine_(character)
+- id: quad-0005
+  category: quadrinhos
+  difficulty: facil
+  question: Como se chama a sala de treinamento dos X-Men?
+  choices: ["Sala de Perigo", "Sala de Guerra", "Cérebro", "Arena Shi'ar"]
+  answer: 0
+  explanation: A Sala de Perigo (Danger Room) é o espaço de treino da equipe.
+  source: https://en.wikipedia.org/wiki/Danger_Room
+- id: quad-0006
+  category: quadrinhos
+  difficulty: normal
+  question: Qual é o nome do avião usado pelos X-Men?
+  choices: ["Quinjet", "Pássaro Negro", "Fantasticarro", "Starjammer"]
+  answer: 1
+  explanation: O jato dos X-Men é o Pássaro Negro (Blackbird); o Quinjet é dos Vingadores.
+  source: https://en.wikipedia.org/wiki/X-Jet
+- id: quad-0007
+  category: quadrinhos
+  difficulty: normal
+  question: Qual era o codinome original de Jean Grey na primeira formação dos X-Men?
+  choices: ["Fênix", "Garota Marvel", "Rainha Branca", "Mulher Invisível"]
+  answer: 1
+  explanation: Jean Grey estreou como Garota Marvel (Marvel Girl) em 1963.
+  source: https://en.wikipedia.org/wiki/Jean_Grey
+- id: quad-0008
+  category: quadrinhos
+  difficulty: dificil
+  question: Qual revista de 1975 apresentou a nova formação dos X-Men com Tempestade, Noturno e Colossus?
+  choices: ["Giant-Size X-Men #1", "X-Men #94", "Uncanny X-Men #129", "Marvel Team-Up #4"]
+  answer: 0
+  explanation: Giant-Size X-Men #1 (1975) trouxe a nova equipe internacional.
+  source: https://en.wikipedia.org/wiki/Giant-Size_X-Men
+- id: quad-0009
+  category: quadrinhos
+  difficulty: normal
+  question: Qual ilha viva virou a nação mutante a partir da saga "House of X" (2019)?
+  choices: ["Genosha", "Krakoa", "Ilha Muir", "Utopia"]
+  answer: 1
+  explanation: Em House of X (2019), Krakoa se torna o lar e a nação dos mutantes.
+  source: https://en.wikipedia.org/wiki/Krakoa
+- id: quad-0010
+  category: quadrinhos
+  difficulty: facil
+  question: Qual é o poder principal do Magneto?
+  choices: ["Telepatia", "Controle do magnetismo", "Controle do clima", "Teletransporte"]
+  answer: 1
+  explanation: Magneto controla campos magnéticos e metais.
+  source: https://en.wikipedia.org/wiki/Magneto_(Marvel_Comics)
+
+# ---------- rivals (Marvel Rivals) ----------
+- id: rivals-0001
+  category: rivals
+  difficulty: facil
+  question: Qual empresa desenvolveu Marvel Rivals?
+  choices: ["Blizzard Entertainment", "NetEase Games", "Insomniac Games", "Riot Games"]
+  answer: 1
+  explanation: Marvel Rivals foi desenvolvido e publicado pela NetEase Games.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0002
+  category: rivals
+  difficulty: facil
+  question: Em que ano Marvel Rivals foi lançado?
+  choices: ["2022", "2023", "2024", "2025"]
+  answer: 2
+  explanation: O jogo foi lançado em 6 de dezembro de 2024.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0003
+  category: rivals
+  difficulty: facil
+  question: Quantos jogadores tem cada time numa partida padrão de Marvel Rivals?
+  choices: ["4", "5", "6", "8"]
+  answer: 2
+  explanation: As partidas são 6 contra 6.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0004
+  category: rivals
+  difficulty: facil
+  question: Em Marvel Rivals, qual função é focada em curar e apoiar aliados?
+  choices: ["Vanguarda", "Duelista", "Estrategista", "Atirador"]
+  answer: 2
+  explanation: Estrategistas (Strategists) são os heróis de suporte e cura.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0005
+  category: rivals
+  difficulty: facil
+  question: Em Marvel Rivals, qual função aguenta dano e protege o time na linha de frente?
+  choices: ["Vanguarda", "Duelista", "Estrategista", "Especialista"]
+  answer: 0
+  explanation: Vanguardas (Vanguards) são os tanques do jogo.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0006
+  category: rivals
+  difficulty: normal
+  question: Qual é o modelo de negócio de Marvel Rivals?
+  choices:
+    [
+      "Pago, preço cheio",
+      "Gratuito para jogar (free-to-play)",
+      "Somente assinatura",
+      "Acesso antecipado pago",
+    ]
+  answer: 1
+  explanation: Marvel Rivals é gratuito para jogar, com itens cosméticos opcionais.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0007
+  category: rivals
+  difficulty: normal
+  question: Em qual destes consoles Marvel Rivals foi lançado?
+  choices: ["PlayStation 4", "Nintendo Switch", "PlayStation 5", "Wii U"]
+  answer: 2
+  explanation: O lançamento foi para PC, PlayStation 5 e Xbox Series X/S.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0008
+  category: rivals
+  difficulty: normal
+  question: A que gênero de jogo Marvel Rivals pertence?
+  choices: ["MOBA", "Battle royale", "Hero shooter em equipe", "Jogo de luta 2D"]
+  answer: 2
+  explanation: É um hero shooter em terceira pessoa, jogado em equipes.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0009
+  category: rivals
+  difficulty: dificil
+  question: Como se chamam as habilidades especiais que surgem quando certos heróis jogam juntos em Marvel Rivals?
+  choices: ["Team-Up", "Combo Final", "Sinergia X", "Fusão"]
+  answer: 0
+  explanation: As habilidades Team-Up dão bônus quando heróis específicos estão no mesmo time.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+- id: rivals-0010
+  category: rivals
+  difficulty: dificil
+  question: Qual motor gráfico Marvel Rivals usa?
+  choices: ["Unity", "Unreal Engine 5", "Source 2", "Frostbite"]
+  answer: 1
+  explanation: O jogo foi feito na Unreal Engine 5.
+  source: https://en.wikipedia.org/wiki/Marvel_Rivals
+
+# ---------- geral ----------
+- id: geral-0001
+  category: geral
+  difficulty: facil
+  question: Qual foi o primeiro filme do Universo Cinematográfico Marvel (MCU)?
+  choices: ["O Incrível Hulk", "Homem de Ferro", "Thor", "Capitão América: O Primeiro Vingador"]
+  answer: 1
+  explanation: Homem de Ferro (2008) abriu o MCU.
+  source: https://en.wikipedia.org/wiki/Iron_Man_(2008_film)
+- id: geral-0002
+  category: geral
+  difficulty: normal
+  question: Com que nome a Marvel foi fundada em 1939?
+  choices: ["Atlas Comics", "Timely Comics", "National Comics", "Fawcett Comics"]
+  answer: 1
+  explanation: A editora começou como Timely Comics em 1939.
+  source: https://en.wikipedia.org/wiki/Timely_Comics
+- id: geral-0003
+  category: geral
+  difficulty: normal
+  question: Em que ano a Disney anunciou a compra da Marvel Entertainment?
+  choices: ["2006", "2009", "2012", "2015"]
+  answer: 1
+  explanation: A Disney anunciou a aquisição em 2009.
+  source: https://en.wikipedia.org/wiki/Marvel_Entertainment
+- id: geral-0004
+  category: geral
+  difficulty: facil
+  question: De que metal é feito o escudo do Capitão América no MCU?
+  choices: ["Adamantium", "Vibranium", "Titânio", "Uru"]
+  answer: 1
+  explanation: No MCU, o escudo é feito de vibranium.
+  source: https://en.wikipedia.org/wiki/Captain_America%27s_shield
+- id: geral-0005
+  category: geral
+  difficulty: facil
+  question: Como se chama o martelo do Thor?
+  choices: ["Gungnir", "Mjolnir", "Stormbreaker", "Jarnbjorn"]
+  answer: 1
+  explanation: O martelo do Thor é o Mjolnir, forjado em uru.
+  source: https://en.wikipedia.org/wiki/Mjolnir_(comics)
+- id: geral-0006
+  category: geral
+  difficulty: facil
+  question: De qual país fictício o Pantera Negra é rei?
+  choices: ["Latvéria", "Wakanda", "Genosha", "Madripoor"]
+  answer: 1
+  explanation: T'Challa, o Pantera Negra, é rei de Wakanda.
+  source: https://en.wikipedia.org/wiki/Wakanda
+- id: geral-0007
+  category: geral
+  difficulty: normal
+  question: Em qual revista o Homem-Aranha apareceu pela primeira vez?
+  choices: ["Amazing Fantasy #15", "Tales of Suspense #39", "Journey into Mystery #83", "Strange Tales #110"]
+  answer: 0
+  explanation: Amazing Fantasy #15 (1962) trouxe a estreia do Homem-Aranha.
+  source: https://en.wikipedia.org/wiki/Amazing_Fantasy
+- id: geral-0008
+  category: geral
+  difficulty: normal
+  question: Em que ano o Quarteto Fantástico estreou nos quadrinhos?
+  choices: ["1958", "1961", "1964", "1967"]
+  answer: 1
+  explanation: The Fantastic Four #1 é de 1961.
+  source: https://en.wikipedia.org/wiki/Fantastic_Four
+- id: geral-0009
+  category: geral
+  difficulty: dificil
+  question: Quem dirigiu o filme X-Men lançado em 2000?
+  choices: ["Bryan Singer", "Brett Ratner", "Matthew Vaughn", "Sam Raimi"]
+  answer: 0
+  explanation: X-Men (2000) foi dirigido por Bryan Singer.
+  source: https://en.wikipedia.org/wiki/X-Men_(film)
+- id: geral-0010
+  category: geral
+  difficulty: normal
+  question: Em que ano morreu Stan Lee?
+  choices: ["2016", "2017", "2018", "2019"]
+  answer: 2
+  explanation: Stan Lee morreu em 12 de novembro de 2018.
+  source: https://en.wikipedia.org/wiki/Stan_Lee

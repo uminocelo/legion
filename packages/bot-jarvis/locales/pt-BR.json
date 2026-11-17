@@ -1,0 +1,96 @@
+{
+  "jarvis": {
+    "errors": {
+      "not_registered": "Você ainda não é um mutante registrado. Comece pelo canal {welcome}.",
+      "not_staff": "Apenas a staff pode usar este comando.",
+      "cooldown": "Calma, agente. Próxima pergunta em {seconds}s.",
+      "no_questions": "Não há perguntas disponíveis{category} agora. Avise a staff.",
+      "not_your_question": "Esta pergunta é de outra pessoa. Use /trivia para a sua.",
+      "unknown_attempt": "Não encontrei esta pergunta. Use /trivia para uma nova.",
+      "unknown_member": "Esse membro ainda não é um mutante registrado.",
+      "ranking_cooldown": "O ranking acabou de ser mostrado aqui. Tente de novo em {seconds}s."
+    },
+    "trivia": {
+      "title": "🧠 Trivia de {category}",
+      "difficulty": { "facil": "Fácil", "normal": "Normal", "dificil": "Difícil" },
+      "category": { "quadrinhos": "Quadrinhos", "rivals": "Marvel Rivals", "geral": "Geral" },
+      "meta": "Dificuldade: {difficulty} · Responda em {seconds}s",
+      "correct": "✅ Correto!",
+      "wrong": "❌ Errado.",
+      "expired": "⏱️ Tempo esgotado.",
+      "answer_was": "Resposta certa: **{answer}**",
+      "xp_gained": "+{xp} XP",
+      "xp_capped": "Você já ganhou o máximo de XP de trivia hoje ({cap}). A resposta conta para estatísticas e sequência.",
+      "xp_partial": "+{xp} XP (limite diário de trivia atingido)",
+      "streak_bonus": "🔥 Sequência de {streak} dia(s): +{bonus} XP de bônus",
+      "level_up": "⬆️ Nível {level}!",
+      "progress": "Nível {level} {bar} {xp} XP",
+      "next": "Próxima pergunta",
+      "source": "Fonte"
+    },
+    "ranking": {
+      "title": "🏆 Ranking — {period}",
+      "title_faction": "🏆 Ranking — {period} · {faction}",
+      "period": { "semana": "esta semana", "mes": "este mês", "total": "geral" },
+      "line": "**{pos}.** {emoji} {codename} — {xp} XP · nível {level}",
+      "you": "Você: **{pos}º** com {xp} XP",
+      "you_none": "Você ainda não tem XP neste período.",
+      "empty": "Ninguém ganhou XP neste período ainda. Que tal um /trivia?",
+      "factions": "Facções: {totals}"
+    },
+    "streak": {
+      "title": "🔥 Sua sequência",
+      "current": "Atual",
+      "best": "Melhor",
+      "days": "{count} dia(s)",
+      "today_done": "✅ Hoje já conta para a sequência.",
+      "today_pending": "⏳ Hoje ainda não conta. Ganhe XP (por exemplo com /trivia) até a meia-noite.",
+      "tomorrow": "Bônus de amanhã: +{bonus} XP"
+    },
+    "profile": {
+      "level": "Nível",
+      "xp": "XP",
+      "streak": "Sequência",
+      "streak_value": "{current} (melhor: {best})"
+    },
+    "staff": {
+      "xp_done": "XP ajustado: {amount} para {member} (motivo: {reason}). Total: {total} XP, nível {level}, rank {rank}.",
+      "xp_invalid": "A quantidade deve estar entre -1000 e 1000 e não pode ser 0.",
+      "reload": "Perguntas recarregadas: {added} novas, {updated} atualizadas, {deactivated} desativadas, {unchanged} iguais.",
+      "reload_errors": "Erros ({count}):",
+      "reload_errors_kept": "Por causa dos erros, nenhuma pergunta foi desativada.",
+      "stats_title": "📊 Trivia — estatísticas",
+      "stats_per_category": "Perguntas ativas por categoria",
+      "stats_lowest": "Menor taxa de acerto (mín. 3 respostas)",
+      "stats_lowest_line": "`{id}` {rate}% ({n} respostas)",
+      "stats_today": "Tentativas hoje",
+      "stats_none": "—",
+      "recalc": "Progresso de {member} recalculado do ledger: {before} → {after} XP, nível {level}, rank {rank}."
+    },
+    "help": {
+      "trivia": "Responda uma pergunta rápida e ganhe XP.",
+      "ranking": "Veja quem mais ganhou XP na semana, no mês ou no total.",
+      "sequencia": "Veja sua sequência de dias ativos e o bônus de amanhã."
+    },
+    "commands": {
+      "trivia": { "description": "Responda uma pergunta e ganhe XP", "categoria": "Categoria da pergunta" },
+      "ranking": {
+        "description": "Ranking de XP",
+        "periodo": "Período (padrão: semana)",
+        "faccao": "Filtrar por facção"
+      },
+      "sequencia": { "description": "Sua sequência de dias ativos" },
+      "jarvis": {
+        "description": "Ferramentas da staff do J.A.R.V.I.S.",
+        "xp": "Adicionar ou remover XP de um membro",
+        "membro": "Membro",
+        "quantidade": "Quantidade (-1000 a 1000)",
+        "motivo": "Motivo",
+        "trivia": "Ferramentas de trivia",
+        "recarregar": "Recarregar as perguntas dos arquivos",
+        "estatisticas": "Estatísticas das perguntas",
+        "recalcular": "Recalcular o progresso de um membro a partir do ledger"
+      }
+    }
+  }
+}

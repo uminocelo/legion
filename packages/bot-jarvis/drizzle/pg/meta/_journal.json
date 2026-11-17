@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794873855364,
+      "tag": "0000_jarvis_init",
+      "breakpoints": true
+    }
+  ]
+}

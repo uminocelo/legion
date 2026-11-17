@@ -71,7 +71,7 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose run --rm legion legion register-commands` — registra os comandos de barra agora.
 - `docker compose logs -f` — logs.
 
-No servidor: `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil`, `/cerebro preferencias`.
+No servidor: `/trivia`, `/ranking`, `/sequencia` e `/jarvis` (com J.A.R.V.I.S.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil`, `/cerebro preferencias`.
 
 ## Atualizar
 
@@ -86,7 +86,18 @@ Tudo fica em `./data`. Pare (`docker compose stop`), copie a pasta `./data` e su
 
 ## Ligar mais bots
 
-Adicione o bot em `bots:` no `legion.config.yaml` (o Cérebro é sempre obrigatório) e reinicie. Nesta versão só o Cérebro está disponível.
+Adicione o bot em `bots:` no `legion.config.yaml` (o Cérebro é sempre obrigatório) e reinicie. Disponíveis: `cerebro` e `jarvis`.
+
+### J.A.R.V.I.S. (trivia e XP)
+
+Com `bots: [cerebro, jarvis]`, rode `legion register-commands` (ou reinicie) e os membros registrados ganham:
+
+- `/trivia [categoria]`: pergunta rápida e só sua (quadrinhos, Marvel Rivals, geral). Acerto rápido vale mais XP; há limite diário.
+- `/ranking [período] [facção]`: quem mais ganhou XP na semana (começa na segunda), no mês ou no total.
+- `/sequencia`: dias seguidos com XP e o bônus de amanhã.
+- `/perfil` passa a mostrar nível, XP e sequência. Ao cruzar 500 e 2000 XP, o Cérebro troca o cargo para Agente e Veterano.
+
+Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia recarregar`, `/jarvis trivia estatisticas`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Para adicionar perguntas suas, veja [docs/CONFIG.md](docs/CONFIG.md#perguntas).
 
 ## Desenvolvimento
 

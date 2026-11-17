@@ -1,0 +1,293 @@
+import type { BotContext, I18n, IncomingInteraction, Responder, SlashCommandDefinition } from '@legion/core';
+import type { JarvisConfig } from './config.js';
+import { PERIODS } from './domain/periods.js';
+import type { JarvisLeaderboard } from './leaderboard.js';
+import type { JarvisServices } from './services.js';
+import type { JarvisTrivia } from './trivia.js';
+
+const desc = (i18n: I18n, key: string) => ({
+  description: i18n.t(key, {}, 'pt-BR').slice(0, 100),
+  description_localizations: { 'en-US': i18n.t(key, {}, 'en').slice(0, 100) },
+});
+
+export function jarvisCommands(
+  ctx: BotContext<JarvisConfig>,
+  s: JarvisServices,
+  trivia: JarvisTrivia,
+  board: JarvisLeaderboard,
+): SlashCommandDefinition[] {
+  const { i18n } = ctx;
+  const ui = trivia.ui;
+  const staffOnly = async (i: IncomingInteraction, r: Responder) => {
+    if (await ctx.isStaff(i)) return true;
+    await r.reply(ui.text(ui.t('jarvis.errors.not_staff', {}, await i18n.localeFor(i.userId))));
+    return false;
+  };
+  const choice = (value: string, key: string) => ({
+    name: i18n.t(key, {}, 'pt-BR'),
+    name_localizations: { 'en-US': i18n.t(key, {}, 'en') },
+    value,
+  });
+  const categories = ctx.botConfig.trivia.categories.map((c) => choice(c, `jarvis.trivia.category.${c}`));
+
+  return [
+    {
+      name: 'trivia',
+      json: {
+        name: 'trivia',
+        ...desc(i18n, 'jarvis.commands.trivia.description'),
+        options: [
+          {
+            type: 3,
+            name: 'categoria',
+            name_localizations: { 'en-US': 'category' },
+            required: false,
+            choices: categories,
+            ...desc(i18n, 'jarvis.commands.trivia.categoria'),
+          },
+        ],
+      },
+      execute: (i, r) =>
+        trivia.ask(i, r, typeof i.options?.categoria === 'string' ? i.options.categoria : null),
+    },
+    {
+      name: 'ranking',
+      json: {
+        name: 'ranking',
+        name_localizations: { 'en-US': 'leaderboard' },
+        ...desc(i18n, 'jarvis.commands.ranking.description'),
+        options: [
+          {
+            type: 3,
+            name: 'periodo',
+            name_localizations: { 'en-US': 'period' },
+            required: false,
+            choices: PERIODS.map((p) => choice(p, `jarvis.ranking.period.${p}`)),
+            ...desc(i18n, 'jarvis.commands.ranking.periodo'),
+          },
+          {
+            type: 3,
+            name: 'faccao',
+            name_localizations: { 'en-US': 'faction' },
+            required: false,
+            choices: ctx.config.factions.map((f) => choice(f.key, `cerebro.faction.${f.key}.name`)),
+            ...desc(i18n, 'jarvis.commands.ranking.faccao'),
+          },
+        ],
+      },
+      execute: (i, r) => board.command(i, r),
+    },
+    {
+      name: 'sequencia',
+      json: {
+        name: 'sequencia',
+        name_localizations: { 'en-US': 'streak' },
+        ...desc(i18n, 'jarvis.commands.sequencia.description'),
+      },
+      execute: async (i, r) => {
+        const l = await i18n.localeFor(i.userId);
+        const m = await trivia.registered(i, r, l);
+        if (m) await r.reply(await board.streak(m.id, l));
+      },
+    },
+    {
+      name: 'jarvis',
+      json: {
+        name: 'jarvis',
+        ...desc(i18n, 'jarvis.commands.jarvis.description'),
+        default_member_permissions: '0',
+        options: [
+          {
+            type: 1,
+            name: 'xp',
+            ...desc(i18n, 'jarvis.commands.jarvis.xp'),
+            options: [
+              {
+                type: 6,
+                name: 'membro',
+                name_localizations: { 'en-US': 'member' },
+                required: true,
+                ...desc(i18n, 'jarvis.commands.jarvis.membro'),
+              },
+              {
+                type: 4,
+                name: 'quantidade',
+                name_localizations: { 'en-US': 'amount' },
+                required: true,
+                min_value: -1000,
+                max_value: 1000,
+                ...desc(i18n, 'jarvis.commands.jarvis.quantidade'),
+              },
+              {
+                type: 3,
+                name: 'motivo',
+                name_localizations: { 'en-US': 'reason' },
+                required: true,
+                max_length: 200,
+                ...desc(i18n, 'jarvis.commands.jarvis.motivo'),
+              },
+            ],
+          },
+          {
+            type: 2,
+            name: 'trivia',
+            ...desc(i18n, 'jarvis.commands.jarvis.trivia'),
+            options: [
+              {
+                type: 1,
+                name: 'recarregar',
+                name_localizations: { 'en-US': 'reload' },
+                ...desc(i18n, 'jarvis.commands.jarvis.recarregar'),
+              },
+              {
+                type: 1,
+                name: 'estatisticas',
+                name_localizations: { 'en-US': 'stats' },
+                ...desc(i18n, 'jarvis.commands.jarvis.estatisticas'),
+              },
+            ],
+          },
+          {
+            type: 1,
+            name: 'recalcular',
+            name_localizations: { 'en-US': 'recalculate' },
+            ...desc(i18n, 'jarvis.commands.jarvis.recalcular'),
+            options: [
+              {
+                type: 6,
+                name: 'membro',
+                name_localizations: { 'en-US': 'member' },
+                required: true,
+                ...desc(i18n, 'jarvis.commands.jarvis.membro'),
+              },
+            ],
+          },
+        ],
+      },
+      execute: async (i, r) => {
+        if (!(await staffOnly(i, r))) return;
+        const l = await i18n.localeFor(i.userId);
+        const sub = i.subcommand;
+        if (sub === 'xp') return staffXp(ctx, s, i, r, l);
+        if (sub === 'trivia recarregar') {
+          const res = await trivia.reload();
+          const { errors, ...counts } = res;
+          const lines = [ui.t('jarvis.staff.reload', counts, l)];
+          if (errors.length) {
+            lines.push(
+              '',
+              ui.t('jarvis.staff.reload_errors', { count: errors.length }, l),
+              ...errors.slice(0, 15).map((e) => `• ${e}`),
+            );
+            lines.push(ui.t('jarvis.staff.reload_errors_kept', {}, l));
+          }
+          return r.reply(ui.text(lines.join('\n').slice(0, 1900)));
+        }
+        if (sub === 'trivia estatisticas') return r.reply(await staffStats(ctx, s, trivia, l));
+        if (sub === 'recalcular') {
+          const member = await ctx.read.members.getByDiscordId(String(i.options?.membro ?? ''));
+          if (!member) return r.reply(ui.text(ui.t('jarvis.errors.unknown_member', {}, l)));
+          const { before, after } = await s.xp.recalculate(member.id);
+          return r.reply(
+            ui.text(
+              ui.t(
+                'jarvis.staff.recalc',
+                {
+                  member: `<@${member.discordUserId}>`,
+                  before: before?.xp ?? 0,
+                  after: after.xp,
+                  level: after.level,
+                  rank: after.rank,
+                },
+                l,
+              ),
+            ),
+          );
+        }
+      },
+    },
+  ];
+}
+
+async function staffXp(
+  ctx: BotContext<JarvisConfig>,
+  s: JarvisServices,
+  i: IncomingInteraction,
+  r: Responder,
+  l: 'pt-BR' | 'en',
+) {
+  const t = (k: string, v: Record<string, string | number> = {}) => ctx.i18n.t(k, v, l);
+  const amount = Number(i.options?.quantidade);
+  const reason = String(i.options?.motivo ?? '').trim();
+  if (!Number.isInteger(amount) || amount === 0 || Math.abs(amount) > 1000)
+    return r.reply({ persona: 'jarvis', ephemeral: true, content: t('jarvis.staff.xp_invalid') });
+  const member = await ctx.read.members.getByDiscordId(String(i.options?.membro ?? ''));
+  if (!member)
+    return r.reply({ persona: 'jarvis', ephemeral: true, content: t('jarvis.errors.unknown_member') });
+  const res = await ctx.bus.transaction((tx) =>
+    s.xp.award(tx, {
+      memberId: member.id,
+      amount,
+      reason: 'admin_adjust',
+      note: `${reason} (por ${i.userId})`.slice(0, 300),
+      sourceKey: `admin:${i.id}`,
+    }),
+  );
+  ctx.log.info({ staff: i.userId, memberId: member.id, amount, reason }, 'staff XP adjustment');
+  const p = res.progress;
+  return r.reply({
+    persona: 'jarvis',
+    ephemeral: true,
+    content: t('jarvis.staff.xp_done', {
+      amount: amount > 0 ? `+${amount}` : String(amount),
+      member: `<@${member.discordUserId}>`,
+      reason,
+      total: p?.xp ?? 0,
+      level: p?.level ?? 1,
+      rank: p?.rank ?? 'recruta',
+    }),
+  });
+}
+
+async function staffStats(
+  ctx: BotContext<JarvisConfig>,
+  s: JarvisServices,
+  trivia: JarvisTrivia,
+  l: 'pt-BR' | 'en',
+) {
+  const t = (k: string, v: Record<string, string | number> = {}) => ctx.i18n.t(k, v, l);
+  const questions = (await s.repo.allQuestions()).filter((q) => q.active === 1);
+  const perCat = ctx.botConfig.trivia.categories.map(
+    (c) => `${trivia.ui.category(c, l)}: ${questions.filter((q) => q.category === c).length}`,
+  );
+  const acc = new Map<string, { n: number; ok: number }>();
+  for (const a of await s.repo.answeredAttempts()) {
+    const e = acc.get(a.questionId) ?? { n: 0, ok: 0 };
+    e.n++;
+    if (a.correct) e.ok++;
+    acc.set(a.questionId, e);
+  }
+  const lowest = [...acc.entries()]
+    .filter(([, e]) => e.n >= 3)
+    .map(([id, e]) => ({ id, n: e.n, rate: Math.round((100 * e.ok) / e.n) }))
+    .sort((a, b) => a.rate - b.rate || b.n - a.n)
+    .slice(0, 5)
+    .map((x) => t('jarvis.staff.stats_lowest_line', x));
+  return {
+    persona: 'jarvis' as const,
+    ephemeral: true,
+    embeds: [
+      {
+        title: t('jarvis.staff.stats_title'),
+        fields: [
+          {
+            name: t('jarvis.staff.stats_per_category'),
+            value: perCat.join('\n') || t('jarvis.staff.stats_none'),
+          },
+          { name: t('jarvis.staff.stats_lowest'), value: lowest.join('\n') || t('jarvis.staff.stats_none') },
+          { name: t('jarvis.staff.stats_today'), value: String(await trivia.attemptsToday()) },
+        ],
+      },
+    ],
+  };
+}
