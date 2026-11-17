@@ -6,6 +6,8 @@ export const cerebroConfigSchema = z
     welcomePing: z.boolean().default(true),
     persistentWelcome: z.boolean().default(true),
     publicRegistryCard: z.boolean().default(true),
+    /** `/perfil` and Compartilhar attach the sheet as a PNG card. */
+    profileCard: z.boolean().default(true),
     codename: z
       .object({ min: z.number().int().min(1).default(2), max: z.number().int().max(32).default(32) })
       .prefault({}),

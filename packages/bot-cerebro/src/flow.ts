@@ -5,6 +5,7 @@ import {
   type IncomingInteraction,
   isArchetype,
   type Locale,
+  type OutgoingMessage,
   type Responder,
 } from '@legion/core';
 import { z } from 'zod';
@@ -13,6 +14,7 @@ import { CerebroRepo, type MemberRow, type MutantRow, pendingPowersOf, toMemberV
 import { validateCodename } from './domain/codename.js';
 import { expectedRoles, transition } from './domain/onboarding.js';
 import { PowerFlow } from './power-flow.js';
+import { CARD_FILE, SheetCard } from './sheet.js';
 import { CerebroUi, channelMention } from './ui.js';
 
 const stepOf = (row: MemberRow) => toMemberView(row).onboardingStep;
@@ -25,6 +27,7 @@ export class CerebroFlow {
   readonly repo: CerebroRepo;
   readonly ui: CerebroUi;
   readonly powers: PowerFlow;
+  readonly sheet: SheetCard;
 
   constructor(readonly ctx: BotContext<CerebroConfig>) {
     this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
@@ -33,6 +36,7 @@ export class CerebroFlow {
       factions: ctx.config.factions.map((f) => ({ key: f.key, emoji: f.emoji })),
     });
     this.powers = new PowerFlow(this);
+    this.sheet = new SheetCard(this);
   }
 
   /** "★ main · secondary…" or null when the mutant has no catalog powers. */
@@ -445,7 +449,22 @@ export class CerebroFlow {
       locale,
       (bot, err) => this.ctx.log.warn({ err, section: bot }, 'profile section failed'),
     );
-    await r.reply(this.ui.profile(row, mutant, locale, extra, await this.powersLine(mutant, locale)));
+    const msg = this.ui.profile(row, mutant, locale, extra, await this.powersLine(mutant, locale));
+    await r.reply(await this.withCard(msg, row, mutant, locale));
+  }
+
+  /** Adds the PNG card to the first embed (faction color, image) when it renders. */
+  private async withCard(msg: OutgoingMessage, row: MemberRow, mutant: MutantRow, locale?: Locale) {
+    const color = this.sheet.factionColor(row.faction);
+    const [first, ...rest] = msg.embeds ?? [];
+    const embed = first && color ? { ...first, color: Number.parseInt(color.slice(1), 16) } : first;
+    const file = await this.sheet.file(row, mutant, locale);
+    if (!embed) return msg;
+    return {
+      ...msg,
+      embeds: [file ? { ...embed, image: { url: `attachment://${CARD_FILE}` } } : embed, ...rest],
+      ...(file ? { files: [file] } : {}),
+    };
   }
 
   async share(i: IncomingInteraction, r: Responder, memberId: string): Promise<void> {
@@ -458,10 +477,17 @@ export class CerebroFlow {
       this.ctx.i18n.defaultLocale,
     );
     try {
-      await this.ctx.gateway.sendMessage(i.channelId, {
-        persona: 'cerebro',
-        embeds: [this.ui.profileEmbed(row, mutant, undefined, extra, await this.powersLine(mutant))],
-      });
+      await this.ctx.gateway.sendMessage(
+        i.channelId,
+        await this.withCard(
+          {
+            persona: 'cerebro',
+            embeds: [this.ui.profileEmbed(row, mutant, undefined, extra, await this.powersLine(mutant))],
+          },
+          row,
+          mutant,
+        ),
+      );
       await r.reply(this.ui.text(this.t('profile.shared', {}, locale)));
     } catch (err) {
       if (!(err instanceof GatewayError)) throw err;

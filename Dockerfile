@@ -40,6 +40,7 @@ COPY --from=build /app/packages/bot-cerebro/dist packages/bot-cerebro/dist
 COPY --from=build /app/packages/bot-cerebro/locales packages/bot-cerebro/locales
 COPY --from=build /app/packages/bot-cerebro/drizzle packages/bot-cerebro/drizzle
 COPY --from=build /app/packages/bot-cerebro/content packages/bot-cerebro/content
+COPY --from=build /app/packages/bot-cerebro/assets packages/bot-cerebro/assets
 COPY --from=build /app/packages/bot-jarvis/dist packages/bot-jarvis/dist
 COPY --from=build /app/packages/bot-jarvis/locales packages/bot-jarvis/locales
 COPY --from=build /app/packages/bot-jarvis/drizzle packages/bot-jarvis/drizzle

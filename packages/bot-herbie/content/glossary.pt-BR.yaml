@@ -10,9 +10,16 @@
 - id: arquetipos
   term: "Arquétipos"
   aliases: [arquetipo, arquétipo, classe]
-  summary: "O tipo do seu mutante (Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Escolhido no cadastro."
-  details: "O arquétipo descreve o estilo do seu mutante e aparece na ficha. A lista pode ser mudada pela staff do servidor. Em versões futuras ele influencia o combate."
+  summary: "O tipo do seu mutante (Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Definido pelo seu poder principal no cadastro."
+  details: "O arquétipo vem do tipo do seu poder principal (ou do menu, se o servidor desligou o catálogo de poderes) e define seus atributos base de combate. A staff pode mudar a lista e qual tipo de poder leva a qual arquétipo."
   related: [faccoes, codinome]
+  bot: cerebro
+- id: poderes
+  term: "Poderes"
+  aliases: [catalogo, catálogo, poder principal, poderes secundarios, poderes secundários, /mutante poderes]
+  summary: "No cadastro você escolhe 1 poder principal e até 2 secundários de um catálogo. O tipo do principal define seu arquétipo."
+  details: "São 6 tipos: ofensivo, defensivo, psiônico, elemental, movimento e utilitário. Os secundários aparecem na ficha e no cartão do /perfil, sem mudar atributos. Quem se registrou antes do catálogo usa /mutante poderes uma vez. Você também descreve o poder com suas palavras na ficha."
+  related: [arquetipos, codinome]
   bot: cerebro
 - id: codinome
   term: "Codinome"
@@ -85,55 +92,55 @@
   term: "Combate"
   aliases: [luta, batalha, duelo]
   summary: "Disputas entre mutantes em turnos, decididas por atributos e um pouco de sorte."
-  details: "O combate chega numa próxima versão. Ele usa poder, defesa, velocidade e foco do seu mutante."
+  details: "Lutas em turnos com botões Atacar, Poder e Defender. Treine com /treino; missões com luta, invasões e raids usam o mesmo sistema. Todo combate tem semente e pode ser conferido pela staff. Regras completas em docs/COMBAT.md."
   related: [poder, defesa, velocidade, foco]
   bot: sentinel
 - id: poder
-  term: "Poder"
-  aliases: [ataque, força]
+  term: "Ataque (ATQ)"
+  aliases: [ataque, atq, força, poder]
   summary: "Atributo de combate que define o dano dos seus golpes."
-  details: "Faz parte do sistema de combate de uma próxima versão."
+  details: "Ataque (ATQ): soma no dano do botão Atacar. Sobe 1 por nível; o arquétipo define a base."
   related: [combate]
   bot: sentinel
 - id: defesa
   term: "Defesa"
   aliases: [resistência, armadura]
   summary: "Atributo de combate que reduz o dano recebido."
-  details: "Faz parte do sistema de combate de uma próxima versão."
+  details: "Defesa (DEF): tira dano de cada golpe recebido. Defender ainda corta o dano pela metade naquela rodada."
   related: [combate]
   bot: sentinel
 - id: velocidade
   term: "Velocidade"
   aliases: [rapidez, iniciativa]
   summary: "Atributo de combate que define quem age primeiro."
-  details: "Faz parte do sistema de combate de uma próxima versão."
+  details: "Velocidade (VEL): quem tem mais age primeiro na rodada, e ela ajuda a acertar e a desviar."
   related: [combate]
   bot: sentinel
 - id: foco
   term: "Foco"
   aliases: [concentração, precisão]
   summary: "Atributo de combate ligado a acertos e efeitos especiais."
-  details: "Faz parte do sistema de combate de uma próxima versão."
+  details: "Foco (FOCO): define o dano do botão Poder, que fica alguns turnos em recarga depois de usado."
   related: [combate]
   bot: sentinel
 - id: evento-mundial
   term: "Evento mundial"
   aliases: [invasão, evento, world event]
   summary: "Acontecimentos que afetam o servidor inteiro, anunciados pelo ULTRON. Todo mundo pode participar."
-  details: "O ULTRON anuncia o evento no canal de eventos e o H.E.R.B.I.E. explica como participar. Chega numa próxima versão."
+  details: "O ULTRON anuncia invasões (toda semana) e raids com chefe no canal de eventos. Clique em Atacar para uma luta rápida que dá XP, ganhando ou perdendo. Veja a ameaça atual com /ameaca."
   related: [raid]
   bot: ultron
 - id: raid
   term: "Raid"
   aliases: [ataque em grupo, chefe]
   summary: "Evento em grupo contra um inimigo forte, com tempo limitado."
-  details: "Faz parte dos eventos mundiais do ULTRON, numa próxima versão."
+  details: "Um chefe aparece num tópico por tempo limitado e todo mundo ataca o mesmo HP. Cada Atacar é uma luta rápida; o grupo vence se zerar o chefe a tempo."
   related: [evento-mundial]
   bot: ultron
 - id: denuncia
   term: "Denúncia"
   aliases: [report, reportar, denunciar]
   summary: "Como avisar a staff sobre algo errado no servidor, de forma privada."
-  details: "O Sentinel recebe denúncias e encaminha para a fila da staff. Chega numa próxima versão; até lá, fale com a staff diretamente."
+  details: "Use /denunciar ou, numa mensagem, Apps → Denunciar mensagem. O Sentinel manda para a fila da staff, e só a staff vê quem denunciou."
   related: [cooldown]
   bot: sentinel

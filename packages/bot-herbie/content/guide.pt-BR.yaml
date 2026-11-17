@@ -1,0 +1,64 @@
+# Guia "como jogar" (pt-BR) que a staff publica com /herbie guia publicar. Sobrescreva em ./data/content/guide.pt-BR.yaml.
+# bot: a seção só aparece quando esse bot está ligado. title até 256 caracteres, body até 4000.
+- id: bem-vindo
+  title: "🧬 Bem-vindo à Legião"
+  body: |
+    Aqui você cria seu próprio mutante e joga com a comunidade direto no Discord: trivia, missões, lutas e eventos que mexem com o servidor inteiro. Tudo dá XP, sobe seu nível e seu rank.
+
+    Precisa de ajuda a qualquer hora? Use **/ajuda** (comandos) e **/regras** (termos do jogo). Mude o idioma com **/idioma**.
+- id: registro
+  bot: cerebro
+  title: "📝 1. Registre seu mutante"
+  body: |
+    Clique em **Começar** na mensagem de boas-vindas e siga os passos:
+    1. Aceite as regras.
+    2. Escolha sua **facção**: X-Men, Irmandade ou Independente.
+    3. Escolha seu **poder principal**: o tipo dele define seu **arquétipo** e seus atributos base.
+    4. Escolha até **2 poderes secundários** (opcional).
+    5. Preencha a ficha: **codinome** original, descrição do poder e origem.
+
+    Nomes de personagens que já existem são recusados: invente o seu!
+- id: ficha
+  bot: cerebro
+  title: "🪪 2. Sua ficha"
+  body: |
+    **/perfil** mostra sua ficha com codinome, facção, arquétipo, poderes, nível, rank e atributos, junto com um **cartão** em imagem. O botão **Compartilhar** posta o cartão no canal.
+
+    Registrou antes do catálogo de poderes? Use **/mutante poderes** uma vez para escolher os seus.
+- id: poderes
+  bot: cerebro
+  title: "⚡ Poderes e arquétipos"
+  body: |
+    Os poderes vêm em 6 tipos: ofensivo, defensivo, psiônico, elemental, movimento e utilitário. O tipo do poder principal define o arquétipo (Telepata, Elemental, Metamorfo, Velocista, Tanque ou Tecnopata), que dá seus atributos: **Vida, Ataque, Defesa, Velocidade e Foco**. Os poderes secundários aparecem na ficha e não mudam números: o jogo fica equilibrado para todo mundo.
+- id: progresso
+  bot: jarvis
+  title: "📈 3. XP, nível e rank"
+  body: |
+    Tudo que você joga dá **XP**. O XP sobe seu **nível** (e seus atributos) e seu **rank**: Recruta, Agente (500 XP) e Veterano (2000 XP). Jogar em dias seguidos aumenta sua **sequência** e dá bônus.
+
+    Veja com **/perfil**, **/sequencia** e **/ranking** (também por facção).
+- id: trivia
+  bot: jarvis
+  title: "❓ Trivia"
+  body: |
+    **/trivia** traz uma pergunta sobre quadrinhos, Marvel Rivals ou cultura geral. Responder certo dá XP, e responder rápido vale mais. Há um limite de XP de trivia por dia.
+- id: missoes
+  bot: jarvis
+  title: "🗺️ Missões"
+  body: |
+    **/missao lista** mostra as missões disponíveis e **/missao iniciar** começa uma, num tópico só seu. Você decide o rumo com botões; em grupo (até 4), a maioria vota. Há missões diárias, semanais e de história, e algumas terminam em luta.
+- id: combate
+  bot: sentinel
+  title: "⚔️ Combate"
+  body: |
+    As lutas acontecem em turnos, com botões: **Atacar**, **Defender** e **Poder**. Seus atributos decidem a maior parte, e um pouco de sorte faz o resto. Treine com **/treino** contra o Drone de Treino.
+- id: eventos
+  bot: ultron
+  title: "🌍 Eventos mundiais"
+  body: |
+    O **ULTRON** ataca o servidor: invasões semanais em que todas as facções enfrentam o mesmo inimigo e raids com chefe num tópico. Cada **Atacar** é uma luta rápida que dá XP, ganhando ou perdendo. Veja a ameaça atual com **/ameaca**.
+- id: convivencia
+  bot: sentinel
+  title: "🤝 Convivência"
+  body: |
+    Respeite todo mundo. Para avisar a staff sobre algo errado, use **/denunciar** ou, numa mensagem, **Apps → Denunciar mensagem**; só a staff vê. A staff pode silenciar quem quebrar as regras.

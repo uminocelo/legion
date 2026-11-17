@@ -125,6 +125,16 @@ export class FakeDiscordGateway implements DiscordGateway {
     if (!m) throw new GatewayError('Unknown Message', 10008);
     m.msg = msg;
   }
+  readonly pinned = new Set<string>();
+  /** Message ids whose pin fails with Missing Permissions (tests). */
+  readonly pinDenied = new Set<string>();
+  async pinMessage(channelId: string, messageId: string): Promise<void> {
+    this.record('pinMessage', [channelId, messageId]);
+    if (!this.messages.some((x) => x.messageId === messageId))
+      throw new GatewayError('Unknown Message', 10008);
+    if (this.pinDenied.has(channelId)) throw new GatewayError('Missing Permissions', 50013);
+    this.pinned.add(messageId);
+  }
   async sendDm(userId: string, msg: OutgoingMessage): Promise<SentMessage> {
     this.record('sendDm', [userId, msg]);
     if (this.closedDms.has(userId)) throw new GatewayError('Cannot send messages to this user', 50007);
