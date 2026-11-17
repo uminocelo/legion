@@ -17,9 +17,18 @@
       "title": "⚔️ Escolha sua facção",
       "body": "Cada mutante luta ao lado de uma facção. Escolha uma (por enquanto não dá para trocar sozinho depois).",
       "placeholder": "Escolha sua facção",
-      "xmen": { "name": "X-Men", "description": "Protegem um mundo que os teme." },
-      "brotherhood": { "name": "Irmandade", "description": "Mutantes primeiro, custe o que custar." },
-      "independent": { "name": "Independente", "description": "Sem bandeira: você faz o próprio caminho." }
+      "xmen": {
+        "name": "X-Men",
+        "description": "Protegem um mundo que os teme."
+      },
+      "brotherhood": {
+        "name": "Irmandade",
+        "description": "Mutantes primeiro, custe o que custar."
+      },
+      "independent": {
+        "name": "Independente",
+        "description": "Sem bandeira: você faz o próprio caminho."
+      }
     },
     "archetype": {
       "title": "🧬 Escolha seu arquétipo",
@@ -37,7 +46,7 @@
       "title": "Ficha do mutante",
       "codename": "Codinome (original!)",
       "codename_placeholder": "Ex.: Faísca Rubra",
-      "power": "Poder",
+      "power": "Descreva seu poder",
       "power_placeholder": "Ex.: Cria faíscas que cegam inimigos",
       "origin": "Origem",
       "origin_placeholder": "Como seus poderes despertaram?"
@@ -71,9 +80,15 @@
       "origin": "Origem",
       "share_button": "Compartilhar",
       "shared": "Ficha compartilhada no canal!",
-      "not_registered": "Esse membro ainda não é um mutante registrado."
+      "not_registered": "Esse membro ainda não é um mutante registrado.",
+      "powers": "Poderes",
+      "power_description": "Descrição do poder"
     },
-    "ranks": { "recruta": "Recruta", "agente": "Agente", "veterano": "Veterano" },
+    "ranks": {
+      "recruta": "Recruta",
+      "agente": "Agente",
+      "veterano": "Veterano"
+    },
     "optins": {
       "title": "🔔 Preferências",
       "body": "Ative ou desative os cargos opcionais. Clique de novo para trocar.",
@@ -113,10 +128,14 @@
       "perfil": "Mostra a ficha do seu mutante (ou de outro membro).",
       "preferencias": "Liga e desliga cargos opcionais, como Aviso de Live.",
       "setup": "Sincroniza cargos e, se pedido, a visibilidade dos canais.",
-      "status": "Mostra quantos membros estão em cada etapa do registro."
+      "status": "Mostra quantos membros estão em cada etapa do registro.",
+      "mutante_poderes": "Escolhe poderes do catálogo para um mutante já registrado (uma vez)"
     },
     "commands": {
-      "perfil": { "description": "Mostra a ficha de um mutante", "membro": "Membro (padrão: você)" },
+      "perfil": {
+        "description": "Mostra a ficha de um mutante",
+        "membro": "Membro (padrão: você)"
+      },
       "cerebro": {
         "description": "Comandos do Cérebro",
         "preferencias": "Liga e desliga cargos opcionais",
@@ -124,7 +143,40 @@
         "aplicar": "Aplicar as mudanças (padrão: só simular)",
         "canais": "Também ajustar a visibilidade dos canais",
         "status": "Status do registro (staff)"
+      },
+      "mutante": {
+        "description": "Sua ficha de mutante",
+        "poderes": "Escolhe seus poderes do catálogo (uma vez)"
       }
+    },
+    "powers": {
+      "type": {
+        "offensive": "Ofensivo",
+        "defensive": "Defensivo",
+        "psionic": "Psiônico",
+        "elemental": "Elemental",
+        "movement": "Movimento",
+        "utility": "Utilitário"
+      },
+      "main_title": "🧬 Escolha seu poder principal",
+      "main_body": "O tipo do poder principal define seu arquétipo e seus atributos base. Depois você escolhe poderes secundários e descreve tudo com suas palavras.",
+      "placeholder": "Poderes: {types}",
+      "main_chosen": "**Poder principal:** {power}\n**Arquétipo:** {archetype}",
+      "archetype_kept": "Seu arquétipo continua **{archetype}** (a staff não liberou a troca).",
+      "secondary_title": "🧬 Poderes secundários (opcional)",
+      "secondary_body": "Escolha até {max} poderes secundários nos menus abaixo, ou siga sem eles. Eles aparecem na ficha, sem mudar atributos.",
+      "no_secondary": "Este servidor não usa poderes secundários.",
+      "secondary_chosen": "**Secundários:** {list}",
+      "next_register": "Continuar para a ficha",
+      "next_save": "Salvar poderes",
+      "back": "Trocar poder principal",
+      "too_many": "Escolha no máximo {max} poderes secundários.",
+      "pick_main": "Escolha o poder principal primeiro.",
+      "already": "Você já escolheu seus poderes.",
+      "already_list": "Você já escolheu seus poderes: {powers}. Peça à staff se precisar trocar.",
+      "disabled": "O catálogo de poderes está desligado neste servidor.",
+      "saved": "✅ Poderes salvos: {powers}. Arquétipo: **{archetype}**.",
+      "saved_changed": "✅ Poderes salvos: {powers}. Novo arquétipo: **{archetype}**."
     }
   }
 }

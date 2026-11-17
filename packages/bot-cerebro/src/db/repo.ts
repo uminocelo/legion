@@ -5,6 +5,15 @@ import { type CerebroTables, cerebroTables } from './tables.js';
 
 export type MemberRow = CerebroTables['members']['$inferSelect'];
 export type MutantRow = CerebroTables['mutants']['$inferSelect'];
+export interface PendingPowers {
+  main: string | null;
+  secondary: string[];
+}
+const pendingSchema = z
+  .object({ main: z.string().nullable().catch(null), secondary: z.array(z.string()).catch([]) })
+  .catch({ main: null, secondary: [] });
+export const pendingPowersOf = (m: Pick<MemberRow, 'pendingPowers'>): PendingPowers =>
+  m.pendingPowers ? pendingSchema.parse(JSON.parse(m.pendingPowers)) : { main: null, secondary: [] };
 
 const optInsSchema = z.array(z.string()).catch([]);
 
@@ -126,6 +135,40 @@ export class CerebroRepo {
       .returning();
     if (!row) throw new Error('mutant insert failed');
     return row;
+  }
+
+  /** Catalog power ids of a mutant, main first. */
+  async powersOf(
+    mutantId: string,
+    ex: Executor = this.db.orm,
+  ): Promise<{ main: string | null; secondary: string[] }> {
+    const t = this.t.cerebroMutantPowers;
+    const rows = await ex.select().from(t).where(eq(t.mutantId, mutantId)).orderBy(t.createdAt, t.id);
+    return {
+      main: rows.find((r) => r.slot === 'main')?.powerId ?? null,
+      secondary: rows.filter((r) => r.slot === 'secondary').map((r) => r.powerId),
+    };
+  }
+
+  async insertPowers(mutantId: string, picked: { main: string; secondary: string[] }, ex: Executor) {
+    const now = this.now();
+    await ex.insert(this.t.cerebroMutantPowers).values([
+      { id: this.newId(), mutantId, powerId: picked.main, slot: 'main', createdAt: now },
+      ...picked.secondary.map((powerId) => ({
+        id: this.newId(),
+        mutantId,
+        powerId,
+        slot: 'secondary',
+        createdAt: now,
+      })),
+    ]);
+  }
+
+  async updateMutant(id: string, patch: Partial<Pick<MutantRow, 'archetype'>>, ex: Executor = this.db.orm) {
+    await ex
+      .update(this.t.mutants)
+      .set({ ...patch, updatedAt: this.now() })
+      .where(eq(this.t.mutants.id, id));
   }
 
   async listRegistered(opts: { faction?: string; includeLeft?: boolean } = {}): Promise<MemberRow[]> {

@@ -5,6 +5,7 @@ import { type CerebroConfig, cerebroConfigSchema } from './config.js';
 import { cerebroDoctorChecks } from './doctor.js';
 import { CerebroFlow, RECONCILE_JOB } from './flow.js';
 import { CEREBRO_LOCALES_DIR, CEREBRO_MIGRATIONS_DIR } from './paths.js';
+import type { PickMode } from './power-flow.js';
 import { membersReadModel, mutantsReadModel } from './read-models.js';
 import { CerebroSetup } from './setup.js';
 import { V } from './ui.js';
@@ -15,9 +16,13 @@ export * from './domain/channels.js';
 export * from './domain/codename.js';
 export * from './domain/onboarding.js';
 export { CerebroFlow, RECONCILE_JOB } from './flow.js';
+export { CEREBRO_CONTENT_DIR } from './paths.js';
+export { type PickMode, PowerFlow, powerIds } from './power-flow.js';
+export * from './powers.js';
 export { CerebroSetup, LAST_ROLE_SYNC_KEY, PERSISTENT_WELCOME_KEY } from './setup.js';
 export { ids as cerebroIds } from './ui.js';
 
+const pickMode = (m: string | undefined): PickMode => (m === 'e' ? 'e' : 'r');
 const state = new WeakMap<object, { flow: CerebroFlow; setup: CerebroSetup }>();
 const services = (ctx: Parameters<LegionBot<CerebroConfig>['register']>[0]) => {
   let s = state.get(ctx);
@@ -62,11 +67,20 @@ export const cerebro: LegionBot<CerebroConfig> = {
       { action: 'mutant', version: V, handle: (i, r) => flow.submitMutant(i, r) },
       { action: 'optin', version: V, handle: (i, r, [key]) => flow.toggleOptIn(i, r, key ?? '') },
       { action: 'share', version: V, handle: (i, r, [memberId]) => flow.share(i, r, memberId ?? '') },
+      { action: 'pmain', version: V, handle: (i, r, [mode]) => flow.powers.chooseMain(i, r, pickMode(mode)) },
+      {
+        action: 'psec',
+        version: V,
+        handle: (i, r, [mode, g]) => flow.powers.chooseSecondary(i, r, pickMode(mode), Number(g ?? 0)),
+      },
+      { action: 'pnext', version: V, handle: (i, r, [mode]) => flow.powers.next(i, r, pickMode(mode)) },
+      { action: 'pback', version: V, handle: (i, r, [mode]) => flow.powers.back(i, r, pickMode(mode)) },
     ];
   },
 
   register: (ctx) => {
     const { flow } = services(ctx);
+    flow.powers.load();
     ctx.provide('members', membersReadModel(flow.repo));
     ctx.provide('mutants', mutantsReadModel(flow.repo));
     ctx.guildEvents.onMemberAdd((m) => flow.memberJoined(m));
@@ -76,6 +90,11 @@ export const cerebro: LegionBot<CerebroConfig> = {
     );
     ctx.scheduler.define<{ memberId: string }>(RECONCILE_JOB, (p) => flow.reconcileJob(p));
     ctx.help.add({ bot: 'cerebro', command: '/perfil', descriptionKey: 'cerebro.help.perfil' });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/mutante poderes',
+      descriptionKey: 'cerebro.help.mutante_poderes',
+    });
     ctx.help.add({
       bot: 'cerebro',
       command: '/cerebro preferencias',

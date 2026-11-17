@@ -61,6 +61,10 @@ Regras: `tiktok_sub` precisa ter `managedBy: integration` (o Legion nunca toca n
 | `publicRegistryCard` | `true` | Posta um cartão público quando alguém se registra |
 | `codename.min` / `codename.max` | `2` / `32` | Tamanho do codinome |
 | `archetypes` | os 6 | Subconjunto de `Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata` |
+| `powers.enabled` | `true` | Cadastro com o catálogo de poderes ([POWERS.md](POWERS.md)). `false` volta o menu de arquétipos |
+| `powers.maxSecondary` | `2` | Quantos poderes secundários (0 a 2) |
+| `powers.typeToArchetype` | ofensivo→Metamorfo, defensivo→Tanque, psiônico→Telepata, elemental→Elemental, movimento→Velocista, utilitário→Tecnopata | Arquétipo de cada tipo de poder principal. Poderes de tipos cujo arquétipo não está em `archetypes` não aparecem |
+| `powers.allowArchetypeChange` | `false` | `/mutante poderes` pode trocar o arquétipo de quem já se registrou |
 | `optInRoles` | `live_ping`, `rivals_*` | Keys de cargos que o membro liga/desliga sozinho (máx. 20) |
 | `canonAttemptFlag.count` / `.windowMinutes` | `3` / `10` | Tentativas de nome canon antes de avisar a staff |
 | `setup.excludeChannelIds` | `[]` | Canais que `/cerebro setup canais:true` nunca toca |

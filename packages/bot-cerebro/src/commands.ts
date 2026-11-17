@@ -41,6 +41,23 @@ export function cerebroCommands(
       execute: (i, r) => flow.profile(i, r),
     },
     {
+      name: 'mutante',
+      json: {
+        name: 'mutante',
+        name_localizations: { 'en-US': 'mutant' },
+        ...desc(i18n, 'cerebro.commands.mutante.description'),
+        options: [
+          {
+            type: 1,
+            name: 'poderes',
+            name_localizations: { 'en-US': 'powers' },
+            ...desc(i18n, 'cerebro.commands.mutante.poderes'),
+          },
+        ],
+      },
+      execute: (i, r) => flow.powers.command(i, r),
+    },
+    {
       name: 'cerebro',
       json: {
         name: 'cerebro',
