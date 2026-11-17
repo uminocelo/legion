@@ -9,6 +9,7 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - `/trivia` with 30 sourced pt-BR questions, per-member cooldown, no-repeat window, time limit, speed bonus and daily XP cap; idempotent answers that survive restarts.
 - `/ranking` (week/month/all time, faction filter), `/sequencia`, `/perfil` section, staff `/jarvis xp | trivia recarregar | trivia estatisticas | recalcular`.
 - Server trivia packs in `./data/content/trivia/*.yaml`, synced by id (removed questions become inactive, never deleted).
+- ADRs 0012–0015 (XP ledger, single XP writer, lazy local-day streaks, trivia content as files).
 
 ### Fixed
 - SQLite: concurrent write transactions no longer fail with `SQLITE_BUSY` (transactions are serialized and busy statements retried).

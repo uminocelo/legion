@@ -1,4 +1,4 @@
-# 0013. Trivia questions live in YAML files, synced by id
+# 0015. Trivia questions live in YAML files, synced by id
 
 **Status:** Accepted
 
