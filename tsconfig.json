@@ -11,6 +11,9 @@
       "path": "packages/bot-jarvis"
     },
     {
+      "path": "packages/bot-herbie"
+    },
+    {
       "path": "apps/runner"
     },
     {

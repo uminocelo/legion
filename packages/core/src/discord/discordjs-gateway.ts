@@ -114,6 +114,21 @@ export class DiscordJsGateway implements DiscordGateway {
 
   /** Normalizes a discord.js interaction for the router; returns null for unsupported kinds. */
   normalize(i: Interaction): IncomingInteraction | null {
+    // Buttons on messages a bot sent by DM (e.g. the tutorial intro). Treated as a member with no roles,
+    // so staff-only handlers never run from a DM. Everything else must come from our guild.
+    if (!i.inGuild() && !i.guildId && i.isButton())
+      return {
+        id: i.id,
+        guildId: this.guildId,
+        channelId: i.channelId ?? '',
+        userId: i.user.id,
+        memberRoleIds: [],
+        isGuildOwner: false,
+        locale: i.locale ?? null,
+        inDm: true,
+        kind: 'component',
+        customId: i.customId,
+      };
     if (!i.inGuild() || i.guildId !== this.guildId) return null;
     const memberRoles = i.member && 'roles' in i.member ? i.member.roles : [];
     const roleIds = Array.isArray(memberRoles) ? memberRoles : [...memberRoles.cache.keys()];
