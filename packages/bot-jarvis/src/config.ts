@@ -27,6 +27,8 @@ export const jarvisConfigSchema = z.object({
         .object({ facil: posInt.default(10), normal: posInt.default(15), dificil: posInt.default(25) })
         .prefault({}),
       speedBonusMax: posInt.default(5),
+      // Staff questions from Discord: live at once, or after a second staff member approves.
+      review: z.enum(['none', 'second_staff']).default('none'),
     })
     .prefault({}),
   levels: z.object({ levelFactor: posInt.default(50), maxLevel: posInt.default(50) }).prefault({}),

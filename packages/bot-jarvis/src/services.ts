@@ -2,7 +2,9 @@ import type { BotContext } from '@legion/core';
 import type { JarvisConfig } from './config.js';
 import { JarvisRepo } from './db/repo.js';
 import { JarvisLeaderboard } from './leaderboard.js';
+import { MissionImports } from './mission-imports.js';
 import { JarvisMissions } from './missions.js';
+import { StaffTrivia } from './staff-trivia.js';
 import { JarvisTrivia } from './trivia.js';
 import { XpService } from './xp-service.js';
 
@@ -12,6 +14,8 @@ export interface JarvisServices {
   trivia: JarvisTrivia;
   board: JarvisLeaderboard;
   missions: JarvisMissions;
+  staffTrivia: StaffTrivia;
+  imports: MissionImports;
 }
 
 const cache = new WeakMap<object, JarvisServices>();
@@ -25,6 +29,8 @@ export function jarvisServices(ctx: BotContext<JarvisConfig>): JarvisServices {
     partial.trivia = new JarvisTrivia(ctx, partial);
     partial.board = new JarvisLeaderboard(ctx, partial, partial.trivia.ui);
     partial.missions = new JarvisMissions(ctx, partial);
+    partial.staffTrivia = new StaffTrivia(ctx, partial);
+    partial.imports = new MissionImports(ctx, partial);
     s = partial;
     cache.set(ctx, s);
   }

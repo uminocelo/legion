@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import type { Locale } from '@legion/core';
-import { eq, notInArray } from 'drizzle-orm';
+import { and, eq, notInArray } from 'drizzle-orm';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 import { z } from 'zod';
 import { DIFFICULTIES } from './config.js';
@@ -17,7 +17,8 @@ export const questionSchema = z
     choices: z.array(z.string().min(1).max(80)).min(2).max(4),
     answer: z.number().int().min(0),
     explanation: z.string().min(1).max(300),
-    source: z.url(),
+    // A URL or a reference such as "Shang-Chi #4 (2021)".
+    source: z.string().trim().min(3).max(200),
     locale: z.enum(['pt-BR', 'en']).optional(),
   })
   .refine((q) => q.answer < q.choices.length, { path: ['answer'], message: 'answer must index into choices' })
@@ -118,11 +119,19 @@ export interface SyncResult {
 /** Upserts questions by id; questions no longer in the files become inactive (never deleted). */
 export async function syncTriviaContent(repo: JarvisRepo, loaded: ContentLoadResult): Promise<SyncResult> {
   const q = repo.t.jarvisTriviaQuestions;
-  const existing = new Map((await repo.allQuestions()).map((r) => [r.id, r]));
+  // Questions created in Discord are never touched by file reloads.
+  const existing = new Map(
+    (await repo.allQuestions()).filter((r) => r.origin === 'file').map((r) => [r.id, r]),
+  );
+  const staffIds = new Set((await repo.allQuestions()).filter((r) => r.origin !== 'file').map((r) => r.id));
   const result: SyncResult = { added: 0, updated: 0, deactivated: 0, unchanged: 0, errors: loaded.errors };
   const now = repo.now();
   await repo.db.transaction(async (tx) => {
     for (const item of loaded.questions) {
+      if (staffIds.has(item.id)) {
+        result.errors.push(`${item.id}: id já usado por uma pergunta criada pela staff; ignorada`);
+        continue;
+      }
       const hash = contentHash(item);
       const row = {
         locale: item.locale,
@@ -138,10 +147,12 @@ export async function syncTriviaContent(repo: JarvisRepo, loaded: ContentLoadRes
         updatedAt: now,
       };
       const prev = existing.get(item.id);
+      // Staff disabled it: content may update, but it stays out of play.
+      if (prev?.review === 'disabled') row.active = 0;
       if (!prev) {
         await tx.insert(q).values({ id: item.id, ...row });
         result.added++;
-      } else if (prev.contentHash !== hash || prev.active !== 1) {
+      } else if (prev.contentHash !== hash || prev.active !== row.active) {
         await tx.update(q).set(row).where(eq(q.id, item.id));
         result.updated++;
       } else result.unchanged++;
@@ -150,7 +161,11 @@ export async function syncTriviaContent(repo: JarvisRepo, loaded: ContentLoadRes
     if (loaded.questions.length && loaded.errors.length === 0) {
       const keep = loaded.questions.map((x) => x.id);
       const gone = [...existing.values()].filter((r) => r.active === 1 && !keep.includes(r.id));
-      if (gone.length) await tx.update(q).set({ active: 0, updatedAt: now }).where(notInArray(q.id, keep));
+      if (gone.length)
+        await tx
+          .update(q)
+          .set({ active: 0, updatedAt: now })
+          .where(and(eq(q.origin, 'file'), notInArray(q.id, keep)));
       result.deactivated = gone.length;
     }
   });

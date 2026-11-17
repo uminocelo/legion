@@ -33,7 +33,14 @@
         "cancelar": "Cancel the scheduled or running event",
         "tipo": "Event kind",
         "quando": "YYYY-MM-DD HH:mm (server time) or +30m",
-        "status": "Next events, results, adaptive difficulty and AI"
+        "status": "Next events, results, adaptive difficulty and AI",
+        "inimigo": "Enemies managed by staff",
+        "importar": "Imports enemies from a .yaml file",
+        "arquivo": "A list of enemies in the enemies.yaml format",
+        "lista": "Lists enemies and where they came from",
+        "desativar": "Takes an enemy out of play",
+        "ativar": "Brings a disabled enemy back",
+        "inimigo_opt": "The enemy"
       },
       "ameaca": "Current or next world event: HP, time left and your damage"
     },
@@ -156,6 +163,29 @@
       "state_scheduled": "scheduled",
       "state_announced": "announced",
       "state_active": "running"
+    },
+    "imports": {
+      "problem": {
+        "missing": "Attach the .yaml file.",
+        "bad_type": "The file must end in .yaml or .yml.",
+        "too_big": "The file is larger than {kb} KB.",
+        "bad_host": "I only accept files uploaded to Discord itself.",
+        "download_failed": "I could not download the file. Try again."
+      },
+      "invalid": "The file has errors and nothing changed:\n{errors}",
+      "preview": "Preview: {count} enemy(ies)",
+      "publish": "Publish",
+      "cancel": "Cancel",
+      "level": "level {level}+",
+      "expired": "This preview expired or was already used. Import again.",
+      "cancelled": "Import cancelled. Nothing changed.",
+      "published": "✅ {count} enemy(ies) published. They join the next encounters.",
+      "list": "Enemies ({total})",
+      "from_file": "file",
+      "unknown": "I do not know that enemy.",
+      "last_minion": "Not possible: at least one level-1 minion must remain.",
+      "disabled": "⛔ Enemy `{id}` disabled.",
+      "enabled": "✅ Enemy `{id}` enabled."
     }
   }
 }

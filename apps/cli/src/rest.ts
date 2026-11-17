@@ -43,6 +43,11 @@ export interface DiscordRest {
   guildRoles(guildId: string): Promise<ApiRole[]>;
   guildChannels(guildId: string): Promise<ApiChannel[]>;
   putGuildCommands(applicationId: string, guildId: string, commands: unknown[]): Promise<void>;
+  guildCommands?(applicationId: string, guildId: string): Promise<{ id: string; name: string }[]>;
+  guildCommandPermissions?(
+    applicationId: string,
+    guildId: string,
+  ): Promise<{ id: string; permissions: { id: string; type: 1 | 2 | 3; permission: boolean }[] }[]>;
 }
 
 export function createDiscordRest(token: string, base = 'https://discord.com/api/v10'): DiscordRest {
@@ -80,5 +85,7 @@ export function createDiscordRest(token: string, base = 'https://discord.com/api
     putGuildCommands: async (a, g, commands) => {
       await call('PUT', `/applications/${a}/guilds/${g}/commands`, commands);
     },
+    guildCommands: (a, g) => call('GET', `/applications/${a}/guilds/${g}/commands`),
+    guildCommandPermissions: (a, g) => call('GET', `/applications/${a}/guilds/${g}/commands/permissions`),
   };
 }

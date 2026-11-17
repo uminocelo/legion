@@ -33,7 +33,14 @@
         "cancelar": "Cancelar o evento agendado ou em andamento",
         "tipo": "Tipo de evento",
         "quando": "AAAA-MM-DD HH:mm (horário do servidor) ou +30m",
-        "status": "Próximos eventos, resultados, dificuldade adaptativa e IA"
+        "status": "Próximos eventos, resultados, dificuldade adaptativa e IA",
+        "inimigo": "Inimigos criados pela staff",
+        "importar": "Importa inimigos de um arquivo .yaml",
+        "arquivo": "Lista de inimigos no formato de enemies.yaml",
+        "lista": "Lista os inimigos e de onde vieram",
+        "desativar": "Tira um inimigo de jogo",
+        "ativar": "Volta um inimigo desativado",
+        "inimigo_opt": "O inimigo"
       },
       "ameaca": "Evento mundial atual ou próximo: HP, tempo e seu dano"
     },
@@ -156,6 +163,29 @@
       "state_scheduled": "agendado",
       "state_announced": "anunciado",
       "state_active": "em andamento"
+    },
+    "imports": {
+      "problem": {
+        "missing": "Anexe o arquivo .yaml.",
+        "bad_type": "O arquivo precisa terminar em .yaml ou .yml.",
+        "too_big": "O arquivo passa de {kb} KB.",
+        "bad_host": "Só aceito arquivos enviados pelo próprio Discord.",
+        "download_failed": "Não consegui baixar o arquivo. Tente de novo."
+      },
+      "invalid": "O arquivo tem erros e nada mudou:\n{errors}",
+      "preview": "Prévia: {count} inimigo(s)",
+      "publish": "Publicar",
+      "cancel": "Cancelar",
+      "level": "nível {level}+",
+      "expired": "Esta prévia expirou ou já foi usada. Importe de novo.",
+      "cancelled": "Importação cancelada. Nada mudou.",
+      "published": "✅ {count} inimigo(s) publicado(s). Já entram nos próximos encontros.",
+      "list": "Inimigos ({total})",
+      "from_file": "arquivo",
+      "unknown": "Não conheço esse inimigo.",
+      "last_minion": "Não dá: precisa sobrar pelo menos um minion de nível 1.",
+      "disabled": "⛔ Inimigo `{id}` desativado.",
+      "enabled": "✅ Inimigo `{id}` ativado."
     }
   }
 }

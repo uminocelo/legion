@@ -1,8 +1,9 @@
 import type { BotContext, I18n, IncomingInteraction, Responder, SlashCommandDefinition } from '@legion/core';
-import type { JarvisConfig } from './config.js';
+import { DIFFICULTIES, type JarvisConfig } from './config.js';
 import { PERIODS } from './domain/periods.js';
 import type { JarvisLeaderboard } from './leaderboard.js';
 import type { JarvisServices } from './services.js';
+import { TRIVIA_STATUSES } from './staff-trivia.js';
 import type { JarvisTrivia } from './trivia.js';
 
 const desc = (i18n: I18n, key: string) => ({
@@ -189,6 +190,148 @@ export function jarvisCommands(
                 name_localizations: { 'en-US': 'stats' },
                 ...desc(i18n, 'jarvis.commands.jarvis.estatisticas'),
               },
+              {
+                type: 1,
+                name: 'nova',
+                name_localizations: { 'en-US': 'new' },
+                ...desc(i18n, 'jarvis.commands.jarvis.nova'),
+                options: [
+                  {
+                    type: 3,
+                    name: 'categoria',
+                    name_localizations: { 'en-US': 'category' },
+                    required: true,
+                    choices: categories,
+                    ...desc(i18n, 'jarvis.commands.trivia.categoria'),
+                  },
+                  {
+                    type: 3,
+                    name: 'dificuldade',
+                    name_localizations: { 'en-US': 'difficulty' },
+                    required: true,
+                    choices: DIFFICULTIES.map((d) => choice(d, `jarvis.trivia.difficulty.${d}`)),
+                    ...desc(i18n, 'jarvis.commands.jarvis.dificuldade'),
+                  },
+                  {
+                    type: 3,
+                    name: 'idioma',
+                    name_localizations: { 'en-US': 'language' },
+                    required: false,
+                    choices: [
+                      { name: 'Português (Brasil)', value: 'pt-BR' },
+                      { name: 'English', value: 'en' },
+                    ],
+                    ...desc(i18n, 'jarvis.commands.jarvis.idioma'),
+                  },
+                ],
+              },
+              {
+                type: 1,
+                name: 'lista',
+                name_localizations: { 'en-US': 'list' },
+                ...desc(i18n, 'jarvis.commands.jarvis.lista'),
+                options: [
+                  {
+                    type: 3,
+                    name: 'status',
+                    required: false,
+                    choices: TRIVIA_STATUSES.map((st) => choice(st, `jarvis.staff_trivia.status.${st}`)),
+                    ...desc(i18n, 'jarvis.commands.jarvis.status'),
+                  },
+                  {
+                    type: 3,
+                    name: 'categoria',
+                    name_localizations: { 'en-US': 'category' },
+                    required: false,
+                    choices: categories,
+                    ...desc(i18n, 'jarvis.commands.trivia.categoria'),
+                  },
+                  {
+                    type: 6,
+                    name: 'autor',
+                    name_localizations: { 'en-US': 'author' },
+                    required: false,
+                    ...desc(i18n, 'jarvis.commands.jarvis.autor'),
+                  },
+                  {
+                    type: 4,
+                    name: 'pagina',
+                    name_localizations: { 'en-US': 'page' },
+                    required: false,
+                    min_value: 1,
+                    ...desc(i18n, 'jarvis.commands.jarvis.pagina'),
+                  },
+                ],
+              },
+              ...(['editar', 'desativar', 'ativar'] as const).map((name) => ({
+                type: 1,
+                name,
+                name_localizations: {
+                  'en-US': { editar: 'edit', desativar: 'disable', ativar: 'enable' }[name],
+                },
+                ...desc(i18n, `jarvis.commands.jarvis.${name}`),
+                options: [
+                  {
+                    type: 3,
+                    name: 'pergunta',
+                    name_localizations: { 'en-US': 'question' },
+                    required: true,
+                    autocomplete: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.pergunta'),
+                  },
+                ],
+              })),
+              {
+                type: 1,
+                name: 'exportar',
+                name_localizations: { 'en-US': 'export' },
+                ...desc(i18n, 'jarvis.commands.jarvis.exportar'),
+              },
+            ],
+          },
+          {
+            type: 2,
+            name: 'missao',
+            name_localizations: { 'en-US': 'mission' },
+            ...desc(i18n, 'jarvis.commands.jarvis.missao'),
+            options: [
+              {
+                type: 1,
+                name: 'importar',
+                name_localizations: { 'en-US': 'import' },
+                ...desc(i18n, 'jarvis.commands.jarvis.importar'),
+                options: [
+                  {
+                    type: 11,
+                    name: 'arquivo',
+                    name_localizations: { 'en-US': 'file' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.arquivo'),
+                  },
+                ],
+              },
+              {
+                type: 1,
+                name: 'lista',
+                name_localizations: { 'en-US': 'list' },
+                ...desc(i18n, 'jarvis.commands.jarvis.missao_lista'),
+              },
+              ...(['desativar', 'ativar'] as const).map((name) => ({
+                type: 1,
+                name,
+                name_localizations: { 'en-US': { desativar: 'disable', ativar: 'enable' }[name] },
+                ...desc(i18n, `jarvis.commands.jarvis.missao_${name}`),
+                options: [
+                  {
+                    type: 3,
+                    name: 'missao',
+                    name_localizations: { 'en-US': 'mission' },
+                    required: true,
+                    autocomplete: true,
+                    ...desc(i18n, 'jarvis.commands.missao.missao'),
+                  },
+                ],
+              })),
             ],
           },
           {
@@ -207,6 +350,11 @@ export function jarvisCommands(
             ],
           },
         ],
+      },
+      autocomplete: async (i, r) => {
+        if (!(await ctx.isStaff(i))) return r.autocomplete([]);
+        if (i.focused?.name === 'missao') return s.imports.autocomplete(i, r);
+        return s.staffTrivia.autocomplete(i, r);
       },
       execute: async (i, r) => {
         if (!(await staffOnly(i, r))) return;
@@ -228,6 +376,16 @@ export function jarvisCommands(
           return r.reply(ui.text(lines.join('\n').slice(0, 1900)));
         }
         if (sub === 'trivia estatisticas') return r.reply(await staffStats(ctx, s, trivia, l));
+        if (sub === 'trivia nova') return s.staffTrivia.openCreate(i, r);
+        if (sub === 'trivia lista') return s.staffTrivia.list(i, r);
+        if (sub === 'trivia editar') return s.staffTrivia.openEdit(i, r);
+        if (sub === 'trivia desativar') return s.staffTrivia.setActive(i, r, false);
+        if (sub === 'trivia ativar') return s.staffTrivia.setActive(i, r, true);
+        if (sub === 'trivia exportar') return s.staffTrivia.export(i, r);
+        if (sub === 'missao importar') return s.imports.import(i, r);
+        if (sub === 'missao lista') return s.imports.list(i, r);
+        if (sub === 'missao desativar') return s.imports.setActive(i, r, false);
+        if (sub === 'missao ativar') return s.imports.setActive(i, r, true);
         if (sub === 'recalcular') {
           const member = await ctx.read.members.getByDiscordId(String(i.options?.membro ?? ''));
           if (!member) return r.reply(ui.text(ui.t('jarvis.errors.unknown_member', {}, l)));

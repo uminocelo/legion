@@ -1,4 +1,4 @@
-import type { LegionBot } from '@legion/core';
+import { type LegionBot, staffCommandsCheck } from '@legion/core';
 import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { ROUND_JOB, V } from './combat.js';
 import { sentinelCommands } from './commands.js';
@@ -91,7 +91,7 @@ export const sentinel: LegionBot<SentinelConfig> = {
     ] as const)
       ctx.help.add({ bot: 'sentinel', command, descriptionKey: `sentinel.help.${key}`, adminOnly });
   },
-  doctorChecks: (ctx) => sentinelDoctorChecks(ctx),
+  doctorChecks: (ctx) => [...sentinelDoctorChecks(ctx), staffCommandsCheck(ctx, ['sentinel'])],
   onReady: async (ctx) => {
     const n = await sentinelServices(ctx).combat.recover();
     if (n) ctx.log.info({ combats: n }, 'combat round timeouts restored');

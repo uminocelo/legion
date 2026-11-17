@@ -28,14 +28,19 @@ export class UltronRepo {
     enemies: EnemyTemplate[],
   ): Promise<{ added: number; updated: number; deactivated: number }> {
     const t = this.t.ultronEnemyTemplates;
-    const current = new Map((await this.db.orm.select().from(t)).map((r) => [r.id, r]));
+    const all = await this.db.orm.select().from(t);
+    // Imported enemies win over files with the same id; reloads only manage file rows.
+    const staff = new Set(all.filter((r) => r.origin === 'staff').map((r) => r.id));
+    const current = new Map(all.filter((r) => r.origin === 'file').map((r) => [r.id, r]));
     let added = 0;
     let updated = 0;
     await this.db.transaction(async (tx) => {
       for (const e of enemies) {
+        if (staff.has(e.id)) continue;
         const hash = contentHash(e);
         const prev = current.get(e.id);
-        if (prev && prev.contentHash === hash && prev.active === 1) continue;
+        const active = prev?.disabledBy ? 0 : 1;
+        if (prev && prev.contentHash === hash && prev.active === active) continue;
         const row = {
           id: e.id,
           name: e.name,
@@ -45,7 +50,7 @@ export class UltronRepo {
           powerCooldownMax: e.powerCooldownMax,
           tauntKeys: JSON.stringify(e.tauntKeys),
           contentHash: hash,
-          active: 1,
+          active,
           updatedAt: this.now(),
         };
         if (prev) {
@@ -63,7 +68,7 @@ export class UltronRepo {
       await this.db.orm
         .update(t)
         .set({ active: 0, updatedAt: this.now() })
-        .where(and(eq(t.active, 1), keep.length ? notInArray(t.id, keep) : undefined));
+        .where(and(eq(t.active, 1), eq(t.origin, 'file'), keep.length ? notInArray(t.id, keep) : undefined));
     return { added, updated, deactivated: gone.length };
   }
 

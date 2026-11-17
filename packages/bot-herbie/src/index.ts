@@ -1,4 +1,4 @@
-import type { LegionBot } from '@legion/core';
+import { type LegionBot, staffCommandsCheck } from '@legion/core';
 import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { herbieCommands } from './commands.js';
 import { type HerbieConfig, herbieConfigSchema } from './config.js';
@@ -62,7 +62,7 @@ export const herbie: LegionBot<HerbieConfig> = {
     ] as const)
       ctx.help.add({ bot: 'herbie', command, descriptionKey: `herbie.help.${key}`, adminOnly });
   },
-  doctorChecks: (ctx) => herbieDoctorChecks(ctx),
+  doctorChecks: (ctx) => [...herbieDoctorChecks(ctx), staffCommandsCheck(ctx, ['herbie'])],
   doctorChannels: (cfg) => [
     { key: 'herbie.tips.channelId', id: cfg.tips.enabled ? cfg.tips.channelId : null },
   ],

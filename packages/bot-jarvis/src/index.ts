@@ -1,4 +1,4 @@
-import type { LegionBot } from '@legion/core';
+import { type LegionBot, staffCommandsCheck } from '@legion/core';
 import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { jarvisCommands } from './commands.js';
 import { type JarvisConfig, jarvisConfigSchema } from './config.js';
@@ -22,8 +22,10 @@ export * from './domain/selection.js';
 export * from './domain/xp.js';
 export { JarvisLeaderboard } from './leaderboard.js';
 export * from './mission-content.js';
+export { IMPORT_MAX_BYTES, MissionImports, missionImportIds, parseMissionYaml } from './mission-imports.js';
 export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
 export * from './services.js';
+export { StaffTrivia, staffTriviaIds, statusOf } from './staff-trivia.js';
 export { contentDirs, JarvisTrivia } from './trivia.js';
 export { ids as jarvisIds } from './ui.js';
 export * from './xp-service.js';
@@ -63,6 +65,10 @@ export const jarvis: LegionBot<JarvisConfig> = {
         handle: (i, r, [runId, sceneId, choice]) =>
           s.missions.choose(i, r, runId ?? '', sceneId ?? '', Number(choice)),
       },
+      { action: 'trivia-new', version: V, handle: (i, r, args) => s.staffTrivia.submitCreate(i, r, args) },
+      { action: 'trivia-edit', version: V, handle: (i, r, args) => s.staffTrivia.submitEdit(i, r, args) },
+      { action: 'trivia-review', version: V, handle: (i, r, args) => s.staffTrivia.review(i, r, args) },
+      { action: 'mission-import', version: V, handle: (i, r, args) => s.imports.decide(i, r, args) },
       {
         action: 'lobby',
         version: V,
@@ -105,7 +111,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.help.add({ bot: 'jarvis', command: '/sequencia', descriptionKey: 'jarvis.help.sequencia' });
     ctx.help.add({ bot: 'jarvis', command: '/missao', descriptionKey: 'jarvis.help.missao' });
   },
-  doctorChecks: (ctx) => jarvisDoctorChecks(ctx),
+  doctorChecks: (ctx) => [...jarvisDoctorChecks(ctx), staffCommandsCheck(ctx, ['jarvis'])],
   onReady: async (ctx) => {
     const n = await jarvisServices(ctx).missions.recover();
     if (n) ctx.log.info({ runs: n }, 'open missions restored');

@@ -100,7 +100,7 @@ Com `bots: [cerebro, jarvis]`, rode `legion register-commands` (ou reinicie) e o
 
 - `/missao lista | iniciar | abandonar`: histórias curtas com escolhas, sozinho ou em grupo (até 4), num tópico do `channels.missions`. Missões com luta usam o ULTRON e o Sentinel. Diárias, semanais e de história, com XP e limites configuráveis. Para escrever as suas, veja [docs/MISSIONS.md](docs/MISSIONS.md).
 
-Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia recarregar`, `/jarvis trivia estatisticas`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Para adicionar perguntas suas, veja [docs/CONFIG.md](docs/CONFIG.md#perguntas).
+Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia nova | lista | editar | desativar | ativar | exportar | recarregar | estatisticas`, `/jarvis missao importar | lista | desativar | ativar`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Crie perguntas e importe missões pelo próprio Discord: [docs/STAFF.md](docs/STAFF.md).
 
 ### H.E.R.B.I.E. (tutorial e ajuda)
 
@@ -131,7 +131,7 @@ Com `ultron` em `bots:` (precisa do `sentinel`) e `channels.events` definido:
 
 - Inimigos originais escalados para o nível do grupo em missões de combate; a staff testa com `/ultron spawn`.
 - Invasão semanal (sábado 20:00 por padrão) em que todas as facções atacam o mesmo HP, e raids com chefe num tópico. Cada **Atacar** é uma luta rápida no Sentinel; vitória ou derrota dá XP pelo J.A.R.V.I.S.
-- `/ameaca` para todos. Staff: `/ultron evento agendar | iniciar | cancelar`, `/ultron status`.
+- `/ameaca` para todos. Staff: `/ultron evento agendar | iniciar | cancelar`, `/ultron status`, `/ultron inimigo importar | lista | desativar | ativar` ([docs/STAFF.md](docs/STAFF.md)).
 - Frases por IA opcionais (Ollama ou API compatível com OpenAI), desligadas por padrão.
 
 Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).

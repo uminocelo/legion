@@ -15,6 +15,20 @@
       "when": 1794953754528,
       "tag": "0001_missions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794955712126,
+      "tag": "0002_staff_trivia",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794956096977,
+      "tag": "0003_mission_imports",
+      "breakpoints": true
     }
   ]
 }
