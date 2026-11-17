@@ -8,6 +8,13 @@
       "when": 1794938467178,
       "tag": "0000_sentinel_combat",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794938618922,
+      "tag": "0001_sentinel_safety",
+      "breakpoints": true
     }
   ]
 }

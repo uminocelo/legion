@@ -80,3 +80,76 @@ export const sentinelPendingActions = table(
   },
   (t) => [primaryKey({ columns: [t.combatId, t.round, t.combatantId] })],
 );
+
+// Safety: rate limits, flags and the moderation queue.
+
+export const sentinelRateBuckets = table(
+  'sentinel_rate_buckets',
+  {
+    key: text('key').notNull(),
+    windowStart: text('window_start').notNull(),
+    count: integer('count').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.key, t.windowStart] }),
+    index('sentinel_rate_buckets_window_idx').on(t.windowStart),
+  ],
+);
+
+export const sentinelViolations = table(
+  'sentinel_violations',
+  {
+    id: text('id').primaryKey(),
+    discordUserId: text('discord_user_id').notNull(),
+    policy: text('policy').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('sentinel_violations_user_idx').on(t.discordUserId, t.createdAt)],
+);
+
+export const sentinelFlagsSent = table(
+  'sentinel_flags_sent',
+  {
+    subjectDiscordUserId: text('subject_discord_user_id').notNull(),
+    reason: text('reason').notNull(),
+    hourBucket: text('hour_bucket').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.subjectDiscordUserId, t.reason, t.hourBucket] })],
+);
+
+export const sentinelReports = table(
+  'sentinel_reports',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    subjectDiscordUserId: text('subject_discord_user_id').notNull(),
+    reporter: text('reporter').notNull(),
+    reporterDiscordUserId: text('reporter_discord_user_id'),
+    reason: text('reason').notNull(),
+    severity: text('severity').notNull(),
+    details: text('details').notNull(),
+    refs: text('refs').notNull(),
+    count: integer('count').notNull().default(1),
+    status: text('status').notNull().default('open'),
+    queueMessageId: text('queue_message_id'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [
+    index('sentinel_reports_subject_idx').on(t.subjectDiscordUserId, t.reason, t.status),
+    index('sentinel_reports_status_idx').on(t.status, t.updatedAt),
+  ],
+);
+
+export const sentinelModerationActions = table(
+  'sentinel_moderation_actions',
+  {
+    id: text('id').primaryKey(),
+    reportId: text('report_id').notNull(),
+    staffDiscordUserId: text('staff_discord_user_id').notNull(),
+    action: text('action').notNull(),
+    note: text('note'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('sentinel_moderation_actions_report_idx').on(t.reportId)],
+);

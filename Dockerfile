@@ -10,6 +10,7 @@ COPY packages/core/package.json packages/core/
 COPY packages/bot-cerebro/package.json packages/bot-cerebro/
 COPY packages/bot-jarvis/package.json packages/bot-jarvis/
 COPY packages/bot-herbie/package.json packages/bot-herbie/
+COPY packages/bot-sentinel/package.json packages/bot-sentinel/
 COPY apps/runner/package.json apps/runner/
 COPY apps/cli/package.json apps/cli/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -25,6 +26,7 @@ COPY --from=build /app/packages/core/package.json packages/core/
 COPY --from=build /app/packages/bot-cerebro/package.json packages/bot-cerebro/
 COPY --from=build /app/packages/bot-jarvis/package.json packages/bot-jarvis/
 COPY --from=build /app/packages/bot-herbie/package.json packages/bot-herbie/
+COPY --from=build /app/packages/bot-sentinel/package.json packages/bot-sentinel/
 COPY --from=build /app/apps/runner/package.json apps/runner/
 COPY --from=build /app/apps/cli/package.json apps/cli/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --prod
@@ -43,6 +45,9 @@ COPY --from=build /app/packages/bot-herbie/dist packages/bot-herbie/dist
 COPY --from=build /app/packages/bot-herbie/locales packages/bot-herbie/locales
 COPY --from=build /app/packages/bot-herbie/drizzle packages/bot-herbie/drizzle
 COPY --from=build /app/packages/bot-herbie/content packages/bot-herbie/content
+COPY --from=build /app/packages/bot-sentinel/dist packages/bot-sentinel/dist
+COPY --from=build /app/packages/bot-sentinel/locales packages/bot-sentinel/locales
+COPY --from=build /app/packages/bot-sentinel/drizzle packages/bot-sentinel/drizzle
 COPY --from=build /app/apps/runner/dist apps/runner/dist
 COPY --from=build /app/apps/cli/dist apps/cli/dist
 RUN ln -s /app/apps/cli/dist/index.js /usr/local/bin/legion && chmod +x apps/cli/dist/index.js \
