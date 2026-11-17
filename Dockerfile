@@ -11,6 +11,7 @@ COPY packages/bot-cerebro/package.json packages/bot-cerebro/
 COPY packages/bot-jarvis/package.json packages/bot-jarvis/
 COPY packages/bot-herbie/package.json packages/bot-herbie/
 COPY packages/bot-sentinel/package.json packages/bot-sentinel/
+COPY packages/bot-ultron/package.json packages/bot-ultron/
 COPY apps/runner/package.json apps/runner/
 COPY apps/cli/package.json apps/cli/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -27,6 +28,7 @@ COPY --from=build /app/packages/bot-cerebro/package.json packages/bot-cerebro/
 COPY --from=build /app/packages/bot-jarvis/package.json packages/bot-jarvis/
 COPY --from=build /app/packages/bot-herbie/package.json packages/bot-herbie/
 COPY --from=build /app/packages/bot-sentinel/package.json packages/bot-sentinel/
+COPY --from=build /app/packages/bot-ultron/package.json packages/bot-ultron/
 COPY --from=build /app/apps/runner/package.json apps/runner/
 COPY --from=build /app/apps/cli/package.json apps/cli/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --prod
@@ -48,6 +50,10 @@ COPY --from=build /app/packages/bot-herbie/content packages/bot-herbie/content
 COPY --from=build /app/packages/bot-sentinel/dist packages/bot-sentinel/dist
 COPY --from=build /app/packages/bot-sentinel/locales packages/bot-sentinel/locales
 COPY --from=build /app/packages/bot-sentinel/drizzle packages/bot-sentinel/drizzle
+COPY --from=build /app/packages/bot-ultron/drizzle packages/bot-ultron/drizzle
+COPY --from=build /app/packages/bot-ultron/dist packages/bot-ultron/dist
+COPY --from=build /app/packages/bot-ultron/locales packages/bot-ultron/locales
+COPY --from=build /app/packages/bot-ultron/content packages/bot-ultron/content
 COPY --from=build /app/apps/runner/dist apps/runner/dist
 COPY --from=build /app/apps/cli/dist apps/cli/dist
 RUN ln -s /app/apps/cli/dist/index.js /usr/local/bin/legion && chmod +x apps/cli/dist/index.js \

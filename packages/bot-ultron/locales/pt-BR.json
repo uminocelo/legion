@@ -1,0 +1,76 @@
+{
+  "ultron": {
+    "errors": {
+      "not_staff": "Apenas a staff pode usar este comando.",
+      "not_registered": "{user} ainda não registrou um mutante.",
+      "generic": "Não consegui criar o encontro. Tente de novo."
+    },
+    "difficulty": {
+      "facil": "Fácil",
+      "normal": "Normal",
+      "dificil": "Difícil"
+    },
+    "commands": {
+      "ultron": {
+        "description": "Comandos do ULTRON para a staff",
+        "spawn": "Encontro de teste: inimigos escalados para até 4 membros",
+        "dificuldade": "Dificuldade do encontro",
+        "membro": "Membro que luta (padrão: você)"
+      }
+    },
+    "spawn": {
+      "sent": "🤖 {count} inimigo(s) enviados para {channel}: {enemies}"
+    },
+    "help": {
+      "ultron": "Staff: encontros de teste, eventos mundiais e status do ULTRON."
+    },
+    "taunt": {
+      "generic": {
+        "1": "🤖 ULTRON: Seus poderes são só variáveis numa equação que eu já resolvi.",
+        "2": "🤖 ULTRON: {enemies} vão testar o que vocês chamam de coragem.",
+        "3": "🤖 ULTRON: Calculei este encontro até a última casa decimal."
+      },
+      "drone": {
+        "1": "🤖 Drone Vigia: Alvos identificados. Iniciando varredura.",
+        "2": "🤖 Drone Vigia: Vocês foram detectados há 3,2 segundos."
+      },
+      "nanites": {
+        "1": "🤖 Enxame de Nanites: Somos muitos. Vocês são poucos.",
+        "2": "🤖 Enxame de Nanites: Cada pedaço de nós volta a se montar."
+      },
+      "sucata": {
+        "1": "🤖 Sentinela de Sucata: Peças velhas, ordens novas."
+      },
+      "espectro": {
+        "1": "🤖 Espectro de Dados: Eu li cada mensagem que vocês apagaram."
+      },
+      "cacador": {
+        "1": "🤖 Caçador Sintético: A caça começou. Corram, se quiserem."
+      },
+      "omega": {
+        "1": "🤖 Unidade Ômega: Protocolo final ativado."
+      },
+      "bastiao": {
+        "1": "🤖 Bastião Prime: O chão treme quando eu chego.",
+        "2": "🤖 Bastião Prime: Juntem todos. Não fará diferença."
+      },
+      "nucleo": {
+        "1": "🤖 Núcleo Carmesim: Minha energia não tem fim. A de vocês tem."
+      }
+    },
+    "flavor": {
+      "announce": {
+        "1": "🤖 ULTRON: Preparem-se. {title} chega em breve.",
+        "2": "🤖 ULTRON: Contagem regressiva iniciada para {title}."
+      },
+      "victory": {
+        "1": "🤖 ULTRON: Vocês venceram... desta vez.",
+        "2": "🤖 ULTRON: Recalculando. Isto não estava previsto."
+      },
+      "defeat": {
+        "1": "🤖 ULTRON: Exatamente como eu calculei.",
+        "2": "🤖 ULTRON: A resistência de vocês foi... insuficiente."
+      }
+    }
+  }
+}

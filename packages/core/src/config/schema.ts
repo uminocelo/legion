@@ -37,6 +37,9 @@ export const sharedConfigSchema = z
     if (cfg.bots.length > 0 && !cfg.bots.includes('cerebro')) {
       ctx.addIssue({ code: 'custom', path: ['bots'], message: 'config.cerebro_required' });
     }
+    if (cfg.bots.includes('ultron') && !cfg.bots.includes('sentinel')) {
+      ctx.addIssue({ code: 'custom', path: ['bots'], message: 'config.sentinel_required' });
+    }
     const keys = new Set<string>();
     cfg.roles.forEach((r, i) => {
       if (keys.has(r.key))

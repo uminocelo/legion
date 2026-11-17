@@ -1,0 +1,76 @@
+{
+  "ultron": {
+    "errors": {
+      "not_staff": "Only staff can use this command.",
+      "not_registered": "{user} has not registered a mutant yet.",
+      "generic": "Could not create the encounter. Try again."
+    },
+    "difficulty": {
+      "facil": "Easy",
+      "normal": "Normal",
+      "dificil": "Hard"
+    },
+    "commands": {
+      "ultron": {
+        "description": "ULTRON staff commands",
+        "spawn": "Test encounter: scaled enemies for up to 4 members",
+        "dificuldade": "Encounter difficulty",
+        "membro": "Member who fights (default: you)"
+      }
+    },
+    "spawn": {
+      "sent": "🤖 {count} enemy(ies) sent to {channel}: {enemies}"
+    },
+    "help": {
+      "ultron": "Staff: test encounters, world events and ULTRON status."
+    },
+    "taunt": {
+      "generic": {
+        "1": "🤖 ULTRON: Your powers are just variables in an equation I already solved.",
+        "2": "🤖 ULTRON: {enemies} will test what you call courage.",
+        "3": "🤖 ULTRON: I calculated this encounter to the last decimal."
+      },
+      "drone": {
+        "1": "🤖 Drone Vigia: Targets identified. Starting sweep.",
+        "2": "🤖 Drone Vigia: You were detected 3.2 seconds ago."
+      },
+      "nanites": {
+        "1": "🤖 Enxame de Nanites: We are many. You are few.",
+        "2": "🤖 Enxame de Nanites: Every piece of us rebuilds itself."
+      },
+      "sucata": {
+        "1": "🤖 Sentinela de Sucata: Old parts, new orders."
+      },
+      "espectro": {
+        "1": "🤖 Espectro de Dados: I read every message you deleted."
+      },
+      "cacador": {
+        "1": "🤖 Caçador Sintético: The hunt has begun. Run, if you like."
+      },
+      "omega": {
+        "1": "🤖 Unidade Ômega: Final protocol activated."
+      },
+      "bastiao": {
+        "1": "🤖 Bastião Prime: The ground shakes when I arrive.",
+        "2": "🤖 Bastião Prime: Bring everyone. It won't matter."
+      },
+      "nucleo": {
+        "1": "🤖 Núcleo Carmesim: My energy never ends. Yours does."
+      }
+    },
+    "flavor": {
+      "announce": {
+        "1": "🤖 ULTRON: Get ready. {title} arrives soon.",
+        "2": "🤖 ULTRON: Countdown started for {title}."
+      },
+      "victory": {
+        "1": "🤖 ULTRON: You won... this time.",
+        "2": "🤖 ULTRON: Recalculating. This was not predicted."
+      },
+      "defeat": {
+        "1": "🤖 ULTRON: Exactly as I calculated.",
+        "2": "🤖 ULTRON: Your resistance was... insufficient."
+      }
+    }
+  }
+}
