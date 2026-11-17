@@ -79,13 +79,14 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 
 | Chave | Padrão | Descrição |
 |---|---|---|
-| `trivia.categories` | `[quadrinhos, rivals, geral]` | Categorias aceitas (letras minúsculas, `-`, `_`) |
+| `trivia.categories` | `[quadrinhos, rivals, geral]` | Categorias aceitas (letras minúsculas, `-`, `_`). Pode acrescentar outras, como `marvel`; sem texto no locale, aparece o próprio nome |
 | `trivia.timeLimitSeconds` | `20` | Tempo para responder; depois disso a pergunta expira com 0 XP |
 | `trivia.cooldownSeconds` | `30` | Espera entre perguntas do mesmo membro |
 | `trivia.noRepeatDays` | `30` | Não repete pergunta vista nesse período (se todas foram vistas, usa a mais antiga) |
 | `trivia.dailyXpCap` | `300` | XP máximo de trivia por dia local; acertos acima disso dão 0 XP mas contam para a sequência |
 | `trivia.baseXp` | `facil 10, normal 15, dificil 25` | XP por acerto |
 | `trivia.speedBonusMax` | `5` | Bônus máximo por rapidez (proporcional ao tempo restante) |
+| `trivia.review` | `none` | Perguntas criadas com `/jarvis trivia nova`: `none` entram em jogo na hora; `second_staff` esperam outra pessoa da staff aprovar (em `channels.modQueue`, senão no canal do comando) |
 | `levels.levelFactor` | `50` | XP para o nível n = `levelFactor × (n-1)²` |
 | `levels.maxLevel` | `50` | Nível máximo |
 | `ranks` | `recruta 0, agente 500, veterano 2000` | XP mínimo de cada rank; `recruta` deve ser 0 e os valores crescentes. O Cérebro troca os cargos |
@@ -115,7 +116,7 @@ As perguntas vêm de `packages/bot-jarvis/content/trivia/*.yaml` (30 em pt-BR) e
   choices: ["A", "B", "C", "D"]   # 2 a 4, sem repetir
   answer: 2                 # índice em choices, começando em 0
   explanation: Por que C.
-  source: https://…         # obrigatório
+  source: https://…         # obrigatório: link ou referência ("Shang-Chi #4 (2021)")
 ```
 
 Ao iniciar, e com `/jarvis trivia recarregar`, as perguntas são sincronizadas pelo `id`: novas entram, alteradas são atualizadas e as que sumiram dos arquivos ficam inativas (nunca apagadas, para o histórico continuar válido). Se algum arquivo tiver erro, nada é desativado e a staff vê a lista de erros.

@@ -121,14 +121,23 @@ export class JarvisUi {
         style: 'primary',
         emoji: '➡️',
       },
-      { type: 'button', url: q.source, label: this.t('jarvis.trivia.source', {}, l), style: 'link' },
     ];
+    // A URL source becomes a link button; a reference ("Shang-Chi #4 (2021)") goes in the footer.
+    const isUrl = /^https?:\/\//.test(q.source);
+    if (isUrl)
+      next.push({
+        type: 'button',
+        url: q.source,
+        label: this.t('jarvis.trivia.source', {}, l),
+        style: 'link',
+      });
     return {
       persona: 'jarvis',
       embeds: [
         {
           title: this.t('jarvis.trivia.title', { category: this.category(q.category, l) }, l),
           description: lines.join('\n'),
+          ...(isUrl ? {} : { footer: { text: `${this.t('jarvis.trivia.source', {}, l)}: ${q.source}` } }),
         },
       ],
       components: [answered, next],

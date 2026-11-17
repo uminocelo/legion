@@ -107,7 +107,19 @@
         "trivia": "Ferramentas de trivia",
         "recarregar": "Recarregar as perguntas dos arquivos",
         "estatisticas": "Estatísticas das perguntas",
-        "recalcular": "Recalcular o progresso de um membro a partir do ledger"
+        "recalcular": "Recalcular o progresso de um membro a partir do ledger",
+        "nova": "Cria uma pergunta de trivia (abre um formulário)",
+        "dificuldade": "Dificuldade da pergunta",
+        "idioma": "Idioma da pergunta (padrão: o do servidor)",
+        "lista": "Lista as perguntas com filtros",
+        "status": "Ativas, pendentes, desativadas ou todas",
+        "autor": "Só perguntas criadas por este membro da staff",
+        "pagina": "Página da lista",
+        "editar": "Edita uma pergunta criada pela staff",
+        "desativar": "Tira uma pergunta de jogo na hora",
+        "ativar": "Volta uma pergunta desativada",
+        "pergunta": "A pergunta (id ou texto)",
+        "exportar": "Baixa as perguntas da staff em YAML"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
@@ -170,6 +182,44 @@
       },
       "fight": "⚔️ Luta em andamento: o Sentinel conduz os turnos aqui.",
       "combat_timeout": "⌛ A luta não terminou a tempo. A missão fracassou."
+    },
+    "staff_trivia": {
+      "bad_category": "A categoria \"{category}\" não está em jarvis.trivia.categories.",
+      "form_new": "Nova pergunta de trivia",
+      "form_edit": "Editar pergunta",
+      "f_question": "Pergunta",
+      "f_choices": "Alternativas (uma por linha, 2 a 4)",
+      "f_answer": "Número da alternativa certa (1 a 4)",
+      "f_explanation": "Explicação da resposta",
+      "f_source": "Fonte (edição do quadrinho ou link)",
+      "invalid": "A pergunta não foi salva:\n{errors}",
+      "created_live": "✅ Pergunta `{id}` criada e já está em jogo.",
+      "created_pending": "📝 Pergunta `{id}` enviada para revisão em {channel}. Outra pessoa da staff precisa aprovar.",
+      "review_title": "Revisão de trivia · {id}",
+      "approve": "Aprovar",
+      "reject": "Rejeitar",
+      "approved_by": "✅ Aprovada por {staff}.",
+      "rejected_by": "❌ Rejeitada por {staff}.",
+      "already_reviewed": "Esta pergunta já foi revisada.",
+      "own_question": "Quem criou a pergunta não pode aprová-la. Peça a outra pessoa da staff.",
+      "unknown": "Não encontrei essa pergunta.",
+      "file_question": "Essa pergunta vem de um arquivo de conteúdo. Edite o arquivo e use /jarvis trivia recarregar.",
+      "edited": "✏️ Pergunta `{id}` atualizada.",
+      "disabled": "⛔ Pergunta `{id}` desativada: saiu de jogo agora.",
+      "enabled": "✅ Pergunta `{id}` ativada.",
+      "not_approved": "Essa pergunta ainda não foi aprovada.",
+      "list_title": "Perguntas de trivia ({total})",
+      "list_empty": "Nenhuma pergunta com esses filtros.",
+      "page": "Página {page} de {pages}",
+      "from_file": "arquivo",
+      "status": {
+        "ativa": "Ativas",
+        "pendente": "Pendentes",
+        "desativada": "Desativadas",
+        "todas": "Todas"
+      },
+      "export_header": "Perguntas criadas pela staff, exportadas em {date}. Guarde como backup.",
+      "exported": "{count} pergunta(s) da staff exportadas."
     }
   }
 }

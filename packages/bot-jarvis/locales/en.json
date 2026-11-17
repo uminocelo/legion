@@ -107,7 +107,19 @@
         "trivia": "Trivia tools",
         "recarregar": "Reload questions from the files",
         "estatisticas": "Question statistics",
-        "recalcular": "Rebuild a member's progress from the ledger"
+        "recalcular": "Rebuild a member's progress from the ledger",
+        "nova": "Creates a trivia question (opens a form)",
+        "dificuldade": "Question difficulty",
+        "idioma": "Question language (default: the server one)",
+        "lista": "Lists questions with filters",
+        "status": "Active, pending, disabled or all",
+        "autor": "Only questions created by this staff member",
+        "pagina": "List page",
+        "editar": "Edits a question created by staff",
+        "desativar": "Takes a question out of play at once",
+        "ativar": "Brings a disabled question back",
+        "pergunta": "The question (id or text)",
+        "exportar": "Downloads the staff questions as YAML"
       },
       "missao": {
         "description": "Missions: short stories with choices, solo or in a party",
@@ -170,6 +182,44 @@
       },
       "fight": "⚔️ Fight in progress: Sentinel runs the turns here.",
       "combat_timeout": "⌛ The fight did not end in time. The mission failed."
+    },
+    "staff_trivia": {
+      "bad_category": "Category \"{category}\" is not in jarvis.trivia.categories.",
+      "form_new": "New trivia question",
+      "form_edit": "Edit question",
+      "f_question": "Question",
+      "f_choices": "Choices (one per line, 2 to 4)",
+      "f_answer": "Number of the right choice (1 to 4)",
+      "f_explanation": "Why that is the answer",
+      "f_source": "Source (comic issue or link)",
+      "invalid": "The question was not saved:\n{errors}",
+      "created_live": "✅ Question `{id}` created and already in play.",
+      "created_pending": "📝 Question `{id}` sent for review in {channel}. Another staff member must approve it.",
+      "review_title": "Trivia review · {id}",
+      "approve": "Approve",
+      "reject": "Reject",
+      "approved_by": "✅ Approved by {staff}.",
+      "rejected_by": "❌ Rejected by {staff}.",
+      "already_reviewed": "This question was already reviewed.",
+      "own_question": "The author cannot approve their own question. Ask another staff member.",
+      "unknown": "I could not find that question.",
+      "file_question": "That question comes from a content file. Edit the file and use /jarvis trivia reload.",
+      "edited": "✏️ Question `{id}` updated.",
+      "disabled": "⛔ Question `{id}` disabled: out of play now.",
+      "enabled": "✅ Question `{id}` enabled.",
+      "not_approved": "That question has not been approved yet.",
+      "list_title": "Trivia questions ({total})",
+      "list_empty": "No questions with these filters.",
+      "page": "Page {page} of {pages}",
+      "from_file": "file",
+      "status": {
+        "ativa": "Active",
+        "pendente": "Pending",
+        "desativada": "Disabled",
+        "todas": "All"
+      },
+      "export_header": "Questions created by staff, exported on {date}. Keep as a backup.",
+      "exported": "{count} staff question(s) exported."
     }
   }
 }

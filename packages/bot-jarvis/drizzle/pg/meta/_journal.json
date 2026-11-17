@@ -15,6 +15,13 @@
       "when": 1794953754931,
       "tag": "0001_missions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794955712485,
+      "tag": "0002_staff_trivia",
+      "breakpoints": true
     }
   ]
 }
