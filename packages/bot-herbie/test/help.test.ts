@@ -222,7 +222,7 @@ describe('world events', () => {
     await emit(t, 'world.event', { ...p, phase: 'started' }, 'core');
     const posts = t.gateway.callsOf('sendMessage').filter((c) => c[0] === CH.events);
     expect(posts).toHaveLength(1);
-    expect((posts[0]?.[1] as { embeds: { title: string }[] }).embeds[0]?.title).toBe(
+    expect((posts[0]?.[1] as { embeds: { title: string }[] } | undefined)?.embeds[0]?.title).toBe(
       '🤖 O que é uma invasão? (Sentinelas)',
     );
   });
