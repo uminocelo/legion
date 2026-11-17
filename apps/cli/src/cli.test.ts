@@ -2,13 +2,14 @@ import { mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { cerebro } from '@legion/bot-cerebro';
-import { createTestDb } from '@legion/core';
+import { createTestDb, parseEnv } from '@legion/core';
 import { PermissionFlagsBits } from 'discord.js';
 import { describe, expect, it } from 'vitest';
 import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
-import { configFile, isSnowflake, writeInitFiles } from './init.js';
+import { configFile, envFile, isSnowflake, writeInitFiles } from './init.js';
 import { invitePermissions, inviteUrl } from './invite.js';
 import { channelPermissions } from './permissions.js';
+import { registerCommands } from './register.js';
 import { type ApiChannel, type ApiRole, type DiscordRest, RestError } from './rest.js';
 
 const GUILD = '100000000000000001';
@@ -26,6 +27,9 @@ function fakeRest(
     rolePerms: string;
     channels: ApiChannel[];
     roles: ApiRole[];
+    botId: string;
+    appId: string;
+    puts: { app: string; names: string[] }[];
   }> = {},
 ): DiscordRest {
   const o = { tokenOk: true, flags: 1 << 15, inGuild: true, rolePerms: basic, ...over };
@@ -40,15 +44,17 @@ function fakeRest(
   return {
     me: async () => {
       if (!o.tokenOk) throw new RestError(401, 'unauthorized');
-      return { id: BOT, username: 'Legion' };
+      return { id: o.botId ?? BOT, username: 'Legion' };
     },
-    application: async () => ({ id: APP, name: 'Legion', flags: o.flags }),
+    application: async () => ({ id: o.appId ?? APP, name: 'Legion', flags: o.flags }),
     guild: async () => ({ id: GUILD, name: 'Teste', owner_id: '1' }),
     guildMember: async (_g, u) =>
-      o.inGuild && u === BOT ? { roles: ['900'], user: { id: BOT, bot: true } } : null,
+      o.inGuild && u === (o.botId ?? BOT) ? { roles: ['900'], user: { id: u, bot: true } } : null,
     guildRoles: async () => roles,
     guildChannels: async () => channels,
-    putGuildCommands: async () => {},
+    putGuildCommands: async (app, _g, cmds) => {
+      o.puts?.push({ app, names: (cmds as { name: string }[]).map((c) => c.name).sort() });
+    },
   };
 }
 
@@ -235,5 +241,74 @@ describe('legion invite-url', () => {
     expect(perms).toBe(invitePermissions([cerebro]));
     expect(perms & P.ManageRoles).toBe(P.ManageRoles);
     expect(perms & P.Administrator).toBe(0n);
+  });
+});
+
+describe('several Discord apps', () => {
+  const JAPP = '223456789012345678';
+  const split = { ...envOk, JARVIS_TOKEN: 'j', JARVIS_CLIENT_ID: JAPP };
+  const twoBots = () => {
+    const dir = tmp();
+    const path = join(dir, 'legion.config.yaml');
+    writeFileSync(
+      path,
+      `bots: [cerebro, jarvis]\nchannels:\n  welcome: '${CH.welcome}'\n  rules: '${CH.rules}'\n`,
+    );
+    return path;
+  };
+
+  it('doctor checks each app and names the failing one', async () => {
+    const main = fakeRest();
+    const rs = await runDoctor({
+      locale: 'pt-BR',
+      envSource: split,
+      configPath: twoBots(),
+      rest: (token) =>
+        token === 'j' ? fakeRest({ botId: '200000000000000002', appId: JAPP, inGuild: false }) : main,
+      openDb: () => createTestDb(),
+    });
+    const st = status(rs);
+    expect(st).toMatchObject({
+      token: 'ok',
+      app: 'ok',
+      guild: 'ok',
+      'token:jarvis': 'ok',
+      'app:jarvis': 'ok',
+      'guild:jarvis': 'fail',
+    });
+    expect(rs.find((r) => r.id === 'guild:jarvis')?.title).toBe('Bot no servidor — app jarvis (jarvis)');
+    expect(rs.find((r) => r.id === 'app:jarvis')?.message).toBe('JARVIS_CLIENT_ID confere com o token');
+    expect(JSON.stringify(rs)).not.toContain('"j"');
+  });
+
+  it('doctor reports a half-configured pair', async () => {
+    const rs = await doctor(fakeRest(), { ...envOk, JARVIS_TOKEN: 'j' }, twoBots());
+    expect(rs.find((r) => r.id === 'apps')).toMatchObject({
+      status: 'fail',
+      message: 'JARVIS_CLIENT_ID: obrigatório quando JARVIS_TOKEN está definido',
+    });
+  });
+
+  it('register-commands puts each bot on its own app and clears it from the shared one', async () => {
+    const puts: { app: string; names: string[] }[] = [];
+    const res = await registerCommands(parseEnv(split), twoBots(), (token) =>
+      token === 'j' ? fakeRest({ botId: '200000000000000002', appId: JAPP, puts }) : fakeRest({ puts }),
+    );
+    expect(res.map((r) => r.app)).toEqual(['main', 'jarvis']);
+    const byApp = Object.fromEntries(puts.map((p) => [p.app, p.names]));
+    expect(byApp[JAPP]).toEqual(['jarvis', 'ranking', 'sequencia', 'trivia']);
+    expect(byApp[APP]).toEqual(['cerebro', 'perfil']);
+  });
+
+  it('init writes per-bot tokens to .env', () => {
+    const env = envFile({
+      token: 't',
+      clientId: APP,
+      guildId: GUILD,
+      locale: 'pt-BR',
+      bots: ['cerebro', 'jarvis'],
+      ownApps: { jarvis: { token: ' jt ', clientId: JAPP } },
+    });
+    expect(env).toContain(`JARVIS_TOKEN=jt\nJARVIS_CLIENT_ID=${JAPP}\n`);
   });
 });

@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 import type { Server } from 'node:http';
 import {
+  ConfigError,
   type CoreRuntime,
   createLogger,
   cryptoRandomSource,
   DiscordJsGateway,
   parseEnv,
+  planApps,
   startHealthServer,
   systemClock,
 } from '@legion/core';
-import { Events } from 'discord.js';
+import { type Client, Events } from 'discord.js';
 import { createClient, wireClient } from './discord.js';
 import {
   buildRuntime,
@@ -49,39 +51,57 @@ async function main(): Promise<void> {
     pretty: Boolean(process.stdout.isTTY) && process.env.NODE_ENV !== 'production',
   });
 
-  const client = createClient(bots);
-  const gateway = new DiscordJsGateway(client, env.DISCORD_GUILD_ID);
+  const plan = planApps(
+    env,
+    bots.map((b) => b.id),
+  );
+  if (plan.errors.length) fatal(new ConfigError(plan.errors.map((e) => `.env → ${e}`)));
+  // One discord.js client per app; `main` (Cérebro's app) is first.
+  const apps = plan.apps.map((a) => {
+    const appBots = bots.filter((b) => a.bots.includes(b.id));
+    const client = createClient(appBots);
+    return { ...a, client, gateway: new DiscordJsGateway(client, env.DISCORD_GUILD_ID) };
+  });
+  const main = apps.find((a) => a.key === 'main') ?? apps[0];
+  if (!main) return fatal(new Error('nenhum bot ligado'));
+  log.info({ apps: apps.map((a) => ({ discordApp: a.key, bots: a.bots })) }, 'discord apps planned');
+
   runtime = await buildRuntime({
     env,
     config,
     bots,
-    gateway,
+    gateway: main.gateway,
+    apps: apps.filter((a) => a !== main).map((a) => ({ key: a.key, gateway: a.gateway, bots: a.bots })),
     log,
     clock: systemClock,
     random: cryptoRandomSource,
     localesOverrideDir: 'locales',
   }).catch(fatal);
-  wireClient(client, gateway, () => runtime, env.DISCORD_GUILD_ID, log);
+  for (const a of apps) wireClient(a.client, a.gateway, () => runtime, env.DISCORD_GUILD_ID, log, a.key);
 
-  client.once(Events.ClientReady, async (c) => {
-    log.info({ user: c.user.tag }, 'connected to Discord');
-    if (!c.guilds.cache.has(env.DISCORD_GUILD_ID))
-      log.error(
-        { guildId: env.DISCORD_GUILD_ID },
-        'the bot is not in this guild; invite it with "legion invite-url"',
-      );
-    try {
-      await runtime?.ready();
-      ready = true;
-      log.info('Legion is ready');
-    } catch (err) {
-      log.error({ err }, 'ready sequence failed');
-    }
-  });
+  const connected = new Set<string>();
+  for (const a of apps)
+    a.client.once(Events.ClientReady, async (c) => {
+      log.info({ discordApp: a.key, user: c.user.tag }, 'connected to Discord');
+      if (!c.guilds.cache.has(env.DISCORD_GUILD_ID))
+        log.error(
+          { discordApp: a.key, guildId: env.DISCORD_GUILD_ID },
+          'this app is not in the guild; invite it with "legion invite-url"',
+        );
+      connected.add(a.key);
+      if (connected.size < apps.length) return;
+      try {
+        await runtime?.ready();
+        ready = true;
+        log.info('Legion is ready');
+      } catch (err) {
+        log.error({ err }, 'ready sequence failed');
+      }
+    });
 
   server = await startHealthServer(env.HEALTH_PORT, {
     dbOk: async () => (runtime ? runtime.db.ping() : false),
-    discordReady: () => ready && client.isReady(),
+    discordReady: () => ready && apps.every((a) => a.client.isReady()),
   }).catch((err) => {
     log.warn({ err, port: env.HEALTH_PORT }, 'health server not started');
     return null;
@@ -93,7 +113,7 @@ async function main(): Promise<void> {
     stopping = true;
     log.info({ signal }, 'shutting down');
     await runtime?.stop(10_000);
-    await client.destroy();
+    await Promise.all(apps.map((a) => a.client.destroy()));
     server?.close();
     await runtime?.close();
     process.exit(0);
@@ -102,20 +122,25 @@ async function main(): Promise<void> {
   process.on('SIGINT', () => void shutdown('SIGINT'));
   process.on('unhandledRejection', (err) => log.error({ err }, 'unhandled rejection'));
 
+  for (const a of apps) await login(a.client, a.token, a.tokenVar, fatal);
+}
+
+/** Logs in one app with readable errors that name its env var (never the token). */
+async function login(client: Client, token: string, tokenVar: string, fatal: (err: unknown) => never) {
   try {
-    await client.login(env.DISCORD_TOKEN);
+    await client.login(token);
   } catch (err) {
     const code = (err as { code?: string }).code;
     if (code === 'TokenInvalid')
       fatal(
         new Error(
-          'DISCORD_TOKEN inválido. Gere um novo token no Developer Portal (Bot → Reset Token) e atualize o .env.',
+          `${tokenVar} inválido. Gere um novo token no Developer Portal (Bot → Reset Token) e atualize o .env.`,
         ),
       );
     if (String((err as Error).message).includes('disallowed intents'))
       fatal(
         new Error(
-          'Intents privilegiadas não liberadas. No Developer Portal → Bot, ligue "Server Members Intent".',
+          `Intents privilegiadas não liberadas para ${tokenVar}. No Developer Portal → Bot, ligue "Server Members Intent".`,
         ),
       );
     fatal(err);

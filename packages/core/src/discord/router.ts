@@ -23,7 +23,13 @@ export interface InteractionRouterOptions {
   onCommandExecuted?: (i: IncomingInteraction, bot: BotId) => Promise<void>;
   /** Requests that skip rate limiting (e.g. staff commands, decided by Sentinel later). */
   bypassRateLimit?: (i: IncomingInteraction) => boolean;
+  /** Several Discord apps: the app key of each bot (default: every bot on `main`). */
+  appOf?: (bot: BotId) => string;
+  /** Several Discord apps: the gateway that answers interactions received by an app. */
+  gatewayFor?: (appKey: string) => DiscordGateway;
 }
+
+export const MAIN_APP = 'main';
 
 /** Routes interactions to bots, inside an error boundary (main prompt §5.3–§5.4). */
 export class InteractionRouter {
@@ -47,8 +53,10 @@ export class InteractionRouter {
     this.componentBots.add(bot);
   }
 
-  commandJson(): Record<string, unknown>[] {
+  /** Command JSON for one app (all commands when `appKey` is omitted). */
+  commandJson(appKey?: string): Record<string, unknown>[] {
     return [...this.commands.values()]
+      .filter((c) => appKey === undefined || this.appOf(c.bot) === appKey)
       .map((c) => c.def.json)
       .sort((a, b) => String(a.name).localeCompare(String(b.name)));
   }
@@ -57,20 +65,28 @@ export class InteractionRouter {
     return this.commands.get(commandName)?.bot;
   }
 
-  async handle(i: IncomingInteraction): Promise<void> {
-    const r = new Responder(this.o.gateway, i.id);
+  private appOf(bot: BotId): string {
+    return this.o.appOf?.(bot) ?? MAIN_APP;
+  }
+
+  /** Handles an interaction received by app `appKey` and answers through that app. */
+  async handle(i: IncomingInteraction, appKey: string = MAIN_APP): Promise<void> {
+    const r = new Responder(this.o.gatewayFor?.(appKey) ?? this.o.gateway, i.id);
+    // A command or button of a bot that lives on another app (e.g. stale after moving a bot) is treated as expired.
+    const elsewhere = (b: BotId) => this.appOf(b) !== appKey;
     const log = this.o.log.child({ interactionId: i.id, userId: i.userId });
     let bot: BotId | undefined;
     try {
       if (i.kind === 'autocomplete') {
-        const entry = i.commandName ? this.commands.get(i.commandName) : undefined;
+        const found = i.commandName ? this.commands.get(i.commandName) : undefined;
+        const entry = found && !elsewhere(found.bot) ? found : undefined;
         bot = entry?.bot;
         await (entry?.def.autocomplete?.(i, r) ?? r.autocomplete([]));
         return;
       }
       if (i.kind === 'command' || i.kind === 'context_menu') {
         const entry = i.commandName ? this.commands.get(i.commandName) : undefined;
-        if (!entry) return await this.expired(i, r);
+        if (!entry || elsewhere(entry.bot)) return await this.expired(i, r);
         bot = entry.bot;
         if (!(await this.allowed(i, r, `cmd:${i.userId}`, this.limits.commandsPerMinute, 60_000))) return;
         await entry.def.execute(i, r);
@@ -82,7 +98,7 @@ export class InteractionRouter {
       }
       const parsed = i.customId ? parseCustomId(i.customId) : null;
       const def = parsed && this.components.get(`${parsed.bot}:v${parsed.version}:${parsed.action}`);
-      if (!parsed || !def) return await this.expired(i, r);
+      if (!parsed || !def || elsewhere(parsed.bot)) return await this.expired(i, r);
       bot = parsed.bot;
       if (!(await this.allowed(i, r, `cmp:${i.userId}`, this.limits.componentsPer10Seconds, 10_000))) return;
       await def.handle(i, r, parsed.args);
