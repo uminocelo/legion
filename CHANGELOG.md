@@ -4,6 +4,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-17
+
 ### Added
 - Sentinel: deterministic turn-based combat (mulberry32 seed, fixed dice order, SHA-256 log hash, `replayCombat`), combat sessions from `combat.requested` in threads with round buttons, timeouts, abandonment, `raid_strike` and restart recovery; `/treino`, `/combate status | log`, `/sentinel replay`. Rules in `docs/COMBAT.md`.
 - DB-backed rate limiter for every bot with staff bypass, violations and `rate_limit` flags; XP anomaly and new-account flags.
@@ -57,7 +59,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/uminocelo/legion/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/uminocelo/legion/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/uminocelo/legion/releases/tag/v0.2.0
 [0.1.0]: https://github.com/uminocelo/legion/releases/tag/v0.1.0
