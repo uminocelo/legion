@@ -61,6 +61,13 @@
   details: "Each question is yours alone and has a time limit. There is a wait between questions and you won't get the same question for a while. Every question has a source."
   related: [xp, cooldown, sequencia]
   bot: jarvis
+- id: missao
+  term: "Missions"
+  aliases: [mission, missions, party, team]
+  summary: "Short stories with choices, solo or with up to 3 friends. Use /mission list and /mission start."
+  details: "Each mission opens a thread. You choose with buttons; in a party the majority decides and the leader breaks ties. Some missions have fights against ULTRON, run by Sentinel. Success and failure give XP; abandoning gives none. Daily and weekly missions have limits, and each story can be played once."
+  related: [xp, trivia]
+  bot: jarvis
 - id: cooldown
   term: "Cooldown"
   aliases: [wait, limit]

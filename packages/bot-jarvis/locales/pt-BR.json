@@ -152,7 +152,24 @@
         "success": "✅ Missão cumprida! +{xp} XP",
         "failure": "❌ Missão fracassada. +{xp} XP pela tentativa",
         "abandoned": "⌛ Missão abandonada. Sem XP."
-      }
+      },
+      "lobby_opened": "Grupo aberto em {channel}. Chame a equipe e clique em Começar.",
+      "lobby_wait": "Clique em **Entrar** para participar. O líder começa quando quiser (o grupo fecha em {minutes} min).",
+      "lobby_started": "A missão começou em {thread}.",
+      "lobby_cancelled": "Grupo encerrado sem começar.",
+      "lobby_closed": "Este grupo já foi fechado.",
+      "leader_only": "Só o líder do grupo pode começar.",
+      "already_in": "Você já está neste grupo.",
+      "full": "O grupo está cheio.",
+      "left_party": "Você saiu do grupo. O resto da equipe continua.",
+      "party": "Equipe ({n}/{max})",
+      "btn": {
+        "join": "Entrar",
+        "leave": "Sair",
+        "start": "Começar"
+      },
+      "fight": "⚔️ Luta em andamento: o Sentinel conduz os turnos aqui.",
+      "combat_timeout": "⌛ A luta não terminou a tempo. A missão fracassou."
     }
   }
 }

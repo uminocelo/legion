@@ -3,11 +3,14 @@ import type {
   BotContext,
   Executor,
   IncomingInteraction,
+  LegionEvent,
   Locale,
+  MemberView,
   OutgoingMessage,
   Responder,
 } from '@legion/core';
 import { customId } from '@legion/core';
+import { eq } from 'drizzle-orm';
 import type { JarvisConfig } from './config.js';
 import { OPEN_RUN, type RunRow } from './db/repo.js';
 import { loc, type Mission, missionXp, resolveVote, type StepResult, step } from './domain/mission.js';
@@ -26,7 +29,11 @@ export const MISSION_TIMEOUT_JOB = 'jarvis.mission-timeout';
 export const missionIds = {
   choose: (runId: string, sceneId: string, choice: number) =>
     customId('jarvis', V, 'mission', runId, sceneId, choice),
+  lobby: (runId: string, action: 'join' | 'leave' | 'start') => customId('jarvis', V, 'lobby', runId, action),
 };
+
+/** `mission.started` id of one fight: the run plus the combat scene, so each fight scene spawns once. */
+export const combatMissionId = (runId: string, sceneId: string) => `${runId}:${sceneId}`;
 
 const COLOR = 0x00b0f4;
 const ENDED_COLOR = { success: 0x2ecc71, failure: 0xe74c3c, abandoned: 0x95a5a6 } as const;
@@ -63,7 +70,8 @@ export class JarvisMissions {
 
   /** Fights need ULTRON (enemies) and Sentinel (referee). */
   combatReady(): boolean {
-    return false;
+    const bots = this.ctx.config.bots;
+    return bots.includes('ultron') && bots.includes('sentinel');
   }
 
   async missions(): Promise<Mission[]> {
@@ -176,6 +184,7 @@ export class JarvisMissions {
     const b = await this.blocker(member.id, m);
     if (b) return r.reply(this.text(this.t(`jarvis.missions.blocked.${b.key}`, b.vars ?? {}, l)));
 
+    const party = m.party > 1;
     const now = this.ctx.clock.now().toISOString();
     const today = this.today();
     const run: RunRow = {
@@ -184,7 +193,7 @@ export class JarvisMissions {
       missionId: m.id,
       kind: m.kind,
       leaderMemberId: member.id,
-      status: 'active',
+      status: party ? 'lobby' : 'active',
       sceneId: m.start,
       version: 0,
       locale: l,
@@ -202,11 +211,26 @@ export class JarvisMissions {
       // The open-run check above can race with a second click: re-check inside the transaction.
       if ((await this.s.repo.runsOf(member.id, OPEN_RUN, tx)).length) return false;
       await this.s.repo.insertRun(run, [member.id], tx);
+      if (party) {
+        await this.scheduleTimeout(tx, run, this.cfg.lobbyTimeoutMinutes);
+        return true;
+      }
       await this.emitStarted(tx, run, m, [member.id], 'text', run.id);
       await this.scheduleTimeout(tx, run, this.cfg.choiceTimeoutMinutes);
       return true;
     });
     if (!created) return r.reply(this.text(this.t('jarvis.missions.already_open', { thread: '—' }, l)));
+    if (party) {
+      try {
+        const sent = await this.ctx.gateway.sendMessage(run.channelId, await this.lobbyMessage(run, m));
+        await this.s.repo.markRun(run.id, { messageId: sent.messageId });
+      } catch (err) {
+        this.ctx.log.warn({ err, runId: run.id }, 'could not post the mission lobby');
+      }
+      return r.reply(
+        this.text(this.t('jarvis.missions.lobby_opened', { channel: `<#${run.channelId}>` }, l)),
+      );
+    }
     const posted = await this.postScene(run, m);
     await r.reply(this.text(this.t('jarvis.missions.started', { thread: `<#${posted}>` }, l)));
   }
@@ -219,8 +243,19 @@ export class JarvisMissions {
     const run = await this.openRunOf(member.id);
     if (!run) return r.reply(this.text(this.t('jarvis.missions.no_open', {}, l)));
     const m = await this.mission(run.missionId);
-    const ended = m && (await this.ctx.bus.transaction((tx) => this.finish(tx, run, m, 'abandoned')));
-    if (ended && m) await this.announceEnd(ended, m, 'abandoned');
+    if (!m) return r.reply(this.text(this.t('jarvis.missions.unknown', {}, l)));
+    const members = await this.s.repo.runMembers(run.id);
+    if (members.length > 1) {
+      // In a party, leaving takes only this member out; the rest keep playing.
+      await this.leave(run, member.id, members);
+      await this.refreshLobby(run.id, m);
+      return r.reply(this.text(this.t('jarvis.missions.left_party', {}, l)));
+    }
+    const ended = await this.ctx.bus.transaction((tx) =>
+      run.status === 'lobby' ? this.cancel(tx, run) : this.finish(tx, run, m, 'abandoned'),
+    );
+    if (ended && ended.status === 'cancelled') await this.refreshLobby(run.id, m);
+    else if (ended) await this.announceEnd(ended, m, 'abandoned');
     await r.reply(this.text(this.t('jarvis.missions.abandoned_reply', {}, l)));
   }
 
@@ -285,10 +320,13 @@ export class JarvisMissions {
   ): Promise<RunRow | null> {
     if (to.type === 'end')
       return this.finish(tx, { ...run, sceneId: to.scene }, m, to.outcome, run.version, members);
-    if (to.type === 'combat') throw new Error('combat scenes are not supported yet');
-    if (!(await this.s.repo.updateRun(run.id, run.version, { sceneId: to.scene }, tx))) return null;
-    const next = { ...run, sceneId: to.scene, version: run.version + 1 };
-    await this.scheduleTimeout(tx, next, this.cfg.choiceTimeoutMinutes);
+    const status = to.type === 'combat' ? 'fighting' : 'active';
+    if (!(await this.s.repo.updateRun(run.id, run.version, { sceneId: to.scene, status }, tx))) return null;
+    const next = { ...run, sceneId: to.scene, status, version: run.version + 1 };
+    if (to.type === 'combat') {
+      await this.emitStarted(tx, next, m, members, 'combat', combatMissionId(run.id, to.scene));
+      await this.scheduleTimeout(tx, next, this.cfg.combatTimeoutMinutes);
+    } else await this.scheduleTimeout(tx, next, this.cfg.choiceTimeoutMinutes);
     return next;
   }
 
@@ -336,12 +374,25 @@ export class JarvisMissions {
     );
   }
 
-  /** Nobody chose in time: partial votes decide, otherwise the run is abandoned. Stale timers do nothing. */
+  /**
+   * One timer per run version. Lobby: cancelled. Fight: no result in time → failure. Choice: partial
+   * votes decide, otherwise the run is abandoned. Stale timers (the run moved on) do nothing.
+   */
   async onTimeout(p: { runId: string; version: number }): Promise<void> {
     const run = await this.s.repo.run(p.runId);
-    if (!run || run.version !== p.version || run.status !== 'active') return;
+    if (!run || run.version !== p.version) return;
     const m = await this.mission(run.missionId);
     if (!m) return;
+    if (run.status === 'lobby') {
+      if (await this.ctx.bus.transaction((tx) => this.cancel(tx, run))) await this.refreshLobby(run.id, m);
+      return;
+    }
+    if (run.status === 'fighting') {
+      const ended = await this.ctx.bus.transaction((tx) => this.finish(tx, run, m, 'failure'));
+      if (ended) await this.announceEnd(ended, m, 'failure', 'jarvis.missions.combat_timeout');
+      return;
+    }
+    if (run.status !== 'active') return;
     const res = await this.ctx.bus.transaction(async (tx) => {
       const votes = await this.s.repo.choices(run.id, run.sceneId, tx);
       const members = await this.s.repo.runMembers(run.id, tx);
@@ -366,18 +417,188 @@ export class JarvisMissions {
     for (const run of await this.s.repo.openRuns()) {
       const m = await this.mission(run.missionId);
       if (!m) continue;
-      if (run.status === 'active') {
-        await this.ctx.bus.transaction(async (tx) => {
-          // Same dedupe key as the original timer: a timer that survived the restart is not doubled.
-          const elapsed = this.ctx.clock.now().getTime() - Date.parse(run.updatedAt);
-          const left = this.cfg.choiceTimeoutMinutes * 60_000 - elapsed;
-          await this.scheduleTimeout(tx, run, Math.max(0, left) / 60_000);
-        });
-        if (run.postedScene !== run.sceneId) await this.postScene(run, m);
-        n++;
-      }
+      const minutes = {
+        lobby: this.cfg.lobbyTimeoutMinutes,
+        active: this.cfg.choiceTimeoutMinutes,
+        fighting: this.cfg.combatTimeoutMinutes,
+      }[run.status as (typeof OPEN_RUN)[number]];
+      await this.ctx.bus.transaction(async (tx) => {
+        // Same dedupe key as the original timer: a timer that survived the restart is not doubled.
+        const elapsed = this.ctx.clock.now().getTime() - Date.parse(run.updatedAt);
+        await this.scheduleTimeout(tx, run, Math.max(0, minutes * 60_000 - elapsed) / 60_000);
+      });
+      if (run.status !== 'lobby' && run.postedScene !== run.sceneId) await this.postScene(run, m);
+      n++;
     }
     return n;
+  }
+
+  // ---------- fights ----------
+
+  /** Sentinel's result for a mission fight: the story continues on the win or lose branch, once. */
+  async onCombatResolved(e: LegionEvent<'combat.resolved'>): Promise<void> {
+    const p = e.payload;
+    if (!p.missionId) return;
+    const cut = p.missionId.lastIndexOf(':');
+    if (cut < 0) return;
+    const runId = p.missionId.slice(0, cut);
+    const sceneId = p.missionId.slice(cut + 1);
+    const run = await this.s.repo.run(runId);
+    if (run?.status !== 'fighting' || run.sceneId !== sceneId) return; // duplicate or late result
+    const m = await this.mission(run.missionId);
+    if (!m) return;
+    const to = step(m, sceneId, { combat: p.winnerSide === 'players' ? 'win' : 'lose' });
+    if (!to) return;
+    const next = await this.ctx.bus.transaction(async (tx) => {
+      const cur = await this.s.repo.run(runId, tx);
+      if (cur?.status !== 'fighting' || cur.sceneId !== sceneId) return null;
+      return this.moveTo(tx, cur, m, to, await this.s.repo.runMembers(runId, tx));
+    });
+    if (next) await this.afterMove(next, m);
+  }
+
+  // ---------- parties ----------
+
+  /** Lobby buttons: join, leave, start (leader only). */
+  async lobbyAction(i: IncomingInteraction, r: Responder, runId: string, action: string): Promise<void> {
+    const l = await this.ctx.i18n.localeFor(i.userId);
+    const run = await this.s.repo.run(runId);
+    const m = run && (await this.mission(run.missionId));
+    if (!run || !m) return r.reply(this.text(this.t('jarvis.missions.unknown', {}, l)));
+    if (run.status !== 'lobby') return r.reply(this.text(this.t('jarvis.missions.lobby_closed', {}, l)));
+    const member = await this.s.trivia.registered(i, r, l);
+    if (!member) return;
+    const members = await this.s.repo.runMembers(run.id);
+    if (action === 'join') return this.join(r, run, m, member, members, l);
+    if (!members.includes(member.id)) return r.reply(this.text(this.t('jarvis.missions.not_yours', {}, l)));
+    if (action === 'leave') {
+      if (member.id === run.leaderMemberId && members.length === 1) {
+        await this.ctx.bus.transaction((tx) => this.cancel(tx, run));
+      } else await this.leave(run, member.id, members);
+      return r.update(await this.lobbyMessage((await this.s.repo.run(run.id)) ?? run, m));
+    }
+    if (action !== 'start') return r.reply(this.text(this.t('jarvis.missions.stale', {}, l)));
+    if (member.id !== run.leaderMemberId)
+      return r.reply(this.text(this.t('jarvis.missions.leader_only', {}, l)));
+    const started = await this.ctx.bus.transaction(async (tx) => {
+      if (!(await this.s.repo.updateRun(run.id, run.version, { status: 'active' }, tx))) return null;
+      const next = { ...run, status: 'active', version: run.version + 1 };
+      const inRun = await this.s.repo.runMembers(run.id, tx);
+      await this.emitStarted(tx, next, m, inRun, 'text', run.id);
+      await this.scheduleTimeout(tx, next, this.cfg.choiceTimeoutMinutes);
+      return next;
+    });
+    if (!started) return r.reply(this.text(this.t('jarvis.missions.lobby_closed', {}, l)));
+    const where = await this.postScene(started, m);
+    await r.update(await this.lobbyMessage(started, m, where));
+  }
+
+  private async join(
+    r: Responder,
+    run: RunRow,
+    m: Mission,
+    member: MemberView,
+    members: string[],
+    l: Locale,
+  ): Promise<void> {
+    if (members.includes(member.id)) return r.reply(this.text(this.t('jarvis.missions.already_in', {}, l)));
+    if (members.length >= m.party) return r.reply(this.text(this.t('jarvis.missions.full', {}, l)));
+    const open = await this.openRunOf(member.id);
+    if (open)
+      return r.reply(this.text(this.t('jarvis.missions.already_open', { thread: this.where(open) }, l)));
+    const b = await this.blocker(member.id, m);
+    if (b) return r.reply(this.text(this.t(`jarvis.missions.blocked.${b.key}`, b.vars ?? {}, l)));
+    const ok = await this.ctx.bus.transaction(async (tx) => {
+      const cur = await this.s.repo.run(run.id, tx);
+      if (cur?.status !== 'lobby') return false;
+      if ((await this.s.repo.runMembers(run.id, tx)).length >= m.party) return false;
+      if ((await this.s.repo.runsOf(member.id, OPEN_RUN, tx)).length) return false;
+      return this.s.repo.addRunMember(run.id, member.id, tx);
+    });
+    if (!ok) return r.reply(this.text(this.t('jarvis.missions.full', {}, l)));
+    await r.update(await this.lobbyMessage(run, m));
+  }
+
+  /** Takes a member out of a run; the leader role passes to the next member. */
+  private async leave(run: RunRow, memberId: string, members: string[]) {
+    await this.ctx.db.transaction(async (tx) => {
+      await this.s.repo.removeRunMember(run.id, memberId, tx);
+      const next = members.find((x) => x !== memberId);
+      if (run.leaderMemberId === memberId && next)
+        await tx
+          .update(this.s.repo.t.jarvisMissionRuns)
+          .set({ leaderMemberId: next })
+          .where(eq(this.s.repo.t.jarvisMissionRuns.id, run.id));
+    });
+  }
+
+  /** Closes a lobby that never started (does not count toward limits). */
+  private async cancel(tx: Executor, run: RunRow): Promise<RunRow | null> {
+    const endedAt = this.ctx.clock.now().toISOString();
+    if (!(await this.s.repo.updateRun(run.id, run.version, { status: 'cancelled', endedAt }, tx)))
+      return null;
+    return { ...run, status: 'cancelled', version: run.version + 1, endedAt };
+  }
+
+  private async refreshLobby(runId: string, m: Mission) {
+    const run = await this.s.repo.run(runId);
+    if (!run?.messageId || run.threadId) return;
+    await this.edit(run.channelId, run.messageId, await this.lobbyMessage(run, m));
+  }
+
+  async lobbyMessage(run: RunRow, m: Mission, thread?: string): Promise<OutgoingMessage> {
+    const l = run.locale as Locale;
+    const members = await this.s.repo.runMembers(run.id);
+    const ids = await this.discordIds(members);
+    const open = run.status === 'lobby';
+    const state =
+      run.status === 'cancelled'
+        ? this.t('jarvis.missions.lobby_cancelled', {}, l)
+        : open
+          ? this.t('jarvis.missions.lobby_wait', { minutes: this.cfg.lobbyTimeoutMinutes }, l)
+          : this.t('jarvis.missions.lobby_started', { thread: thread ? `<#${thread}>` : '—' }, l);
+    const leader = (await this.ctx.read.members.getById(run.leaderMemberId))?.discordUserId;
+    return {
+      persona: 'jarvis',
+      embeds: [
+        {
+          title: `${loc(m.title, l)} · ${this.t(`jarvis.missions.kind.${m.kind}`, {}, l)}`,
+          description: [loc(m.summary, l), '', state].join('\n'),
+          color: COLOR,
+          fields: [
+            {
+              name: this.t('jarvis.missions.party', { n: ids.length, max: m.party }, l),
+              value: ids.map((d) => (d === leader ? `👑 <@${d}>` : `<@${d}>`)).join('\n') || '—',
+            },
+          ],
+        },
+      ],
+      components: open
+        ? [
+            [
+              {
+                type: 'button',
+                customId: missionIds.lobby(run.id, 'join'),
+                label: this.t('jarvis.missions.btn.join', {}, l),
+                style: 'primary',
+              },
+              {
+                type: 'button',
+                customId: missionIds.lobby(run.id, 'leave'),
+                label: this.t('jarvis.missions.btn.leave', {}, l),
+                style: 'secondary',
+              },
+              {
+                type: 'button',
+                customId: missionIds.lobby(run.id, 'start'),
+                label: this.t('jarvis.missions.btn.start', {}, l),
+                style: 'success',
+              },
+            ],
+          ]
+        : [],
+      allowedMentions: { users: [] },
+    };
   }
 
   // ---------- messages ----------
@@ -387,7 +608,7 @@ export class JarvisMissions {
   }
 
   private async afterMove(run: RunRow, m: Mission) {
-    if (run.status === 'active') await this.postScene(run, m);
+    if (run.status === 'active' || run.status === 'fighting') await this.postScene(run, m);
     else if (run.status === 'success' || run.status === 'failure' || run.status === 'abandoned')
       await this.announceEnd(run, m, run.status);
   }
@@ -433,13 +654,13 @@ export class JarvisMissions {
     return id;
   }
 
-  private async announceEnd(run: RunRow, m: Mission, outcome: Outcome) {
+  private async announceEnd(run: RunRow, m: Mission, outcome: Outcome, reasonKey?: string) {
     const l = run.locale as Locale;
     const where = (await this.s.repo.run(run.id))?.threadId ?? run.threadId ?? run.channelId;
     const xp = missionXp(m, outcome, this.cfg);
-    const scene = outcome === 'abandoned' ? null : m.scenes[run.sceneId];
+    const scene = outcome === 'abandoned' || reasonKey ? null : m.scenes[run.sceneId];
     const lines = [
-      scene ? loc(scene.text, l) : this.t('jarvis.missions.abandoned_text', {}, l),
+      scene ? loc(scene.text, l) : this.t(reasonKey ?? 'jarvis.missions.abandoned_text', {}, l),
       '',
       this.t(`jarvis.missions.result.${outcome}`, { xp }, l),
     ];
@@ -466,11 +687,13 @@ export class JarvisMissions {
       style: done && o.picked === idx ? 'success' : done ? 'secondary' : 'primary',
       disabled: done,
     }));
-    const footer = done
-      ? o.picked === null
-        ? this.t('jarvis.missions.timed_out', {}, l)
-        : this.t('jarvis.missions.chosen', {}, l)
-      : this.t('jarvis.missions.choose_within', { minutes: this.cfg.choiceTimeoutMinutes }, l);
+    const footer = scene?.combat
+      ? this.t('jarvis.missions.fight', {}, l)
+      : done
+        ? o.picked === null
+          ? this.t('jarvis.missions.timed_out', {}, l)
+          : this.t('jarvis.missions.chosen', {}, l)
+        : this.t('jarvis.missions.choose_within', { minutes: this.cfg.choiceTimeoutMinutes }, l);
     return {
       persona: 'jarvis',
       embeds: [

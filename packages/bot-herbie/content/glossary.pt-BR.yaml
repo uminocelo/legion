@@ -62,6 +62,13 @@
   details: "Cada pergunta é só sua e tem tempo limite. Há uma espera entre perguntas e você não recebe a mesma pergunta por um tempo. Toda pergunta tem uma fonte."
   related: [xp, cooldown, sequencia]
   bot: jarvis
+- id: missao
+  term: "Missões"
+  aliases: [missao, missão, missoes, grupo, equipe]
+  summary: "Histórias curtas com escolhas, sozinho ou com até 3 amigos. Use /missao lista e /missao iniciar."
+  details: "Cada missão abre um tópico. Você escolhe com botões; em grupo, a maioria decide e o líder desempata. Algumas missões têm lutas contra o ULTRON, conduzidas pelo Sentinel. Sucesso e fracasso dão XP; abandonar não dá. Há limite de missões diárias e semanais, e cada história só pode ser jogada uma vez."
+  related: [xp, trivia]
+  bot: jarvis
 - id: cooldown
   term: "Cooldown"
   aliases: [espera, tempo de espera, limite]

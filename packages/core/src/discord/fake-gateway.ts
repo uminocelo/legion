@@ -133,6 +133,9 @@ export class FakeDiscordGateway implements DiscordGateway {
   }
   async createThread(channelId: string, name: string, fromMessageId?: string) {
     this.record('createThread', [channelId, name, fromMessageId]);
+    // Like Discord: a thread cannot hold another thread.
+    if (this.channels.get(channelId)?.kind === 'thread')
+      throw new GatewayError('Channel cannot host threads', 50024);
     const threadId = this.nextId();
     this.addChannel({ id: threadId, name, kind: 'thread', parentId: channelId });
     return { threadId };

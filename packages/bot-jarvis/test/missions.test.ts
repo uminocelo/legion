@@ -181,7 +181,7 @@ describe('solo missions', () => {
     expect((await events(t, 'mission.completed')).length).toBe(1);
   });
 
-  it('lists missions with what the member can play; fights stay hidden for now; unregistered members are told to register', async () => {
+  it('lists missions with what the member can play; fights stay hidden without ULTRON and Sentinel; unregistered members are told to register', async () => {
     const { t } = await setup();
     const id = await t.interact({ kind: 'command', userId: U, commandName: 'missao', subcommand: 'lista' });
     const fields = t.gateway.lastReply(id)?.embeds?.[0]?.fields ?? [];

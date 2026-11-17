@@ -3,6 +3,7 @@ import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { jarvisCommands } from './commands.js';
 import { type JarvisConfig, jarvisConfigSchema } from './config.js';
 import { progressReadModel, registerConsumers } from './consumers.js';
+import { jarvisDoctorChecks } from './doctor.js';
 import { displayedStreak, levelFor, progressBar } from './domain/xp.js';
 import { MISSION_TIMEOUT_JOB } from './missions.js';
 import { JARVIS_LOCALES_DIR, JARVIS_MIGRATIONS_DIR } from './paths.js';
@@ -14,13 +15,14 @@ export * from './consumers.js';
 export * from './content.js';
 export * from './db/repo.js';
 export * from './db/tables.js';
+export { jarvisDoctorChecks } from './doctor.js';
 export * from './domain/mission.js';
 export * from './domain/periods.js';
 export * from './domain/selection.js';
 export * from './domain/xp.js';
 export { JarvisLeaderboard } from './leaderboard.js';
 export * from './mission-content.js';
-export { JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
+export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
 export * from './services.js';
 export { contentDirs, JarvisTrivia } from './trivia.js';
 export { ids as jarvisIds } from './ui.js';
@@ -61,6 +63,11 @@ export const jarvis: LegionBot<JarvisConfig> = {
         handle: (i, r, [runId, sceneId, choice]) =>
           s.missions.choose(i, r, runId ?? '', sceneId ?? '', Number(choice)),
       },
+      {
+        action: 'lobby',
+        version: V,
+        handle: (i, r, [runId, action]) => s.missions.lobbyAction(i, r, runId ?? '', action ?? ''),
+      },
     ];
   },
   register: async (ctx) => {
@@ -74,6 +81,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.scheduler.define<{ runId: string; version: number }>(MISSION_TIMEOUT_JOB, (p) =>
       s.missions.onTimeout(p),
     );
+    ctx.bus.on('combat.resolved', 'jarvis.mission-combat', (e) => s.missions.onCombatResolved(e));
     ctx.profile.add('jarvis', async ({ memberId }, l) => {
       const p = await s.repo.progress(memberId);
       if (!p) return [];
@@ -97,6 +105,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.help.add({ bot: 'jarvis', command: '/sequencia', descriptionKey: 'jarvis.help.sequencia' });
     ctx.help.add({ bot: 'jarvis', command: '/missao', descriptionKey: 'jarvis.help.missao' });
   },
+  doctorChecks: (ctx) => jarvisDoctorChecks(ctx),
   onReady: async (ctx) => {
     const n = await jarvisServices(ctx).missions.recover();
     if (n) ctx.log.info({ runs: n }, 'open missions restored');

@@ -152,7 +152,24 @@
         "success": "✅ Mission accomplished! +{xp} XP",
         "failure": "❌ Mission failed. +{xp} XP for trying",
         "abandoned": "⌛ Mission abandoned. No XP."
-      }
+      },
+      "lobby_opened": "Party opened in {channel}. Call your team and press Start.",
+      "lobby_wait": "Press **Join** to take part. The leader starts whenever ready (the party closes in {minutes} min).",
+      "lobby_started": "The mission started in {thread}.",
+      "lobby_cancelled": "Party closed without starting.",
+      "lobby_closed": "This party is already closed.",
+      "leader_only": "Only the party leader can start.",
+      "already_in": "You are already in this party.",
+      "full": "The party is full.",
+      "left_party": "You left the party. The rest of the team keeps going.",
+      "party": "Team ({n}/{max})",
+      "btn": {
+        "join": "Join",
+        "leave": "Leave",
+        "start": "Start"
+      },
+      "fight": "⚔️ Fight in progress: Sentinel runs the turns here.",
+      "combat_timeout": "⌛ The fight did not end in time. The mission failed."
     }
   }
 }
