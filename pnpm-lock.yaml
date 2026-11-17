@@ -56,6 +56,9 @@ importers:
       '@legion/bot-cerebro':
         specifier: workspace:*
         version: link:../../packages/bot-cerebro
+      '@legion/bot-herbie':
+        specifier: workspace:*
+        version: link:../../packages/bot-herbie
       '@legion/bot-jarvis':
         specifier: workspace:*
         version: link:../../packages/bot-jarvis

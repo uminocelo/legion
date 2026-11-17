@@ -68,6 +68,13 @@ export class HerbieTutorial {
     return effectiveSteps(this.chain, { enabledBots: this.ctx.config.bots, features });
   }
 
+  /** The member's current step while the chain is active (for /ajuda). */
+  async currentFor(memberId: string): Promise<EffectiveStep | null> {
+    const p = await this.repo.progress(memberId);
+    if (p?.status !== 'active') return null;
+    return currentStep(this.steps(), new Set((await this.repo.stepsDone(memberId)).map((d) => d.stepId)));
+  }
+
   // ---------- start ----------
 
   /** Starts the chain once per member; returns false when it already existed. */
@@ -95,7 +102,7 @@ export class HerbieTutorial {
 
   private async advanceMember(memberId: string, event: LegionEvent): Promise<void> {
     const progress = await this.repo.progress(memberId);
-    if (!progress || progress.status !== 'active') return;
+    if (progress?.status !== 'active') return;
     const steps = this.steps();
     const done = new Set((await this.repo.stepsDone(memberId)).map((d) => d.stepId));
     const adv = advance(steps, done, event.type, event.payload as Record<string, unknown>);

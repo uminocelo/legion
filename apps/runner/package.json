@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@legion/bot-cerebro": "workspace:*",
+    "@legion/bot-herbie": "workspace:*",
     "@legion/bot-jarvis": "workspace:*",
     "@legion/core": "workspace:*",
     "discord.js": "^14.28.1",

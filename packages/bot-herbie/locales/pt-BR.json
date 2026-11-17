@@ -1,15 +1,22 @@
 {
   "herbie": {
     "errors": {
-      "not_registered": "Bip! Você ainda não é um mutante registrado. Comece pelo canal {welcome}."
+      "not_registered": "Bip! Você ainda não é um mutante registrado. Comece pelo canal {welcome}.",
+      "not_staff": "Apenas a staff pode usar este comando."
     },
     "quest": {
-      "perfil": { "title": "Conheça seu mutante", "body": "Use /perfil para ver sua ficha de mutante." },
+      "perfil": {
+        "title": "Conheça seu mutante",
+        "body": "Use /perfil para ver sua ficha de mutante."
+      },
       "trivia": {
         "title": "Primeira trivia",
         "body": "Use /trivia e responda uma pergunta. Certa ou errada, vale!"
       },
-      "missao": { "title": "Primeira missão", "body": "Complete sua primeira missão com o J.A.R.V.I.S." },
+      "missao": {
+        "title": "Primeira missão",
+        "body": "Complete sua primeira missão com o J.A.R.V.I.S."
+      },
       "preferencias": {
         "title": "Suas preferências",
         "body": "Use /cerebro preferencias para escolher seus cargos opcionais."
@@ -35,13 +42,83 @@
       "disabled": "O tutorial está desligado neste servidor."
     },
     "help": {
-      "tutorial": "Veja seus passos do tutorial (ou recomece)."
+      "tutorial": "Veja seus passos do tutorial (ou recomece).",
+      "title": "🤖 Ajuda do H.E.R.B.I.E.",
+      "glossary_button": "Glossário",
+      "tutorial_button": "Tutorial",
+      "now_unregistered": "**Primeiro passo:** registre seu mutante no canal {welcome} (botão **Começar**). Depois disso, tudo aqui fica disponível!",
+      "now_tutorial": "**Agora:** {step}\n{body}",
+      "now_free": "**Sugestões para agora:**",
+      "suggest_trivia": "Faça sua /trivia diária.",
+      "suggest_streak": "Sua sequência está em {days} dia(s). Não deixe zerar!",
+      "suggest_regras": "Dúvida sobre um termo? /regras",
+      "ajuda": "Ajuda: o que fazer agora e todos os comandos.",
+      "regras": "Regras do servidor e glossário de termos.",
+      "idioma": "Escolha o idioma das respostas dos bots para você.",
+      "herbie": "Ferramentas da staff do H.E.R.B.I.E."
     },
     "commands": {
       "tutorial": {
         "description": "Seu tutorial com o H.E.R.B.I.E.",
         "reiniciar": "Recomeçar um tutorial pulado"
+      },
+      "ajuda": {
+        "description": "Ajuda do H.E.R.B.I.E.",
+        "topico": "Um termo ou comando"
+      },
+      "regras": {
+        "description": "Regras e glossário",
+        "termo": "Termo do glossário"
+      },
+      "idioma": {
+        "description": "Idioma das respostas dos bots para você",
+        "idioma": "Idioma"
+      },
+      "herbie": {
+        "description": "Ferramentas da staff do H.E.R.B.I.E.",
+        "dica": "Postar a próxima dica agora",
+        "status": "Funil do tutorial"
       }
+    },
+    "glossary": {
+      "related": "Veja também: {terms}",
+      "not_found": "Bip? Não achei \"{term}\". Tente /regras e digite: eu completo para você.",
+      "title": "📖 Glossário ({page}/{pages})",
+      "footer": "Use /regras termo para ver um termo em detalhe."
+    },
+    "language": {
+      "unknown_member": "Ainda não te conheço. Entre pelo canal de boas-vindas primeiro.",
+      "saved": "Pronto! Vou responder em português. 🇧🇷"
+    },
+    "world": {
+      "invasion": {
+        "title": "🤖 O que é uma invasão? ({title})",
+        "body": "Inimigos estão atacando o servidor! Todos podem ajudar: siga o anúncio acima e participe enquanto o evento estiver ativo. Quem participa ganha XP no final."
+      },
+      "raid": {
+        "title": "🤖 O que é uma raid? ({title})",
+        "body": "Um inimigo forte apareceu. Juntem-se em grupo antes do tempo acabar: cada participação conta para a vitória."
+      },
+      "announcement": {
+        "title": "🤖 Novidade no servidor ({title})",
+        "body": "O ULTRON fez um anúncio acima. Leia com calma: se tiver dúvida, use /ajuda."
+      }
+    },
+    "tips": {
+      "title": "💡 Dica do dia"
+    },
+    "staff": {
+      "tip_posted": "Dica `{id}` postada.",
+      "tip_none": "Nenhuma dica postada: confira herbie.tips.channelId.",
+      "status_title": "📊 H.E.R.B.I.E. — tutorial",
+      "started": "Começaram",
+      "completed": "Completaram",
+      "skipped": "Pularam",
+      "fallback": "DM fechada (canal)",
+      "per_step": "Por passo",
+      "tips": "Dicas",
+      "tips_on": "ligadas em {channel}",
+      "tips_off": "desligadas"
     }
   }
 }

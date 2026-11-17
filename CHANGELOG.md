@@ -8,6 +8,11 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Optional Discord app per bot: `<BOT>_TOKEN` and `<BOT>_CLIENT_ID` (e.g. `JARVIS_TOKEN`). Each app registers and answers only its bots' commands, with only their intents and permissions; Cérebro's app keeps roles and member events. One process, one database.
 - `legion init` asks one app or one per bot; `doctor` checks each app; `invite-url` prints one link per app; `register-commands` registers per app and removes moved commands from the shared app.
 - ADR 0016.
+- H.E.R.B.I.E.: 3-step tutorial started on registration (DM first, channel fallback on closed DMs), XP per step through J.A.R.V.I.S. and a completion bonus, `/tutorial` (backfill, restart, skip), data-driven steps with fallbacks.
+- `/ajuda` (state-aware, filtered by enabled bots and staff), `/regras` glossary with accent-insensitive autocomplete (pt-BR and en), `/idioma` with a core `LocaleResolver`, optional daily tips, world-event explanations, staff `/herbie status | dica-agora`, doctor checks.
+- Bots can declare extra channels for `legion doctor` (checked with the permissions of the app hosting the bot).
+- Buttons on messages sent by DM now work (handled as a member without roles).
+- ADRs 0017–0019.
 
 ## [0.2.0] - 2026-11-16
 

@@ -9,6 +9,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json tsconfig
 COPY packages/core/package.json packages/core/
 COPY packages/bot-cerebro/package.json packages/bot-cerebro/
 COPY packages/bot-jarvis/package.json packages/bot-jarvis/
+COPY packages/bot-herbie/package.json packages/bot-herbie/
 COPY apps/runner/package.json apps/runner/
 COPY apps/cli/package.json apps/cli/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -23,6 +24,7 @@ COPY --from=build /app/pnpm-lock.yaml /app/pnpm-workspace.yaml /app/package.json
 COPY --from=build /app/packages/core/package.json packages/core/
 COPY --from=build /app/packages/bot-cerebro/package.json packages/bot-cerebro/
 COPY --from=build /app/packages/bot-jarvis/package.json packages/bot-jarvis/
+COPY --from=build /app/packages/bot-herbie/package.json packages/bot-herbie/
 COPY --from=build /app/apps/runner/package.json apps/runner/
 COPY --from=build /app/apps/cli/package.json apps/cli/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --prod
@@ -37,6 +39,10 @@ COPY --from=build /app/packages/bot-jarvis/dist packages/bot-jarvis/dist
 COPY --from=build /app/packages/bot-jarvis/locales packages/bot-jarvis/locales
 COPY --from=build /app/packages/bot-jarvis/drizzle packages/bot-jarvis/drizzle
 COPY --from=build /app/packages/bot-jarvis/content packages/bot-jarvis/content
+COPY --from=build /app/packages/bot-herbie/dist packages/bot-herbie/dist
+COPY --from=build /app/packages/bot-herbie/locales packages/bot-herbie/locales
+COPY --from=build /app/packages/bot-herbie/drizzle packages/bot-herbie/drizzle
+COPY --from=build /app/packages/bot-herbie/content packages/bot-herbie/content
 COPY --from=build /app/apps/runner/dist apps/runner/dist
 COPY --from=build /app/apps/cli/dist apps/cli/dist
 RUN ln -s /app/apps/cli/dist/index.js /usr/local/bin/legion && chmod +x apps/cli/dist/index.js \
