@@ -75,5 +75,5 @@ herbie:
   tips:
     enabled: false # dica diária
     channelId: null
-    cron: '0 12 * * *' # no timezone acima
+    cron: "0 12 * * *" # no timezone acima
   explainWorldEvents: true
