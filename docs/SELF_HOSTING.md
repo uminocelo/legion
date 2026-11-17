@@ -49,6 +49,25 @@ O `doctor` mostra ✅/⚠️/❌ e, para cada ❌, uma linha dizendo como corrig
 
 No Discord, como staff (ou dono do servidor), rode `/cerebro setup`. Ele mostra o que faria; rode `/cerebro setup aplicar:true` para aplicar. Para esconder os canais de quem ainda não se registrou, use `canais:true` também (canais de staff e os excluídos em `cerebro.setup.excludeChannelIds` não são tocados).
 
+## Um app por bot (opcional)
+
+Por padrão todos os bots falam pelo mesmo app do Discord (o do `DISCORD_TOKEN`). Se quiser que cada bot apareça separado, com nome, avatar, status e comandos próprios, crie um app para ele:
+
+1. No [Developer Portal](https://discord.com/developers/applications), **New Application** (ex.: "J.A.R.V.I.S."), escolha nome e avatar. Em **Bot → Reset Token**, copie o token. Em **General Information**, copie o **Application ID**.
+2. No `.env`, adicione os dois juntos (ou rode `legion init` e escolha "Um app por bot"):
+   ```
+   JARVIS_TOKEN=…
+   JARVIS_CLIENT_ID=…
+   ```
+3. `legion invite-url` mostra um link por app, cada um só com as permissões daquele bot. Abra o do novo app e adicione-o ao servidor.
+4. Reinicie (`docker compose up -d`). Os comandos do bot passam para o app dele e somem do app compartilhado (ou rode `legion register-commands`).
+5. `legion doctor` confere cada app separadamente.
+
+Detalhes:
+- O app do **Cérebro** é o principal: é ele que cria e troca cargos e vê quem entra. Só ele precisa da **Server Members Intent** e do cargo acima dos cargos gerenciados. Se der `CEREBRO_TOKEN`, faça isso no app dele.
+- Tudo continua num processo e num banco; nenhum dado muda. Para voltar a um app só, apague as duas linhas do `.env` e reinicie.
+- Mensagens e botões antigos de um bot continuam no app que os enviou; depois da troca, use o comando de novo.
+
 ## Problemas comuns
 
 | Sintoma | Causa | Correção |

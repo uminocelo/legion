@@ -63,6 +63,8 @@ export interface BuildRuntimeOptions {
   random: RandomSource;
   db?: LegionDb;
   localesOverrideDir?: string;
+  /** Extra Discord apps (bots with their own token); `gateway` is the main app. */
+  apps?: { key: string; gateway: DiscordGateway; bots: BotId[] }[];
 }
 
 /** DB + migrations + core services + enabled bots, ready to connect. */
@@ -77,6 +79,7 @@ export async function buildRuntime(o: BuildRuntimeOptions): Promise<CoreRuntime>
     random: o.random,
     log: o.log,
     guildId: o.env.DISCORD_GUILD_ID,
+    ...(o.apps?.length ? { apps: o.apps } : {}),
     ...(o.localesOverrideDir && existsSync(o.localesOverrideDir)
       ? { localesOverrideDir: o.localesOverrideDir }
       : {}),

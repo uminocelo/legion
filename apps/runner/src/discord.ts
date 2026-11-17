@@ -31,6 +31,8 @@ export function wireClient(
   runtime: () => CoreRuntime | null,
   guildId: string,
   log: Logger,
+  /** App key of this client; only `main` (Cérebro's app) forwards member join/leave. */
+  appKey = 'main',
 ) {
   client.on(Events.InteractionCreate, (interaction) => {
     const rt = runtime();
@@ -38,14 +40,15 @@ export function wireClient(
     gateway.track(interaction);
     const normalized = gateway.normalize(interaction);
     if (!normalized) return;
-    rt.router.handle(normalized).catch((err) => log.error({ err }, 'router crashed'));
+    rt.router.handle(normalized, appKey).catch((err) => log.error({ err }, 'router crashed'));
   });
+  client.on(Events.Error, (err) => log.error({ err, app: appKey }, 'discord client error'));
+  client.on(Events.Warn, (msg) => log.warn({ msg, app: appKey }, 'discord client warning'));
+  if (appKey !== 'main') return;
   client.on(Events.GuildMemberAdd, (m) => {
     if (m.guild.id === guildId) runtime()?.guildEvents.memberAdded(toMember(m));
   });
   client.on(Events.GuildMemberRemove, (m: DjsMember | PartialGuildMember) => {
     if (m.guild.id === guildId) runtime()?.guildEvents.memberRemoved(m.id);
   });
-  client.on(Events.Error, (err) => log.error({ err }, 'discord client error'));
-  client.on(Events.Warn, (msg) => log.warn({ msg }, 'discord client warning'));
 }

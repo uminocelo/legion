@@ -3,7 +3,10 @@ import { type Logger, type LoggerOptions, pino } from 'pino';
 export type { Logger };
 
 /** Paths redacted from every log line. */
+const BOT_TOKEN_VARS = ['CEREBRO', 'JARVIS', 'HERBIE', 'SENTINEL', 'ULTRON'].map((b) => `${b}_TOKEN`);
+
 export const REDACT_PATHS = [
+  ...BOT_TOKEN_VARS.flatMap((v) => [v, `*.${v}`, `env.${v}`]),
   'token',
   'DISCORD_TOKEN',
   'AI_API_KEY',

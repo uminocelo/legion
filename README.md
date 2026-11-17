@@ -58,6 +58,7 @@ O cargo **Assinante TikTok** é da integração do TikTok: o Legion nunca cria, 
 | `DISCORD_TOKEN` | sim | — | Token do bot |
 | `DISCORD_CLIENT_ID` | sim | — | Application ID |
 | `DISCORD_GUILD_ID` | sim | — | ID do servidor |
+| `<BOT>_TOKEN` + `<BOT>_CLIENT_ID` | não | — | App próprio para um bot, ex. `JARVIS_TOKEN` e `JARVIS_CLIENT_ID` ([um app por bot](docs/SELF_HOSTING.md#um-app-por-bot-opcional)) |
 | `DATABASE_URL` | não | `file:./data/legion.db` | SQLite (padrão) ou `postgres://…` |
 | `LOG_LEVEL` | não | `info` | `debug`, `info`, `warn`, `error` |
 | `HEALTH_PORT` | não | `8080` | `GET /healthz` |

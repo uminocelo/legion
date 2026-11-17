@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   type AnyLegionBot,
+  type AppPlan,
   CORE_MIGRATIONS_DIR,
   ConfigError,
   CoreRuntime,
@@ -13,6 +14,7 @@ import {
   type LegionDb,
   type Locale,
   parseEnv,
+  planApps,
   silentLogger,
   systemClock,
 } from '@legion/core';
@@ -70,6 +72,101 @@ async function pendingMigrations(db: LegionDb, packageId: string, dir: string): 
   }
 }
 
+type T = (k: MessageKey, v?: Record<string, string | number>) => string;
+
+/** Token, application id, intents and guild membership of one Discord app. */
+async function checkApp(
+  a: AppPlan,
+  rest: DiscordRest,
+  allBots: AnyLegionBot[],
+  guildId: string,
+  t: T,
+  appLabel: string | null,
+  add: (r: CheckResult) => void,
+  skip: (id: string, title: string) => void,
+) {
+  const sfx = appLabel ? t('check.app_suffix', { app: appLabel, bots: a.bots.join(', ') }) : '';
+  const id = (base: string) => (appLabel && appLabel !== 'main' ? `${base}:${appLabel}` : base);
+  const title = (k: MessageKey) => `${t(k)}${sfx}`;
+  let botUserId: string | null = null;
+  let applicationId: string | null = null;
+  let inGuild = false;
+  try {
+    const me = await rest.me();
+    botUserId = me.id;
+    add({
+      id: id('token'),
+      title: title('check.token'),
+      status: 'ok',
+      message: t('check.token.ok', { name: me.username }),
+    });
+  } catch (err) {
+    const status = err instanceof RestError ? err.status : 0;
+    add({
+      id: id('token'),
+      title: title('check.token'),
+      status: 'fail',
+      message: status === 401 ? `${t('check.token.fail')} (${a.tokenVar})` : (err as Error).message,
+      fix: t('check.token.fix'),
+    });
+  }
+  if (!botUserId) {
+    skip(id('app'), title('check.app'));
+    skip(id('intents'), title('check.intents'));
+    skip(id('guild'), title('check.guild'));
+    return { botUserId, applicationId, inGuild };
+  }
+  const app = await rest.application();
+  applicationId = app.id;
+  if (app.id === a.clientId)
+    add({
+      id: id('app'),
+      title: title('check.app'),
+      status: 'ok',
+      message: t('check.app.ok', { var: a.clientIdVar }),
+    });
+  else
+    add({
+      id: id('app'),
+      title: title('check.app'),
+      status: 'fail',
+      message: t('check.app.fail', { var: a.clientIdVar, given: a.clientId, actual: app.id }),
+      fix: t('check.app.fix'),
+    });
+  const appBots = allBots.filter((b) => a.bots.includes(b.id));
+  const needsMembers = appBots.some((b) => b.intents.includes(2 /* GuildMembers */));
+  const hasMembers = ((app.flags ?? 0) & (GATEWAY_GUILD_MEMBERS | GATEWAY_GUILD_MEMBERS_LIMITED)) !== 0;
+  if (!needsMembers || hasMembers)
+    add({ id: id('intents'), title: title('check.intents'), status: 'ok', message: t('check.intents.ok') });
+  else
+    add({
+      id: id('intents'),
+      title: title('check.intents'),
+      status: 'fail',
+      message: t('check.intents.fail'),
+      fix: t('check.intents.fix'),
+    });
+  const member = await rest.guildMember(guildId, botUserId);
+  if (member) {
+    inGuild = true;
+    const guild = await rest.guild(guildId);
+    add({
+      id: id('guild'),
+      title: title('check.guild'),
+      status: 'ok',
+      message: t('check.guild.ok', { name: guild.name }),
+    });
+  } else
+    add({
+      id: id('guild'),
+      title: title('check.guild'),
+      status: 'fail',
+      message: t('check.guild.fail', { guild: guildId }),
+      fix: t('check.guild.fix'),
+    });
+  return { botUserId, applicationId, inGuild };
+}
+
 /** Runs every check and returns the results (✅ ok, ⚠️ warn, ❌ fail). Never throws. */
 export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
   const L = o.locale;
@@ -104,12 +201,22 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
     add({ id: 'config', title: t('check.config'), status: 'fail', message, fix: t('check.config.fix') });
   }
 
-  // 3. Discord: token, application, intents, guild
+  // 3. Discord, per app: token, application, intents, guild. `main` (Cérebro's app) is used afterwards.
   let botUserId: string | null = null;
   let applicationId: string | null = null;
   let inGuild = false;
-  const rest = env ? o.rest(env.DISCORD_TOKEN) : null;
-  if (!env || !rest) {
+  let rest: DiscordRest | null = null;
+  const plan = env ? planApps(env, config ? bots.map((b) => b.id) : ['cerebro']) : null;
+  if (plan?.errors.length)
+    add({
+      id: 'apps',
+      title: t('check.apps'),
+      status: 'fail',
+      message: plan.errors.join('\n'),
+      fix: t('check.apps.fix'),
+    });
+  const several = (plan?.apps.length ?? 0) > 1;
+  if (!env || !plan) {
     for (const [id, k] of [
       ['token', 'check.token'],
       ['app', 'check.app'],
@@ -117,75 +224,24 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
       ['guild', 'check.guild'],
     ] as const)
       skip(id, t(k));
-  } else {
-    try {
-      const me = await rest.me();
-      botUserId = me.id;
-      add({
-        id: 'token',
-        title: t('check.token'),
-        status: 'ok',
-        message: t('check.token.ok', { name: me.username }),
-      });
-    } catch (err) {
-      const status = err instanceof RestError ? err.status : 0;
-      add({
-        id: 'token',
-        title: t('check.token'),
-        status: 'fail',
-        message: status === 401 ? t('check.token.fail') : (err as Error).message,
-        fix: t('check.token.fix'),
-      });
+  } else
+    for (const a of plan.apps) {
+      const appRest = o.rest(a.token);
+      const res = await checkApp(
+        a,
+        appRest,
+        bots,
+        env.DISCORD_GUILD_ID,
+        t,
+        several ? a.key : null,
+        add,
+        skip,
+      );
+      if (a.key === 'main') {
+        rest = appRest;
+        ({ botUserId, applicationId, inGuild } = res);
+      }
     }
-    if (botUserId) {
-      const app = await rest.application();
-      applicationId = app.id;
-      if (app.id === env.DISCORD_CLIENT_ID)
-        add({ id: 'app', title: t('check.app'), status: 'ok', message: t('check.app.ok') });
-      else
-        add({
-          id: 'app',
-          title: t('check.app'),
-          status: 'fail',
-          message: t('check.app.fail', { given: env.DISCORD_CLIENT_ID, actual: app.id }),
-          fix: t('check.app.fix'),
-        });
-      const needsMembers = bots.some((b) => b.intents.includes(2 /* GuildMembers */));
-      const hasMembers = ((app.flags ?? 0) & (GATEWAY_GUILD_MEMBERS | GATEWAY_GUILD_MEMBERS_LIMITED)) !== 0;
-      if (!needsMembers || hasMembers)
-        add({ id: 'intents', title: t('check.intents'), status: 'ok', message: t('check.intents.ok') });
-      else
-        add({
-          id: 'intents',
-          title: t('check.intents'),
-          status: 'fail',
-          message: t('check.intents.fail'),
-          fix: t('check.intents.fix'),
-        });
-      const member = await rest.guildMember(env.DISCORD_GUILD_ID, botUserId);
-      if (member) {
-        inGuild = true;
-        const guild = await rest.guild(env.DISCORD_GUILD_ID);
-        add({
-          id: 'guild',
-          title: t('check.guild'),
-          status: 'ok',
-          message: t('check.guild.ok', { name: guild.name }),
-        });
-      } else
-        add({
-          id: 'guild',
-          title: t('check.guild'),
-          status: 'fail',
-          message: t('check.guild.fail', { guild: env.DISCORD_GUILD_ID }),
-          fix: t('check.guild.fix'),
-        });
-    } else {
-      skip('app', t('check.app'));
-      skip('intents', t('check.intents'));
-      skip('guild', t('check.guild'));
-    }
-  }
 
   // 4. channels
   if (env && rest && config && botUserId && inGuild) {
