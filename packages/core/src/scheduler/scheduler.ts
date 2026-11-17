@@ -29,6 +29,8 @@ export interface Scheduler {
   enqueue(name: string, payload: unknown, opts?: EnqueueOptions, ex?: Executor): Promise<string | null>;
   cancel(dedupeKey: string, ex?: Executor): Promise<boolean>;
   every(name: string, cron: string, handler: () => Promise<void>): void;
+  /** Next time `cron` fires after `after`, in the server timezone. */
+  nextRun(cron: string, after: Date): Date;
 }
 
 export interface DbSchedulerOptions {
