@@ -1,6 +1,6 @@
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { createClient } from '@libsql/client';
+import { type Client, createClient } from '@libsql/client';
 import { drizzle as drizzleLibsql, type LibSQLDatabase } from 'drizzle-orm/libsql';
 import { migrate as migrateLibsql } from 'drizzle-orm/libsql/migrator';
 import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
@@ -48,6 +48,39 @@ export function pickSchema<S>(db: Pick<LegionDb, 'dialect'>, sqlite: S, pgTables
   return db.dialect === 'sqlite' ? sqlite : (pgTables as S);
 }
 
+const BUSY_RETRY_MS = 5000;
+const isBusy = (err: unknown) =>
+  /SQLITE_BUSY|database is locked/i.test(String((err as { code?: string })?.code ?? err));
+
+/**
+ * While a libSQL transaction is open, the client runs other statements on a fresh connection that
+ * has busy_timeout = 0, so they fail at once with SQLITE_BUSY. Retry those with a short backoff
+ * (up to ~5 s, like busy_timeout would). Transactions themselves are untouched.
+ */
+export function retryOnBusy<C extends Client>(client: C): C {
+  const wrap =
+    <A extends unknown[], R>(fn: (...a: A) => Promise<R>) =>
+    async (...args: A): Promise<R> => {
+      const start = Date.now();
+      for (let delay = 2; ; delay = Math.min(delay * 2, 100)) {
+        try {
+          return await fn(...args);
+        } catch (err) {
+          if (!isBusy(err) || Date.now() - start > BUSY_RETRY_MS) throw err;
+          await new Promise((r) => setTimeout(r, delay));
+        }
+      }
+    };
+  return new Proxy(client, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (typeof value !== 'function') return value;
+      const bound = value.bind(target);
+      return prop === 'execute' || prop === 'batch' || prop === 'executeMultiple' ? wrap(bound) : bound;
+    },
+  });
+}
+
 export async function createDb(url: string, opts: CreateDbOptions = {}): Promise<LegionDb> {
   if (dialectOf(url) === 'sqlite') {
     if (url.startsWith('file:')) mkdirSync(dirname(resolve(url.slice('file:'.length))), { recursive: true });
@@ -55,11 +88,19 @@ export async function createDb(url: string, opts: CreateDbOptions = {}): Promise
     await client.execute('PRAGMA journal_mode = WAL');
     await client.execute('PRAGMA busy_timeout = 5000');
     await client.execute('PRAGMA foreign_keys = ON');
-    const orm = drizzleLibsql(client);
+    const orm = drizzleLibsql(retryOnBusy(client));
+    // SQLite has one writer. libSQL opens a new connection per transaction (without our busy_timeout),
+    // so two concurrent transactions fail with SQLITE_BUSY. Queue them in-process instead (ADR 0002).
+    let queue: Promise<unknown> = Promise.resolve();
+    const serial = <T>(fn: () => Promise<T>): Promise<T> => {
+      const run = queue.then(fn, fn);
+      queue = run.catch(() => {});
+      return run;
+    };
     return {
       dialect: 'sqlite',
       orm,
-      transaction: (fn) => orm.transaction((tx) => fn(tx as unknown as Executor)),
+      transaction: (fn) => serial(() => orm.transaction((tx) => fn(tx as unknown as Executor))),
       migrate: async (packageId, dir) =>
         migrateLibsql(orm, {
           migrationsFolder: `${dir}/sqlite`,

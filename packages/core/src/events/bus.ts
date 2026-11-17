@@ -123,7 +123,15 @@ export class InProcessEventBus {
 
   private dispatch(event: LegionEvent): void {
     for (const sub of this.subs.get(event.type) ?? []) {
-      const p = this.deliver(event, sub).finally(() => this.inFlight.delete(p));
+      const p = this.deliver(event, sub)
+        .catch((err) =>
+          // Bookkeeping failed (e.g. the consumption row). The event stays unconsumed and is replayed on boot.
+          this.o.log.error(
+            { err, eventId: event.id, consumerId: sub.consumerId },
+            'event delivery bookkeeping failed',
+          ),
+        )
+        .finally(() => this.inFlight.delete(p));
       this.inFlight.add(p);
     }
   }

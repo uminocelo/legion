@@ -62,3 +62,44 @@ describe('createDb', () => {
     expect(await db.ping()).toBe(true);
   });
 });
+
+describe('concurrent transactions', () => {
+  it('20 concurrent write transactions all commit (no SQLITE_BUSY)', async () => {
+    const db = await createTestDb();
+    try {
+      await db.migrate('core', (await import('../paths.js')).CORE_MIGRATIONS_DIR);
+      const clock = new FakeClock('2026-11-16T15:00:00.000Z');
+      const kv = new KvStore(db, () => clock.now());
+      await Promise.all(
+        Array.from({ length: 20 }, (_, i) =>
+          db.transaction(async (tx) => {
+            await kv.set(`k${i}`, i, tx);
+            await new Promise((r) => setTimeout(r, 1));
+            await kv.set(`k${i}:b`, i, tx);
+          }),
+        ),
+      );
+      const values = await Promise.all(Array.from({ length: 20 }, (_, i) => kv.get<number>(`k${i}:b`)));
+      expect(values).toEqual(Array.from({ length: 20 }, (_, i) => i));
+      // a write outside any transaction while one is open waits instead of failing with SQLITE_BUSY
+      let release: () => void = () => {};
+      const open = db.transaction(async (tx) => {
+        await kv.set('in-tx', 1, tx);
+        await new Promise<void>((r) => {
+          release = r;
+        });
+      });
+      await new Promise((r) => setTimeout(r, 5));
+      const outside = kv.set('outside', 2);
+      setTimeout(() => release(), 30);
+      await Promise.all([open, outside]);
+      expect([await kv.get('in-tx'), await kv.get('outside')]).toEqual([1, 2]);
+      // a failing transaction does not block the queue
+      await expect(db.transaction(async () => Promise.reject(new Error('x')))).rejects.toThrow('x');
+      await db.transaction((tx) => kv.set('after', 1, tx));
+      expect(await kv.get('after')).toBe(1);
+    } finally {
+      await db.close();
+    }
+  });
+});
