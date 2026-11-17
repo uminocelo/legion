@@ -101,3 +101,32 @@ sentinel:
   moderation:
     enabled: true
     timeoutOptionsMinutes: [10, 60]
+
+# ULTRON: inimigos escalados, invasão semanal e raids. Precisa do sentinel e de channels.events.
+# Ligue com bots: [cerebro, jarvis, herbie, sentinel, ultron]. Detalhes em docs/WORLD_EVENTS.md.
+ultron:
+  combat:
+    maxRounds: 20
+  adaptive:
+    enabled: false
+  events:
+    pingRoleKey: null # chave de um cargo mencionável; nunca @everyone
+    announceMinutesBefore: 60
+    strikeCooldownMinutes: 10
+    hpPerParticipant: 300
+    expectedParticipants: 8
+    bossLevel: auto
+    rewards: { victoryXp: 50, bonusXpMax: 50, participationXp: 15 }
+  invasion:
+    enabled: true
+    cron: "0 20 * * 6" # sábado 20:00 no timezone acima
+    durationMinutes: 60
+    templateId: enxame-de-nanites
+  raids:
+    cron: null # ex.: "0 21 * * 3"; null = só pela staff
+    durationMinutes: 45
+    templateIds: [bastiao-prime]
+  ai:
+    provider: none # none | openai-compatible (veja docs/SELF_HOSTING.md)
+    timeoutMs: 4000
+    maxCallsPerHour: 30

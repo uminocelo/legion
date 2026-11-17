@@ -11,7 +11,15 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Core: rate limiters can set per-interaction limits and a bypass (`RateLimiter.policyFor`).
 - ADRs 0020–0023.
 - `legion doctor` and startup check that each app's bot role has every permission its bots ask for in the invite link, and say how to fix it.
+- ULTRON: original enemy templates (validated, canon names refused, server overrides), pure level scaling with optional clamped adaptive difficulty, encounters for combat missions (`mission.started`) and `/ultron spawn`, outcomes stored per encounter.
+- World events: weekly invasion and raids with shared HP worn down by `raid_strike` fights in Sentinel, announce/start/end jobs that survive restarts without double posts, throttled HP embed, results with top damage and damage per faction, XP per participant through J.A.R.V.I.S.; `/ameaca`, `/ultron evento agendar | iniciar | cancelar`, `/ultron status`. Docs in `docs/WORLD_EVENTS.md`.
+- Optional AI flavor text (`ultron.ai.provider: openai-compatible`, Ollama compose profile `ai`): only after mechanics are decided, filtered, budgeted, timed out to static lines; no network calls with the default `none`.
+- Config validation: ULTRON requires Sentinel. ADRs 0024–0027.
 - `/sentinel replay` and `/combate log` accept the short combat id (`#ABC123`) and autocomplete recent combats; timeouts explain a missing permission, an admin target or the role order before trying.
+
+### Fixed
+- SQLite: a transaction in one event consumer no longer stalls the other consumers of the same event for 5–10 s (libSQL busy waits blocked the event loop); plain writes now queue behind open transactions.
+- `xp.grant_requested` grants are unique per member, so one source event can pay several members.
 
 ## [0.3.0] - 2026-11-17
 
