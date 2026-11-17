@@ -4,6 +4,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-17
+
 ### Added
 - Optional Discord app per bot: `<BOT>_TOKEN` and `<BOT>_CLIENT_ID` (e.g. `JARVIS_TOKEN`). Each app registers and answers only its bots' commands, with only their intents and permissions; Cérebro's app keeps roles and member events. One process, one database.
 - `legion init` asks one app or one per bot; `doctor` checks each app; `invite-url` prints one link per app; `register-commands` registers per app and removes moved commands from the shared app.
@@ -13,6 +15,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Bots can declare extra channels for `legion doctor` (checked with the permissions of the app hosting the bot).
 - Buttons on messages sent by DM now work (handled as a member without roles).
 - ADRs 0017–0019.
+
+### Fixed
 - Event replay on startup no longer feeds a newly enabled bot events from before it was first started.
 
 ## [0.2.0] - 2026-11-16
@@ -36,6 +40,7 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/uminocelo/legion/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/uminocelo/legion/releases/tag/v0.2.0
 [0.1.0]: https://github.com/uminocelo/legion/releases/tag/v0.1.0

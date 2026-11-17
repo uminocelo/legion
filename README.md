@@ -5,8 +5,8 @@ Kit de bots de RPG para Discord, **auto-hospedável**, inspirado nos X-Men. Um �
 | Bot | Papel | Versão |
 |---|---|---|
 | **Cérebro** | Recepção, cadastro do mutante, facções e cargos | v0.1.0 ✅ |
-| J.A.R.V.I.S. | XP, níveis, ranks, trivia, missões | v0.2.0 |
-| H.E.R.B.I.E. | Tutorial e dicas | v0.3.0 |
+| J.A.R.V.I.S. | XP, níveis, ranks, trivia, missões | v0.2.0 ✅ |
+| H.E.R.B.I.E. | Tutorial, ajuda e dicas | v0.3.0 ✅ |
 | Sentinel | Combate e moderação | v0.4.0 |
 | ULTRON | Eventos mundiais e raids | v0.4.0 |
 
