@@ -109,7 +109,7 @@ describe('onboarding', () => {
   });
 
   it('resumes after a restart: the archetype is stored and the modal reopens', async () => {
-    t = await setupCerebro();
+    t = await setupCerebro({ cerebro: { powers: { enabled: false } } });
     await join(t);
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });

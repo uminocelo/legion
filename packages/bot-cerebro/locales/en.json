@@ -17,9 +17,18 @@
       "title": "⚔️ Choose your faction",
       "body": "Every mutant fights alongside a faction. Pick one (you can't switch on your own later, for now).",
       "placeholder": "Choose your faction",
-      "xmen": { "name": "X-Men", "description": "They protect a world that fears them." },
-      "brotherhood": { "name": "Brotherhood", "description": "Mutants first, whatever it takes." },
-      "independent": { "name": "Independent", "description": "No flag: you walk your own path." }
+      "xmen": {
+        "name": "X-Men",
+        "description": "They protect a world that fears them."
+      },
+      "brotherhood": {
+        "name": "Brotherhood",
+        "description": "Mutants first, whatever it takes."
+      },
+      "independent": {
+        "name": "Independent",
+        "description": "No flag: you walk your own path."
+      }
     },
     "archetype": {
       "title": "🧬 Choose your archetype",
@@ -37,7 +46,7 @@
       "title": "Mutant sheet",
       "codename": "Codename (original!)",
       "codename_placeholder": "E.g. Crimson Spark",
-      "power": "Power",
+      "power": "Describe your power",
       "power_placeholder": "E.g. Creates sparks that blind enemies",
       "origin": "Origin",
       "origin_placeholder": "How did your powers awaken?"
@@ -71,9 +80,15 @@
       "origin": "Origin",
       "share_button": "Share",
       "shared": "Sheet shared in the channel!",
-      "not_registered": "That member is not a registered mutant yet."
+      "not_registered": "That member is not a registered mutant yet.",
+      "powers": "Powers",
+      "power_description": "Power description"
     },
-    "ranks": { "recruta": "Recruit", "agente": "Agent", "veterano": "Veteran" },
+    "ranks": {
+      "recruta": "Recruit",
+      "agente": "Agent",
+      "veterano": "Veteran"
+    },
     "optins": {
       "title": "🔔 Preferences",
       "body": "Turn the optional roles on or off. Click again to switch.",
@@ -113,10 +128,14 @@
       "perfil": "Shows your mutant sheet (or another member's).",
       "preferencias": "Turns optional roles on and off, like Live alerts.",
       "setup": "Syncs roles and, if asked, channel visibility.",
-      "status": "Shows how many members are at each registration step."
+      "status": "Shows how many members are at each registration step.",
+      "mutante_poderes": "Picks catalog powers for an already registered mutant (once)"
     },
     "commands": {
-      "perfil": { "description": "Shows a mutant sheet", "membro": "Member (default: you)" },
+      "perfil": {
+        "description": "Shows a mutant sheet",
+        "membro": "Member (default: you)"
+      },
       "cerebro": {
         "description": "Cérebro commands",
         "preferencias": "Turn optional roles on and off",
@@ -124,7 +143,40 @@
         "aplicar": "Apply the changes (default: dry run)",
         "canais": "Also adjust channel visibility",
         "status": "Registration status (staff)"
+      },
+      "mutante": {
+        "description": "Your mutant sheet",
+        "poderes": "Pick your powers from the catalog (once)"
       }
+    },
+    "powers": {
+      "type": {
+        "offensive": "Offensive",
+        "defensive": "Defensive",
+        "psionic": "Psionic",
+        "elemental": "Elemental",
+        "movement": "Movement",
+        "utility": "Utility"
+      },
+      "main_title": "🧬 Choose your main power",
+      "main_body": "Your main power type sets your archetype and base stats. Then you pick secondary powers and describe it all in your own words.",
+      "placeholder": "Powers: {types}",
+      "main_chosen": "**Main power:** {power}\n**Archetype:** {archetype}",
+      "archetype_kept": "Your archetype stays **{archetype}** (staff has not allowed changing it).",
+      "secondary_title": "🧬 Secondary powers (optional)",
+      "secondary_body": "Pick up to {max} secondary powers in the menus below, or go on without them. They show on your sheet and do not change stats.",
+      "no_secondary": "This server does not use secondary powers.",
+      "secondary_chosen": "**Secondary:** {list}",
+      "next_register": "Continue to the sheet",
+      "next_save": "Save powers",
+      "back": "Change main power",
+      "too_many": "Pick at most {max} secondary powers.",
+      "pick_main": "Pick the main power first.",
+      "already": "You already chose your powers.",
+      "already_list": "You already chose your powers: {powers}. Ask staff if you need to change them.",
+      "disabled": "The power catalog is off on this server.",
+      "saved": "✅ Powers saved: {powers}. Archetype: **{archetype}**.",
+      "saved_changed": "✅ Powers saved: {powers}. New archetype: **{archetype}**."
     }
   }
 }

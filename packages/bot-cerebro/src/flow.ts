@@ -9,9 +9,10 @@ import {
 } from '@legion/core';
 import { z } from 'zod';
 import type { CerebroConfig } from './config.js';
-import { CerebroRepo, type MemberRow, toMemberView } from './db/repo.js';
+import { CerebroRepo, type MemberRow, type MutantRow, pendingPowersOf, toMemberView } from './db/repo.js';
 import { validateCodename } from './domain/codename.js';
 import { expectedRoles, transition } from './domain/onboarding.js';
+import { PowerFlow } from './power-flow.js';
 import { CerebroUi, channelMention } from './ui.js';
 
 const stepOf = (row: MemberRow) => toMemberView(row).onboardingStep;
@@ -23,6 +24,7 @@ const RANK_KEYS = ['rank_recruta', 'rank_agente', 'rank_veterano'];
 export class CerebroFlow {
   readonly repo: CerebroRepo;
   readonly ui: CerebroUi;
+  readonly powers: PowerFlow;
 
   constructor(readonly ctx: BotContext<CerebroConfig>) {
     this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
@@ -30,6 +32,12 @@ export class CerebroFlow {
       channels: ctx.config.channels,
       factions: ctx.config.factions.map((f) => ({ key: f.key, emoji: f.emoji })),
     });
+    this.powers = new PowerFlow(this);
+  }
+
+  /** "★ main · secondary…" or null when the mutant has no catalog powers. */
+  async powersLine(mutant: MutantRow, locale?: Locale): Promise<string | null> {
+    return this.powers.sheetLine(await this.repo.powersOf(mutant.id), locale);
   }
 
   private get cfg() {
@@ -160,6 +168,7 @@ export class CerebroFlow {
       case 'rules_accepted':
         return this.ui.faction(locale, row.faction, prefix);
       case 'faction_chosen':
+        if (this.powers.enabled) return this.powers.screen(locale, pendingPowersOf(row), 'r', prefix);
         return this.ui.archetype(locale, row.pendingArchetype, prefix);
       default:
         return this.profileOrOptIns(row, locale);
@@ -168,7 +177,9 @@ export class CerebroFlow {
 
   private async profileOrOptIns(row: MemberRow, locale: Locale) {
     const mutant = await this.repo.mutantByMemberId(row.id);
-    const header = mutant ? this.ui.profileEmbed(row, mutant, locale) : undefined;
+    const header = mutant
+      ? this.ui.profileEmbed(row, mutant, locale, [], await this.powersLine(mutant, locale))
+      : undefined;
     return this.ui.optIns(locale, toMemberView(row).optIns, header);
   }
 
@@ -283,6 +294,7 @@ export class CerebroFlow {
 
     const archetype = row.pendingArchetype;
     const faction = row.faction;
+    const picked = this.powers.enabled ? pendingPowersOf(row) : { main: null, secondary: [] };
     let result:
       | { member: MemberRow; mutant: Awaited<ReturnType<CerebroRepo['insertMutant']>> }
       | 'already'
@@ -302,9 +314,21 @@ export class CerebroFlow {
           },
           tx,
         );
+        const main = picked.main ? this.powers.catalog.get(picked.main) : undefined;
+        if (main)
+          await this.repo.insertPowers(
+            mutant.id,
+            {
+              main: main.id,
+              secondary: picked.secondary
+                .filter((id) => id !== main.id && this.powers.catalog.get(id))
+                .slice(0, this.cfg.powers.maxSecondary),
+            },
+            tx,
+          );
         const member = await this.repo.updateMember(
           row.id,
-          { onboardingStep: 'registered', rank: 'recruta', pendingArchetype: null },
+          { onboardingStep: 'registered', rank: 'recruta', pendingArchetype: null, pendingPowers: null },
           tx,
         );
         if (!member) throw new Error('member vanished');
@@ -421,7 +445,7 @@ export class CerebroFlow {
       locale,
       (bot, err) => this.ctx.log.warn({ err, section: bot }, 'profile section failed'),
     );
-    await r.reply(this.ui.profile(row, mutant, locale, extra));
+    await r.reply(this.ui.profile(row, mutant, locale, extra, await this.powersLine(mutant, locale)));
   }
 
   async share(i: IncomingInteraction, r: Responder, memberId: string): Promise<void> {
@@ -436,7 +460,7 @@ export class CerebroFlow {
     try {
       await this.ctx.gateway.sendMessage(i.channelId, {
         persona: 'cerebro',
-        embeds: [this.ui.profileEmbed(row, mutant, undefined, extra)],
+        embeds: [this.ui.profileEmbed(row, mutant, undefined, extra, await this.powersLine(mutant))],
       });
       await r.reply(this.ui.text(this.t('profile.shared', {}, locale)));
     } catch (err) {

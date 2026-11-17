@@ -8,6 +8,13 @@
       "when": 1794863358275,
       "tag": "0000_cerebro_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794956937060,
+      "tag": "0001_mutant_powers",
+      "breakpoints": true
     }
   ]
 }

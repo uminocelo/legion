@@ -274,6 +274,7 @@ export class CerebroUi {
     mutant: MutantRow,
     locale: Locale | undefined,
     extra: Embed['fields'] = [],
+    powers: string | null = null,
   ): Embed {
     return {
       title: this.t('profile.title', { codename: mutant.codename }, locale),
@@ -290,7 +291,11 @@ export class CerebroUi {
           value: this.t(`ranks.${member.rank}`, {}, locale),
           inline: true,
         },
-        { name: this.t('profile.power', {}, locale), value: mutant.power },
+        ...(powers ? [{ name: this.t('profile.powers', {}, locale), value: powers }] : []),
+        {
+          name: this.t(powers ? 'profile.power_description' : 'profile.power', {}, locale),
+          value: mutant.power,
+        },
         { name: this.t('profile.origin', {}, locale), value: mutant.origin },
         ...(extra ?? []),
       ],
@@ -302,11 +307,12 @@ export class CerebroUi {
     mutant: MutantRow,
     locale: Locale,
     extra: Embed['fields'] = [],
+    powers: string | null = null,
   ): OutgoingMessage {
     return {
       persona: 'cerebro',
       ephemeral: true,
-      embeds: [this.profileEmbed(member, mutant, locale, extra)],
+      embeds: [this.profileEmbed(member, mutant, locale, extra, powers)],
       components: [
         [
           {

@@ -38,6 +38,18 @@ cerebro:
     max: 32
   # Arquétipos oferecidos no cadastro
   archetypes: [Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata]
+  # Catálogo de poderes no cadastro (docs/POWERS.md). O tipo do poder principal define o arquétipo.
+  powers:
+    enabled: true # false = volta o menu de arquétipos
+    maxSecondary: 2 # poderes secundários (0 a 2)
+    typeToArchetype:
+      offensive: Metamorfo
+      defensive: Tanque
+      psionic: Telepata
+      elemental: Elemental
+      movement: Velocista
+      utility: Tecnopata
+    allowArchetypeChange: false # /mutante poderes pode trocar o arquétipo de quem já se registrou
   # Cargos que o membro pode ligar/desligar sozinho
   optInRoles: [live_ping, rivals_vanguard, rivals_duelist, rivals_strategist]
   # Avisa a staff (report.flagged) após N tentativas de nome canon em X minutos
