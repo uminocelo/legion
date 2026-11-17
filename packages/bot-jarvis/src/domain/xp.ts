@@ -2,7 +2,7 @@ import type { Rank } from '@legion/core';
 import { addDays } from '@legion/core';
 import type { Difficulty, JarvisConfig } from '../config.js';
 
-export type XpReason = 'trivia' | 'streak_bonus' | 'grant' | 'admin_adjust';
+export type XpReason = 'trivia' | 'streak_bonus' | 'grant' | 'admin_adjust' | 'mission';
 
 export interface TriviaScoreInput {
   correct: boolean;

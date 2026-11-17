@@ -5,6 +5,13 @@ const posInt = z.number().int().positive();
 export const DIFFICULTIES = ['facil', 'normal', 'dificil'] as const;
 export type Difficulty = (typeof DIFFICULTIES)[number];
 
+const xp = z.number().int().min(0).max(10_000);
+const reward = (success: number, failure: number) =>
+  z.object({ successXp: xp.default(success), failureXp: xp.default(failure) }).prefault({});
+
+export const MISSION_KINDS = ['daily', 'weekly', 'story'] as const;
+export type MissionKind = (typeof MISSION_KINDS)[number];
+
 export const jarvisConfigSchema = z.object({
   trivia: z
     .object({
@@ -42,6 +49,28 @@ export const jarvisConfigSchema = z.object({
   streak: z.object({ bonusPerDay: posInt.default(5), bonusCap: posInt.default(7) }).prefault({}),
   leaderboard: z
     .object({ size: posInt.max(25).default(10), channelCooldownSeconds: posInt.default(15) })
+    .prefault({}),
+  missions: z
+    .object({
+      enabled: z.boolean().default(true),
+      rewards: z
+        .object({
+          daily: reward(40, 10),
+          weekly: reward(120, 30),
+          story: reward(80, 20),
+        })
+        .prefault({}),
+      limits: z
+        .object({
+          dailyPerMember: z.number().int().min(0).default(1),
+          weeklyPerMember: z.number().int().min(0).default(1),
+          storyRepeatable: z.boolean().default(false),
+        })
+        .prefault({}),
+      choiceTimeoutMinutes: posInt.max(1440).default(10),
+      combatTimeoutMinutes: posInt.max(1440).default(15),
+      lobbyTimeoutMinutes: posInt.max(1440).default(5),
+    })
     .prefault({}),
 });
 

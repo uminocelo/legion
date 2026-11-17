@@ -12,8 +12,16 @@
     },
     "trivia": {
       "title": "🧠 Trivia de {category}",
-      "difficulty": { "facil": "Fácil", "normal": "Normal", "dificil": "Difícil" },
-      "category": { "quadrinhos": "Quadrinhos", "rivals": "Marvel Rivals", "geral": "Geral" },
+      "difficulty": {
+        "facil": "Fácil",
+        "normal": "Normal",
+        "dificil": "Difícil"
+      },
+      "category": {
+        "quadrinhos": "Quadrinhos",
+        "rivals": "Marvel Rivals",
+        "geral": "Geral"
+      },
       "meta": "Dificuldade: {difficulty} · Responda em {seconds}s",
       "correct": "✅ Correto!",
       "wrong": "❌ Errado.",
@@ -31,7 +39,11 @@
     "ranking": {
       "title": "🏆 Ranking — {period}",
       "title_faction": "🏆 Ranking — {period} · {faction}",
-      "period": { "semana": "esta semana", "mes": "este mês", "total": "geral" },
+      "period": {
+        "semana": "esta semana",
+        "mes": "este mês",
+        "total": "geral"
+      },
       "line": "**{pos}.** {emoji} {codename} — {xp} XP · nível {level}",
       "you": "Você: **{pos}º** com {xp} XP",
       "you_none": "Você ainda não tem XP neste período.",
@@ -70,16 +82,22 @@
     "help": {
       "trivia": "Responda uma pergunta rápida e ganhe XP.",
       "ranking": "Veja quem mais ganhou XP na semana, no mês ou no total.",
-      "sequencia": "Veja sua sequência de dias ativos e o bônus de amanhã."
+      "sequencia": "Veja sua sequência de dias ativos e o bônus de amanhã.",
+      "missao": "Missões com escolhas (e lutas), sozinho ou em grupo"
     },
     "commands": {
-      "trivia": { "description": "Responda uma pergunta e ganhe XP", "categoria": "Categoria da pergunta" },
+      "trivia": {
+        "description": "Responda uma pergunta e ganhe XP",
+        "categoria": "Categoria da pergunta"
+      },
       "ranking": {
         "description": "Ranking de XP",
         "periodo": "Período (padrão: semana)",
         "faccao": "Filtrar por facção"
       },
-      "sequencia": { "description": "Sua sequência de dias ativos" },
+      "sequencia": {
+        "description": "Sua sequência de dias ativos"
+      },
       "jarvis": {
         "description": "Ferramentas da staff do J.A.R.V.I.S.",
         "xp": "Adicionar ou remover XP de um membro",
@@ -90,6 +108,50 @@
         "recarregar": "Recarregar as perguntas dos arquivos",
         "estatisticas": "Estatísticas das perguntas",
         "recalcular": "Recalcular o progresso de um membro a partir do ledger"
+      },
+      "missao": {
+        "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
+        "lista": "Mostra as missões e o que você pode jogar agora",
+        "iniciar": "Começa uma missão",
+        "missao": "A missão",
+        "abandonar": "Abandona a sua missão em andamento (sem XP)"
+      }
+    },
+    "missions": {
+      "disabled": "As missões estão desativadas neste servidor.",
+      "none": "Não há missões disponíveis agora. Avise a staff.",
+      "unknown": "Não encontrei essa missão. Use /missao lista.",
+      "list_title": "🗺️ Missões",
+      "meta": "`{id}` · Nível {level}+ · Até {party} jogador(es) · {difficulty}",
+      "kind": {
+        "daily": "Diária",
+        "weekly": "Semanal",
+        "story": "História"
+      },
+      "blocked": {
+        "level": "Precisa do nível {level}",
+        "daily_limit": "Você já fez sua missão diária hoje",
+        "weekly_limit": "Você já fez sua missão semanal nesta semana",
+        "story_done": "Você já jogou esta história",
+        "combat_unavailable": "Lutas indisponíveis (ULTRON ou Sentinel desligado)"
+      },
+      "already_open": "Você já tem uma missão em andamento: {thread}. Termine ou use /missao abandonar.",
+      "started": "Missão iniciada em {thread}. Boa sorte, agente.",
+      "no_open": "Você não tem missão em andamento.",
+      "abandoned_reply": "Missão abandonada.",
+      "abandoned_text": "⌛ A missão foi abandonada.",
+      "not_yours": "Esta missão é de outra equipe.",
+      "stale": "Esta escolha já passou.",
+      "already_chose": "Você já escolheu nesta cena.",
+      "vote_recorded": "Voto registrado. Aguardando o resto da equipe.",
+      "thread_name": "Missão: {title} #{id}",
+      "chosen": "Escolha feita.",
+      "timed_out": "Tempo esgotado.",
+      "choose_within": "Escolha em até {minutes} min.",
+      "result": {
+        "success": "✅ Missão cumprida! +{xp} XP",
+        "failure": "❌ Missão fracassada. +{xp} XP pela tentativa",
+        "abandoned": "⌛ Missão abandonada. Sem XP."
       }
     }
   }

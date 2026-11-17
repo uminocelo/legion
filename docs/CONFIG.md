@@ -15,6 +15,7 @@ Segredos ficam no `.env` (veja o README; tokens por bot em [SELF_HOSTING](SELF_H
 | `channels.tutorial` | `null` | H.E.R.B.I.E.: tutorial de quem tem DM fechada (vazio = usa `welcome`) |
 | `channels.events` | `null` | Eventos do ULTRON; o H.E.R.B.I.E. explica cada anúncio aqui |
 | `channels.combat` | `null` | Sentinel: onde os combates abrem tópicos (vazio = canal onde o `/treino` foi usado) |
+| `channels.missions` | `null` | J.A.R.V.I.S.: onde as missões abrem tópicos (vazio = `channels.combat`, senão o canal do `/missao`) |
 | `channels.modQueue` | `null` | Sentinel: fila de denúncias, visível só para a staff |
 | `channels.trivia` | `null` | Usado por bots futuros |
 | `roles` | lista abaixo | Cargos gerenciados. Se definida, **substitui** a lista padrão inteira |
@@ -91,6 +92,16 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 | `streak.bonusPerDay` / `streak.bonusCap` | `5` / `7` | Bônus diário = `bonusPerDay × min(dias, bonusCap)` |
 | `leaderboard.size` | `10` | Linhas do `/ranking` |
 | `leaderboard.channelCooldownSeconds` | `15` | Intervalo mínimo do `/ranking` público por canal |
+| `missions.enabled` | `true` | Liga o `/missao` (e o passo "primeira missão" do tutorial do H.E.R.B.I.E.) |
+| `missions.rewards.daily` | `successXp 40, failureXp 10` | XP de uma missão diária; o arquivo da missão pode definir `xp` próprio |
+| `missions.rewards.weekly` | `successXp 120, failureXp 30` | XP de uma missão semanal |
+| `missions.rewards.story` | `successXp 80, failureXp 20` | XP de uma missão de história |
+| `missions.limits.dailyPerMember` | `1` | Missões diárias por membro por dia (fuso do servidor) |
+| `missions.limits.weeklyPerMember` | `1` | Missões semanais por membro por semana (segunda a domingo) |
+| `missions.limits.storyRepeatable` | `false` | `false`: cada história só pode ser jogada uma vez |
+| `missions.choiceTimeoutMinutes` | `10` | Sem escolha nesse tempo, a missão é abandonada (sem XP) |
+| `missions.combatTimeoutMinutes` | `15` | Sem resultado da luta nesse tempo, a missão fracassa |
+| `missions.lobbyTimeoutMinutes` | `5` | Tempo para um grupo se formar |
 
 ### Perguntas
 

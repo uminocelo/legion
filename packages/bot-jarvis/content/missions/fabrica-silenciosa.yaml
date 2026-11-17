@@ -1,0 +1,52 @@
+# Daily mission with a fight, up to 4 players.
+id: fabrica-silenciosa
+kind: daily
+title:
+  pt-BR: A fábrica silenciosa
+  en: The silent factory
+summary:
+  pt-BR: Uma fábrica desativada voltou a consumir energia. Alguém está construindo algo lá dentro.
+  en: A shut-down factory started drawing power again. Someone is building something inside.
+minLevel: 3
+party: 4
+difficulty: normal
+start: portao
+scenes:
+  portao:
+    text:
+      pt-BR: As chaminés estão frias, mas o chão vibra. Há uma entrada de carga aberta e um duto de ventilação no telhado.
+      en: The chimneys are cold, but the floor hums. There is an open loading bay and a vent on the roof.
+    choices:
+      - label: { pt-BR: Entrar pela carga, en: Go in through the loading bay }
+        next: linha
+      - label: { pt-BR: Descer pelo duto, en: Drop in through the vent }
+        next: passarela
+  passarela:
+    text:
+      pt-BR: Do alto da passarela vocês veem a linha de montagem fabricando sentinelas menores. Dá para sabotar o painel antes de descer.
+      en: From the catwalk you see the assembly line building small sentries. You could sabotage the panel before going down.
+    choices:
+      - label: { pt-BR: Sabotar o painel, en: Sabotage the panel }
+        next: alarme
+      - label: { pt-BR: Descer em silêncio, en: Climb down quietly }
+        next: linha
+  linha:
+    text:
+      pt-BR: A linha de montagem para de repente. Todas as cabeças metálicas se viram para vocês ao mesmo tempo.
+      en: The assembly line stops all at once. Every metal head turns toward you at the same time.
+    combat: { win: desligada, lose: retirada }
+  alarme:
+    text:
+      pt-BR: O painel explode em faíscas e a linha trava, mas um alarme ecoa. As máquinas prontas acordam.
+      en: The panel bursts into sparks and the line jams, but an alarm echoes. The finished machines wake up.
+    combat: { win: desligada, lose: retirada }
+  desligada:
+    text:
+      pt-BR: A última máquina cai. Vocês cortam a energia, e a fábrica volta ao silêncio, desta vez de verdade.
+      en: The last machine falls. You cut the power, and the factory goes silent, for real this time.
+    end: success
+  retirada:
+    text:
+      pt-BR: Vocês recuam feridos. A fábrica continua funcionando, e amanhã haverá mais delas.
+      en: You fall back, wounded. The factory keeps running, and tomorrow there will be more of them.
+    end: failure
