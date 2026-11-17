@@ -62,6 +62,9 @@ importers:
       '@legion/bot-jarvis':
         specifier: workspace:*
         version: link:../../packages/bot-jarvis
+      '@legion/bot-sentinel':
+        specifier: workspace:*
+        version: link:../../packages/bot-sentinel
       '@legion/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -127,6 +130,25 @@ importers:
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+    devDependencies:
+      drizzle-kit:
+        specifier: ^0.31.11
+        version: 0.31.11
+
+  packages/bot-sentinel:
+    dependencies:
+      '@legion/core':
+        specifier: workspace:*
+        version: link:../core
+      discord.js:
+        specifier: ^14.28.1
+        version: 14.28.1
+      drizzle-orm:
+        specifier: ^0.45.4
+        version: 0.45.4(@libsql/client@0.18.0)(@types/pg@8.23.1)(pg@8.23.1)
       zod:
         specifier: ^4.6.7
         version: 4.6.7

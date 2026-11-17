@@ -87,7 +87,7 @@ Tudo fica em `./data`. Pare (`docker compose stop`), copie a pasta `./data` e su
 
 ## Ligar mais bots
 
-Adicione o bot em `bots:` no `legion.config.yaml` (o Cérebro é sempre obrigatório) e reinicie. Disponíveis: `cerebro`, `jarvis` e `herbie`.
+Adicione o bot em `bots:` no `legion.config.yaml` (o Cérebro é sempre obrigatório) e reinicie. Disponíveis: `cerebro`, `jarvis`, `herbie` e `sentinel`.
 
 ### J.A.R.V.I.S. (trivia e XP)
 
@@ -111,6 +111,17 @@ Com `herbie` em `bots:`, quem termina o cadastro recebe uma DM do H.E.R.B.I.E. c
 - Dicas diárias opcionais (desligadas por padrão) e explicação dos eventos do ULTRON.
 
 Staff: `/herbie status` (funil do tutorial) e `/herbie dica-agora`. Tutorial, glossário e dicas podem ser personalizados: veja [docs/CONFIG.md](docs/CONFIG.md#herbie).
+
+### Sentinel (combate e moderação)
+
+Com `sentinel` em `bots:`:
+
+- `/treino`: luta contra o Drone de Treino num tópico, com botões por rodada. Todo combate usa dados com semente e pode ser conferido pela staff com `/sentinel replay`. Regras e fórmulas em [docs/COMBAT.md](docs/COMBAT.md).
+- `/combate status` e `/combate log <id>`.
+- Limites de uso para todos os bots (a staff nunca é bloqueada), com sinais de abuso, XP fora do normal e contas novas.
+- `/denunciar` e o menu **Denunciar mensagem** (clique direito na mensagem → Apps). As denúncias chegam em `channels.modQueue` com botões só para a staff: resolver, ignorar, avisar por DM, timeouts e histórico. O Sentinel nunca pune sozinho.
+
+Staff: `/sentinel replay | denuncias | historico`. Para os timeouts, o cargo do bot precisa da permissão **Moderar membros**. Deixe `channels.modQueue` visível só para a staff.
 
 ## Desenvolvimento
 

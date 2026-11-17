@@ -7,6 +7,7 @@
     "@legion/bot-cerebro": "workspace:*",
     "@legion/bot-herbie": "workspace:*",
     "@legion/bot-jarvis": "workspace:*",
+    "@legion/bot-sentinel": "workspace:*",
     "@legion/core": "workspace:*",
     "discord.js": "^14.28.1",
     "yaml": "^2.9.1"

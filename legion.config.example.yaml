@@ -20,7 +20,9 @@ channels:
   registry: null # cartões públicos de novos mutantes (vazio = usa welcome)
   tutorial: null # H.E.R.B.I.E.: tutorial de quem tem DM fechada (vazio = usa welcome)
   events: null # eventos do ULTRON (o H.E.R.B.I.E. explica os anúncios aqui)
-  # trivia, modQueue, combat: usados por bots futuros
+  combat: null # Sentinel: tópicos de combate
+  modQueue: null # Sentinel: fila de denúncias (só a staff vê)
+  # trivia: usado por bots futuros
 # Cargos: os padrões cobrem tudo. Para renomear ou mudar cores, copie a lista
 # COMPLETA de docs/CONFIG.md para cá (a lista substitui a padrão inteira).
 # O código usa sempre a "key"; o nome é só o que aparece no Discord.
@@ -77,3 +79,25 @@ herbie:
     channelId: null
     cron: "0 12 * * *" # no timezone acima
   explainWorldEvents: true
+
+# Sentinel: combate, limites de uso e denúncias. Ligue com bots: [cerebro, jarvis, herbie, sentinel].
+sentinel:
+  combat:
+    maxRounds: 20
+    roundTimeoutSeconds: 45
+    powerCooldownRounds: 3
+    abandonAfterIdleRounds: 3
+  training:
+    cooldownSeconds: 300
+    dummyAtkMultiplier: 0.7
+  rateLimits:
+    commandsPerMinute: 20
+    componentsPer10Seconds: 15
+    reportsPerHour: 3
+    violationsToFlag: 5
+  antiCheat:
+    xpAnomalyPerHour: 600
+    newAccountDays: 7
+  moderation:
+    enabled: true
+    timeoutOptionsMinutes: [10, 60]

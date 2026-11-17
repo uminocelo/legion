@@ -18,6 +18,8 @@ const APP = '123456789012345678';
 const CH = { welcome: '300000000000000001', rules: '300000000000000002' };
 const P = PermissionFlagsBits;
 const basic = (P.ViewChannel | P.SendMessages | P.EmbedLinks).toString();
+/** Everything the invite link asks for (Cérebro and J.A.R.V.I.S. in these tests). */
+const full = (cerebro.permissions.reduce((a, b) => a | b, 0n) | BigInt(basic)).toString();
 
 function fakeRest(
   over: Partial<{
@@ -32,7 +34,7 @@ function fakeRest(
     puts: { app: string; names: string[] }[];
   }> = {},
 ): DiscordRest {
-  const o = { tokenOk: true, flags: 1 << 15, inGuild: true, rolePerms: basic, ...over };
+  const o = { tokenOk: true, flags: 1 << 15, inGuild: true, rolePerms: full, ...over };
   const roles: ApiRole[] = o.roles ?? [
     { id: GUILD, name: '@everyone', permissions: '0', position: 0, managed: false, color: 0 },
     { id: '900', name: 'Legion', permissions: o.rolePerms, position: 100, managed: true, color: 0 },
@@ -97,6 +99,17 @@ describe('legion doctor', () => {
     expect(rs.filter((r) => r.status === 'fail')).toEqual([]);
     expect(doctorExitCode(rs)).toBe(0);
     expect(s.db).toBe('warn'); // fresh DB: migrations pending, applied on start
+  });
+
+  it('fails when the bot role lacks a permission its bots need, naming it and the fix', async () => {
+    const rs = await doctor(fakeRest({ rolePerms: basic }));
+    const perms = rs.find((r) => r.id === 'perms:main');
+    expect(perms?.status).toBe('fail');
+    expect(perms?.message).toContain('ManageRoles');
+    expect(perms?.message).not.toContain('SendMessages');
+    expect(perms?.fix).toContain('legion invite-url');
+    const admin = await doctor(fakeRest({ rolePerms: P.Administrator.toString() }));
+    expect(admin.find((r) => r.id === 'perms:main')?.status).toBe('ok');
   });
 
   it('missing env skips Discord checks and exits 1 with a fix', async () => {

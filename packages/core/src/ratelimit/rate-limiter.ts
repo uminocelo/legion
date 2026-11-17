@@ -6,9 +6,24 @@ export interface RateLimitResult {
   retryAfterMs: number;
 }
 
+/** Limits the router applies to one interaction (from the limiter's policy). */
+export interface RatePolicy {
+  /** Skip rate limiting (e.g. staff). */
+  bypass: boolean;
+  commandsPerMinute: number;
+  componentsPer10Seconds: number;
+}
+
 /** Fixed-window rate limiter. Core ships an in-memory default; Sentinel provides a DB-backed one (v3). */
 export interface RateLimiter {
   consume(key: string, limit: number, windowMs: number): Promise<RateLimitResult>;
+  /** Optional per-interaction policy; without it the router uses its configured limits. */
+  policyFor?(i: {
+    userId: string;
+    isGuildOwner: boolean;
+    memberRoleIds: string[];
+    inDm?: boolean;
+  }): Promise<RatePolicy>;
 }
 
 export class InMemoryRateLimiter implements RateLimiter {

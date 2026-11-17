@@ -314,6 +314,7 @@ export class DiscordJsGateway implements DiscordGateway {
       color: r.colors?.primaryColor ?? r.color ?? 0,
       position: r.position,
       managed: r.managed,
+      permissions: r.permissions.toArray(),
     }));
   }
   async createRole(role: RoleCreate): Promise<GuildRole> {

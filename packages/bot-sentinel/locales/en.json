@@ -1,0 +1,160 @@
+{
+  "sentinel": {
+    "errors": {
+      "not_participant": "You are not in this combat.",
+      "round_over": "This round is already over.",
+      "downed": "You were downed and cannot act.",
+      "power_cooldown": "Your power is still recharging.",
+      "not_registered": "Register your mutant before training (welcome channel).",
+      "already_fighting": "You are already in a combat: {thread}",
+      "training_cooldown": "The drone is recharging. Try again in {seconds}s.",
+      "combat_not_found": "Combat not found (or still in progress).",
+      "not_staff": "Only staff can use this command.",
+      "report_self": "You cannot report yourself.",
+      "report_bot": "Bots cannot be reported.",
+      "report_unknown": "I could not find that member on the server.",
+      "report_limit": "You sent too many reports. Try again in {minutes} min.",
+      "report_not_found": "Report not found."
+    },
+    "combat": {
+      "thread_name": "⚔️ Combat #{id}",
+      "started": "⚔️ Combat started! Participants: {players}",
+      "round_title": "⚔️ Round {round}/{max}",
+      "choose": "Choose your action ({seconds}s). Without a choice, you attack.",
+      "side_players": "Mutants",
+      "side_enemies": "Enemies",
+      "chosen": "Action chosen: **{action}**. You can change it until the round ends.",
+      "action": {
+        "attack": "Attack",
+        "power": "Power",
+        "defend": "Defend"
+      },
+      "result_win": "Victory: {side}!",
+      "result_draw": "Draw!",
+      "result_abandoned": "Combat abandoned: nobody acted for several rounds.",
+      "final_title": "🏁 End of combat #{id}",
+      "rounds": "Rounds",
+      "damage": "Damage (mutants × enemies)",
+      "full_log": "See full log",
+      "log_title": "📜 Combat log #{id} ({page}/{pages})",
+      "training_started": "🤖 Training Drone incoming! The combat opens in a thread.",
+      "no_active": "You are not in a combat right now.",
+      "status_title": "⚔️ Your combat — round {round}/{max}",
+      "in_progress": "in progress"
+    },
+    "log": {
+      "round": "— Round {round} —",
+      "defend": "🛡️ {actor} defends.",
+      "miss": "💨 {actor} uses {action} on {target} and misses (d20={roll}).",
+      "hit": "⚔️ {actor} uses {action} on {target}: {damage} damage (HP {hp}).",
+      "crit": "💥 {actor} uses {action} on {target}: CRITICAL, {damage} damage (HP {hp}).",
+      "end_wipe": "🏁 Victory: {side}.",
+      "end_max_rounds": "⏱️ Round limit. Result: {side}.",
+      "end_abandoned": "🏳️ Combat abandoned ({side} win)."
+    },
+    "replay": {
+      "ok": "✅ Combat {id} matches: the replay produces the same log (hash {computed}).",
+      "mismatch": "❌ Combat {id} does NOT match: stored {stored}, recomputed {computed}."
+    },
+    "help": {
+      "treino": "Training fight against a drone.",
+      "combate": "Your current combat and combat logs.",
+      "sentinel": "Sentinel staff tools.",
+      "denunciar": "Report a member or a message to staff."
+    },
+    "commands": {
+      "treino": "Training fight against the Training Drone",
+      "combate": {
+        "description": "Combats",
+        "status": "Your current combat",
+        "log": "Log of a finished combat",
+        "id": "Combat ID"
+      },
+      "sentinel": {
+        "description": "Sentinel staff tools",
+        "replay": "Check that a combat replays the same",
+        "denuncias": "List reports",
+        "status": "Status (default: open)",
+        "historico": "Reports and actions for a member"
+      },
+      "denunciar": {
+        "description": "Report a member to staff",
+        "membro": "Member",
+        "motivo": "Reason",
+        "detalhes": "Details (optional)"
+      }
+    },
+    "flags": {
+      "rate_limit": "{n} blocks for overuse in 10 minutes.",
+      "xp_anomaly": "{xp} XP in the last hour (limit {limit}).",
+      "new_account": "Account created {days} day(s) ago."
+    },
+    "reasons": {
+      "spam": "Spam",
+      "rate_limit": "Overuse",
+      "canon_name_attempts": "Existing character names",
+      "xp_anomaly": "Unusual XP",
+      "new_account": "New account",
+      "user_report": "Member report",
+      "other": "Other"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "motivos": {
+      "spam": "Spam",
+      "assedio": "Harassment or insult",
+      "conteudo": "Inappropriate content",
+      "trapaca": "Cheating",
+      "outro": "Other"
+    },
+    "mod": {
+      "queue_title": "🚨 {reason}",
+      "subject": "Member",
+      "account_age": "Account {days} day(s) old",
+      "severity": "Severity",
+      "count": "Occurrences",
+      "source": "Source",
+      "details": "Details",
+      "links": "Links",
+      "status": "Status",
+      "status_open": "Open",
+      "status_resolved": "Resolved",
+      "status_ignored": "Ignored",
+      "last_action": "{action} by {staff}",
+      "btn": {
+        "resolve": "Resolve",
+        "ignore": "Ignore",
+        "warn": "Warn",
+        "timeout": "Timeout {time}",
+        "history": "History"
+      },
+      "report_received": "Report sent to staff. Thank you!",
+      "modal_title": "Report message",
+      "modal_reason": "What is wrong?",
+      "already_closed": "This report is already {status}.",
+      "done": "Report marked as {status}.",
+      "warn_title": "⚠️ Staff warning",
+      "warn_dm": "Server staff received a report about you ({reason}). Please review the server rules; further reports may lead to a timeout.",
+      "warned": "Warning sent by DM.",
+      "warn_closed": "DMs closed: warning logged but not delivered.",
+      "timed_out": "{time} timeout applied.",
+      "timeout_failed": "Discord refused the timeout. Common causes: the member is the server owner, an administrator, has a role above Sentinel, or the \"Moderate Members\" permission is missing.",
+      "history_title": "📋 Report history",
+      "history_empty": "No reports.",
+      "list_title": "📋 Reports: {status} ({n})",
+      "list_empty": "Nothing here.",
+      "timeout_no_permission": "The Sentinel role lacks the \"Moderate Members\" permission. Open the invite link again (legion invite-url) or edit the role.",
+      "timeout_admin": "Administrators and the server owner cannot be timed out.",
+      "timeout_hierarchy": "This member's highest role is above (or at) the Sentinel role. Drag the Sentinel role up in Server Settings → Roles."
+    },
+    "modes": {
+      "training": "Training",
+      "duel": "Duel",
+      "party": "Party",
+      "raid_strike": "Raid"
+    }
+  }
+}

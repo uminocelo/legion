@@ -85,6 +85,8 @@ export interface GuildRole {
   position: number;
   /** Managed by an integration or a bot (Discord's flag). */
   managed: boolean;
+  /** Server-wide permission names (discord.js flag names, e.g. `ModerateMembers`). Unknown when absent. */
+  permissions?: string[];
 }
 
 export interface GuildMember {

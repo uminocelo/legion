@@ -4,6 +4,15 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- Sentinel: deterministic turn-based combat (mulberry32 seed, fixed dice order, SHA-256 log hash, `replayCombat`), combat sessions from `combat.requested` in threads with round buttons, timeouts, abandonment, `raid_strike` and restart recovery; `/treino`, `/combate status | log`, `/sentinel replay`. Rules in `docs/COMBAT.md`.
+- DB-backed rate limiter for every bot with staff bypass, violations and `rate_limit` flags; XP anomaly and new-account flags.
+- Reports: `/denunciar`, the "Denunciar mensagem" context menu, grouping, a staff-only moderation queue (resolve, ignore, warn by DM, timeouts, history) with every action logged; `/sentinel denuncias | historico`.
+- Core: rate limiters can set per-interaction limits and a bypass (`RateLimiter.policyFor`).
+- ADRs 0020–0023.
+- `legion doctor` and startup check that each app's bot role has every permission its bots ask for in the invite link, and say how to fix it.
+- `/sentinel replay` and `/combate log` accept the short combat id (`#ABC123`) and autocomplete recent combats; timeouts explain a missing permission, an admin target or the role order before trying.
+
 ## [0.3.0] - 2026-11-17
 
 ### Added

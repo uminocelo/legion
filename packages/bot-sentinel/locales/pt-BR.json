@@ -1,0 +1,160 @@
+{
+  "sentinel": {
+    "errors": {
+      "not_participant": "Você não está neste combate.",
+      "round_over": "Esta rodada já acabou.",
+      "downed": "Você foi derrubado(a) e não pode agir.",
+      "power_cooldown": "Seu poder ainda está recarregando.",
+      "not_registered": "Registre seu mutante antes de treinar (canal de boas-vindas).",
+      "already_fighting": "Você já está em um combate: {thread}",
+      "training_cooldown": "O drone está recarregando. Tente de novo em {seconds}s.",
+      "combat_not_found": "Combate não encontrado (ou ainda em andamento).",
+      "not_staff": "Apenas a staff pode usar este comando.",
+      "report_self": "Você não pode denunciar a si mesmo(a).",
+      "report_bot": "Bots não podem ser denunciados.",
+      "report_unknown": "Não encontrei esse membro no servidor.",
+      "report_limit": "Você já enviou muitas denúncias. Tente de novo em {minutes} min.",
+      "report_not_found": "Denúncia não encontrada."
+    },
+    "combat": {
+      "thread_name": "⚔️ Combate #{id}",
+      "started": "⚔️ Combate iniciado! Participantes: {players}",
+      "round_title": "⚔️ Rodada {round}/{max}",
+      "choose": "Escolha sua ação ({seconds}s). Sem escolha, você ataca.",
+      "side_players": "Mutantes",
+      "side_enemies": "Inimigos",
+      "chosen": "Ação escolhida: **{action}**. Você pode trocar até a rodada terminar.",
+      "action": {
+        "attack": "Atacar",
+        "power": "Poder",
+        "defend": "Defender"
+      },
+      "result_win": "Vitória: {side}!",
+      "result_draw": "Empate!",
+      "result_abandoned": "Combate abandonado: ninguém agiu por várias rodadas.",
+      "final_title": "🏁 Fim do combate #{id}",
+      "rounds": "Rodadas",
+      "damage": "Dano (mutantes × inimigos)",
+      "full_log": "Ver log completo",
+      "log_title": "📜 Log do combate #{id} ({page}/{pages})",
+      "training_started": "🤖 Drone de Treino a caminho! O combate vai abrir num tópico.",
+      "no_active": "Você não está em nenhum combate agora.",
+      "status_title": "⚔️ Seu combate — rodada {round}/{max}",
+      "in_progress": "em andamento"
+    },
+    "log": {
+      "round": "— Rodada {round} —",
+      "defend": "🛡️ {actor} se defende.",
+      "miss": "💨 {actor} usa {action} em {target} e erra (d20={roll}).",
+      "hit": "⚔️ {actor} usa {action} em {target}: {damage} de dano (HP {hp}).",
+      "crit": "💥 {actor} usa {action} em {target}: CRÍTICO, {damage} de dano (HP {hp}).",
+      "end_wipe": "🏁 Vitória: {side}.",
+      "end_max_rounds": "⏱️ Limite de rodadas. Resultado: {side}.",
+      "end_abandoned": "🏳️ Combate abandonado ({side} vencem)."
+    },
+    "replay": {
+      "ok": "✅ Combate {id} confere: o replay gera o mesmo log (hash {computed}).",
+      "mismatch": "❌ Combate {id} NÃO confere: salvo {stored}, recalculado {computed}."
+    },
+    "help": {
+      "treino": "Luta de treino contra um drone.",
+      "combate": "Seu combate atual e logs de combates.",
+      "sentinel": "Ferramentas da staff do Sentinel.",
+      "denunciar": "Denunciar um membro ou uma mensagem para a staff."
+    },
+    "commands": {
+      "treino": "Luta de treino contra o Drone de Treino",
+      "combate": {
+        "description": "Combates",
+        "status": "Seu combate atual",
+        "log": "Log de um combate encerrado",
+        "id": "ID do combate"
+      },
+      "sentinel": {
+        "description": "Ferramentas da staff do Sentinel",
+        "replay": "Verificar se um combate se repete igual",
+        "denuncias": "Listar denúncias",
+        "status": "Situação (padrão: abertas)",
+        "historico": "Denúncias e ações de um membro"
+      },
+      "denunciar": {
+        "description": "Denunciar um membro para a staff",
+        "membro": "Membro",
+        "motivo": "Motivo",
+        "detalhes": "Detalhes (opcional)"
+      }
+    },
+    "flags": {
+      "rate_limit": "{n} bloqueios por excesso de uso em 10 minutos.",
+      "xp_anomaly": "{xp} XP na última hora (limite {limit}).",
+      "new_account": "Conta criada há {days} dia(s)."
+    },
+    "reasons": {
+      "spam": "Spam",
+      "rate_limit": "Excesso de uso",
+      "canon_name_attempts": "Nomes de personagens existentes",
+      "xp_anomaly": "XP fora do normal",
+      "new_account": "Conta nova",
+      "user_report": "Denúncia de membro",
+      "other": "Outro"
+    },
+    "severity": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta"
+    },
+    "motivos": {
+      "spam": "Spam",
+      "assedio": "Assédio ou ofensa",
+      "conteudo": "Conteúdo impróprio",
+      "trapaca": "Trapaça",
+      "outro": "Outro"
+    },
+    "mod": {
+      "queue_title": "🚨 {reason}",
+      "subject": "Membro",
+      "account_age": "Conta com {days} dia(s)",
+      "severity": "Gravidade",
+      "count": "Ocorrências",
+      "source": "Origem",
+      "details": "Detalhes",
+      "links": "Links",
+      "status": "Situação",
+      "status_open": "Aberta",
+      "status_resolved": "Resolvida",
+      "status_ignored": "Ignorada",
+      "last_action": "{action} por {staff}",
+      "btn": {
+        "resolve": "Resolver",
+        "ignore": "Ignorar",
+        "warn": "Aviso",
+        "timeout": "Timeout {time}",
+        "history": "Histórico"
+      },
+      "report_received": "Denúncia enviada para a staff. Obrigado!",
+      "modal_title": "Denunciar mensagem",
+      "modal_reason": "O que há de errado?",
+      "already_closed": "Esta denúncia já está {status}.",
+      "done": "Denúncia marcada como {status}.",
+      "warn_title": "⚠️ Aviso da staff",
+      "warn_dm": "A staff do servidor recebeu uma denúncia sobre você ({reason}). Revise as regras do servidor; novas ocorrências podem levar a um timeout.",
+      "warned": "Aviso enviado por DM.",
+      "warn_closed": "DM fechada: aviso registrado, mas não entregue.",
+      "timed_out": "Timeout de {time} aplicado.",
+      "timeout_failed": "O Discord recusou o timeout. Causas comuns: o membro é o dono do servidor, é administrador, tem um cargo acima do Sentinel, ou falta a permissão \"Moderar membros\".",
+      "history_title": "📋 Histórico de denúncias",
+      "history_empty": "Nenhuma denúncia.",
+      "list_title": "📋 Denúncias: {status} ({n})",
+      "list_empty": "Nada por aqui.",
+      "timeout_no_permission": "O cargo do Sentinel não tem a permissão \"Moderar membros\". Abra de novo o link de convite (legion invite-url) ou edite o cargo.",
+      "timeout_admin": "Não dá para aplicar timeout em administradores nem no dono do servidor.",
+      "timeout_hierarchy": "O cargo mais alto deste membro está acima (ou no mesmo nível) do cargo do Sentinel. Arraste o cargo do Sentinel para cima em Configurações do servidor → Cargos."
+    },
+    "modes": {
+      "training": "Treino",
+      "duel": "Duelo",
+      "party": "Grupo",
+      "raid_strike": "Raid"
+    }
+  }
+}

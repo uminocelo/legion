@@ -10,6 +10,7 @@ export default defineConfig({
       '@legion/bot-cerebro': src('./packages/bot-cerebro/src/index.ts'),
       '@legion/bot-jarvis': src('./packages/bot-jarvis/src/index.ts'),
       '@legion/bot-herbie': src('./packages/bot-herbie/src/index.ts'),
+      '@legion/bot-sentinel': src('./packages/bot-sentinel/src/index.ts'),
       '@legion/runner': fileURLToPath(new URL('./apps/runner/src/index.ts', import.meta.url)),
     },
   },
