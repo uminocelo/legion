@@ -477,9 +477,9 @@ export class CombatService {
 
   /** Paginated log of a finished combat (button or /combate log). */
   async logPage(combatId: string, page: number, l: Locale): Promise<OutgoingMessage | null> {
-    const combat = await this.repo.combat(combatId);
+    const combat = await this.repo.findCombat(combatId);
     if (!combat || combat.status === 'active') return null;
-    const names = new Map((await this.repo.combatants(combatId)).map((c) => [c.id, c.name]));
+    const names = new Map((await this.repo.combatants(combat.id)).map((c) => [c.id, c.name]));
     const lines = this.summaryLines(await this.fullLog(combat), names, l);
     const pages = Math.max(1, Math.ceil(lines.length / LOG_PAGE));
     const p = Math.min(Math.max(0, Number.isFinite(page) ? page : 0), pages - 1);
@@ -515,16 +515,41 @@ export class CombatService {
 
   // ---------- replay check ----------
 
-  async verify(combatId: string): Promise<{ ok: boolean; stored: string | null; computed: string } | null> {
-    const combat = await this.repo.combat(combatId);
+  async verify(
+    idOrShort: string,
+  ): Promise<{ id: string; ok: boolean; stored: string | null; computed: string } | null> {
+    const combat = await this.repo.findCombat(idOrShort);
     if (!combat) return null;
+    const combatId = combat.id;
     const cs = await this.repo.combatants(combatId);
     const rounds = await this.repo.rounds(combatId);
     const r = replayCombat(combat.seed, cs.map(startFighter), rounds.map(roundInput), this.opts(combat));
     const storedLog = rounds.flatMap((x) => JSON.parse(x.log) as LogEntry[]);
     const sameLog = JSON.stringify(storedLog) === JSON.stringify(r.log);
     const expected = combat.logHash ?? r.logHash; // active combat: compare the log only
-    return { ok: sameLog && expected === r.logHash, stored: combat.logHash, computed: r.logHash };
+    return {
+      id: combatId,
+      ok: sameLog && expected === r.logHash,
+      stored: combat.logHash,
+      computed: r.logHash,
+    };
+  }
+
+  /** Autocomplete for combat ids: recent combats, matching the short or full id. */
+  async autocomplete(i: IncomingInteraction, r: Responder, finishedOnly: boolean): Promise<void> {
+    const q = (i.focused?.value ?? '').trim().replace(/^#/, '').toUpperCase();
+    const rows = (await this.repo.recentCombats(50)).filter(
+      (c) => (!finishedOnly || c.status !== 'active') && (!q || c.id.toUpperCase().includes(q)),
+    );
+    await r.autocomplete(
+      rows.slice(0, 25).map((c) => ({
+        name: `#${c.id.slice(-6)} · ${this.t(`sentinel.modes.${c.mode}`)} · ${c.status === 'active' ? this.t('sentinel.combat.in_progress') : c.winnerSide ? this.t(`sentinel.combat.side_${c.winnerSide}`) : this.t('sentinel.combat.result_draw')} · ${c.createdAt.slice(0, 16).replace('T', ' ')}`.slice(
+          0,
+          100,
+        ),
+        value: c.id,
+      })),
+    );
   }
 
   // ---------- recovery ----------

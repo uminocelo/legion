@@ -326,3 +326,118 @@ describe('locales', () => {
     for (const k of Object.keys(pt)) expect([k, vars(en[k] ?? '')]).toEqual([k, vars(pt[k] ?? '')]);
   });
 });
+
+describe('timeout pre-checks', () => {
+  async function withReport(tc: TestContext, subjectRoles: string[]) {
+    await addMember(tc, '111');
+    await addMember(tc, '222');
+    const m = tc.gateway.members.get('222');
+    if (m) m.roleIds = subjectRoles;
+    await tc.interact({
+      kind: 'command',
+      userId: '111',
+      commandName: 'denunciar',
+      options: { membro: '222', motivo: 'spam' },
+    });
+    await tc.settle();
+    const [report] = await servicesOf(tc).safetyRepo.reports({ subject: '222' });
+    return (action: string) =>
+      tc.interact({
+        kind: 'component',
+        userId: '1',
+        isGuildOwner: true,
+        customId: `sentinel:v1:mod:${report?.id}:${action}`,
+      });
+  }
+  const setPerms = (tc: TestContext, id: string, permissions: string[], position?: number) => {
+    const r = tc.gateway.roles.get(id);
+    if (r) Object.assign(r, { permissions, ...(position === undefined ? {} : { position }) });
+  };
+
+  it('explains a missing permission, an admin target and the role order before calling Discord', async () => {
+    t = await setupSentinel();
+    const g = t.gateway;
+    setPerms(t, g.guildId, []);
+    setPerms(t, '900000000000000099', ['SendMessages']);
+    const admin = g.addRole({ name: 'Admin', position: 50, permissions: ['Administrator'] });
+    const high = g.addRole({ name: 'Alto', position: 150, permissions: [] });
+    const press = await withReport(t, [high.id]);
+    expect(g.lastReply(await press('t0'))?.content).toMatch(
+      /^O cargo do Sentinel não tem a permissão "Moderar membros"/,
+    );
+    setPerms(t, '900000000000000099', ['ModerateMembers']);
+    expect(g.lastReply(await press('t0'))?.content).toMatch(/^O cargo mais alto deste membro está acima/);
+    const m = g.members.get('222');
+    if (m) m.roleIds = [admin.id];
+    expect(g.lastReply(await press('t0'))?.content).toBe(
+      'Não dá para aplicar timeout em administradores nem no dono do servidor.',
+    );
+    if (m) m.roleIds = [];
+    expect(g.lastReply(await press('t0'))?.content).toBe('Timeout de 10 min aplicado.');
+    expect(g.callsOf('timeoutMember')).toHaveLength(1);
+  });
+});
+
+describe('finding combats and the registered commands', () => {
+  it('replay and log accept the short id people see; autocomplete lists recent combats', async () => {
+    t = await setupSentinel();
+    await addMember(t, '111');
+    await t.interact({ kind: 'command', userId: '111', commandName: 'treino' });
+    await t.settle();
+    const s = servicesOf(t);
+    const [c] = await s.repo.recentCombats();
+    const id = c?.id ?? '';
+    await s.combat.resolve(id, 1); // finish quickly: the drone only needs to exist; force rounds to the end
+    for (let n = 2; n <= 20 && (await s.repo.combat(id))?.status === 'active'; n++)
+      await s.combat.resolve(id, n);
+    const short = `#${id.slice(-6).toLowerCase()}`;
+    const rep = await t.interact({
+      kind: 'command',
+      userId: '1',
+      isGuildOwner: true,
+      commandName: 'sentinel',
+      subcommand: 'replay',
+      options: { combate: short },
+    });
+    expect(t.gateway.lastReply(rep)?.content).toMatch(new RegExp(`^✅ Combate #${id.slice(-6)} confere`));
+    const log = await t.interact({
+      kind: 'command',
+      userId: '111',
+      commandName: 'combate',
+      subcommand: 'log',
+      options: { id: id.slice(-6) },
+    });
+    expect(t.gateway.lastReply(log)?.embeds?.[0]?.title).toMatch(/^📜/);
+    const ac = await t.interact({
+      kind: 'autocomplete',
+      userId: '1',
+      isGuildOwner: true,
+      commandName: 'sentinel',
+      focused: { name: 'combate', value: id.slice(-4) },
+    });
+    const choices = t.gateway.callsOf('respondAutocomplete').find((x) => x[0] === ac)?.[1] as {
+      name: string;
+      value: string;
+    }[];
+    expect(choices[0]).toMatchObject({ value: id });
+    expect(choices[0]?.name).toMatch(new RegExp(`^#${id.slice(-6)} · Treino · `));
+  });
+
+  it('registers every subcommand Discord should show', async () => {
+    t = await setupSentinel();
+    const json = t.runtime.router.commandJson() as {
+      name: string;
+      type?: number;
+      options?: { name: string; type: number }[];
+    }[];
+    const sub = (n: string) =>
+      json
+        .find((c) => c.name === n)
+        ?.options?.filter((o) => o.type === 1)
+        .map((o) => o.name);
+    expect(sub('sentinel')).toEqual(['replay', 'denuncias', 'historico']);
+    expect(sub('combate')).toEqual(['status', 'log']);
+    expect(json.find((c) => c.name === 'Denunciar mensagem')?.type).toBe(3);
+    expect(json.map((c) => c.name)).toEqual(expect.arrayContaining(['treino', 'denunciar']));
+  });
+});

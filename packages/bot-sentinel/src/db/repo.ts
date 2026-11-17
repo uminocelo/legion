@@ -154,6 +154,33 @@ export class SentinelRepo {
     return rows.map((r) => r.combat);
   }
 
+  /**
+   * Finds a combat by its full id or by the short id people see (`#ABC123`, the last characters),
+   * ignoring case. A short id that matches several combats returns null.
+   */
+  async findCombat(idOrShort: string): Promise<CombatRow | null> {
+    const q = idOrShort.trim().replace(/^#/, '');
+    if (!q) return null;
+    const exact = await this.combat(q);
+    if (exact) return exact;
+    if (q.length < 4) return null;
+    const c = this.t.sentinelCombats;
+    const all = await this.db.orm.select().from(c).where(eq(c.guildId, this.guildId));
+    const hits = all.filter((x) => x.id.toUpperCase().endsWith(q.toUpperCase()));
+    return hits.length === 1 ? (hits[0] ?? null) : null;
+  }
+
+  /** Recent combats (newest first), for autocomplete. */
+  async recentCombats(limit = 25): Promise<CombatRow[]> {
+    const c = this.t.sentinelCombats;
+    return this.db.orm
+      .select()
+      .from(c)
+      .where(eq(c.guildId, this.guildId))
+      .orderBy(desc(c.createdAt))
+      .limit(limit);
+  }
+
   async combatsByIds(ids: string[]) {
     if (!ids.length) return [];
     const c = this.t.sentinelCombats;

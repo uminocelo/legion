@@ -19,7 +19,7 @@ import {
   systemClock,
 } from '@legion/core';
 import { loadConfigAndBots } from '@legion/runner';
-import { PermissionFlagsBits } from 'discord.js';
+import { PermissionFlagsBits, PermissionsBitField } from 'discord.js';
 import { count } from 'drizzle-orm';
 import { integer as pgInteger, pgTable } from 'drizzle-orm/pg-core';
 import { integer, sqliteTable } from 'drizzle-orm/sqlite-core';
@@ -255,6 +255,45 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
         rest = appRest;
         ({ botUserId, applicationId, inGuild } = res);
       }
+    }
+
+  // 3b. server-wide permissions of each app's bot role (what its bots ask for in the invite link)
+  if (env && config)
+    for (const app of appInfos) {
+      const suffix = several ? ` — app ${app.key} (${app.bots.join(', ')})` : '';
+      if (!app.botUserId || !app.inGuild) {
+        skip(`perms:${app.key}`, `${t('check.perms')}${suffix}`);
+        continue;
+      }
+      const [member, roles] = await Promise.all([
+        app.rest.guildMember(env.DISCORD_GUILD_ID, app.botUserId),
+        app.rest.guildRoles(env.DISCORD_GUILD_ID),
+      ]);
+      const needed = bots
+        .filter((b) => app.bots.includes(b.id))
+        .reduce((acc, b) => b.permissions.reduce((x, p) => x | p, acc), 0n);
+      const byId = new Map(roles.map((r) => [r.id, r]));
+      let have = BigInt(byId.get(env.DISCORD_GUILD_ID)?.permissions ?? '0');
+      for (const id of member?.roles ?? []) have |= BigInt(byId.get(id)?.permissions ?? '0');
+      const missing =
+        have & PermissionFlagsBits.Administrator ? [] : new PermissionsBitField(needed & ~have).toArray();
+      const count = new PermissionsBitField(needed).toArray().length;
+      add(
+        missing.length
+          ? {
+              id: `perms:${app.key}`,
+              title: `${t('check.perms')}${suffix}`,
+              status: 'fail',
+              message: t('check.perms.missing', { perms: missing.join(', ') }),
+              fix: t('check.perms.fix'),
+            }
+          : {
+              id: `perms:${app.key}`,
+              title: `${t('check.perms')}${suffix}`,
+              status: 'ok',
+              message: t('check.perms.ok', { count, bots: app.bots.join(', ') }),
+            },
+      );
     }
 
   // 4. channels: config.channels with the main app, plus each bot's own channels with the app hosting it
