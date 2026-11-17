@@ -152,7 +152,7 @@ describe('consumers', () => {
     });
   });
 
-  it('xp.grant_requested writes one ledger entry per (sourceEventId, reason) and ignores unknown members', async () => {
+  it('xp.grant_requested writes one ledger entry per (sourceEventId, reason, member) and ignores unknown members', async () => {
     t = await setupJarvis();
     const m = await addMember(t, '111');
     const bus = t.runtime.bus.forSource('herbie');
@@ -160,10 +160,15 @@ describe('consumers', () => {
     await bus.transaction((tx) => bus.emit(tx, 'xp.grant_requested', grant));
     await bus.transaction((tx) => bus.emit(tx, 'xp.grant_requested', grant));
     await bus.transaction((tx) => bus.emit(tx, 'xp.grant_requested', { ...grant, memberId: 'ghost' }));
+    const other = await addMember(t, '222');
+    await bus.transaction((tx) => bus.emit(tx, 'xp.grant_requested', { ...grant, memberId: other }));
     await t.runtime.bus.drain();
+    expect((await servicesOf(t).repo.ledgerFor(other)).map((l) => l.sourceKey)).toContain(
+      `grant:ev1:tutorial:${other}`,
+    );
     const ledger = await servicesOf(t).repo.ledgerFor(m);
     expect(ledger.map((l) => [l.reason, l.note, l.sourceKey])).toEqual([
-      ['grant', 'tutorial', 'grant:ev1:tutorial'],
+      ['grant', 'tutorial', `grant:ev1:tutorial:${m}`],
       ['streak_bonus', null, `streak:${m}:2026-11-16`],
     ]);
     const { coreTables } = await import('@legion/core');
@@ -171,7 +176,7 @@ describe('consumers', () => {
     const statuses = (await t.db.orm.select().from(c))
       .filter((r) => r.consumerId === 'jarvis.xp-grant')
       .map((r) => r.status);
-    expect(statuses).toEqual(['done', 'done', 'done']); // unknown member: done, not retried forever
+    expect(statuses).toEqual(['done', 'done', 'done', 'done']); // unknown member: done, not retried forever
   });
 
   it('provides the progress read model to other bots, with a lazily lapsed streak', async () => {
