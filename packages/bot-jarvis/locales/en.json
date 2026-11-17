@@ -12,8 +12,16 @@
     },
     "trivia": {
       "title": "🧠 {category} trivia",
-      "difficulty": { "facil": "Easy", "normal": "Normal", "dificil": "Hard" },
-      "category": { "quadrinhos": "Comics", "rivals": "Marvel Rivals", "geral": "General" },
+      "difficulty": {
+        "facil": "Easy",
+        "normal": "Normal",
+        "dificil": "Hard"
+      },
+      "category": {
+        "quadrinhos": "Comics",
+        "rivals": "Marvel Rivals",
+        "geral": "General"
+      },
       "meta": "Difficulty: {difficulty} · Answer within {seconds}s",
       "correct": "✅ Correct!",
       "wrong": "❌ Wrong.",
@@ -31,7 +39,11 @@
     "ranking": {
       "title": "🏆 Leaderboard — {period}",
       "title_faction": "🏆 Leaderboard — {period} · {faction}",
-      "period": { "semana": "this week", "mes": "this month", "total": "all time" },
+      "period": {
+        "semana": "this week",
+        "mes": "this month",
+        "total": "all time"
+      },
       "line": "**{pos}.** {emoji} {codename} — {xp} XP · level {level}",
       "you": "You: **#{pos}** with {xp} XP",
       "you_none": "You have no XP in this period yet.",
@@ -70,16 +82,22 @@
     "help": {
       "trivia": "Answer a quick question and earn XP.",
       "ranking": "See who earned the most XP this week, this month or all time.",
-      "sequencia": "See your active-day streak and tomorrow's bonus."
+      "sequencia": "See your active-day streak and tomorrow's bonus.",
+      "missao": "Missions with choices (and fights), solo or in a party"
     },
     "commands": {
-      "trivia": { "description": "Answer a question and earn XP", "categoria": "Question category" },
+      "trivia": {
+        "description": "Answer a question and earn XP",
+        "categoria": "Question category"
+      },
       "ranking": {
         "description": "XP leaderboard",
         "periodo": "Period (default: week)",
         "faccao": "Filter by faction"
       },
-      "sequencia": { "description": "Your active-day streak" },
+      "sequencia": {
+        "description": "Your active-day streak"
+      },
       "jarvis": {
         "description": "J.A.R.V.I.S. staff tools",
         "xp": "Add or remove XP from a member",
@@ -90,6 +108,50 @@
         "recarregar": "Reload questions from the files",
         "estatisticas": "Question statistics",
         "recalcular": "Rebuild a member's progress from the ledger"
+      },
+      "missao": {
+        "description": "Missions: short stories with choices, solo or in a party",
+        "lista": "Shows the missions and what you can play now",
+        "iniciar": "Starts a mission",
+        "missao": "The mission",
+        "abandonar": "Abandons your current mission (no XP)"
+      }
+    },
+    "missions": {
+      "disabled": "Missions are turned off on this server.",
+      "none": "No missions are available right now. Tell the staff.",
+      "unknown": "I could not find that mission. Use /mission list.",
+      "list_title": "🗺️ Missions",
+      "meta": "`{id}` · Level {level}+ · Up to {party} player(s) · {difficulty}",
+      "kind": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "story": "Story"
+      },
+      "blocked": {
+        "level": "Needs level {level}",
+        "daily_limit": "You already did your daily mission today",
+        "weekly_limit": "You already did your weekly mission this week",
+        "story_done": "You already played this story",
+        "combat_unavailable": "Fights unavailable (ULTRON or Sentinel is off)"
+      },
+      "already_open": "You already have a mission in progress: {thread}. Finish it or use /mission abandon.",
+      "started": "Mission started in {thread}. Good luck, agent.",
+      "no_open": "You have no mission in progress.",
+      "abandoned_reply": "Mission abandoned.",
+      "abandoned_text": "⌛ The mission was abandoned.",
+      "not_yours": "This mission belongs to another team.",
+      "stale": "This choice has already passed.",
+      "already_chose": "You already chose in this scene.",
+      "vote_recorded": "Vote recorded. Waiting for the rest of the team.",
+      "thread_name": "Mission: {title} #{id}",
+      "chosen": "Choice made.",
+      "timed_out": "Time is up.",
+      "choose_within": "Choose within {minutes} min.",
+      "result": {
+        "success": "✅ Mission accomplished! +{xp} XP",
+        "failure": "❌ Mission failed. +{xp} XP for trying",
+        "abandoned": "⌛ Mission abandoned. No XP."
       }
     }
   }

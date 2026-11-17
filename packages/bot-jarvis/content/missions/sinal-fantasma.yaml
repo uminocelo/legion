@@ -1,0 +1,58 @@
+# Weekly text mission, up to 4 players.
+id: sinal-fantasma
+kind: weekly
+title:
+  pt-BR: Sinal fantasma
+  en: Ghost signal
+summary:
+  pt-BR: Uma estação de rádio abandonada voltou a transmitir uma voz que ninguém reconhece.
+  en: An abandoned radio station started broadcasting a voice nobody recognizes.
+minLevel: 2
+party: 4
+difficulty: normal
+start: estacao
+scenes:
+  estacao:
+    text:
+      pt-BR: A estação fica no alto da serra. A porta está trancada por dentro, e a voz repete números em loop.
+      en: The station sits high in the hills. The door is locked from the inside, and the voice repeats numbers in a loop.
+    choices:
+      - label: { pt-BR: Forçar a porta, en: Force the door }
+        next: sala
+      - label: { pt-BR: Anotar os números, en: Write down the numbers }
+        next: numeros
+  numeros:
+    text:
+      pt-BR: Os números são coordenadas, e mudam a cada minuto. Elas apontam sempre para algum lugar mais perto de vocês.
+      en: The numbers are coordinates, and they change every minute. They always point somewhere closer to you.
+    choices:
+      - label: { pt-BR: Seguir as coordenadas, en: Follow the coordinates }
+        next: encontro
+      - label: { pt-BR: Entrar na estação, en: Go into the station }
+        next: sala
+      - label: { pt-BR: Recuar e chamar reforços, en: Fall back and call for backup }
+        next: recuo
+  sala:
+    text:
+      pt-BR: A sala está vazia. Só um gravador antigo, ligado a um cristal que brilha no ritmo da voz.
+      en: The room is empty. Just an old recorder, wired to a crystal that glows in time with the voice.
+    choices:
+      - label: { pt-BR: Quebrar o cristal, en: Break the crystal }
+        next: estilhacos
+      - label: { pt-BR: Levar o cristal intacto, en: Take the crystal intact }
+        next: encontro
+  encontro:
+    text:
+      pt-BR: As coordenadas e o cristal levam ao mesmo ponto, uma clareira onde um mutante telepata está preso num eco da própria mente. Ele agradece em silêncio quando o sinal se cala.
+      en: The coordinates and the crystal lead to the same spot, a clearing where a telepathic mutant is trapped in an echo of his own mind. He thanks you silently as the signal goes quiet.
+    end: success
+  estilhacos:
+    text:
+      pt-BR: O cristal se parte e a voz grita uma última vez. Seja quem for, agora ninguém vai encontrá-lo.
+      en: The crystal shatters and the voice screams one last time. Whoever it was, nobody will find them now.
+    end: failure
+  recuo:
+    text:
+      pt-BR: Quando os reforços chegam, a estação está em silêncio. O sinal sumiu, e a pista também.
+      en: By the time backup arrives, the station is silent. The signal is gone, and so is the lead.
+    end: failure

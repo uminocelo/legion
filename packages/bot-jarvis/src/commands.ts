@@ -91,6 +91,50 @@ export function jarvisCommands(
       },
     },
     {
+      name: 'missao',
+      json: {
+        name: 'missao',
+        name_localizations: { 'en-US': 'mission' },
+        ...desc(i18n, 'jarvis.commands.missao.description'),
+        options: [
+          {
+            type: 1,
+            name: 'lista',
+            name_localizations: { 'en-US': 'list' },
+            ...desc(i18n, 'jarvis.commands.missao.lista'),
+          },
+          {
+            type: 1,
+            name: 'iniciar',
+            name_localizations: { 'en-US': 'start' },
+            ...desc(i18n, 'jarvis.commands.missao.iniciar'),
+            options: [
+              {
+                type: 3,
+                name: 'missao',
+                name_localizations: { 'en-US': 'mission' },
+                required: true,
+                autocomplete: true,
+                ...desc(i18n, 'jarvis.commands.missao.missao'),
+              },
+            ],
+          },
+          {
+            type: 1,
+            name: 'abandonar',
+            name_localizations: { 'en-US': 'abandon' },
+            ...desc(i18n, 'jarvis.commands.missao.abandonar'),
+          },
+        ],
+      },
+      execute: (i, r) => {
+        if (i.subcommand === 'iniciar') return s.missions.start(i, r, String(i.options?.missao ?? ''));
+        if (i.subcommand === 'abandonar') return s.missions.abandon(i, r);
+        return s.missions.list(i, r);
+      },
+      autocomplete: (i, r) => s.missions.autocomplete(i, r),
+    },
+    {
       name: 'jarvis',
       json: {
         name: 'jarvis',
