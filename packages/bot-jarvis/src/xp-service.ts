@@ -2,7 +2,7 @@ import type { BotContext, Executor, Rank } from '@legion/core';
 import { localDay } from '@legion/core';
 import type { JarvisConfig } from './config.js';
 import type { JarvisRepo, ProgressRow } from './db/repo.js';
-import { advanceStreak, countsForStreak, levelFor, rankFor, type XpReason } from './domain/xp.js';
+import { advanceStreak, isActiveEntry, levelFor, rankFor, type XpReason } from './domain/xp.js';
 
 export interface AwardInput {
   memberId: string;
@@ -68,7 +68,7 @@ export class XpService {
     }
 
     let streakBonus = 0;
-    if (countsForStreak(i.reason) && i.amount > 0) {
+    if (isActiveEntry(i.reason, i.amount)) {
       const next = advanceStreak(row, day, this.ctx.botConfig.streak);
       if (next) {
         await this.repo.updateProgress(i.memberId, next.state, tx);
@@ -171,7 +171,7 @@ export function rebuildFromLedger(
   let triviaXpToday = 0;
   for (const r of rows) {
     xp += r.amount;
-    if (r.amount > 0 && countsForStreak(r.reason as XpReason)) {
+    if (isActiveEntry(r.reason as XpReason, r.amount)) {
       const next = advanceStreak(streak, r.day, cfg.streak);
       if (next) streak = next.state;
     }

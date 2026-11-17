@@ -1,5 +1,5 @@
 {
-  "id": "4c57db4c-0262-461c-8ab2-4dbdfa123a3d",
+  "id": "234fb3dc-aa66-4bda-b134-b45cec499984",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -440,6 +440,27 @@
           "columns": [
             {
               "expression": "member_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "jarvis_xp_ledger_guild_day_idx": {
+          "name": "jarvis_xp_ledger_guild_day_idx",
+          "columns": [
+            {
+              "expression": "guild_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "day",
               "isExpression": false,
               "asc": true,
               "nulls": "last"

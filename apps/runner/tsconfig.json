@@ -12,6 +12,9 @@
     },
     {
       "path": "../../packages/bot-cerebro"
+    },
+    {
+      "path": "../../packages/bot-jarvis"
     }
   ]
 }

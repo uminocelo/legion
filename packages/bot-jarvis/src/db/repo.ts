@@ -93,11 +93,11 @@ export class JarvisRepo {
     return ex.select().from(l).where(eq(l.memberId, memberId)).orderBy(l.createdAt, l.id);
   }
 
-  /** XP per member since `fromIso` (all time when null), highest first. */
-  async xpTotals(fromIso: string | null, memberIds?: string[]): Promise<{ memberId: string; xp: number }[]> {
+  /** XP per member from local day `fromDay` on (all time when null), highest first. */
+  async xpTotals(fromDay: string | null, memberIds?: string[]): Promise<{ memberId: string; xp: number }[]> {
     const l = this.t.jarvisXpLedger;
     const conds = [eq(l.guildId, this.guildId)];
-    if (fromIso) conds.push(gte(l.createdAt, fromIso));
+    if (fromDay) conds.push(gte(l.day, fromDay));
     if (memberIds) conds.push(inArray(l.memberId, memberIds.length ? memberIds : ['']));
     const total = sum(l.amount);
     const rows = await this.db.orm

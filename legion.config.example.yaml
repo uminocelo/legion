@@ -42,3 +42,24 @@ cerebro:
   setup:
     # Canais que o "/cerebro setup canais:true" nunca deve tocar
     excludeChannelIds: []
+
+# J.A.R.V.I.S.: trivia, XP, níveis, ranks e sequências. Ligue com bots: [cerebro, jarvis].
+jarvis:
+  trivia:
+    categories: [quadrinhos, rivals, geral] # pacotes extras: ./data/content/trivia/*.yaml
+    timeLimitSeconds: 20 # tempo para responder
+    cooldownSeconds: 30 # espera entre perguntas
+    noRepeatDays: 30 # não repete pergunta vista nesse período
+    dailyXpCap: 300 # XP máximo de trivia por dia (acertos acima disso ainda contam para a sequência)
+    baseXp: { facil: 10, normal: 15, dificil: 25 }
+    speedBonusMax: 5 # bônus por responder rápido
+  levels:
+    levelFactor: 50 # XP do nível n = levelFactor × (n-1)²
+    maxLevel: 50
+  ranks: { recruta: 0, agente: 500, veterano: 2000 } # XP mínimo de cada rank (cargos do Cérebro)
+  streak:
+    bonusPerDay: 5 # bônus = bonusPerDay × dias seguidos
+    bonusCap: 7 # até no máximo 7 dias
+  leaderboard:
+    size: 10
+    channelCooldownSeconds: 15

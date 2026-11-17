@@ -13,12 +13,36 @@ export async function setupJarvis(
 export const servicesOf = (t: TestContext) => jarvisServices(t.ctxOf(jarvis));
 
 /** A registered member row in Cérebro's table (what onboarding would create). */
-export async function addMember(t: TestContext, discordUserId: string, faction = 'xmen') {
+export async function addMember(t: TestContext, discordUserId: string, faction = 'xmen', codename?: string) {
   t.gateway.members.get(discordUserId) ?? t.gateway.addMember({ userId: discordUserId });
   const repo = new CerebroRepo(t.db, t.gateway.guildId, t.clock, t.runtime.newId);
   const { row } = await repo.ensureMember(discordUserId);
   await repo.updateMember(row.id, { onboardingStep: 'registered', faction });
+  if (codename)
+    await repo.insertMutant({
+      memberId: row.id,
+      codename,
+      codenameNormalized: codename.toLowerCase(),
+      power: 'p',
+      archetype: 'Elemental',
+      origin: 'o',
+    });
   return row.id;
+}
+
+/** The display index of the right (or a wrong) answer in an open question message. */
+export async function answerIndex(t: TestContext, interactionId: string, right: boolean) {
+  const { servicesOf: so } = await import('./helpers.js');
+  const reply = t.gateway.lastReply(interactionId);
+  const btn = reply?.components?.[0]?.[0];
+  const cid = btn && 'customId' in btn ? (btn.customId ?? '') : '';
+  const attemptId = cid.split(':')[3] ?? '';
+  const s = so(t);
+  const attempt = await s.repo.attempt(attemptId);
+  const q = attempt ? await s.repo.question(attempt.questionId) : null;
+  const order = JSON.parse(attempt?.choiceOrder ?? '[]') as number[];
+  const display = order.findIndex((o) => (right ? o === q?.answerIndex : o !== q?.answerIndex));
+  return { attemptId, display, customId: `jarvis:v1:trivia:${attemptId}:${display}`, question: q };
 }
 
 export async function events(t: TestContext, type: EventType) {

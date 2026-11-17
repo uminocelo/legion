@@ -58,6 +58,13 @@ export interface StreakState {
 export const countsForStreak = (reason: XpReason) => reason !== 'streak_bonus' && reason !== 'admin_adjust';
 
 /**
+ * A ledger entry makes its day active when it earned XP for a counting reason. A correct trivia
+ * answer above the daily cap is written with amount 0 and still counts (spec: "still count for streaks").
+ */
+export const isActiveEntry = (reason: XpReason, amount: number) =>
+  countsForStreak(reason) && (amount > 0 || (reason === 'trivia' && amount === 0));
+
+/**
  * Applies an active day. Returns null when the day was already counted (or is older than the last
  * active day), otherwise the new state and the bonus for that day.
  */

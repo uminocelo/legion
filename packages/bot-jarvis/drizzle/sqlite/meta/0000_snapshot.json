@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "dd2f7d22-c26a-4d00-bbab-6383fd921b6a",
+  "id": "d4f092fe-c14f-4dff-b46d-25bb5060a83a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "jarvis_progress": {
@@ -409,6 +409,14 @@
           "name": "jarvis_xp_ledger_member_idx",
           "columns": [
             "member_id"
+          ],
+          "isUnique": false
+        },
+        "jarvis_xp_ledger_guild_day_idx": {
+          "name": "jarvis_xp_ledger_guild_day_idx",
+          "columns": [
+            "guild_id",
+            "day"
           ],
           "isUnique": false
         }
