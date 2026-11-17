@@ -84,6 +84,21 @@ Detalhes:
 - Backup: pare com `docker compose stop` e copie a pasta `data/`
 - Parar: `docker compose down` (os dados em `data/` ficam)
 
+## IA opcional (Ollama)
+
+O ULTRON pode escrever provocações e anúncios com IA. Os números do jogo nunca vêm da IA. Desligado por padrão.
+
+1. No `docker-compose.yml`, o serviço `ollama` só sobe com o perfil `ai`:
+   ```bash
+   docker compose --profile ai up -d
+   docker compose exec ollama ollama pull llama3.2
+   ```
+2. No `.env`: `AI_BASE_URL=http://ollama:11434/v1` e `AI_MODEL=llama3.2`. Para uma API paga compatível com OpenAI, use o endereço dela e `AI_API_KEY`.
+3. No `legion.config.yaml`: `ultron.ai.provider: openai-compatible`.
+4. `legion doctor` faz uma chamada de teste (só aviso se falhar).
+
+Limites: `ultron.ai.timeoutMs` (4000) e `ultron.ai.maxCallsPerHour` (30). Ao passar disso, ou em qualquer erro, o bot usa as frases fixas. Só a duração e o sucesso de cada chamada ficam salvos; o texto, não.
+
 ## Postgres (opcional)
 
 SQLite é suficiente para um servidor. Para usar Postgres, ponha `DATABASE_URL=postgres://legion:legion@postgres:5432/legion` no `.env` e suba com `docker compose --profile postgres up -d`.

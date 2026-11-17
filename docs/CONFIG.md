@@ -152,3 +152,31 @@ Textos dos passos (`herbie.quest.*`) podem ser trocados pela pasta `./locales` (
 
 Regras do combate: [COMBAT.md](COMBAT.md).
 
+## `ultron`
+
+Precisa do `sentinel` em `bots:` e de `channels.events` quando invasões ou raids agendadas estão ligadas.
+
+| Chave | Padrão | Descrição |
+|---|---|---|
+| `combat.maxRounds` | `20` | Rodadas máximas das lutas de missão |
+| `scaling.growth` | `0.10` | Crescimento dos atributos por nível |
+| `scaling.difficultyMultiplier` | `{ facil: 0.8, normal: 1.0, dificil: 1.25 }` | Multiplicador por dificuldade |
+| `adaptive.enabled` | `false` | Dificuldade adaptativa |
+| `adaptive.windowCombats` / `minSample` | `50` / `10` | Combates considerados / mínimo para ajustar |
+| `adaptive.target` / `maxAdjust` | `0.65` / `0.15` | Taxa de vitória alvo / ajuste máximo |
+| `events.pingRoleKey` | `null` | Cargo (chave em `roles`) marcado no anúncio. Deixe o cargo mencionável no Discord. Nunca @everyone |
+| `events.announceMinutesBefore` | `60` | Anúncio antes do início |
+| `events.strikeCooldownMinutes` | `10` | Espera entre ataques (o dobro para quem cai) |
+| `events.hpPerParticipant` / `expectedParticipants` | `300` / `8` | HP compartilhado = um × outro × dificuldade |
+| `events.difficulty` | `normal` | Dificuldade dos eventos |
+| `events.bossLevel` | `auto` | Nível do chefe (`auto` = mediana do último evento, ou 5) |
+| `events.rewards` | `{ victoryXp: 50, bonusXpMax: 50, participationXp: 15 }` | XP dos participantes |
+| `invasion.enabled` / `cron` | `true` / `"0 20 * * 6"` | Invasão semanal, no fuso do servidor |
+| `invasion.durationMinutes` / `templateId` | `60` / `enxame-de-nanites` | Duração / inimigo |
+| `raids.cron` | `null` | Raids automáticas (`null` = só pela staff) |
+| `raids.durationMinutes` / `templateIds` | `45` / `[bastiao-prime]` | Duração / chefes possíveis |
+| `ai.provider` | `none` | `none` ou `openai-compatible` (veja SELF_HOSTING.md) |
+| `ai.timeoutMs` / `maxCallsPerHour` | `4000` / `30` | Limites da IA |
+
+Inimigos e eventos: [WORLD_EVENTS.md](WORLD_EVENTS.md).
+

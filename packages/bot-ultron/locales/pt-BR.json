@@ -3,7 +3,18 @@
     "errors": {
       "not_staff": "Apenas a staff pode usar este comando.",
       "not_registered": "{user} ainda não registrou um mutante.",
-      "generic": "Não consegui criar o encontro. Tente de novo."
+      "generic": "Não consegui criar o encontro. Tente de novo.",
+      "bad_when": "Não entendi a data. Use AAAA-MM-DD HH:mm (horário do servidor) ou algo como +30m, +2h.",
+      "event_not_found": "Evento não encontrado.",
+      "event_not_started": "O evento ainda não começou ({at}).",
+      "event_over": "O evento já terminou.",
+      "no_events_channel": "Defina channels.events em legion.config.yaml antes de criar eventos.",
+      "register_first": "Registre seu mutante antes de lutar (canal de boas-vindas).",
+      "strike_cooldown": "Você ainda está se recuperando. Ataque de novo em {time}.",
+      "schedule_overlap": "Já existe um evento desse tipo nesse horário.",
+      "schedule_past": "Esse horário já passou.",
+      "schedule_no_template": "Não achei o inimigo do evento; confira ultron.invasion.templateId / ultron.raids.templateIds.",
+      "schedule_exists": "Esse evento já está agendado."
     },
     "difficulty": {
       "facil": "Fácil",
@@ -15,14 +26,23 @@
         "description": "Comandos do ULTRON para a staff",
         "spawn": "Encontro de teste: inimigos escalados para até 4 membros",
         "dificuldade": "Dificuldade do encontro",
-        "membro": "Membro que luta (padrão: você)"
-      }
+        "membro": "Membro que luta (padrão: você)",
+        "evento": "Eventos mundiais",
+        "agendar": "Agendar uma invasão ou raid",
+        "iniciar": "Começar uma invasão ou raid agora (ainda anuncia)",
+        "cancelar": "Cancelar o evento agendado ou em andamento",
+        "tipo": "Tipo de evento",
+        "quando": "AAAA-MM-DD HH:mm (horário do servidor) ou +30m",
+        "status": "Próximos eventos, resultados, dificuldade adaptativa e IA"
+      },
+      "ameaca": "Evento mundial atual ou próximo: HP, tempo e seu dano"
     },
     "spawn": {
       "sent": "🤖 {count} inimigo(s) enviados para {channel}: {enemies}"
     },
     "help": {
-      "ultron": "Staff: encontros de teste, eventos mundiais e status do ULTRON."
+      "ultron": "Staff: encontros de teste, eventos mundiais e status do ULTRON.",
+      "ameaca": "Mostra a invasão ou raid atual (ou a próxima), o HP e o seu dano."
     },
     "taunt": {
       "generic": {
@@ -50,12 +70,12 @@
       "omega": {
         "1": "🤖 Unidade Ômega: Protocolo final ativado."
       },
+      "nucleo": {
+        "1": "🤖 Núcleo Carmesim: Minha energia não tem fim. A de vocês tem."
+      },
       "bastiao": {
         "1": "🤖 Bastião Prime: O chão treme quando eu chego.",
         "2": "🤖 Bastião Prime: Juntem todos. Não fará diferença."
-      },
-      "nucleo": {
-        "1": "🤖 Núcleo Carmesim: Minha energia não tem fim. A de vocês tem."
       }
     },
     "flavor": {
@@ -71,6 +91,71 @@
         "1": "🤖 ULTRON: Exatamente como eu calculei.",
         "2": "🤖 ULTRON: A resistência de vocês foi... insuficiente."
       }
+    },
+    "kinds": {
+      "invasion": "Invasão",
+      "raid": "Raid"
+    },
+    "events": {
+      "title_invasion": "Invasão: {name}",
+      "title_raid": "Raid: {name}",
+      "announce_invasion": "Todas as facções lutam juntas. Clique em **Atacar** quando a invasão começar.",
+      "announce_raid": "Um chefe vai aparecer. Quem quiser lutar, clique em **Atacar** quando a raid começar.",
+      "active_invasion": "O enxame está aqui! Cada ataque é um combate rápido contra o HP compartilhado. Depois de atacar, espere {cooldown} min.",
+      "active_raid": "O chefe chegou! Cada ataque é um combate rápido contra o HP compartilhado. Depois de atacar, espere {cooldown} min.",
+      "starts": "Começa",
+      "duration": "Duração",
+      "minutes": "{n} min",
+      "hp": "HP",
+      "ends": "Termina",
+      "result": "Resultado",
+      "participants": "Participantes",
+      "outcome_victory": "Vitória",
+      "outcome_defeat": "Derrota",
+      "outcome_cancelled": "Cancelado",
+      "strike_button": "Atacar",
+      "strike_sent": "Ataque enviado! O resultado aparece no HP do evento. Próximo ataque em {minutes} min.",
+      "total_damage": "Dano total",
+      "top": "Maiores danos",
+      "by_faction": "Dano por facção",
+      "xp": "XP",
+      "xp_victory": "Vitória: {base} XP para cada participante + até {bonus} de bônus por dano.",
+      "xp_defeat": "Derrota: {xp} XP por participar.",
+      "cancelled_note": "Este evento foi cancelado pela staff.",
+      "cancelled": "Evento cancelado: {title}.",
+      "nothing_to_cancel": "Não há evento agendado ou em andamento.",
+      "scheduled": "Agendado para {at}. O anúncio sai {announce}.",
+      "started_now": "Evento iniciado em {channel}."
+    },
+    "threat": {
+      "none": "Nenhuma ameaça no radar. Por enquanto.",
+      "status_scheduled": "Agendado: começa {at}.",
+      "status_announced": "Anunciado: começa {at}.",
+      "status_active": "Em andamento: termina {ends}.",
+      "your_damage": "Seu dano: {damage} em {strikes} ataque(s).",
+      "cooldown": "Próximo ataque {at}.",
+      "ready": "Você pode atacar agora.",
+      "go": "Ir para o evento"
+    },
+    "status": {
+      "title": "🤖 ULTRON · status",
+      "next": "Próximos eventos",
+      "last": "Últimos resultados",
+      "encounters": "Últimos encontros",
+      "adaptive": "Dificuldade adaptativa",
+      "adaptive_off": "desligada",
+      "adaptive_on": "×{m} ({n} combates; mínimo {min})",
+      "ai": "Texto de IA",
+      "ai_none": "desligado (frases fixas)",
+      "ai_on": "{ok}/{calls} chamadas ok na última hora (máx. {max})",
+      "level": "nível {n}",
+      "in_progress": "em andamento",
+      "outcome_players": "jogadores venceram",
+      "outcome_enemies": "inimigos venceram",
+      "outcome_draw": "empate",
+      "state_scheduled": "agendado",
+      "state_announced": "anunciado",
+      "state_active": "em andamento"
     }
   }
 }
