@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@legion/core': src('./packages/core/src/index.ts'),
       '@legion/bot-cerebro': src('./packages/bot-cerebro/src/index.ts'),
+      '@legion/bot-jarvis': src('./packages/bot-jarvis/src/index.ts'),
       '@legion/runner': fileURLToPath(new URL('./apps/runner/src/index.ts', import.meta.url)),
     },
   },
