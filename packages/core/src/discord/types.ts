@@ -59,6 +59,12 @@ export interface OutgoingMessage {
   ephemeral?: boolean;
   /** Defaults to no pings at all; mention only the addressed member. */
   allowedMentions?: AllowedMentions;
+  /** Attached files (e.g. a YAML export or a rendered card). */
+  files?: OutgoingFile[];
+}
+export interface OutgoingFile {
+  name: string;
+  content: string | Uint8Array;
 }
 
 export interface ModalTextInput {

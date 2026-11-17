@@ -57,6 +57,15 @@ export function toDiscordPayload(msg: OutgoingMessage) {
     embeds: msg.embeds ?? [],
     components: toApiRows(msg.components) ?? [],
     allowedMentions: msg.allowedMentions ?? { parse: [] },
+    ...(msg.files?.length
+      ? {
+          files: msg.files.map((f) => ({
+            attachment:
+              typeof f.content === 'string' ? Buffer.from(f.content, 'utf8') : Buffer.from(f.content),
+            name: f.name,
+          })),
+        }
+      : {}),
     ...(msg.ephemeral ? { flags: MessageFlags.Ephemeral } : {}),
     // biome-ignore lint/suspicious/noExplicitAny: raw API JSON accepted by discord.js
   } as any;

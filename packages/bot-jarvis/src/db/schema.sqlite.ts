@@ -56,6 +56,12 @@ export const jarvisTriviaQuestions = table(
     contentHash: text('content_hash').notNull(),
     active: integer('active').notNull().default(1),
     updatedAt: text('updated_at').notNull(),
+    // file (content packs) | staff (created in Discord)
+    origin: text('origin').notNull().default('file'),
+    // Staff questions: pending | approved | rejected. Any question: disabled (kept out by staff, even on reload).
+    review: text('review'),
+    createdBy: text('created_by'),
+    reviewedBy: text('reviewed_by'),
   },
   (t) => [index('jarvis_trivia_questions_pick_idx').on(t.locale, t.category, t.active)],
 );
@@ -149,4 +155,18 @@ export const jarvisMissionChoices = table(
     createdAt: text('created_at').notNull(),
   },
   (t) => [primaryKey({ columns: [t.runId, t.sceneId, t.memberId] })],
+);
+
+/** Staff changes to trivia questions (create, edit, approve, reject, disable, enable). */
+export const jarvisTriviaEdits = table(
+  'jarvis_trivia_edits',
+  {
+    id: text('id').primaryKey(),
+    questionId: text('question_id').notNull(),
+    staffId: text('staff_id').notNull(),
+    action: text('action').notNull(),
+    before: text('before'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('jarvis_trivia_edits_question_idx').on(t.questionId, t.createdAt)],
 );
