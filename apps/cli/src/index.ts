@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as p from '@clack/prompts';
-import { type BotId, ConfigError, type Locale, parseEnv, planApps } from '@legion/core';
+import { type BotId, ConfigError, createDb, type Locale, parseEnv, planApps } from '@legion/core';
 import {
   AVAILABLE_BOTS,
   DEFAULT_CONFIG_PATH,
@@ -13,6 +13,7 @@ import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
 import { isSnowflake, writeInitFiles } from './init.js';
 import { inviteUrl } from './invite.js';
 import { cliLocale, msg } from './messages.js';
+import { formatPlaytest, parseSince, playtestReport } from './playtest.js';
 import { registerCommands } from './register.js';
 import { createDiscordRest } from './rest.js';
 
@@ -149,6 +150,47 @@ program
         bots.filter((b) => a.bots.includes(b.id)),
       );
       console.log(plan.apps.length > 1 ? `${a.bots.join(', ')}: ${url}` : url);
+    }
+  });
+
+program
+  .command('playtest-report')
+  .description('Resumo de uma sessão de teste: missões, XP, limites, lutas e conteúdo, com conferência')
+  .option(...configOpt)
+  .option('-s, --since <quando>', 'início: 90m, 3h, 2d ou data/hora ISO', '6h')
+  .option('--json', 'saída em JSON')
+  .action(async (o: { config: string; since: string; json?: boolean }) => {
+    loadDotEnv();
+    const env = parseEnv(process.env, cliLocale());
+    const { config, bots } = await loadConfigAndBots(o.config);
+    const now = new Date();
+    const since = parseSince(o.since, now);
+    if (!since) throw new ConfigError([`--since: "${o.since}" não é 90m, 3h, 2d nem uma data ISO`]);
+    const jarvis = (
+      config as { jarvis?: { missions?: { limits?: { dailyPerMember: number; weeklyPerMember: number } } } }
+    ).jarvis;
+    // Read-only: no migrations, so it can run next to the live bot.
+    const db = await createDb(env.DATABASE_URL);
+    try {
+      const report = await playtestReport(db, {
+        guildId: env.DISCORD_GUILD_ID,
+        since,
+        now,
+        bots: bots.map((b) => b.id),
+        ...(jarvis?.missions?.limits ? { limits: jarvis.missions.limits } : {}),
+      });
+      console.log(o.json ? JSON.stringify(report, null, 2) : formatPlaytest(report));
+      process.exitCode = report.problems.length ? 1 : 0;
+    } catch (err) {
+      const text = String((err as { cause?: unknown }).cause ?? err);
+      if (/no such table|does not exist/i.test(text))
+        throw new Error(
+          'O banco ainda não tem as tabelas dos bots. Rode o comando dentro do container que já iniciou o bot\n' +
+            '(docker compose exec legion legion playtest-report) ou confira o DATABASE_URL.',
+        );
+      throw err;
+    } finally {
+      await db.close();
     }
   });
 

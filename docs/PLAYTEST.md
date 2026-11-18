@@ -1,0 +1,141 @@
+# Sessão de teste ao vivo
+
+Roteiro para testar o Legion com amigos no seu servidor, numa sessão de umas 2 horas. Cada passo diz quem faz o quê e o que todo mundo deve ver. Marque ✅ ou ❌ na coluna **Resultado** e anote qualquer coisa estranha. No fim, o `legion playtest-report` confere no banco se XP, limites e lutas batem com o que vocês viram.
+
+## Quem participa
+
+| Papel | Quem | Precisa |
+|---|---|---|
+| **Dono** | Você | Dono do servidor, acesso ao terminal |
+| **Staff 2** | Um amigo | Cargo do Conselho da Legião, **sem** Administrador |
+| **J1, J2** | Amigos | Já cadastrados no Cérebro, ou se cadastram no passo 1 |
+| **J3** | Amigo com conta nova | Nunca passou pelo cadastro neste servidor |
+
+Com uma quinta conta dá para testar o "grupo cheio" no passo 4.
+
+## Antes (só o dono, uns 15 minutos)
+
+1. Atualize para a versão mais nova: `LEGION_VERSION=0.8.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
+2. No `legion.config.yaml`, para esta sessão:
+   ```yaml
+   channels:
+     missions: "<ID do canal de missões>"   # texto, todos os jogadores veem
+   jarvis:
+     trivia:
+       review: second_staff                # perguntas novas esperam outro staff
+     missions:
+       choiceTimeoutMinutes: 3             # padrão 10; 3 deixa os testes de tempo curtos
+   ```
+   Depois: `docker compose up -d`.
+3. `docker compose exec legion legion doctor`: **nenhum ❌**.
+4. Anote a hora de início: `date -u +%Y-%m-%dT%H:%M:%SZ`. O relatório e os logs usam essa hora.
+
+## Os limites mudam a ordem
+
+Cada jogador tem **1 missão diária por dia e 1 semanal por semana** (`jarvis.missions.limits`). Patrulha noturna e A fábrica silenciosa são diárias, por isso o J1 faz a Patrulha e os outros fazem a Fábrica. O lobby abandonado vem **antes** da missão semanal, senão o limite semanal já estaria usado.
+
+| Missão | Tipo | Nível | Grupo | Quem |
+|---|---|---|---|---|
+| Patrulha noturna | diária | 1 | solo | J1 |
+| Sinal fantasma | semanal | 2 | até 4 | J2 (líder), J1, J3, Dono |
+| A fábrica silenciosa | diária, com luta | 3 | até 4 | J2, J3, Dono |
+| Primeiro contato | história | 1 | solo | J1 (teste de tempo) |
+
+## 1. Cadastro e níveis (20 min)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 1.1 | J3 entra no servidor e faz o cadastro, escolhendo os poderes no catálogo | O poder principal define o arquétipo | | |
+| 1.2 | J3 tenta antes um codinome de personagem existente (ex.: "Wolverine") | Recusado, pede outro | | |
+| 1.3 | J1 e J2 se cadastram, se ainda não tiverem cadastro | Ficha aparece | | |
+| 1.4 | Dono: `/jarvis xp` com +200 para J2, J3 e você mesmo; +50 para J1 (motivo: "teste") | Nível 3 para os três, nível 2 para J1 | | |
+| 1.5 | Todos: `/perfil` | Cada um vê o próprio nível | | |
+
+## 2. Missão solo (J1, 10 min)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 2.1 | J1: `/missao iniciar missao: Patrulha noturna` e jogue até o fim | Abre um tópico no canal de missões; cada cena aparece uma vez | | |
+| 2.2 | | A mensagem final mostra o XP; o `/perfil` também | | |
+| 2.3 | J1 tenta outra diária: `/missao iniciar` → A fábrica silenciosa | Some do autocompletar; digitando o id, é recusada pelo limite diário | | |
+| 2.4 | J1 clica num botão antigo da Patrulha | "Esta escolha já passou" | | |
+
+## 3. Lobby que nunca começa (J2, 5 min de espera)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 3.1 | J2: `/missao iniciar missao: Sinal fantasma`, ninguém clica em começar | Lobby aberto | | |
+| 3.2 | Esperem 5 minutos (enquanto isso, faça o passo 7.1) | O lobby fecha sozinho | | |
+
+## 4. Missão em grupo, votos e reinício (todos, 25 min)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 4.1 | J2 abre Sinal fantasma de novo; J1, J3 e Dono entram; J3 sai e entra de novo | Abre normalmente (o lobby do passo 3 não gastou o limite semanal); a lista do lobby muda a cada clique | | |
+| 4.2 | (Com 5 contas) a quinta tenta entrar | Recusado: grupo cheio | | |
+| 4.3 | J1 tenta começar | Só o líder começa | | |
+| 4.4 | J2 começa | O tópico menciona todos | | |
+| 4.5 | Votem com maioria (3 × 1) | Segue o caminho da maioria | | |
+| 4.6 | Votem empatado (2 × 2, J2 num dos lados) | Vence o lado do líder | | |
+| 4.7 | Alguém clica duas vezes | "Você já escolheu" | | |
+| 4.8 | **Dono:** `docker compose restart legion` no meio de uma cena | A missão continua; nenhuma cena repetida | | |
+| 4.9 | Numa cena, só 2 votam e esperem 3 minutos | O tempo acaba e vale o voto de quem votou | | |
+| 4.10 | Terminem a missão | Todos recebem o XP semanal uma vez | | |
+| 4.11 | Cada um tenta outra semanal | Recusada pelo limite semanal | | |
+
+## 5. Luta em grupo (J2, J3, Dono, 15 min)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 5.1 | J2 abre A fábrica silenciosa; J3 e Dono entram; joguem até a luta | O ULTRON coloca os inimigos e o Sentinel conduz a luta **no tópico da missão**, com os três | | |
+| 5.2 | Terminem a luta | A história segue pelo caminho certo (venceu ou perdeu) | | |
+| 5.3 | Terminem a missão | Todos recebem o XP | | |
+
+## 6. Tempo esgotado (J1, 3 min de espera)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 6.1 | J1: `/missao iniciar missao: Primeiro contato` e não responda | | | |
+| 6.2 | Dono: `docker compose restart legion` | | | |
+| 6.3 | Esperem 3 minutos | A missão termina como abandonada, sem XP; os botões ficam desativados | | |
+
+## 7. Ferramentas da staff (Dono e Staff 2, 20 min)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 7.1 | Dono: `/jarvis trivia nova` | A pergunta fica esperando revisão | | |
+| 7.2 | Staff 2 aprova na fila de moderação | Um jogador recebe a pergunta no `/trivia` sem reiniciar o bot | | |
+| 7.3 | Dono desativa a pergunta (`/jarvis trivia desativar`) | Some na hora | | |
+| 7.4 | Dono importa uma missão válida (`/jarvis missao importar`) e um inimigo válido (`/ultron inimigo importar`) | Prévia; depois de Publicar, entram em jogo | | |
+| 7.5 | Dono importa uma missão com erro (apague uma cena para a qual alguma escolha leva) e um inimigo chamado "Magneto" | Lista os erros; nada muda | | |
+| 7.6 | Staff 2 (sem Administrador) procura `/jarvis`, `/herbie`, `/sentinel`, `/ultron` | Até liberar em Integrações, o `legion doctor` avisa e os comandos não aparecem; depois aparecem | | |
+
+## 8. Ficha do mutante (J1, 10 min)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 8.1 | J1: `/mutante poderes` e escolha os poderes | Funciona uma vez | | |
+| 8.2 | J1: `/mutante poderes` de novo | Recusado | | |
+| 8.3 | J1 compartilha a ficha pelo `/perfil` | A imagem mostra codinome, facção, poderes, nível e patente | | |
+| 8.4 | Todos leem o post fixado do guia (`/herbie guia publicar` se não houver) | Ninguém sente falta de nada do site antigo | | |
+
+## 9. Editores do site e importação de trivia (Dono e Staff 2, 25 min)
+
+Os editores ficam em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/personalizar.html#editores).
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 9.1 | Dono escreve 3 perguntas no [editor de trivia](https://uminocelo.github.io/legion/editor-trivia.html), baixa e importa com `/jarvis trivia importar` | Prévia: 3 novas. Com a revisão ligada, esperam o Staff 2 | | |
+| 9.2 | Staff 2 aprova; um jogador faz `/trivia` | Uma das novas pode aparecer | | |
+| 9.3 | `/jarvis trivia exportar`; abra o arquivo no editor (Abrir arquivo), mude uma pergunta, importe de novo | Prévia: 1 alterada, o resto igual | | |
+| 9.4 | Importe um arquivo quebrado: copie uma pergunta com o mesmo `id` e ponha `answer: 9` em outra | Mostra os dois erros; nada muda | | |
+| 9.5 | No [editor de missões](https://uminocelo.github.io/legion/editor-missoes.html): uma missão de **história**, grupo até 4, com uma cena de combate; no [de inimigos](https://uminocelo.github.io/legion/editor-inimigos.html): um lacaio nível 1. Importe os dois | As prévias batem com o que foi montado; entram em jogo | | |
+| 9.6 | J2 e J3 jogam a missão nova | A luta acontece; o inimigo novo pode aparecer | | |
+| 9.7 | Abram cada editor no celular, escrevam algo, fechem e abram de novo | Dá para usar; o rascunho continua lá | | |
+
+## Depois
+
+1. **Relatório:** `docker compose exec legion legion playtest-report --since <hora de início>`. A seção **Conferência** deve dizer ✅. Cada ❌ é um problema (XP pago duas vezes ou faltando, limite furado, luta com o grupo errado). Os ⚠️ merecem uma olhada. Use `--json` para guardar o resultado.
+2. **Logs:** `docker compose logs legion --since <hora de início> | grep '"level":50'` deve sair vazio. Para os avisos: `grep '"level":40'`.
+3. **Volte a config:** tire o `choiceTimeoutMinutes: 3` (e a revisão, se não quiser deixar ligada) e rode `docker compose up -d`.
+4. **Bugs:** abra uma issue no GitHub para cada ❌ desta página ou do relatório, com o passo, o que aconteceu e o trecho do log.
