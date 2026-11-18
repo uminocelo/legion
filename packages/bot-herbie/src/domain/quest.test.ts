@@ -3,6 +3,7 @@ import {
   advance,
   type Chain,
   chainSchema,
+  chainTextKey,
   currentStep,
   effectiveSteps,
   isAboutMember,
@@ -111,6 +112,60 @@ describe('quest engine', () => {
     const bad = chainSchema.safeParse({
       chain: 'c',
       steps: [{ id: 'x', titleKey: 'a', bodyKey: 'b', trigger: { event: 'message.created' }, rewardXp: 1 }],
+    });
+    expect(bad.success).toBe(false);
+  });
+});
+
+describe('v0.9 chain fields', () => {
+  const env = (bots: string[], features: string[] = []) => ({
+    enabledBots: bots as never,
+    features: new Set(features),
+  });
+
+  it('intro and completion texts pick the fallback when their bot is off', () => {
+    const text = { bodyKey: 'with', requiresBot: 'jarvis' as const, fallbackBodyKey: 'without' };
+    expect(chainTextKey(text, env(['cerebro', 'jarvis']))).toBe('with');
+    expect(chainTextKey(text, env(['cerebro']))).toBe('without');
+    expect(chainTextKey({ bodyKey: 'only', requiresBot: 'jarvis' }, env(['cerebro']))).toBeNull();
+    expect(chainTextKey({ bodyKey: 'always' }, env([]))).toBe('always');
+    expect(chainTextKey(undefined, env([]))).toBeNull();
+  });
+
+  it('mission-combat steps are left out (or use their fallback) when fights are off', () => {
+    const c = chainSchema.parse({
+      chain: 'c',
+      steps: [
+        { id: 'a', titleKey: 'a', bodyKey: 'b', trigger: { event: 'trivia.answered' }, rewardXp: 1 },
+        {
+          id: 'luta',
+          titleKey: 'a',
+          bodyKey: 'b',
+          requiresFeature: 'mission-combat',
+          trigger: { event: 'mission.completed', where: { missionId: 'm', outcome: 'success' } },
+          rewardXp: 1,
+        },
+      ],
+      completion: { bodyKey: 'fim' },
+    });
+    expect(effectiveSteps(c, env(['jarvis'], ['missions'])).map((s) => s.id)).toEqual(['a']);
+    expect(effectiveSteps(c, env(['jarvis'], ['missions', 'mission-combat'])).map((s) => s.id)).toEqual([
+      'a',
+      'luta',
+    ]);
+    expect(
+      triggerMatches(c.steps[1]?.trigger ?? { event: 'trivia.answered' }, 'mission.completed', {
+        missionId: 'm',
+        outcome: 'failure',
+      }),
+    ).toBe(false);
+  });
+
+  it('refuses unknown fields in a chain text', () => {
+    const bad = chainSchema.safeParse({
+      chain: 'c',
+      steps: [{ id: 'x', titleKey: 'a', bodyKey: 'b', trigger: { event: 'trivia.answered' }, rewardXp: 1 }],
+      intro: { bodyKey: 'a', nope: 1 },
     });
     expect(bad.success).toBe(false);
   });

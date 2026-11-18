@@ -67,6 +67,7 @@ export const herbie: LegionBot<HerbieConfig> = {
       ctx.help.add({ bot: 'herbie', command, descriptionKey: `herbie.help.${key}`, adminOnly });
   },
   onReady: async (ctx) => {
+    await herbieServices(ctx).tutorial.migrateChain();
     await announceOrigins(ctx);
   },
   doctorChecks: (ctx) => [...herbieDoctorChecks(ctx), staffCommandsCheck(ctx, ['herbie'])],

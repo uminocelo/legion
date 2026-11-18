@@ -31,7 +31,7 @@ describe('run engine', () => {
     expect(step(m, 'porto', { choice: 9 })).toBeNull();
     expect(step(m, 'porto', { combat: 'win' })).toBeNull();
     expect(step(m, 'nope', { choice: 0 })).toBeNull();
-    const c = shipped.find((x) => x.id === 'primeiro-contato') as Mission;
+    const c = shipped.find((x) => x.id === 'primeiro-contato-3') as Mission;
     expect(step(c, 'confronto', { combat: 'lose' })).toEqual({
       type: 'end',
       scene: 'derrota',

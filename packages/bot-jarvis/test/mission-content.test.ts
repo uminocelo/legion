@@ -42,7 +42,9 @@ describe('mission content', () => {
     expect(r.missions.map((m) => m.id).sort()).toEqual([
       'fabrica-silenciosa',
       'patrulha-noturna',
-      'primeiro-contato',
+      'primeiro-contato-1',
+      'primeiro-contato-2',
+      'primeiro-contato-3',
       'sinal-fantasma',
     ]);
     expect(r.missions.filter((m) => Object.values(m.scenes).some((s) => s.combat))).toHaveLength(2);
@@ -105,7 +107,7 @@ describe('mission content', () => {
     expect(JSON.parse(row?.definition ?? '{}').title).toBe('Minha patrulha');
     // Gone from valid files → inactive (never deleted).
     const r2 = await syncMissions(s.repo, readMissions([join(dir({ 'x.yaml': ok }), 'missions')]));
-    expect(r2.deactivated).toBe(4);
-    expect((await s.repo.mission('primeiro-contato'))?.active).toBe(0);
+    expect(r2.deactivated).toBe(6);
+    expect((await s.repo.mission('primeiro-contato-3'))?.active).toBe(0);
   });
 });
