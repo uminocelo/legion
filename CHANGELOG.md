@@ -4,6 +4,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-18
+
 ### Added
 - `legion playtest-report --since <90m|3h|2d|data>`: read-only summary of a session from the database (registrations, missions with their members and XP, XP by reason, fights, staff content) with checks: XP paid once and equally, ledger = progress, daily/weekly limits, fights with the right party. Exits 1 when something does not match; `--json`.
 - `docs/PLAYTEST.md`: script for a live test session with friends.
@@ -112,7 +114,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/uminocelo/legion/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/uminocelo/legion/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/uminocelo/legion/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/uminocelo/legion/compare/v0.7.0...v0.7.1
