@@ -24,6 +24,7 @@ export * from './discord/with-personas.js';
 export * from './events/bus.js';
 export * from './events/catalog.js';
 export * from './game/canon.js';
+export * from './game/content-issues.js';
 export * from './game/random.js';
 export * from './game/stats.js';
 export * from './health.js';

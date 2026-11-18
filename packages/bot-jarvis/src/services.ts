@@ -6,6 +6,7 @@ import { MissionImports } from './mission-imports.js';
 import { JarvisMissions } from './missions.js';
 import { StaffTrivia } from './staff-trivia.js';
 import { JarvisTrivia } from './trivia.js';
+import { TriviaImports } from './trivia-imports.js';
 import { XpService } from './xp-service.js';
 
 export interface JarvisServices {
@@ -16,6 +17,7 @@ export interface JarvisServices {
   missions: JarvisMissions;
   staffTrivia: StaffTrivia;
   imports: MissionImports;
+  triviaImports: TriviaImports;
 }
 
 const cache = new WeakMap<object, JarvisServices>();
@@ -31,6 +33,7 @@ export function jarvisServices(ctx: BotContext<JarvisConfig>): JarvisServices {
     partial.missions = new JarvisMissions(ctx, partial);
     partial.staffTrivia = new StaffTrivia(ctx, partial);
     partial.imports = new MissionImports(ctx, partial);
+    partial.triviaImports = new TriviaImports(ctx, partial);
     s = partial;
     cache.set(ctx, s);
   }

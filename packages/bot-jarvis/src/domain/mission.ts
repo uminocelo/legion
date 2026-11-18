@@ -1,5 +1,6 @@
 import type { Locale } from '@legion/core';
-import { isCanonName } from '@legion/core';
+import { contentIssues, isCanonName } from '@legion/core';
+import { parse as parseYaml, YAMLParseError } from 'yaml';
 import { z } from 'zod';
 import { DIFFICULTIES, type JarvisConfig, MISSION_KINDS } from '../config.js';
 
@@ -150,4 +151,18 @@ export function missionXp(
   if (m.xp) return outcome === 'success' ? m.xp.success : m.xp.failure;
   const r = cfg.rewards[m.kind];
   return outcome === 'success' ? r.successXp : r.failureXp;
+}
+
+/** Parses one mission YAML; errors carry the YAML line or the field path. */
+export function parseMissionYaml(text: string): { mission: Mission } | { errors: string[] } {
+  let raw: unknown;
+  try {
+    raw = parseYaml(text);
+  } catch (err) {
+    const line = err instanceof YAMLParseError ? ` (linha ${err.linePos?.[0]?.line ?? 0})` : '';
+    return { errors: [`YAML inválido${line}: ${(err as Error).message.split('\n')[0]}`] };
+  }
+  const res = missionSchema.safeParse(raw);
+  if (!res.success) return { errors: contentIssues(res.error.issues, 'missão') };
+  return { mission: res.data };
 }

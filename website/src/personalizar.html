@@ -1,7 +1,24 @@
 <section class="page-hero">
   <p class="eyebrow">Para quem hospeda</p>
   <h1>Personalize seu servidor</h1>
-  <p class="lead">Missões, perguntas, inimigos, poderes e textos são arquivos <code>.yaml</code>. Você pode trocar os que vêm com o Legion ou acrescentar os seus, sem mexer no código.</p>
+  <p class="lead">Missões, perguntas, inimigos, poderes e textos são arquivos <code>.yaml</code>. Você pode trocar os que vêm com o Legion ou acrescentar os seus, sem mexer no código, e montar perguntas e inimigos direto no navegador.</p>
+</section>
+
+<section>
+  <h2>Editores</h2>
+  <p class="section-lead">Monte o arquivo no navegador, com as mesmas regras que o bot usa para conferir. Baixe e importe no seu servidor. Nada sai do seu navegador.</p>
+  <div class="bots">
+    <article class="bot" style="--c:#F1C40F">
+      <h3><a href="editor-trivia.html">Perguntas de trivia</a></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Várias perguntas por arquivo, em português ou inglês. Abre também o arquivo do <code>/jarvis trivia exportar</code> para editar.</p>
+    </article>
+    <article class="bot" style="--c:#E74C3C">
+      <h3><a href="editor-inimigos.html">Inimigos</a></h3>
+      <p class="role">ULTRON</p>
+      <p>Lacaios, elites e chefes com atributos base. Recusa nomes de personagens existentes na hora.</p>
+    </article>
+  </div>
 </section>
 
 <section>
@@ -35,6 +52,8 @@
   <h2>Perguntas de trivia</h2>
   <p class="section-lead">Cada pergunta tem categoria, dificuldade, de 2 a 4 alternativas, a resposta certa, uma explicação e uma fonte.</p>
   <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-trivia.html">Editor de trivia</a>: monte o arquivo e importe</td></tr>
+    <tr><th>Importar</th><td><code>/jarvis trivia importar arquivo:</code> e anexe o <code>.yaml</code> (até 50 perguntas); o mesmo <code>id</code> atualiza a pergunta</td></tr>
     <tr><th>Uma por vez</th><td><code>/jarvis trivia nova</code> abre um formulário no Discord</td></tr>
     <tr><th>Em lote</th><td><code>data/content/trivia/pt-BR.yaml</code> (ou <code>en.yaml</code>) e <code>/jarvis trivia recarregar</code></td></tr>
     <tr><th>Backup</th><td><code>/jarvis trivia exportar</code> baixa as perguntas da staff no mesmo formato</td></tr>
@@ -48,6 +67,7 @@
   <h2>Inimigos do ULTRON</h2>
   <p class="section-lead">Lacaios, elites e chefes com atributos base. O <a href="ultron.html">ULTRON</a> escala os atributos pelo nível do grupo e pela dificuldade.</p>
   <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-inimigos.html">Editor de inimigos</a>: monte o arquivo e importe</td></tr>
     <tr><th>Importar</th><td><code>/ultron inimigo importar arquivo:</code> e anexe o <code>.yaml</code></td></tr>
     <tr><th>Ou na pasta</th><td><code>data/content/enemies.yaml</code> e reinicie</td></tr>
   </table>

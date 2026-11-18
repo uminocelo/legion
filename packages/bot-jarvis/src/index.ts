@@ -27,6 +27,7 @@ export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from
 export * from './services.js';
 export { StaffTrivia, staffTriviaIds, statusOf } from './staff-trivia.js';
 export { contentDirs, JarvisTrivia } from './trivia.js';
+export { TRIVIA_IMPORT_MAX, TriviaImports, triviaImportIds } from './trivia-imports.js';
 export { ids as jarvisIds } from './ui.js';
 export * from './xp-service.js';
 
@@ -69,6 +70,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
       { action: 'trivia-edit', version: V, handle: (i, r, args) => s.staffTrivia.submitEdit(i, r, args) },
       { action: 'trivia-review', version: V, handle: (i, r, args) => s.staffTrivia.review(i, r, args) },
       { action: 'mission-import', version: V, handle: (i, r, args) => s.imports.decide(i, r, args) },
+      { action: 'trivia-import', version: V, handle: (i, r, args) => s.triviaImports.decide(i, r, args) },
       {
         action: 'lobby',
         version: V,

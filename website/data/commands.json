@@ -252,6 +252,26 @@
       "options": []
     },
     {
+      "path": "/jarvis trivia importar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Importa perguntas de um arquivo .yaml",
+        "en": "Imports questions from a .yaml file"
+      },
+      "options": [
+        {
+          "name": "arquivo",
+          "nameEn": "file",
+          "required": true,
+          "description": {
+            "pt-BR": "O arquivo .yaml com as perguntas (mesmo formato do exportar)",
+            "en": "The .yaml file with the questions (same format as export)"
+          }
+        }
+      ]
+    },
+    {
       "path": "/jarvis trivia lista",
       "kind": "slash",
       "staff": true,

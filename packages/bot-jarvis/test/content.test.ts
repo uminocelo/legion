@@ -39,7 +39,9 @@ describe('trivia content', () => {
     const { questions, errors } = readTriviaContent([d], CATS, 'pt-BR');
     expect(questions.map((x) => x.id)).toEqual(['ok-1']);
     expect(errors[0]).toMatch(/^broken\.yaml \(linha \d+\): YAML inválido/);
-    expect(errors).toContain('pack.yaml → item 2 (bad-1) → answer: answer must index into choices');
+    expect(errors).toContain(
+      'pack.yaml → item 2 (bad-1) → answer: answer aponta para uma alternativa que não existe (comece em 0)',
+    );
     expect(errors).toContain('pack.yaml → item 3 (ok-1) → id: "ok-1" repetido (já existe em pack.yaml)');
     expect(errors.some((e) => e.includes('"culinaria" não está em jarvis.trivia.categories'))).toBe(true);
   });

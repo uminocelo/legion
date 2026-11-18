@@ -125,7 +125,9 @@
         "arquivo": "The mission .yaml file (see docs/MISSIONS.md)",
         "missao_lista": "Lists missions and where they came from",
         "missao_desativar": "Takes a mission out of play",
-        "missao_ativar": "Brings a disabled mission back"
+        "missao_ativar": "Brings a disabled mission back",
+        "trivia_importar": "Imports questions from a .yaml file",
+        "trivia_arquivo": "The .yaml file with the questions (same format as export)"
       },
       "missao": {
         "description": "Missions: short stories with choices, solo or in a party",
@@ -248,6 +250,12 @@
       "mission_list": "Missions ({total})",
       "disabled": "⛔ Mission `{id}` disabled.",
       "enabled": "✅ Mission `{id}` enabled."
+    },
+    "trivia_imports": {
+      "summary": "🆕 {added} new · ✏️ {changed} changed · ＝ {same} unchanged",
+      "review_note": "ℹ️ Review is on: new and changed questions wait for another staff member's approval.",
+      "published": "✅ Questions published: {added} new, {changed} changed, {same} unchanged. They are live in /trivia.",
+      "published_review": "📝 Questions sent for review: {added} new, {changed} changed ({same} unchanged). They go live in /trivia once approved."
     }
   }
 }
