@@ -23,7 +23,7 @@ export * from './powers.js';
 export { CerebroSetup, LAST_ROLE_SYNC_KEY, PERSISTENT_WELCOME_KEY } from './setup.js';
 export { ids as cerebroIds } from './ui.js';
 
-const pickMode = (m: string | undefined): PickMode => (m === 'e' ? 'e' : 'r');
+const pickMode = (m: string | undefined): PickMode => (m === 'e' || m === 'o' ? m : 'r');
 const state = new WeakMap<object, { flow: CerebroFlow; setup: CerebroSetup }>();
 const services = (ctx: Parameters<LegionBot<CerebroConfig>['register']>[0]) => {
   let s = state.get(ctx);
@@ -35,7 +35,7 @@ const services = (ctx: Parameters<LegionBot<CerebroConfig>['register']>[0]) => {
   return s;
 };
 
-/** Cérebro: onboarding, factions, mutant creation and the server role set (v0). */
+/** Cérebro: onboarding, origins, factions, hero creation and the server role set. */
 export const cerebro: LegionBot<CerebroConfig> = {
   id: 'cerebro',
   version: '0.1.0',
@@ -62,7 +62,11 @@ export const cerebro: LegionBot<CerebroConfig> = {
     return [
       { action: 'start', version: V, handle: (i, r) => flow.start(i, r) },
       { action: 'rules', version: V, handle: (i, r) => flow.acceptRules(i, r) },
-      { action: 'faction', version: V, handle: (i, r) => flow.chooseFaction(i, r) },
+      { action: 'faction', version: V, handle: (i, r) => flow.legacyButton(i, r) },
+      { action: 'origin', version: V, handle: (i, r) => flow.chooseOrigin(i, r) },
+      { action: 'oback', version: V, handle: (i, r) => flow.backToOrigin(i, r) },
+      { action: 'rorigin', version: V, handle: (i, r) => flow.originChange.choose(i, r) },
+      { action: 'rcancel', version: V, handle: (i, r) => flow.originChange.cancel(i, r) },
       { action: 'archetype', version: V, handle: (i, r) => flow.chooseArchetype(i, r) },
       { action: 'reopen', version: V, handle: (i, r) => flow.reopen(i, r) },
       { action: 'mutant', version: V, handle: (i, r) => flow.submitMutant(i, r) },
@@ -91,11 +95,8 @@ export const cerebro: LegionBot<CerebroConfig> = {
     );
     ctx.scheduler.define<{ memberId: string }>(RECONCILE_JOB, (p) => flow.reconcileJob(p));
     ctx.help.add({ bot: 'cerebro', command: '/perfil', descriptionKey: 'cerebro.help.perfil' });
-    ctx.help.add({
-      bot: 'cerebro',
-      command: '/mutante poderes',
-      descriptionKey: 'cerebro.help.mutante_poderes',
-    });
+    ctx.help.add({ bot: 'cerebro', command: '/heroi poderes', descriptionKey: 'cerebro.help.heroi_poderes' });
+    ctx.help.add({ bot: 'cerebro', command: '/heroi origem', descriptionKey: 'cerebro.help.heroi_origem' });
     ctx.help.add({
       bot: 'cerebro',
       command: '/cerebro preferencias',

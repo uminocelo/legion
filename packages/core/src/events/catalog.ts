@@ -35,6 +35,7 @@ export const eventCatalog = {
     codename: z.string().min(1),
     archetype: z.string().min(1),
     faction: z.string().min(1),
+    originType: z.string().min(1),
   }),
   'player.rejoined': z.object({ memberId: id, discordUserId: id }),
   'player.optins_changed': z.object({ memberId: id, optIns: z.array(z.string()) }),

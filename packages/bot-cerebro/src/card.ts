@@ -7,6 +7,8 @@ import { initWasm, Resvg } from '@resvg/resvg-wasm';
 /** Everything printed on the card, already localized. */
 export interface CardData {
   codename: string;
+  /** Origin name ("Tecnologia"); plain text, the card fonts have no emoji. */
+  origin: string;
   faction: string;
   factionColor: string | null;
   archetype: string;
@@ -113,7 +115,7 @@ export function cardSvg(d: CardData): string {
   <circle cx="860" cy="120" r="150" fill="${accent}" opacity="0.08"/>
   <text x="48" y="62" class="title">${esc(d.labels.title)}</text>
   <text x="48" y="${120 + Math.round(head.size * 0.3)}" class="name" font-size="${head.size}">${esc(head.text)}</text>
-  <text x="48" y="200" class="meta">${esc(clipText(clean(`${d.faction} · ${d.archetype}`), 26, 600))}</text>
+  <text x="48" y="200" class="meta">${esc(clipText(clean(`${d.origin} · ${d.faction} · ${d.archetype}`), 26, 600))}</text>
   <text x="48" y="236" class="sub">${esc(clipText(clean([d.rank, level].filter(Boolean).join(' · ')), 20, 600))}</text>
   <text x="48" y="290" class="section">${esc(d.labels.powers)}</text>
   ${powers}

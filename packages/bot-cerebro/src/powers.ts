@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { type Archetype, isCanonName, type Locale } from '@legion/core';
+import { type Archetype, isCanonName, type Locale, ORIGINS } from '@legion/core';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 import { z } from 'zod';
 import { CEREBRO_CONTENT_DIR } from './paths.js';
@@ -22,6 +22,11 @@ export const powerSchema = z
     type: z.enum(POWER_TYPES),
     name: z.object({ 'pt-BR': name, en: name.optional() }).strict(),
     description: z.object({ 'pt-BR': text, en: text.optional() }).strict(),
+    /** Origins that may pick this power; absent = every origin. */
+    origins: z
+      .array(z.enum(ORIGINS, { message: `origem desconhecida; use: ${ORIGINS.join(', ')}` }))
+      .min(1)
+      .optional(),
   })
   .strict();
 export type Power = z.infer<typeof powerSchema>;
@@ -68,6 +73,9 @@ export function readPowers(files: string[]): { powers: Power[]; errors: string[]
   return { powers: [...byId.values()], errors };
 }
 
+/** A power without `origins` is open to every origin. */
+export const allowsOrigin = (p: Power, origin: string) => !p.origins || p.origins.includes(origin as never);
+
 export const powerName = (p: Power, l?: Locale) =>
   l === 'en' ? (p.name.en ?? p.name['pt-BR']) : p.name['pt-BR'];
 export const powerDescription = (p: Power, l?: Locale) =>
@@ -94,22 +102,31 @@ export class PowerCatalog {
     return { total: this.list.length, errors: res.errors };
   }
 
-  /** Powers whose archetype is enabled in `cerebro.archetypes`. */
-  all(): Power[] {
-    return this.list.filter((p) => this.allowed.includes(this.archetypeOf(p)));
+  /** Powers whose archetype is enabled in `cerebro.archetypes` (and open to `origin`, when given). */
+  all(origin?: string): Power[] {
+    return this.list.filter(
+      (p) => this.allowed.includes(this.archetypeOf(p)) && (!origin || allowsOrigin(p, origin)),
+    );
   }
-  get(id: string): Power | undefined {
-    return this.all().find((p) => p.id === id);
+  forOrigin(origin: string): Power[] {
+    return this.all(origin);
+  }
+  get(id: string, origin?: string): Power | undefined {
+    return this.all(origin).find((p) => p.id === id);
+  }
+  /** Origins (of `keys`) that have no power at all; they are hidden from registration. */
+  emptyOrigins(keys: readonly string[]): string[] {
+    return keys.filter((k) => this.forOrigin(k).length === 0);
   }
   archetypeOf(p: Power): Archetype {
     return this.typeToArchetype[p.type];
   }
   /** Powers split into select menus of whole types, each at most 25 options. */
-  groups(exclude: string[] = []): Power[][] {
+  groups(exclude: string[] = [], origin?: string): Power[][] {
     const out: Power[][] = [];
     let cur: Power[] = [];
     for (const type of POWER_TYPES) {
-      const ofType = this.all().filter((p) => p.type === type && !exclude.includes(p.id));
+      const ofType = this.all(origin).filter((p) => p.type === type && !exclude.includes(p.id));
       if (cur.length + ofType.length > 25 && cur.length) {
         out.push(cur);
         cur = [];

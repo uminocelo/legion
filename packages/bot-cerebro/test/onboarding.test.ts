@@ -12,7 +12,7 @@ afterEach(async () => {
 const repoOf = (tc: TestContext) => new CerebroRepo(tc.db, tc.gateway.guildId, tc.clock, tc.runtime.newId);
 
 describe('onboarding', () => {
-  it('walks join → rules → faction → archetype → modal → registered', async () => {
+  it('walks join → rules → origin → archetype → modal → registered, starting Independente', async () => {
     t = await setupCerebro();
     await join(t);
     expect(t.gateway.memberRoleNames(USER)).toEqual(['Sinal Detectado']);
@@ -29,9 +29,19 @@ describe('onboarding', () => {
 
     const r = await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
     expect(t.gateway.repliesTo(r)[0]?.kind).toBe('updateMessage');
-    expect(t.gateway.lastReply(r)?.components?.[0]?.[0]).toMatchObject({ customId: 'cerebro:v1:faction' });
+    const menu = t.gateway.lastReply(r)?.components?.[0]?.[0];
+    expect(menu).toMatchObject({ customId: 'cerebro:v1:origin' });
+    expect(menu?.type === 'select' && menu.options.map((o) => o.value)).toEqual([
+      'mutante',
+      'inumano',
+      'ciencia',
+      'tecnologia',
+      'mistico',
+      'cosmico',
+      'treinado',
+    ]);
 
-    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:faction', values: ['xmen'] });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['ciencia'] });
     const a = await t.interact({
       kind: 'component',
       userId: USER,
@@ -51,17 +61,20 @@ describe('onboarding', () => {
       fields: FIELDS,
     });
     expect(t.gateway.repliesTo(m).map((x) => x.kind)).toEqual(['deferReply', 'editReply']);
-    expect(t.gateway.lastReply(m)?.embeds?.[0]?.title).toBe('✅ Mutante registrado!');
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Mutante Registrado', 'Recruta', 'X-Men']);
+    expect(t.gateway.lastReply(m)?.embeds?.[0]?.title).toBe('✅ Herói registrado!');
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Independente', 'Mutante Registrado', 'Recruta']);
 
-    const member = await t.runtime.providers.readModels().members.getByDiscordId(USER);
-    expect(member).toMatchObject({ onboardingStep: 'registered', faction: 'xmen', rank: 'recruta' });
+    const reads = t.runtime.providers.readModels();
+    const member = await reads.members.getByDiscordId(USER);
+    expect(member).toMatchObject({ onboardingStep: 'registered', faction: 'independent', rank: 'recruta' });
+    expect(await reads.mutants.getByMemberId(member?.id ?? '')).toMatchObject({ originType: 'ciencia' });
     const [created] = await events(t, 'player.created');
     expect(created).toMatchObject({
       discordUserId: USER,
       codename: 'Faísca Rubra',
       archetype: 'Elemental',
-      faction: 'xmen',
+      faction: 'independent',
+      originType: 'ciencia',
     });
     const card = t.gateway.messages.find((x) => x.channelId === CH.registry);
     expect(card?.msg.embeds?.[0]?.description).toContain('Faísca Rubra');
@@ -104,8 +117,20 @@ describe('onboarding', () => {
       customId: 'cerebro:v1:mutant',
       fields: FIELDS,
     });
-    expect(t.gateway.lastReply(sub)?.components?.[0]?.[0]).toMatchObject({ customId: 'cerebro:v1:faction' });
+    expect(t.gateway.lastReply(sub)?.components?.[0]?.[0]).toMatchObject({ customId: 'cerebro:v1:origin' });
     expect(await events(t, 'player.created')).toHaveLength(0);
+    // A faction menu from before v0.9 answers with the current screen.
+    const legacy = await t.interact({
+      kind: 'component',
+      userId: USER,
+      customId: 'cerebro:v1:faction',
+      values: ['xmen'],
+    });
+    expect(t.gateway.lastReply(legacy)?.content).toBe('Vamos continuar de onde você parou:');
+    expect(t.gateway.lastReply(legacy)?.components?.[0]?.[0]).toMatchObject({
+      customId: 'cerebro:v1:origin',
+    });
+    expect((await repoOf(t).memberByDiscordId(USER))?.faction).toBeNull();
   });
 
   it('resumes after a restart: the archetype is stored and the modal reopens', async () => {
@@ -113,12 +138,7 @@ describe('onboarding', () => {
     await join(t);
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
-    await t.interact({
-      kind: 'component',
-      userId: USER,
-      customId: 'cerebro:v1:faction',
-      values: ['brotherhood'],
-    });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['inumano'] });
     await t.interact({
       kind: 'component',
       userId: USER,
@@ -155,20 +175,19 @@ describe('onboarding', () => {
     await route({ ...base, id: 'r2', kind: 'component', customId: 'cerebro:v1:reopen' });
     expect(t.gateway.repliesTo('r2')[0]?.kind).toBe('showModal');
     await route({ ...base, id: 'r3', kind: 'modal', customId: 'cerebro:v1:mutant', fields: FIELDS });
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Irmandade', 'Mutante Registrado', 'Recruta']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Independente', 'Mutante Registrado', 'Recruta']);
     const [created] = await events(t, 'player.created');
-    expect(created).toMatchObject({ archetype: 'Tanque', faction: 'brotherhood' });
+    expect(created).toMatchObject({ archetype: 'Tanque', faction: 'independent', originType: 'inumano' });
   });
 
-  it('ends with exactly one faction role, whatever was picked or given by hand before', async () => {
+  it('ends with exactly one faction role (the start faction), even with another given by hand', async () => {
     t = await setupCerebro();
     await join(t);
     const irmandade = t.gateway.roleByName('Irmandade');
     t.gateway.members.get(USER)?.roleIds.push(irmandade?.id ?? '');
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
-    for (const f of ['brotherhood', 'independent', 'xmen', 'independent'])
-      await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:faction', values: [f] });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['mutante'] });
     await t.interact({
       kind: 'component',
       userId: USER,
@@ -184,7 +203,7 @@ describe('onboarding', () => {
     await join(t);
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
-    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:faction', values: ['xmen'] });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['mutante'] });
     await t.interact({
       kind: 'component',
       userId: USER,
@@ -221,7 +240,7 @@ describe('onboarding', () => {
     const other = '400000000000000002';
     const id = await register(t, other, { fields: { codinome: '  faisca   RUBRA ' } });
     expect(t.gateway.lastReply(id)?.content).toBe(
-      'O codinome **faisca RUBRA** já pertence a outro mutante. Escolha outro.',
+      'O codinome **faisca RUBRA** já pertence a outro herói. Escolha outro.',
     );
     expect(await events(t, 'player.created')).toHaveLength(1);
   });
@@ -246,9 +265,9 @@ describe('rejoin', () => {
     await join(t);
     expect(t.gateway.memberRoleNames(USER)).toEqual([
       'Aviso de Live',
+      'Independente',
       'Mutante Registrado',
       'Recruta',
-      'X-Men',
     ]);
     const repo = repoOf(t);
     const row = await repo.memberByDiscordId(USER);

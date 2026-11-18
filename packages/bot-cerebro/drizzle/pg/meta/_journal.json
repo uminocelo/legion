@@ -15,6 +15,13 @@
       "when": 1794956937060,
       "tag": "0001_mutant_powers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795022128283,
+      "tag": "0002_hero_origins",
+      "breakpoints": true
     }
   ]
 }

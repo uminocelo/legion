@@ -47,7 +47,7 @@ describe('/trivia', () => {
     t.gateway.addMember({ userId: U });
     const id = await ask(t);
     expect(t.gateway.lastReply(id)?.content).toBe(
-      'Você ainda não é um mutante registrado. Comece pelo canal <#300000000000000001>.',
+      'Você ainda não é um herói registrado. Comece pelo canal <#300000000000000001>.',
     );
   });
 

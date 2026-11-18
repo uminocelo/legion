@@ -16,7 +16,12 @@ export const V = 1;
 export const ids = {
   start: () => customId('cerebro', V, 'start'),
   rules: () => customId('cerebro', V, 'rules'),
+  /** Before v0.9: old faction menus still answer with the member's current screen. */
   faction: () => customId('cerebro', V, 'faction'),
+  origin: () => customId('cerebro', V, 'origin'),
+  originBack: () => customId('cerebro', V, 'oback'),
+  rechoose: () => customId('cerebro', V, 'rorigin'),
+  rechooseCancel: () => customId('cerebro', V, 'rcancel'),
   archetype: () => customId('cerebro', V, 'archetype'),
   reopen: () => customId('cerebro', V, 'reopen'),
   mutant: () => customId('cerebro', V, 'mutant'),
@@ -101,31 +106,56 @@ export class CerebroUi {
     };
   }
 
-  faction(locale: Locale, current: string | null, prefix?: string): OutgoingMessage {
+  /** The origin menu (registration, or `/heroi origem` with a cancel button). */
+  origin(
+    locale: Locale,
+    origins: { key: string; emoji: string }[],
+    current: string | null,
+    prefix?: string,
+    rechoice = false,
+  ): OutgoingMessage {
+    const rows: ActionRow[] = [
+      [
+        {
+          type: 'select',
+          customId: rechoice ? ids.rechoose() : ids.origin(),
+          placeholder: this.t('origin_step.placeholder', {}, locale),
+          options: origins.map((o) => ({
+            value: o.key,
+            label: this.t(`origin.${o.key}.name`, {}, locale),
+            description: this.t(`origin.${o.key}.description`, {}, locale).slice(0, 100),
+            ...(o.emoji ? { emoji: o.emoji } : {}),
+            default: o.key === current,
+          })),
+        },
+      ],
+    ];
+    if (rechoice)
+      rows.push([
+        {
+          type: 'button',
+          customId: ids.rechooseCancel(),
+          label: this.t('origin_change.cancel', {}, locale),
+          style: 'secondary',
+        },
+      ]);
+    const key = rechoice ? 'origin_change' : 'origin_step';
     return {
       persona: 'cerebro',
       ephemeral: true,
       ...(prefix ? { content: prefix } : {}),
-      embeds: [
-        { title: this.t('faction.title', {}, locale), description: this.t('faction.body', {}, locale) },
-      ],
-      components: [
-        [
-          {
-            type: 'select',
-            customId: ids.faction(),
-            placeholder: this.t('faction.placeholder', {}, locale),
-            options: this.shared.factions.map((f) => ({
-              value: f.key,
-              label: this.t(`faction.${f.key}.name`, {}, locale),
-              description: this.t(`faction.${f.key}.description`, {}, locale),
-              ...(f.emoji ? { emoji: f.emoji } : {}),
-              default: f.key === current,
-            })),
-          },
-        ],
-      ],
+      embeds: [{ title: this.t(`${key}.title`, {}, locale), description: this.t(`${key}.body`, {}, locale) }],
+      components: rows,
     };
+  }
+
+  /** "🤖 Tecnologia" (with emoji) or "Tecnologia" (plain, for the card). */
+  originName(key: string, locale?: Locale): string {
+    return this.t(`origin.${key}.name`, {}, locale);
+  }
+  originLabel(key: string, locale?: Locale): string {
+    const emoji = this.cfg.origins.find((o) => o.key === key)?.emoji;
+    return `${emoji ? `${emoji} ` : ''}${this.originName(key, locale)}`;
   }
 
   archetype(locale: Locale, current: string | null, prefix?: string): OutgoingMessage {
@@ -261,6 +291,7 @@ export class CerebroUi {
           title: this.t('registered.public_title'),
           description: this.t('registered.public_body', { codename: mutant.codename }),
           fields: [
+            { name: this.t('profile.origin_type'), value: this.originLabel(mutant.originType), inline: true },
             { name: this.t('profile.archetype'), value: mutant.archetype, inline: true },
             { name: this.t('profile.faction'), value: this.factionLabel(member.faction), inline: true },
           ],
@@ -277,9 +308,21 @@ export class CerebroUi {
     powers: string | null = null,
   ): Embed {
     return {
-      title: this.t('profile.title', { codename: mutant.codename }, locale),
+      title: this.t(
+        'profile.title',
+        {
+          codename: mutant.codename,
+          emoji: this.cfg.origins.find((x) => x.key === mutant.originType)?.emoji ?? '🦸',
+        },
+        locale,
+      ),
       description: `<@${member.discordUserId}>`,
       fields: [
+        {
+          name: this.t('profile.origin_type', {}, locale),
+          value: this.originLabel(mutant.originType, locale),
+          inline: true,
+        },
         { name: this.t('profile.archetype', {}, locale), value: mutant.archetype, inline: true },
         {
           name: this.t('profile.faction', {}, locale),
@@ -296,7 +339,7 @@ export class CerebroUi {
           name: this.t(powers ? 'profile.power_description' : 'profile.power', {}, locale),
           value: mutant.power,
         },
-        { name: this.t('profile.origin', {}, locale), value: mutant.origin },
+        { name: this.t('profile.story', {}, locale), value: mutant.origin },
         ...(extra ?? []),
       ],
     };

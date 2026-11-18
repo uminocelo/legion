@@ -1,13 +1,13 @@
 {
   "herbie": {
     "errors": {
-      "not_registered": "Beep! You are not a registered mutant yet. Start in {welcome}.",
+      "not_registered": "Beep! You are not a registered hero yet. Start in {welcome}.",
       "not_staff": "Only staff can use this command."
     },
     "quest": {
       "perfil": {
-        "title": "Meet your mutant",
-        "body": "Use /perfil to see your mutant sheet."
+        "title": "Meet your hero",
+        "body": "Use /perfil to see your hero sheet."
       },
       "trivia": {
         "title": "First trivia",
@@ -46,7 +46,7 @@
       "title": "🤖 H.E.R.B.I.E.'s help",
       "glossary_button": "Glossary",
       "tutorial_button": "Tutorial",
-      "now_unregistered": "**First step:** register your mutant in {welcome} (button **Começar**). After that, everything here is available!",
+      "now_unregistered": "**First step:** register your hero in {welcome} (button **Começar**). After that, everything here is available!",
       "now_tutorial": "**Now:** {step}\n{body}",
       "now_free": "**Suggestions for now:**",
       "suggest_trivia": "Do your daily /trivia.",
@@ -130,6 +130,10 @@
       "send_failed": "I could not post in {channel}. Check that H.E.R.B.I.E. can see the channel and send messages and links.",
       "invalid": "The guide file has errors:\n{errors}",
       "server_file_invalid": "⚠️ The server guide (data/content/guide.*.yaml) has errors, so I used the default guide:\n{errors}"
+    },
+    "announce": {
+      "origins_title": "🌟 New in the Legion: origins!",
+      "origins_body": "Beep! Every hero now has an **origin**: Mutant, Inhuman, Science, Technology, Mystic, Cosmic or Trained. It decides which powers each one can pick.\n\nIf you registered before, you are now a **Mutant**, with everything kept: codename, powers, level and sheet. Want another origin? Use **/heroi origem** — it works **only once**.\n\n`/mutante` is now **/heroi** (the old name still works for a while)."
     }
   }
 }

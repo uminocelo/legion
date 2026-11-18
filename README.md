@@ -10,7 +10,7 @@ Kit de bots de RPG para Discord, **auto-hospedável**, inspirado nos X-Men. Um �
 | Sentinel | Combate e moderação | v0.4.0 ✅ |
 | ULTRON | Eventos mundiais e raids | v0.4.0 ✅ |
 
-![Ficha mutante de exemplo gerada pelo /perfil](website/assets/ficha-exemplo.png)
+![Ficha de herói de exemplo gerada pelo /perfil](website/assets/ficha-exemplo.png)
 
 **Primeira vez?** Siga o [TUTORIAL.md](TUTORIAL.md): do zero ao primeiro jogo, com uma conferência no fim de cada passo. Site do projeto: [uminocelo.github.io/legion](https://uminocelo.github.io/legion/).
 
@@ -76,7 +76,7 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose exec legion legion playtest-report --since 3h` — resumo do que aconteceu (missões, XP, lutas, conteúdo da staff) e se XP e limites batem. Roteiro de uma sessão de teste com amigos: [docs/PLAYTEST.md](docs/PLAYTEST.md).
 - `docker compose logs -f` — logs.
 
-No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/mutante poderes`, `/cerebro preferencias`.
+No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`; `/mutante` ainda funciona), `/cerebro preferencias`.
 
 No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e até dois secundários de um catálogo: veja [docs/POWERS.md](docs/POWERS.md).
 

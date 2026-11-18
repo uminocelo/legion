@@ -42,7 +42,7 @@ export const FIELDS = {
 export async function register(
   t: TestContext,
   userId = USER,
-  opts: { faction?: string; fields?: Partial<typeof FIELDS> } = {},
+  opts: { origin?: string; fields?: Partial<typeof FIELDS> } = {},
 ) {
   await join(t, userId);
   await t.interact({ kind: 'component', userId, customId: 'cerebro:v1:start' });
@@ -50,8 +50,8 @@ export async function register(
   await t.interact({
     kind: 'component',
     userId,
-    customId: 'cerebro:v1:faction',
-    values: [opts.faction ?? 'xmen'],
+    customId: 'cerebro:v1:origin',
+    values: [opts.origin ?? 'mutante'],
   });
   await t.interact({ kind: 'component', userId, customId: 'cerebro:v1:archetype', values: ['Elemental'] });
   return t.interact({

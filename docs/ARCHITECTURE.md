@@ -73,12 +73,15 @@ O passo fica em `members.onboarding_step`. Botões antigos ou repetidos nunca av
 stateDiagram-v2
   [*] --> joined: entra no servidor<br/>(cargo Sinal Detectado)
   joined --> rules_accepted: aceita as regras
-  rules_accepted --> faction_chosen: escolhe facção
-  faction_chosen --> faction_chosen: troca facção / escolhe arquétipo
-  faction_chosen --> registered: envia a ficha válida<br/>(transação + player.created)
+  rules_accepted --> origin_chosen: escolhe a origem
+  origin_chosen --> origin_chosen: escolhe poderes / arquétipo
+  origin_chosen --> rules_accepted: Trocar origem
+  origin_chosen --> registered: envia a ficha válida<br/>(facção inicial, transação + player.created)
   registered --> registered: sai e volta<br/>(cargos restaurados, player.rejoined)
   registered: Mutante Registrado + 1 facção + Recruta
 ```
+
+Antes da v0.9 o terceiro passo era `faction_chosen`; a migração `0002_hero_origins` muda esses membros para `rules_accepted` (eles escolhem a origem e mantêm a facção). Veja o [ADR 0031](adr/0031-hero-origins.md).
 
 Cargos são aplicados **depois** do commit. Se o Discord falhar, o banco continua certo e o job `cerebro.reconcile-member` acerta os cargos depois.
 

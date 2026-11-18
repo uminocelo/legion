@@ -11,7 +11,7 @@ Entrega: gravado na transação de quem emite (outbox), entregue após o commit,
 | Event | Emitted by | Consumed by | Payload |
 |---|---|---|---|
 | `member.joined` | Cérebro | Sentinel (account-age check, v3) | `{ discordUserId, accountCreatedAt, isRejoin: boolean }` |
-| `player.created` | Cérebro | H.E.R.B.I.E. (start tutorial), J.A.R.V.I.S. (create progress row) | `{ memberId, discordUserId, mutantId, codename, archetype, faction }` |
+| `player.created` | Cérebro | H.E.R.B.I.E. (start tutorial), J.A.R.V.I.S. (create progress row) | `{ memberId, discordUserId, mutantId, codename, archetype, faction, originType }` (`originType` since v0.9) |
 | `player.rejoined` | Cérebro | J.A.R.V.I.S. (optional welcome back) | `{ memberId, discordUserId }` |
 | `player.optins_changed` | Cérebro | (none yet) | `{ memberId, optIns: string[] }` |
 | `command.executed` | core router | H.E.R.B.I.E. (tutorial triggers) | `{ discordUserId, memberId: string \| null, bot: BotId, command: string, subcommand: string \| null }` |

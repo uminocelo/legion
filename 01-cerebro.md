@@ -19,6 +19,7 @@ Because Cérebro is built first, this step also builds the **monorepo skeleton, 
 - Idempotent role sync from `legion.config.yaml` (part B).
 - `/cerebro setup` to sync roles and, when asked, set channel visibility (part B).
 - Onboarding flow: join → welcome → rules → faction → mutant → registration → opt-ins (part C).
+- **v0.9 update ([ADR 0031](docs/adr/0031-hero-origins.md)):** the faction step became an **origin** step (`origin_chosen`); new heroes start on `cerebro.teams.startFaction`; powers are filtered by origin; `/heroi` replaces `/mutante` (alias until v1.0). The sections below describe v0.
 - Rejoin restore.
 - `/perfil`, `/cerebro preferencias`, `/cerebro setup`.
 - Handling `rank.changed` (swap rank roles), so J.A.R.V.I.S. v1 can plug in later without touching Cérebro.

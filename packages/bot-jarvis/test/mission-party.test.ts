@@ -56,7 +56,7 @@ describe('party missions', () => {
     expect(t.gateway.lastReply(twice)?.content).toMatch(/já está neste grupo/);
     t.gateway.addMember({ userId: '999' });
     const anon = await click(t, join, '999');
-    expect(t.gateway.lastReply(anon)?.content).toMatch(/não é um mutante registrado/);
+    expect(t.gateway.lastReply(anon)?.content).toMatch(/não é um herói registrado/);
     const notLeader = await click(t, lobbyBtn(t, 'start'), B);
     expect(t.gateway.lastReply(notLeader)?.content).toMatch(/Só o líder/);
 

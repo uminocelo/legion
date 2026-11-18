@@ -55,7 +55,7 @@ describe('tutorial start and delivery', () => {
     expect(msgs).toHaveLength(1);
     expect(msgs[0]?.via).toBe('dm');
     expect(msgs[0]?.msg.embeds?.[0]?.title).toBe('🤖 Oi! Eu sou o H.E.R.B.I.E.');
-    expect(msgs[0]?.msg.embeds?.[0]?.description).toContain('Conheça seu mutante');
+    expect(msgs[0]?.msg.embeds?.[0]?.description).toContain('Conheça seu herói');
     // replay: the consumer runs again for the same member
     await servicesOf(t).tutorial.start({ id: m, discordUserId: '111' });
     expect(messagesTo(t, '111')).toHaveLength(1);
@@ -180,7 +180,7 @@ describe('/tutorial', () => {
     const id = await t.interact({ kind: 'command', userId: '111', commandName: 'tutorial' });
     const d = t.gateway.lastReply(id)?.embeds?.[0]?.description ?? '';
     expect(d).toContain('Progresso: 0 de 3');
-    expect(d).toContain('▶️ Conheça seu mutante · +20 XP');
+    expect(d).toContain('▶️ Conheça seu herói · +20 XP');
     expect(d).toContain('⬜ Primeira trivia');
     expect((await servicesOf(t).repo.progress(m))?.status).toBe('active');
   });
@@ -201,7 +201,7 @@ describe('/tutorial', () => {
       commandName: 'tutorial',
       options: { reiniciar: true },
     });
-    expect(t.gateway.lastReply(r)?.embeds?.[0]?.description).toContain('✅ Conheça seu mutante');
+    expect(t.gateway.lastReply(r)?.embeds?.[0]?.description).toContain('✅ Conheça seu herói');
     await trivia(t, m, 2);
     expect((await events(t, 'xp.grant_requested')).map((g) => g.amount)).toEqual([20, 30]);
   });
@@ -211,7 +211,7 @@ describe('/tutorial', () => {
     t.gateway.addMember({ userId: '222' });
     const id = await t.interact({ kind: 'command', userId: '222', commandName: 'tutorial' });
     expect(t.gateway.lastReply(id)?.content).toBe(
-      `Bip! Você ainda não é um mutante registrado. Comece pelo canal <#${CH.welcome}>.`,
+      `Bip! Você ainda não é um herói registrado. Comece pelo canal <#${CH.welcome}>.`,
     );
   });
 });

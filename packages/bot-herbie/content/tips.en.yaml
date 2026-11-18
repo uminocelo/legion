@@ -1,5 +1,5 @@
 # Tips of the day (en).
-- { id: perfil, text: "Use /perfil to see your mutant sheet — and /perfil membro:@someone to see theirs." }
+- { id: perfil, text: "Use /perfil to see your hero sheet — and /perfil membro:@someone to see theirs." }
 - {
     id: preferencias,
     text: "In /cerebro preferencias you turn optional roles on and off, like the live ping.",

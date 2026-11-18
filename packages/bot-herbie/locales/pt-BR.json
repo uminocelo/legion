@@ -1,13 +1,13 @@
 {
   "herbie": {
     "errors": {
-      "not_registered": "Bip! Você ainda não é um mutante registrado. Comece pelo canal {welcome}.",
+      "not_registered": "Bip! Você ainda não é um herói registrado. Comece pelo canal {welcome}.",
       "not_staff": "Apenas a staff pode usar este comando."
     },
     "quest": {
       "perfil": {
-        "title": "Conheça seu mutante",
-        "body": "Use /perfil para ver sua ficha de mutante."
+        "title": "Conheça seu herói",
+        "body": "Use /perfil para ver sua ficha de herói."
       },
       "trivia": {
         "title": "Primeira trivia",
@@ -46,7 +46,7 @@
       "title": "🤖 Ajuda do H.E.R.B.I.E.",
       "glossary_button": "Glossário",
       "tutorial_button": "Tutorial",
-      "now_unregistered": "**Primeiro passo:** registre seu mutante no canal {welcome} (botão **Começar**). Depois disso, tudo aqui fica disponível!",
+      "now_unregistered": "**Primeiro passo:** registre seu herói no canal {welcome} (botão **Começar**). Depois disso, tudo aqui fica disponível!",
       "now_tutorial": "**Agora:** {step}\n{body}",
       "now_free": "**Sugestões para agora:**",
       "suggest_trivia": "Faça sua /trivia diária.",
@@ -130,6 +130,10 @@
       "send_failed": "Não consegui postar em {channel}. Confira se o H.E.R.B.I.E. vê o canal e pode enviar mensagens e links.",
       "invalid": "O arquivo do guia tem erros:\n{errors}",
       "server_file_invalid": "⚠️ O guia do servidor (data/content/guide.*.yaml) tem erros, então usei o guia padrão:\n{errors}"
+    },
+    "announce": {
+      "origins_title": "🌟 Novidade na Legião: origens!",
+      "origins_body": "Bip! Agora todo herói tem uma **origem**: Mutante, Inumano, Ciência, Tecnologia, Místico, Cósmico ou Treinado. Ela define quais poderes cada um pode escolher.\n\nQuem se registrou antes virou **Mutante**, com tudo igual: codinome, poderes, nível e ficha. Se quiser outra origem, use **/heroi origem** — vale **uma única vez**.\n\n`/mutante` agora é **/heroi** (o nome antigo ainda funciona por um tempo)."
     }
   }
 }

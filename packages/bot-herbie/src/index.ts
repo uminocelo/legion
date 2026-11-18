@@ -1,5 +1,6 @@
 import { type LegionBot, staffCommandsCheck } from '@legion/core';
 import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
+import { announceOrigins } from './announcements.js';
 import { herbieCommands } from './commands.js';
 import { type HerbieConfig, herbieConfigSchema } from './config.js';
 import { registerConsumers } from './consumers.js';
@@ -8,6 +9,7 @@ import { HERBIE_LOCALES_DIR, HERBIE_MIGRATIONS_DIR } from './paths.js';
 import { herbieServices } from './services.js';
 import { V } from './tutorial.js';
 
+export { announceOrigins, ORIGINS_ANNOUNCEMENT_KEY } from './announcements.js';
 export * from './config.js';
 export * from './content.js';
 export * from './db/repo.js';
@@ -63,6 +65,9 @@ export const herbie: LegionBot<HerbieConfig> = {
       ['/herbie', 'herbie', true],
     ] as const)
       ctx.help.add({ bot: 'herbie', command, descriptionKey: `herbie.help.${key}`, adminOnly });
+  },
+  onReady: async (ctx) => {
+    await announceOrigins(ctx);
   },
   doctorChecks: (ctx) => [...herbieDoctorChecks(ctx), staffCommandsCheck(ctx, ['herbie'])],
   doctorChannels: (cfg) => [

@@ -189,7 +189,7 @@ describe('solo missions', () => {
     expect(fields[1]?.value).toMatch(/🔒 Precisa do nível 2/);
     t.gateway.addMember({ userId: '999' });
     const anon = await start(t, 'patrulha-noturna', '999');
-    expect(t.gateway.lastReply(anon)?.content).toMatch(/ainda não é um mutante registrado/);
+    expect(t.gateway.lastReply(anon)?.content).toMatch(/ainda não é um herói registrado/);
   });
 
   it('autocomplete offers only what the member can start', async () => {
