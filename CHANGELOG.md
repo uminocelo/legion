@@ -4,6 +4,12 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-11-17
+
+### Added
+- `TUTORIAL.md`: step-by-step guide for server owners, with a check after each step.
+- `website/`: static project page (no build, no external requests).
+
 ### Fixed
 - CLI (`legion doctor`, `register-commands`): waits Discord's `retry_after` and retries when rate limited (HTTP 429) instead of reporting ❌.
 
@@ -92,7 +98,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.7.2...HEAD
+[0.7.2]: https://github.com/uminocelo/legion/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/uminocelo/legion/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/uminocelo/legion/compare/v0.4.0...v0.7.0
 [0.4.0]: https://github.com/uminocelo/legion/compare/v0.3.0...v0.4.0

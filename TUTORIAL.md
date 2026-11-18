@@ -185,7 +185,7 @@ Detalhes em [Um app por bot](docs/SELF_HOSTING.md#um-app-por-bot-opcional). Lemb
 | Quero… | Faça |
 |---|---|
 | Atualizar | `docker compose pull && docker compose up -d`, depois `/herbie guia publicar` |
-| Fixar uma versão | `LEGION_VERSION=0.7.1` no `.env` |
+| Fixar uma versão | `LEGION_VERSION=0.7.2` no `.env` |
 | Backup | `docker compose stop`, copie a pasta `data/`, `docker compose up -d` |
 | Criar perguntas de trivia | `/jarvis trivia nova` ([docs/STAFF.md](docs/STAFF.md)) |
 | Importar missões ou inimigos | `/jarvis missao importar`, `/ultron inimigo importar` ([docs/STAFF.md](docs/STAFF.md)) |
