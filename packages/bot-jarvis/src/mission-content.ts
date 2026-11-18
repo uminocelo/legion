@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { contentIssue } from '@legion/core';
 import { and, eq, notInArray } from 'drizzle-orm';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 import type { JarvisRepo, MissionRow } from './db/repo.js';
@@ -39,7 +40,7 @@ export function readMissions(dirs: string[]): MissionLoadResult {
       const res = missionSchema.safeParse(raw);
       if (!res.success) {
         for (const issue of res.error.issues)
-          errors.push(`${file} → ${issue.path.join('.') || 'missão'}: ${issue.message}`);
+          errors.push(`${file} → ${issue.path.join('.') || 'missão'}: ${contentIssue(issue)}`);
         continue;
       }
       const dup = seen.get(res.data.id);

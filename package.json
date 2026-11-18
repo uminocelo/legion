@@ -8,19 +8,24 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && tsc -p website",
     "test": "vitest run",
     "lint": "biome check .",
     "format": "biome check --write .",
     "dev": "tsc -b && node --enable-source-maps apps/runner/dist/main.js",
     "legion": "node apps/cli/dist/index.js",
-    "start": "node --enable-source-maps apps/runner/dist/main.js"
+    "start": "node --enable-source-maps apps/runner/dist/main.js",
+    "site:commands": "node website/scripts/commands.mjs",
+    "site:check": "node website/scripts/commands.mjs --check",
+    "site:build": "node website/scripts/build.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",
     "@types/node": "^22.20.5",
+    "esbuild": "0.28.2",
     "fast-check": "^4.10.2",
     "typescript": "^5.9.3",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "yaml": "^2.9.1"
   }
 }

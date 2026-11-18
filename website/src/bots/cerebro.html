@@ -1,0 +1,34 @@
+<section class="page-hero">
+  <p class="eyebrow">Recepção e cadastro · sempre ligado</p>
+  <h1>Cérebro</h1>
+  <p class="lead">É quem recebe cada pessoa que entra, transforma o cadastro em uma ficha de RPG e cuida dos cargos do servidor. Os outros bots dependem dele.</p>
+</section>
+
+<section>
+  <h2>Para jogadores</h2>
+  <div class="facts">
+    <div><h3>Cadastro em cinco passos</h3><p>Clique em <strong>Começar</strong> em <code>#boas-vindas</code>: aceite as regras, escolha a facção (X-Men, Irmandade ou Independente), o <strong>poder principal</strong>, até dois secundários e preencha codinome, descrição e origem.</p></div>
+    <div><h3>Poder define o arquétipo</h3><p>O tipo do poder principal escolhe o arquétipo: ofensivo → Metamorfo, defensivo → Tanque, psiônico → Telepata, elemental → Elemental, movimento → Velocista, utilitário → Tecnopata. O arquétipo define os atributos base.</p></div>
+    <div><h3>Ficha com cartão</h3><p><code>/perfil</code> mostra a ficha e um cartão em imagem com facção, poderes, nível, rank e atributos. O botão <strong>Compartilhar</strong> posta o cartão no canal.</p></div>
+    <div><h3>Só mutantes originais</h3><p>Nomes de personagens que já existem são recusados no codinome e nos poderes. Cada ficha é uma criação do jogador.</p></div>
+  </div>
+  <h3 class="table-title">Comandos</h3>
+  {{player}}
+</section>
+
+<section>
+  <h2>Para a staff</h2>
+  <div class="facts">
+    <div><h3>Cargos automáticos</h3><p>Cria os cargos que faltam (Sinal Detectado, Mutante Registrado, facções, ranks e cargos de aviso) e troca o rank quando o J.A.R.V.I.S. muda o nível de alguém. O cargo do bot precisa ficar acima desses cargos.</p></div>
+    <div><h3>Simula antes de aplicar</h3><p><code>/cerebro setup</code> mostra o que faria. Com <code>aplicar:true</code> aplica; com <code>canais:true</code> esconde os canais de quem ainda não se registrou.</p></div>
+  </div>
+  <h3 class="table-title">Comandos da staff</h3>
+  {{staff}}
+</section>
+
+<section>
+  <h2>Configuração</h2>
+  <p class="section-lead">Trecho do <code>legion.config.yaml</code> com os padrões. Os canais e cargos ficam em <code>channels:</code> e <code>roles:</code>.</p>
+  {{config}}
+  <p class="more">Leia mais: <a href="{{doc:docs/POWERS.md}}">catálogo de poderes</a> · <a href="{{doc:docs/CONFIG.md}}">todas as opções</a> · <a href="personalizar.html#poderes">trocar os poderes do seu servidor</a></p>
+</section>

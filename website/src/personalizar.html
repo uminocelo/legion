@@ -1,0 +1,104 @@
+<section class="page-hero">
+  <p class="eyebrow">Para quem hospeda</p>
+  <h1>Personalize seu servidor</h1>
+  <p class="lead">Missões, perguntas, inimigos, poderes e textos são arquivos <code>.yaml</code>. Você pode trocar os que vêm com o Legion ou acrescentar os seus, sem mexer no código, e montar perguntas e inimigos direto no navegador.</p>
+</section>
+
+<section>
+  <h2>Editores</h2>
+  <p class="section-lead">Monte o arquivo no navegador, com as mesmas regras que o bot usa para conferir. Baixe e importe no seu servidor. Nada sai do seu navegador.</p>
+  <div class="bots">
+    <article class="bot" style="--c:#00B0F4">
+      <h3><a href="editor-missoes.html">Missões</a></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Cenas, escolhas, combates e finais, com um mapa que mostra cenas soltas e links quebrados. Comece do zero ou de uma missão pronta.</p>
+    </article>
+    <article class="bot" style="--c:#F1C40F">
+      <h3><a href="editor-trivia.html">Perguntas de trivia</a></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Várias perguntas por arquivo, em português ou inglês. Abre também o arquivo do <code>/jarvis trivia exportar</code> para editar.</p>
+    </article>
+    <article class="bot" style="--c:#E74C3C">
+      <h3><a href="editor-inimigos.html">Inimigos</a></h3>
+      <p class="role">ULTRON</p>
+      <p>Lacaios, elites e chefes com atributos base. Recusa nomes de personagens existentes na hora.</p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>Como funciona</h2>
+  <div class="facts">
+    <div><h3>Pelo Discord</h3><p>Missões e inimigos entram anexando o arquivo num comando da staff. O bot confere o arquivo e responde com cada erro, item por item.</p></div>
+    <div><h3>Pela pasta do servidor</h3><p>Todo conteúdo também pode ficar em <code>data/content/</code>, ao lado do banco. Um item com o mesmo <code>id</code> de um que vem com o Legion o substitui; <code>id</code> novo acrescenta.</p></div>
+    <div><h3>Erro não derruba nada</h3><p>Um arquivo com erro não é carregado e a versão anterior continua valendo. O <code>legion doctor</code> mostra o item e o campo com problema.</p></div>
+    <div><h3>Personagens originais</h3><p>Nomes de personagens que já existem são recusados em codinomes, poderes, inimigos e missões. Invente os seus.</p></div>
+  </div>
+</section>
+
+<section id="missoes">
+  <h2>Missões</h2>
+  <p class="section-lead">Histórias com escolhas, conduzidas pelo <a href="jarvis.html">J.A.R.V.I.S.</a>. Cada missão é um arquivo com cenas: cada cena tem escolhas, uma luta (com saída para vitória e para derrota) ou um final.</p>
+  <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-missoes.html">Editor de missões</a>: monte a missão e importe</td></tr>
+    <tr><th>Importar</th><td><code>/jarvis missao importar arquivo:</code> e anexe o <code>.yaml</code> (até 64 KB)</td></tr>
+    <tr><th>Ou na pasta</th><td><code>data/content/missions/&lt;id&gt;.yaml</code> e reinicie</td></tr>
+    <tr><th>Regras</th><td>Toda cena alcançável a partir de <code>start</code>, sem ciclos, pelo menos um final. Lutas precisam do ULTRON e do Sentinel.</td></tr>
+  </table>
+  <p class="downloads">Exemplos:
+    <a href="{{example:exemplos/missoes/primeiro-contato.yaml}}" download>primeiro-contato.yaml</a> (com luta) ·
+    <a href="{{example:exemplos/missoes/patrulha-noturna.yaml}}" download>patrulha-noturna.yaml</a> ·
+    <a href="{{example:exemplos/missoes/sinal-fantasma.yaml}}" download>sinal-fantasma.yaml</a> ·
+    <a href="{{example:exemplos/missoes/fabrica-silenciosa.yaml}}" download>fabrica-silenciosa.yaml</a>
+  </p>
+  <p class="more">Formato completo: <a href="{{doc:docs/MISSIONS.md}}">docs/MISSIONS.md</a></p>
+</section>
+
+<section id="trivia">
+  <h2>Perguntas de trivia</h2>
+  <p class="section-lead">Cada pergunta tem categoria, dificuldade, de 2 a 4 alternativas, a resposta certa, uma explicação e uma fonte.</p>
+  <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-trivia.html">Editor de trivia</a>: monte o arquivo e importe</td></tr>
+    <tr><th>Importar</th><td><code>/jarvis trivia importar arquivo:</code> e anexe o <code>.yaml</code> (até 50 perguntas); o mesmo <code>id</code> atualiza a pergunta</td></tr>
+    <tr><th>Uma por vez</th><td><code>/jarvis trivia nova</code> abre um formulário no Discord</td></tr>
+    <tr><th>Em lote</th><td><code>data/content/trivia/pt-BR.yaml</code> (ou <code>en.yaml</code>) e <code>/jarvis trivia recarregar</code></td></tr>
+    <tr><th>Backup</th><td><code>/jarvis trivia exportar</code> baixa as perguntas da staff no mesmo formato</td></tr>
+    <tr><th>Categorias</th><td>Precisam estar em <code>jarvis.trivia.categories</code>; para criar uma nova, acrescente lá e reinicie</td></tr>
+  </table>
+  <p class="downloads">Exemplo: <a href="{{example:exemplos/trivia/pt-BR.yaml}}" download>trivia/pt-BR.yaml</a> (30 perguntas)</p>
+  <p class="more">Formato completo: <a href="{{doc:docs/CONFIG.md#perguntas}}">docs/CONFIG.md</a> · <a href="{{doc:docs/STAFF.md}}">docs/STAFF.md</a></p>
+</section>
+
+<section id="inimigos">
+  <h2>Inimigos do ULTRON</h2>
+  <p class="section-lead">Lacaios, elites e chefes com atributos base. O <a href="ultron.html">ULTRON</a> escala os atributos pelo nível do grupo e pela dificuldade.</p>
+  <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-inimigos.html">Editor de inimigos</a>: monte o arquivo e importe</td></tr>
+    <tr><th>Importar</th><td><code>/ultron inimigo importar arquivo:</code> e anexe o <code>.yaml</code></td></tr>
+    <tr><th>Ou na pasta</th><td><code>data/content/enemies.yaml</code> e reinicie</td></tr>
+  </table>
+  <p class="downloads">Exemplo: <a href="{{example:exemplos/enemies.yaml}}" download>enemies.yaml</a></p>
+  <p class="more">Formato completo: <a href="{{doc:docs/WORLD_EVENTS.md}}">docs/WORLD_EVENTS.md</a></p>
+</section>
+
+<section id="poderes">
+  <h2>Poderes</h2>
+  <p class="section-lead">O catálogo do cadastro do <a href="cerebro.html">Cérebro</a>: 32 poderes em 6 tipos. O tipo do poder principal define o arquétipo.</p>
+  <table class="kv">
+    <tr><th>Na pasta</th><td><code>data/content/powers.yaml</code> e reinicie</td></tr>
+  </table>
+  <p class="downloads">Exemplo: <a href="{{example:exemplos/powers.yaml}}" download>powers.yaml</a></p>
+  <p class="more">Formato completo: <a href="{{doc:docs/POWERS.md}}">docs/POWERS.md</a></p>
+</section>
+
+<section id="textos">
+  <h2>Guia, glossário, dicas e tutorial</h2>
+  <p class="section-lead">Os textos do <a href="herbie.html">H.E.R.B.I.E.</a>. Copie o arquivo para <code>data/content/</code> com o mesmo nome e edite; o do servidor tem prioridade.</p>
+  <table class="kv">
+    <tr><th>Guia "como jogar"</th><td><a href="{{example:exemplos/guide.pt-BR.yaml}}" download>guide.pt-BR.yaml</a>; depois de editar, rode <code>/herbie guia publicar</code></td></tr>
+    <tr><th>Glossário do <code>/regras</code></th><td><a href="{{example:exemplos/glossary.pt-BR.yaml}}" download>glossary.pt-BR.yaml</a></td></tr>
+    <tr><th>Dicas diárias</th><td><a href="{{example:exemplos/tips.pt-BR.yaml}}" download>tips.pt-BR.yaml</a></td></tr>
+    <tr><th>Passos do tutorial</th><td><a href="{{example:exemplos/tutorial.yaml}}" download>tutorial.yaml</a></td></tr>
+  </table>
+  <p class="more">Formato completo: <a href="{{doc:docs/CONFIG.md#conteúdo-do-herbie}}">docs/CONFIG.md</a></p>
+</section>

@@ -8,7 +8,7 @@ import type {
   OutgoingMessage,
   Responder,
 } from '@legion/core';
-import { customId, LOCALES } from '@legion/core';
+import { contentIssues, customId, LOCALES } from '@legion/core';
 import { and, desc, eq } from 'drizzle-orm';
 import { stringify as toYaml } from 'yaml';
 import type { JarvisConfig } from './config.js';
@@ -138,12 +138,12 @@ export class StaffTrivia {
       explanation: (fields.explanation ?? '').trim(),
       source: (fields.source ?? '').trim(),
     });
-    if (!res.success)
-      return { errors: res.error.issues.map((x) => `${x.path.join('.') || 'pergunta'}: ${x.message}`) };
+    if (!res.success) return { errors: contentIssues(res.error.issues, 'pergunta') };
     return { ok: { ...res.data, locale: res.data.locale ?? 'pt-BR' } };
   }
 
-  private row(q: TriviaQuestion, now: string) {
+  /** DB columns for a question's content (also used by `/jarvis trivia importar`). */
+  row(q: TriviaQuestion, now: string) {
     return {
       locale: q.locale,
       category: q.category,
@@ -204,7 +204,8 @@ export class StaffTrivia {
     );
   }
 
-  private reviewMessage(q: QuestionRow, l: Locale, open: boolean, note?: string): OutgoingMessage {
+  /** The review post with Approve / Reject (also used by `/jarvis trivia importar`). */
+  reviewMessage(q: QuestionRow, l: Locale, open: boolean, note?: string): OutgoingMessage {
     return {
       persona: 'jarvis',
       embeds: [this.preview(q, l, note)],
@@ -420,7 +421,8 @@ export class StaffTrivia {
     await r.autocomplete(hits);
   }
 
-  private async history(
+  /** Records a staff change in the question's history (also used by `/jarvis trivia importar`). */
+  async history(
     tx: Executor,
     questionId: string,
     staffId: string,

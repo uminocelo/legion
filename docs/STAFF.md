@@ -24,13 +24,16 @@ Outros comandos:
 | `/jarvis trivia lista` | Lista com filtros: `status` (ativa, pendente, desativada, todas), `categoria`, `autor`, `pagina` |
 | `/jarvis trivia editar pergunta:…` | Abre o formulário preenchido. Só perguntas criadas no Discord; as de arquivo se editam no arquivo. Toda edição fica no histórico |
 | `/jarvis trivia desativar` / `ativar` | Tira ou volta uma pergunta (inclusive de arquivo) na hora; continua desligada depois de recarregar os arquivos |
+| `/jarvis trivia importar arquivo:` | Importa até 50 perguntas de um `.yaml` (feito no [editor de trivia](https://uminocelo.github.io/legion/editor-trivia.html) ou pelo `exportar`): prévia, depois **Publicar**. Mesmo `id` atualiza; a regra `review` vale aqui também |
 | `/jarvis trivia exportar` | Baixa `trivia-staff.yaml` no mesmo formato dos arquivos de conteúdo (backup ou para compartilhar) |
+
+Várias perguntas de uma vez: monte no [editor de trivia](https://uminocelo.github.io/legion/editor-trivia.html) e use `/jarvis trivia importar`.
 
 Quer uma categoria nova, como `marvel`? Acrescente em `jarvis.trivia.categories` no `legion.config.yaml` e reinicie uma vez.
 
 ## Missões
 
-Escreva a missão num arquivo `.yaml` (formato em [MISSIONS.md](MISSIONS.md); copie uma das missões do `content/missions/` como ponto de partida).
+Monte a missão no [editor de missões](https://uminocelo.github.io/legion/editor-missoes.html) (cenas, escolhas, combates e finais, conferidos na hora, a partir do zero ou de uma missão pronta) ou escreva o `.yaml` à mão (formato em [MISSIONS.md](MISSIONS.md)).
 
 1. `/jarvis missao importar arquivo:` e anexe o `.yaml` (até 64 KB).
 2. O J.A.R.V.I.S. confere o arquivo com as mesmas regras dos arquivos de conteúdo: campos, cenas ligadas, sem ciclos, com final, sem nomes de personagens existentes nos títulos e escolhas. Se houver erro, ele lista campo e linha, e **nada muda**.

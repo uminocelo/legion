@@ -287,6 +287,21 @@ export function jarvisCommands(
                 name_localizations: { 'en-US': 'export' },
                 ...desc(i18n, 'jarvis.commands.jarvis.exportar'),
               },
+              {
+                type: 1,
+                name: 'importar',
+                name_localizations: { 'en-US': 'import' },
+                ...desc(i18n, 'jarvis.commands.jarvis.trivia_importar'),
+                options: [
+                  {
+                    type: 11,
+                    name: 'arquivo',
+                    name_localizations: { 'en-US': 'file' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.trivia_arquivo'),
+                  },
+                ],
+              },
             ],
           },
           {
@@ -382,6 +397,7 @@ export function jarvisCommands(
         if (sub === 'trivia desativar') return s.staffTrivia.setActive(i, r, false);
         if (sub === 'trivia ativar') return s.staffTrivia.setActive(i, r, true);
         if (sub === 'trivia exportar') return s.staffTrivia.export(i, r);
+        if (sub === 'trivia importar') return s.triviaImports.import(i, r);
         if (sub === 'missao importar') return s.imports.import(i, r);
         if (sub === 'missao lista') return s.imports.list(i, r);
         if (sub === 'missao desativar') return s.imports.setActive(i, r, false);

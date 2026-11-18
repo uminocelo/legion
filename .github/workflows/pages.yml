@@ -1,10 +1,16 @@
 name: Pages
 
-# Publishes website/ to GitHub Pages (https://uminocelo.github.io/legion/).
+# Builds website/ and publishes it to GitHub Pages (https://uminocelo.github.io/legion/).
 on:
   push:
     branches: [main]
-    paths: ["website/**", ".github/workflows/pages.yml"]
+    paths:
+      - "website/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "legion.config.example.yaml"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -24,9 +30,18 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Pages, command tables (website/data/commands.json, checked by the tests), example files and the
+      # editor bundles (the bots' validation code, bundled for the browser).
+      - run: pnpm site:build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: website
+          path: website/dist
       - id: deploy
         uses: actions/deploy-pages@v4

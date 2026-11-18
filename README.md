@@ -105,7 +105,7 @@ Com `bots: [cerebro, jarvis]`, rode `legion register-commands` (ou reinicie) e o
 
 - `/missao lista | iniciar | abandonar`: histórias curtas com escolhas, sozinho ou em grupo (até 4), num tópico do `channels.missions`. Missões com luta usam o ULTRON e o Sentinel. Diárias, semanais e de história, com XP e limites configuráveis. Para escrever as suas, veja [docs/MISSIONS.md](docs/MISSIONS.md).
 
-Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia nova | lista | editar | desativar | ativar | exportar | recarregar | estatisticas`, `/jarvis missao importar | lista | desativar | ativar`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Crie perguntas e importe missões pelo próprio Discord: [docs/STAFF.md](docs/STAFF.md).
+Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia nova | importar | lista | editar | desativar | ativar | exportar | recarregar | estatisticas`, `/jarvis missao importar | lista | desativar | ativar`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Crie perguntas e importe missões pelo próprio Discord: [docs/STAFF.md](docs/STAFF.md).
 
 ### H.E.R.B.I.E. (tutorial e ajuda)
 
@@ -143,7 +143,7 @@ Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
 
 ## Site
 
-A página do projeto fica em [`website/`](website/): HTML e CSS estáticos, sem build e sem chamadas externas. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente, abra `website/index.html` no navegador. Detalhes em [website/README.md](website/README.md).
+A página do projeto fica em [`website/`](website/): uma página por bot (com os comandos gerados do próprio código) um guia para [personalizar](https://uminocelo.github.io/legion/personalizar.html) missões, trivia, inimigos e textos, e editores no navegador para montar [missões](https://uminocelo.github.io/legion/editor-missoes.html), [perguntas](https://uminocelo.github.io/legion/editor-trivia.html) e [inimigos](https://uminocelo.github.io/legion/editor-inimigos.html) com as mesmas regras dos bots. Estático, sem chamadas externas: nada sai do navegador. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente: `pnpm site:build` e abra `website/dist/index.html`. Detalhes em [website/README.md](website/README.md).
 
 ## Desenvolvimento
 

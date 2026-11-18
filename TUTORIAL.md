@@ -187,8 +187,8 @@ Detalhes em [Um app por bot](docs/SELF_HOSTING.md#um-app-por-bot-opcional). Lemb
 | Atualizar | `docker compose pull && docker compose up -d`, depois `/herbie guia publicar` |
 | Fixar uma versão | `LEGION_VERSION=0.7.2` no `.env` |
 | Backup | `docker compose stop`, copie a pasta `data/`, `docker compose up -d` |
-| Criar perguntas de trivia | `/jarvis trivia nova` ([docs/STAFF.md](docs/STAFF.md)) |
-| Importar missões ou inimigos | `/jarvis missao importar`, `/ultron inimigo importar` ([docs/STAFF.md](docs/STAFF.md)) |
+| Criar perguntas de trivia | `/jarvis trivia nova`, ou várias no [editor de trivia](https://uminocelo.github.io/legion/editor-trivia.html) e `/jarvis trivia importar` ([docs/STAFF.md](docs/STAFF.md)) |
+| Criar missões ou inimigos | Monte no [editor de missões](https://uminocelo.github.io/legion/editor-missoes.html) ou no [de inimigos](https://uminocelo.github.io/legion/editor-inimigos.html); importe com `/jarvis missao importar` ou `/ultron inimigo importar` |
 | Ajustar XP de alguém | `/jarvis xp` (sempre com motivo) |
 | Ver denúncias | `#fila-moderacao` e `/sentinel denuncias` |
 | Agendar um evento | `/ultron evento agendar` |

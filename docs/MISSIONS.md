@@ -10,7 +10,7 @@ Missões são histórias curtas com escolhas. Um membro registrado usa `/missao 
 
 ## Importar pelo Discord
 
-A staff pode importar um arquivo de missão sem acesso ao servidor: `/jarvis missao importar` e anexe o `.yaml`. Veja [STAFF.md](STAFF.md#missões).
+A staff pode importar um arquivo de missão sem acesso ao servidor: `/jarvis missao importar` e anexe o `.yaml`. Veja [STAFF.md](STAFF.md#missões). Para montar o arquivo sem escrever YAML, use o [editor de missões](https://uminocelo.github.io/legion/editor-missoes.html): ele confere tudo com as mesmas regras deste documento.
 
 ## Escrever uma missão
 

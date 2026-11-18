@@ -1,0 +1,35 @@
+<section class="page-hero">
+  <p class="eyebrow">XP, trivia e missões</p>
+  <h1>J.A.R.V.I.S.</h1>
+  <p class="lead">Guarda o progresso de todo mundo: XP, níveis, ranks e sequências. É ele quem faz as perguntas de trivia e conduz as missões com escolhas.</p>
+</section>
+
+<section>
+  <h2>Para jogadores</h2>
+  <div class="facts">
+    <div><h3>Trivia</h3><p><code>/trivia</code> faz uma pergunta só sua, de quadrinhos, Marvel Rivals ou conhecimentos gerais. Responder rápido vale mais XP; existe um limite diário.</p></div>
+    <div><h3>Níveis e ranks</h3><p>Todo XP sobe o nível. Ao cruzar 500 e 2000 XP você vira Agente e Veterano, e o Cérebro troca o cargo.</p></div>
+    <div><h3>Sequência</h3><p>Dias seguidos ganhando XP dão um bônus que cresce até 7 dias. <code>/sequencia</code> mostra o bônus de amanhã.</p></div>
+    <div><h3>Missões</h3><p><code>/missao</code> abre uma história com escolhas num tópico, sozinho ou em grupo de até 4. Em grupo a maioria decide. Cenas de luta chamam o ULTRON e o Sentinel. Há missões diárias, semanais e de história.</p></div>
+  </div>
+  <h3 class="table-title">Comandos</h3>
+  {{player}}
+</section>
+
+<section>
+  <h2>Para a staff</h2>
+  <div class="facts">
+    <div><h3>Perguntas pelo Discord</h3><p><code>/jarvis trivia nova</code> abre um formulário. Para várias de uma vez, monte o arquivo no <a href="editor-trivia.html">editor de trivia</a> e anexe em <code>/jarvis trivia importar</code>. Dá para editar, desativar, exportar e ver estatísticas de acerto.</p></div>
+    <div><h3>Missões novas</h3><p>Monte a missão no <a href="editor-missoes.html">editor de missões</a> (ou escreva o <code>.yaml</code> à mão) e anexe em <code>/jarvis missao importar</code>. O bot valida e explica qualquer erro.</p></div>
+    <div><h3>XP com histórico</h3><p>Todo XP passa por um livro-caixa. <code>/jarvis xp</code> ajusta com motivo, e <code>/jarvis recalcular</code> refaz o progresso a partir do histórico.</p></div>
+  </div>
+  <h3 class="table-title">Comandos da staff</h3>
+  {{staff}}
+</section>
+
+<section>
+  <h2>Configuração</h2>
+  <p class="section-lead">Trecho do <code>legion.config.yaml</code> com os padrões.</p>
+  {{config}}
+  <p class="more">Leia mais: <a href="{{doc:docs/MISSIONS.md}}">como escrever missões</a> · <a href="{{doc:docs/STAFF.md}}">ferramentas da staff</a> · <a href="personalizar.html#missoes">personalizar missões e trivia</a></p>
+</section>

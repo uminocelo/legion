@@ -75,7 +75,7 @@ describe('staff trivia from Discord', () => {
     const { t } = await setup();
     const bad = await submitNew(t, fields({ answer: '5', choices: 'A\nA' }));
     expect(reply(t, bad)?.content).toMatch(/não foi salva/);
-    expect(reply(t, bad)?.content).toMatch(/choices: choices must be different/);
+    expect(reply(t, bad)?.content).toMatch(/choices: as alternativas precisam ser diferentes/);
     expect(await staffRows(t)).toEqual([]);
     await addMember(t, '111');
     const no = await t.interact({

@@ -1,0 +1,34 @@
+<section class="page-hero">
+  <p class="eyebrow">Inimigos e eventos · precisa do Sentinel</p>
+  <h1>ULTRON</h1>
+  <p class="lead">Traz as ameaças: inimigos que se ajustam ao nível do grupo, invasões semanais em que todas as facções atacam o mesmo alvo e raids com chefe.</p>
+</section>
+
+<section>
+  <h2>Para jogadores</h2>
+  <div class="facts">
+    <div><h3>Invasão semanal</h3><p>Por padrão, todo sábado às 20:00. Todas as facções atacam o mesmo HP; no fim saem o total, os maiores danos e o <strong>dano por facção</strong>.</p></div>
+    <div><h3>Raids</h3><p>Um chefe num tópico. Cada <strong>Atacar</strong> é uma luta rápida no Sentinel; vitória ou derrota dá XP pelo J.A.R.V.I.S.</p></div>
+    <div><h3>Inimigos escalados</h3><p>Nas missões de luta, os inimigos ficam mais fortes conforme o nível do grupo e a dificuldade da missão. Elites aparecem a partir do nível 5.</p></div>
+  </div>
+  <h3 class="table-title">Comandos</h3>
+  {{player}}
+</section>
+
+<section>
+  <h2>Para a staff</h2>
+  <div class="facts">
+    <div><h3>Eventos sob controle</h3><p>Agende (<code>2026-12-05 20:00</code>, <code>+30m</code>), inicie ou cancele invasões e raids. <code>/ultron spawn</code> testa um encontro.</p></div>
+    <div><h3>Inimigos novos</h3><p>Monte os inimigos no <a href="editor-inimigos.html">editor de inimigos</a> e anexe o arquivo em <code>/ultron inimigo importar</code>.</p></div>
+    <div><h3>IA opcional</h3><p>Provocações e anúncios podem ser escritos por IA (Ollama ou API compatível). Os números do jogo nunca vêm da IA. Desligado por padrão.</p></div>
+  </div>
+  <h3 class="table-title">Comandos da staff</h3>
+  {{staff}}
+</section>
+
+<section>
+  <h2>Configuração</h2>
+  <p class="section-lead">Trecho do <code>legion.config.yaml</code> com os padrões. Precisa de <code>channels.events</code>.</p>
+  {{config}}
+  <p class="more">Leia mais: <a href="{{doc:docs/WORLD_EVENTS.md}}">inimigos, invasões e raids</a> · <a href="personalizar.html#inimigos">criar inimigos</a></p>
+</section>

@@ -1,9 +1,8 @@
 import type { BotContext, IncomingInteraction, Locale, OutgoingMessage, Responder } from '@legion/core';
 import { customId, readTextAttachment } from '@legion/core';
 import { eq } from 'drizzle-orm';
-import { parse as parseYaml, YAMLParseError } from 'yaml';
 import type { JarvisConfig } from './config.js';
-import { hasCombat, loc, type Mission, missionSchema } from './domain/mission.js';
+import { hasCombat, loc, type Mission, parseMissionYaml } from './domain/mission.js';
 import { missionHash } from './mission-content.js';
 import type { JarvisServices } from './services.js';
 import { V } from './ui.js';
@@ -19,20 +18,7 @@ interface Staged {
   staffId: string;
 }
 
-/** Parses one mission YAML; errors carry the YAML line or the field path. */
-export function parseMissionYaml(text: string): { mission: Mission } | { errors: string[] } {
-  let raw: unknown;
-  try {
-    raw = parseYaml(text);
-  } catch (err) {
-    const line = err instanceof YAMLParseError ? ` (linha ${err.linePos?.[0]?.line ?? 0})` : '';
-    return { errors: [`YAML inválido${line}: ${(err as Error).message.split('\n')[0]}`] };
-  }
-  const res = missionSchema.safeParse(raw);
-  if (!res.success)
-    return { errors: res.error.issues.map((x) => `${x.path.join('.') || 'missão'}: ${x.message}`) };
-  return { mission: res.data };
-}
+export { parseMissionYaml } from './domain/mission.js';
 
 /** Staff import missions from a `.yaml` attachment: validate → preview → publish (live, no restart). */
 export class MissionImports {
