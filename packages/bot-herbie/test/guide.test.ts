@@ -45,7 +45,7 @@ describe('how-to-play guide', () => {
     const posted = titles(t, RULES);
     expect(posted).toEqual(
       expect.arrayContaining([
-        '📝 1. Registre seu mutante',
+        '📝 1. Registre seu herói',
         '🪪 2. Sua ficha',
         '⚡ Poderes e arquétipos',
         '📈 3. XP, nível e rank',
@@ -76,7 +76,7 @@ describe('how-to-play guide', () => {
       'eventos',
       'convivencia',
     ]);
-    expect(guide.sections()[1]?.title).toBe('📝 1. Register your mutant');
+    expect(guide.sections()[1]?.title).toBe('📝 1. Register your hero');
   });
 
   it('publishing again edits the same messages; another channel gets a new post', async () => {

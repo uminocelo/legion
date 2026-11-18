@@ -3,36 +3,66 @@
 - id: faccoes
   term: "Facções"
   aliases: [faccao, facção, x-men, irmandade, independente]
-  summary: "Todo mutante escolhe um lado ao se registrar — X-Men, Irmandade ou Independente. A facção vira um cargo e aparece no /perfil e no /ranking."
-  details: "A facção é escolhida no cadastro com o Cérebro e, por enquanto, só a staff pode trocar. Ela soma pontos para o total da facção no /ranking. Não muda seus poderes nem limita com quem você joga."
-  related: [arquetipos, rank]
+  summary: "Todo herói começa Independente. A facção (ou equipe) vira um cargo e aparece no /perfil e no /ranking."
+  details: "Novos heróis começam na facção inicial do servidor (Independente). Quem se registrou antes das origens mantém a facção que escolheu. Por enquanto só a staff troca a facção. Ela soma pontos para o total da facção no /ranking. Não muda seus poderes nem limita com quem você joga."
+  related: [origens, arquetipos, rank]
+  bot: cerebro
+- id: origens
+  term: "Origens"
+  aliases:
+    [
+      origem,
+      mutante,
+      inumano,
+      ciencia,
+      ciência,
+      tecnologia,
+      mistico,
+      místico,
+      cosmico,
+      cósmico,
+      treinado,
+      /heroi origem,
+    ]
+  summary: "De onde vêm seus poderes: Mutante, Inumano, Ciência, Tecnologia, Místico, Cósmico ou Treinado. Você escolhe no cadastro."
+  details: "A origem define quais poderes do catálogo você pode escolher; ela não muda atributos (eles vêm do arquétipo e do nível). Heróis registrados antes das origens viraram Mutante e podem trocar uma única vez com /heroi origem."
+  related: [poderes, arquetipos]
   bot: cerebro
 - id: arquetipos
   term: "Arquétipos"
   aliases: [arquetipo, arquétipo, classe]
-  summary: "O tipo do seu mutante (Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Definido pelo seu poder principal no cadastro."
+  summary: "O tipo do seu herói (Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Definido pelo seu poder principal no cadastro."
   details: "O arquétipo vem do tipo do seu poder principal (ou do menu, se o servidor desligou o catálogo de poderes) e define seus atributos base de combate. A staff pode mudar a lista e qual tipo de poder leva a qual arquétipo."
   related: [faccoes, codinome]
   bot: cerebro
 - id: poderes
   term: "Poderes"
-  aliases: [catalogo, catálogo, poder principal, poderes secundarios, poderes secundários, /mutante poderes]
-  summary: "No cadastro você escolhe 1 poder principal e até 2 secundários de um catálogo. O tipo do principal define seu arquétipo."
-  details: "São 6 tipos: ofensivo, defensivo, psiônico, elemental, movimento e utilitário. Os secundários aparecem na ficha e no cartão do /perfil, sem mudar atributos. Quem se registrou antes do catálogo usa /mutante poderes uma vez. Você também descreve o poder com suas palavras na ficha."
+  aliases:
+    [
+      catalogo,
+      catálogo,
+      poder principal,
+      poderes secundarios,
+      poderes secundários,
+      /heroi poderes,
+      /mutante poderes,
+    ]
+  summary: "No cadastro você escolhe 1 poder principal e até 2 secundários entre os poderes da sua origem. O tipo do principal define seu arquétipo."
+  details: "São 6 tipos: ofensivo, defensivo, psiônico, elemental, movimento e utilitário. Os secundários aparecem na ficha e no cartão do /perfil, sem mudar atributos. Quem se registrou antes do catálogo usa /heroi poderes uma vez. Você também descreve o poder com suas palavras na ficha."
   related: [arquetipos, codinome]
   bot: cerebro
 - id: codinome
   term: "Codinome"
   aliases: [nome, apelido, codename]
-  summary: "O nome do seu mutante. Precisa ser único no servidor e original — nada de nomes de heróis ou vilões existentes."
+  summary: "O nome do seu herói. Precisa ser único no servidor e original — nada de nomes de heróis ou vilões existentes."
   details: "O codinome tem entre 2 e 32 caracteres (configurável). O Cérebro recusa nomes de personagens conhecidos, com ou sem acentos, números no lugar de letras ou espaços. Tentativas repetidas avisam a staff."
   related: [mutante-original]
   bot: cerebro
 - id: mutante-original
-  term: "Mutante original"
-  aliases: [personagem original, oc, canon]
-  summary: "Aqui você cria seu próprio mutante. Personagens existentes da Marvel não podem ser usados como codinome ou ficha."
-  details: "A regra vale para codinomes, fichas e textos dos bots. Inspire-se à vontade, mas invente: nome, poder e origem precisam ser seus. A staff pode pedir para você trocar."
+  term: "Herói original"
+  aliases: [personagem original, oc, canon, mutante original]
+  summary: "Aqui você cria seu próprio herói. Personagens existentes da Marvel não podem ser usados como codinome ou ficha, mas podem aparecer nas histórias das missões."
+  details: "A regra vale para codinomes, fichas e textos dos bots. Inspire-se à vontade, mas invente: nome, poder e história precisam ser seus. A staff pode pedir para você trocar."
   related: [codinome]
 - id: xp
   term: "XP"
@@ -91,7 +121,7 @@
 - id: combate
   term: "Combate"
   aliases: [luta, batalha, duelo]
-  summary: "Disputas entre mutantes em turnos, decididas por atributos e um pouco de sorte."
+  summary: "Disputas entre heróis em turnos, decididas por atributos e um pouco de sorte."
   details: "Lutas em turnos com botões Atacar, Poder e Defender. Treine com /treino; missões com luta, invasões e raids usam o mesmo sistema. Todo combate tem semente e pode ser conferido pela staff. Regras completas em docs/COMBAT.md."
   related: [poder, defesa, velocidade, foco]
   bot: sentinel

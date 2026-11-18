@@ -3,28 +3,28 @@
 - id: bem-vindo
   title: "🧬 Bem-vindo à Legião"
   body: |
-    Aqui você cria seu próprio mutante e joga com a comunidade direto no Discord: trivia, missões, lutas e eventos que mexem com o servidor inteiro. Tudo dá XP, sobe seu nível e seu rank.
+    Aqui você cria seu próprio herói e joga com a comunidade direto no Discord: trivia, missões, lutas e eventos que mexem com o servidor inteiro. Tudo dá XP, sobe seu nível e seu rank.
 
     Precisa de ajuda a qualquer hora? Use **/ajuda** (comandos) e **/regras** (termos do jogo). Mude o idioma com **/idioma**.
 - id: registro
   bot: cerebro
-  title: "📝 1. Registre seu mutante"
+  title: "📝 1. Registre seu herói"
   body: |
     Clique em **Começar** na mensagem de boas-vindas e siga os passos:
     1. Aceite as regras.
-    2. Escolha sua **facção**: X-Men, Irmandade ou Independente.
+    2. Escolha sua **origem**: Mutante, Inumano, Ciência, Tecnologia, Místico, Cósmico ou Treinado. Ela define quais poderes você pode escolher.
     3. Escolha seu **poder principal**: o tipo dele define seu **arquétipo** e seus atributos base.
     4. Escolha até **2 poderes secundários** (opcional).
-    5. Preencha a ficha: **codinome** original, descrição do poder e origem.
+    5. Preencha a ficha: **codinome** original, descrição do poder e sua história.
 
-    Nomes de personagens que já existem são recusados: invente o seu!
+    Todo herói começa **Independente**. Nomes de personagens que já existem são recusados: invente o seu!
 - id: ficha
   bot: cerebro
   title: "🪪 2. Sua ficha"
   body: |
-    **/perfil** mostra sua ficha com codinome, facção, arquétipo, poderes, nível, rank e atributos, junto com um **cartão** em imagem. O botão **Compartilhar** posta o cartão no canal.
+    **/perfil** (ou **/heroi ficha**) mostra sua ficha com codinome, origem, facção, arquétipo, poderes, nível, rank e atributos, junto com um **cartão** em imagem. O botão **Compartilhar** posta o cartão no canal.
 
-    Registrou antes do catálogo de poderes? Use **/mutante poderes** uma vez para escolher os seus.
+    Registrou antes do catálogo de poderes? Use **/heroi poderes** uma vez para escolher os seus. Registrou antes das origens? Use **/heroi origem** uma vez para escolher a sua.
 - id: poderes
   bot: cerebro
   title: "⚡ Poderes e arquétipos"

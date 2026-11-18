@@ -66,6 +66,7 @@ export async function playerCreated(t: TestContext, discordUserId: string) {
     codename: `Nome${discordUserId}`,
     archetype: 'Elemental',
     faction: 'xmen',
+    originType: 'mutante',
   });
   return memberId;
 }

@@ -1,0 +1,211 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`registration with an origin > snapshots of the origin menu, the welcome card and the public registry card > origin menu 1`] = `
+{
+  "allowedMentions": {
+    "parse": [],
+  },
+  "components": [
+    [
+      {
+        "customId": "cerebro:v1:origin",
+        "options": [
+          {
+            "default": false,
+            "description": "Nasceu com o gene X: os poderes despertaram sozinhos.",
+            "emoji": "🧬",
+            "label": "Mutante",
+            "value": "mutante",
+          },
+          {
+            "default": false,
+            "description": "Herdou poderes latentes, despertados pela névoa terrígena.",
+            "emoji": "💠",
+            "label": "Inumano",
+            "value": "inumano",
+          },
+          {
+            "default": false,
+            "description": "Um experimento, acidente ou soro mudou seu corpo.",
+            "emoji": "⚗️",
+            "label": "Ciência",
+            "value": "ciencia",
+          },
+          {
+            "default": false,
+            "description": "Seus poderes vêm de armaduras, armas e engenhocas.",
+            "emoji": "🤖",
+            "label": "Tecnologia",
+            "value": "tecnologia",
+          },
+          {
+            "default": false,
+            "description": "Domina magia, artefatos ou pactos com outras dimensões.",
+            "emoji": "🔮",
+            "label": "Místico",
+            "value": "mistico",
+          },
+          {
+            "default": false,
+            "description": "Ganhou poder de uma fonte vinda das estrelas.",
+            "emoji": "🌌",
+            "label": "Cósmico",
+            "value": "cosmico",
+          },
+          {
+            "default": false,
+            "description": "Sem superpoderes: técnica, disciplina e coragem.",
+            "emoji": "🥋",
+            "label": "Treinado",
+            "value": "treinado",
+          },
+        ],
+        "placeholder": "Escolha sua origem",
+        "type": "select",
+      },
+    ],
+  ],
+  "embeds": [
+    {
+      "author": {
+        "name": "Cérebro",
+      },
+      "color": 9323693,
+      "description": "De onde vêm seus poderes? A origem define quais poderes você pode escolher. Ela não muda seus atributos: eles vêm do arquétipo e do nível. Todo herói começa Independente e pode entrar numa equipe pelas missões de recrutamento.",
+      "footer": {
+        "text": "Legion · projeto de fã sem fins lucrativos",
+      },
+      "title": "🌟 Escolha sua origem",
+    },
+  ],
+  "ephemeral": true,
+  "persona": "cerebro",
+}
+`;
+
+exports[`registration with an origin > snapshots of the origin menu, the welcome card and the public registry card > profile embed 1`] = `
+{
+  "author": {
+    "name": "Cérebro",
+  },
+  "color": 3066993,
+  "description": "<@400000000000000001>",
+  "fields": [
+    {
+      "inline": true,
+      "name": "Origem",
+      "value": "🤖 Tecnologia",
+    },
+    {
+      "inline": true,
+      "name": "Arquétipo",
+      "value": "Metamorfo",
+    },
+    {
+      "inline": true,
+      "name": "Facção",
+      "value": "🟢 Independente",
+    },
+    {
+      "inline": true,
+      "name": "Rank",
+      "value": "Recruta",
+    },
+    {
+      "name": "Poderes",
+      "value": "★ Canhão de plasma",
+    },
+    {
+      "name": "Descrição do poder",
+      "value": "Cria faíscas que cegam",
+    },
+    {
+      "name": "História",
+      "value": "Acordou no meio de uma tempestade.",
+    },
+  ],
+  "footer": {
+    "text": "Legion · projeto de fã sem fins lucrativos",
+  },
+  "image": {
+    "url": "attachment://ficha.png",
+  },
+  "title": "🤖 Faísca Rubra",
+}
+`;
+
+exports[`registration with an origin > snapshots of the origin menu, the welcome card and the public registry card > registry card 1`] = `
+{
+  "allowedMentions": {
+    "parse": [],
+  },
+  "embeds": [
+    {
+      "author": {
+        "name": "Cérebro",
+      },
+      "color": 9323693,
+      "description": "Um novo herói entrou para a Legião: **Faísca Rubra**.",
+      "fields": [
+        {
+          "inline": true,
+          "name": "Origem",
+          "value": "🤖 Tecnologia",
+        },
+        {
+          "inline": true,
+          "name": "Arquétipo",
+          "value": "Metamorfo",
+        },
+        {
+          "inline": true,
+          "name": "Facção",
+          "value": "🟢 Independente",
+        },
+      ],
+      "footer": {
+        "text": "Legion · projeto de fã sem fins lucrativos",
+      },
+      "title": "🦸 Herói registrado!",
+    },
+  ],
+  "persona": "cerebro",
+}
+`;
+
+exports[`registration with an origin > snapshots of the origin menu, the welcome card and the public registry card > welcome 1`] = `
+{
+  "allowedMentions": {
+    "parse": [],
+    "users": [
+      "400000000000000001",
+    ],
+  },
+  "components": [
+    [
+      {
+        "customId": "cerebro:v1:start",
+        "emoji": "🧬",
+        "label": "Iniciar registro",
+        "style": "primary",
+        "type": "button",
+      },
+    ],
+  ],
+  "content": "<@400000000000000001>",
+  "embeds": [
+    {
+      "author": {
+        "name": "Cérebro",
+      },
+      "color": 9323693,
+      "description": "<@400000000000000001>, sua assinatura de poder acabou de aparecer nos nossos sensores. Para entrar na Legião, registre seu herói: leva menos de um minuto.",
+      "footer": {
+        "text": "Legion · projeto de fã sem fins lucrativos",
+      },
+      "title": "🧠 Cérebro detectou um novo sinal…",
+    },
+  ],
+  "persona": "cerebro",
+}
+`;

@@ -4,6 +4,7 @@ import {
   type GuildMember,
   type IncomingInteraction,
   isArchetype,
+  isOrigin,
   type Locale,
   type OutgoingMessage,
   type Responder,
@@ -13,6 +14,7 @@ import type { CerebroConfig } from './config.js';
 import { CerebroRepo, type MemberRow, type MutantRow, pendingPowersOf, toMemberView } from './db/repo.js';
 import { validateCodename } from './domain/codename.js';
 import { expectedRoles, transition } from './domain/onboarding.js';
+import { OriginChange } from './origin-change.js';
 import { PowerFlow } from './power-flow.js';
 import { CARD_FILE, SheetCard } from './sheet.js';
 import { CerebroUi, channelMention } from './ui.js';
@@ -28,6 +30,7 @@ export class CerebroFlow {
   readonly ui: CerebroUi;
   readonly powers: PowerFlow;
   readonly sheet: SheetCard;
+  readonly originChange: OriginChange;
 
   constructor(readonly ctx: BotContext<CerebroConfig>) {
     this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
@@ -37,6 +40,27 @@ export class CerebroFlow {
     });
     this.powers = new PowerFlow(this);
     this.sheet = new SheetCard(this);
+    this.originChange = new OriginChange(this);
+  }
+
+  /** Origins offered now: configured ones that have at least one power (when the catalog is on). */
+  visibleOrigins(): { key: string; emoji: string }[] {
+    return this.cfg.origins.filter(
+      (o) => !this.powers.enabled || this.powers.catalog.forOrigin(o.key).length,
+    );
+  }
+  isVisibleOrigin(key: string | null | undefined): key is string {
+    return isOrigin(key) && this.visibleOrigins().some((o) => o.key === key);
+  }
+  /** Where new heroes start: `cerebro.teams.startFaction`, or the first faction when it is not configured. */
+  startFaction(): string {
+    const { startFaction } = this.cfg.teams;
+    const factions = this.ctx.config.factions;
+    return factions.some((f) => f.key === startFaction) ? startFaction : (factions[0]?.key ?? startFaction);
+  }
+  /** Shown to the hero themself while the one-time origin change is open. */
+  originHint(mutant: MutantRow, locale?: Locale): string | null {
+    return mutant.originRechoice === 1 ? this.t('origin_change.hint', {}, locale) : null;
   }
 
   /** "★ main · secondary…" or null when the mutant has no catalog powers. */
@@ -166,13 +190,16 @@ export class CerebroFlow {
 
   /** The screen for a member's current step (used by "start", old buttons and resumes). */
   async currentScreen(row: MemberRow, locale: Locale, prefix?: string) {
-    switch (row.onboardingStep) {
+    switch (stepOf(row)) {
       case 'signal':
         return this.ui.rules(locale, prefix);
       case 'rules_accepted':
-        return this.ui.faction(locale, row.faction, prefix);
-      case 'faction_chosen':
-        if (this.powers.enabled) return this.powers.screen(locale, pendingPowersOf(row), 'r', prefix);
+        return this.ui.origin(locale, this.visibleOrigins(), row.pendingOrigin, prefix);
+      case 'origin_chosen':
+        if (!this.isVisibleOrigin(row.pendingOrigin))
+          return this.ui.origin(locale, this.visibleOrigins(), null, prefix);
+        if (this.powers.enabled)
+          return this.powers.screen(locale, pendingPowersOf(row), 'r', prefix, undefined, row.pendingOrigin);
         return this.ui.archetype(locale, row.pendingArchetype, prefix);
       default:
         return this.profileOrOptIns(row, locale);
@@ -214,17 +241,45 @@ export class CerebroFlow {
     await r.update(await this.currentScreen(next, locale));
   }
 
-  async chooseFaction(i: IncomingInteraction, r: Responder): Promise<void> {
+  async chooseOrigin(i: IncomingInteraction, r: Responder): Promise<void> {
     const locale = await this.locale(i.userId);
     const row = await this.loadOrCreate(i.userId);
-    const faction = i.values?.[0];
-    if (!faction || !this.ctx.config.factions.some((f) => f.key === faction))
-      return r.update(await this.currentScreen(row, locale, this.t('errors.invalid_choice', {}, locale)));
-    const res = transition(stepOf(row), 'choose_faction');
+    const origin = i.values?.[0];
+    const res = transition(stepOf(row), 'choose_origin');
     if (!res.ok)
       return r.update(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
-    const next = (await this.repo.updateMember(row.id, { onboardingStep: res.next, faction })) ?? row;
+    if (!this.isVisibleOrigin(origin))
+      return r.update(await this.currentScreen(row, locale, this.t('errors.invalid_choice', {}, locale)));
+    const changed = origin !== row.pendingOrigin;
+    const next =
+      (await this.repo.updateMember(row.id, {
+        onboardingStep: res.next,
+        pendingOrigin: origin,
+        ...(changed ? { pendingPowers: null, pendingArchetype: null } : {}),
+      })) ?? row;
     await r.update(await this.currentScreen(next, locale));
+  }
+
+  /** "Trocar origem" on the power picker: back to the origin menu, picks cleared. */
+  async backToOrigin(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    if (stepOf(row) !== 'origin_chosen')
+      return r.update(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
+    const next =
+      (await this.repo.updateMember(row.id, {
+        onboardingStep: 'rules_accepted',
+        pendingPowers: null,
+        pendingArchetype: null,
+      })) ?? row;
+    await r.update(await this.currentScreen(next, locale));
+  }
+
+  /** Buttons from before v0.9 (the faction menu): show where the member is now. */
+  async legacyButton(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    await r.update(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
   }
 
   async chooseArchetype(i: IncomingInteraction, r: Responder): Promise<void> {
@@ -244,7 +299,7 @@ export class CerebroFlow {
   async reopen(i: IncomingInteraction, r: Responder): Promise<void> {
     const locale = await this.locale(i.userId);
     const row = await this.loadOrCreate(i.userId);
-    if (row.onboardingStep !== 'faction_chosen' || !row.pendingArchetype)
+    if (stepOf(row) !== 'origin_chosen' || !row.pendingArchetype)
       return r.reply(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
     await r.showModal(this.ui.mutantModal(locale));
   }
@@ -254,7 +309,7 @@ export class CerebroFlow {
     await r.defer(true);
     const row = await this.loadOrCreate(i.userId);
     const res = transition(stepOf(row), 'submit_mutant');
-    if (!res.ok || !row.pendingArchetype || !row.faction) {
+    if (!res.ok || !row.pendingArchetype || !this.isVisibleOrigin(row.pendingOrigin)) {
       const prefix = res.ok ? this.t('errors.continue', {}, locale) : undefined;
       const screen = await this.currentScreen(
         res.ok ? { ...row, pendingArchetype: null } : row,
@@ -297,8 +352,17 @@ export class CerebroFlow {
       );
 
     const archetype = row.pendingArchetype;
-    const faction = row.faction;
+    const originType = row.pendingOrigin;
+    // A faction kept from the old faction step (before v0.9) stays; everyone else starts on startFaction.
+    const faction =
+      row.faction && this.ctx.config.factions.some((f) => f.key === row.faction)
+        ? row.faction
+        : this.startFaction();
     const picked = this.powers.enabled ? pendingPowersOf(row) : { main: null, secondary: [] };
+    if (picked.main && !this.powers.catalog.get(picked.main, originType)) {
+      const cleared = (await this.repo.updateMember(row.id, { pendingPowers: null })) ?? row;
+      return r.send(await this.currentScreen(cleared, locale, this.t('errors.power_origin', {}, locale)));
+    }
     let result:
       | { member: MemberRow; mutant: Awaited<ReturnType<CerebroRepo['insertMutant']>> }
       | 'already'
@@ -315,24 +379,32 @@ export class CerebroFlow {
             power: power.data,
             archetype,
             origin: origin.data,
+            originType,
           },
           tx,
         );
-        const main = picked.main ? this.powers.catalog.get(picked.main) : undefined;
+        const main = picked.main ? this.powers.catalog.get(picked.main, originType) : undefined;
         if (main)
           await this.repo.insertPowers(
             mutant.id,
             {
               main: main.id,
               secondary: picked.secondary
-                .filter((id) => id !== main.id && this.powers.catalog.get(id))
+                .filter((id) => id !== main.id && this.powers.catalog.get(id, originType))
                 .slice(0, this.cfg.powers.maxSecondary),
             },
             tx,
           );
         const member = await this.repo.updateMember(
           row.id,
-          { onboardingStep: 'registered', rank: 'recruta', pendingArchetype: null, pendingPowers: null },
+          {
+            onboardingStep: 'registered',
+            rank: 'recruta',
+            faction,
+            pendingArchetype: null,
+            pendingPowers: null,
+            pendingOrigin: null,
+          },
           tx,
         );
         if (!member) throw new Error('member vanished');
@@ -343,6 +415,7 @@ export class CerebroFlow {
           codename: mutant.codename,
           archetype: mutant.archetype,
           faction,
+          originType: mutant.originType,
         });
         return { member, mutant };
       });
@@ -361,7 +434,7 @@ export class CerebroFlow {
     }
 
     const { member, mutant } = result;
-    this.ctx.log.info({ userId: i.userId, memberId: member.id }, 'mutant registered');
+    this.ctx.log.info({ userId: i.userId, memberId: member.id }, 'hero registered');
     const rolesOk = await this.applyExpectedRoles(member);
     const header = this.ui.registeredEmbed(locale, mutant.codename);
     const reply = this.ui.optIns(locale, [], header);
@@ -450,7 +523,8 @@ export class CerebroFlow {
       (bot, err) => this.ctx.log.warn({ err, section: bot }, 'profile section failed'),
     );
     const msg = this.ui.profile(row, mutant, locale, extra, await this.powersLine(mutant, locale));
-    await r.reply(await this.withCard(msg, row, mutant, locale));
+    const hint = targetId === i.userId ? this.originHint(mutant, locale) : null;
+    await r.reply(await this.withCard(hint ? { ...msg, content: hint } : msg, row, mutant, locale));
   }
 
   /** Adds the PNG card to the first embed (faction color, image) when it renders. */

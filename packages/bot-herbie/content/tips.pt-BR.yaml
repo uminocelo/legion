@@ -1,7 +1,7 @@
 # Dicas do dia (pt-BR). bot: só aparece com esse bot ligado.
 - {
     id: perfil,
-    text: "Use /perfil para ver sua ficha de mutante — e /perfil membro:@alguém para ver a de outra pessoa.",
+    text: "Use /perfil para ver sua ficha de herói — e /perfil membro:@alguém para ver a de outra pessoa.",
   }
 - {
     id: preferencias,

@@ -139,6 +139,7 @@ describe('consumers', () => {
       codename: 'Faísca',
       archetype: 'Elemental',
       faction: 'xmen',
+      originType: 'mutante',
     };
     await bus.transaction((tx) => bus.emit(tx, 'player.created', payload));
     await bus.transaction((tx) => bus.emit(tx, 'player.created', payload));

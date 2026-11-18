@@ -1,6 +1,6 @@
 import { type BotContext, type DoctorCheck, TIKTOK_ROLE_NAME } from '@legion/core';
 import type { CerebroConfig } from './config.js';
-import { powerFiles, readPowers } from './powers.js';
+import { allowsOrigin, powerFiles, readPowers } from './powers.js';
 import type { CerebroSetup } from './setup.js';
 
 /**
@@ -22,7 +22,30 @@ export function cerebroDoctorChecks(ctx: BotContext<CerebroConfig>, setup: Cereb
             message: res.errors.slice(0, 5).join('\n'),
             fix: 'Corrija data/content/powers.yaml (veja docs/POWERS.md); até lá vale o catálogo anterior',
           };
-        return { status: 'ok', message: `${res.powers.length} poderes` };
+        const empty: string[] = [];
+        const thin: string[] = [];
+        for (const { key } of ctx.botConfig.origins) {
+          const ps = res.powers.filter(
+            (p) =>
+              allowsOrigin(p, key) &&
+              ctx.botConfig.archetypes.includes(ctx.botConfig.powers.typeToArchetype[p.type]),
+          );
+          if (!ps.length) empty.push(key);
+          else if (new Set(ps.map((p) => p.type)).size < 2) thin.push(key);
+        }
+        if (empty.length)
+          return {
+            status: 'fail',
+            message: `Origens sem nenhum poder (escondidas do registro): ${empty.join(', ')}`,
+            fix: 'Acrescente poderes com essas origens em data/content/powers.yaml, ou tire a origem de cerebro.origins',
+          };
+        if (thin.length)
+          return {
+            status: 'warn',
+            message: `Origens com poderes de um tipo só: ${thin.join(', ')}`,
+            fix: 'Dê a cada origem poderes de pelo menos 2 tipos (veja docs/POWERS.md)',
+          };
+        return { status: 'ok', message: `${res.powers.length} poderes; todas as origens têm poderes` };
       },
     },
     {

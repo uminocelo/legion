@@ -1,13 +1,13 @@
 {
   "jarvis": {
     "errors": {
-      "not_registered": "Você ainda não é um mutante registrado. Comece pelo canal {welcome}.",
+      "not_registered": "Você ainda não é um herói registrado. Comece pelo canal {welcome}.",
       "not_staff": "Apenas a staff pode usar este comando.",
       "cooldown": "Calma, agente. Próxima pergunta em {seconds}s.",
       "no_questions": "Não há perguntas disponíveis{category} agora. Avise a staff.",
       "not_your_question": "Esta pergunta é de outra pessoa. Use /trivia para a sua.",
       "unknown_attempt": "Não encontrei esta pergunta. Use /trivia para uma nova.",
-      "unknown_member": "Esse membro ainda não é um mutante registrado.",
+      "unknown_member": "Esse membro ainda não é um herói registrado.",
       "ranking_cooldown": "O ranking acabou de ser mostrado aqui. Tente de novo em {seconds}s."
     },
     "trivia": {

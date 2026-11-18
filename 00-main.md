@@ -153,7 +153,7 @@ export interface ReadModels {
   progress: { get(memberId: string): Promise<ProgressView | null> };                     // J.A.R.V.I.S. (null if disabled)
 }
 // MemberView = { id, discordUserId, onboardingStep, faction, rank, optIns, leftAt }
-// MutantView = { id, memberId, codename, archetype, power, origin }
+// MutantView = { id, memberId, codename, archetype, power, origin, originType }  (origin = free-text story; originType = origin key, v0.9)
 // ProgressView = { xp, level, rank, currentStreak, bestStreak }
 ```
 
@@ -289,7 +289,7 @@ All ids are strings. `memberId` is the `members.id` ULID; `discordUserId` is the
 | Event | Emitted by | Consumed by | Payload |
 |---|---|---|---|
 | `member.joined` | Cérebro | Sentinel (account-age check, v3) | `{ discordUserId, accountCreatedAt, isRejoin: boolean }` |
-| `player.created` | Cérebro | H.E.R.B.I.E. (start tutorial), J.A.R.V.I.S. (create progress row) | `{ memberId, discordUserId, mutantId, codename, archetype, faction }` |
+| `player.created` | Cérebro | H.E.R.B.I.E. (start tutorial), J.A.R.V.I.S. (create progress row) | `{ memberId, discordUserId, mutantId, codename, archetype, faction, originType }` (`originType` since v0.9) |
 | `player.rejoined` | Cérebro | J.A.R.V.I.S. (optional welcome back) | `{ memberId, discordUserId }` |
 | `player.optins_changed` | Cérebro | (none yet) | `{ memberId, optIns: string[] }` |
 | `command.executed` | core router | H.E.R.B.I.E. (tutorial triggers) | `{ discordUserId, memberId: string \| null, bot: BotId, command: string, subcommand: string \| null }` |

@@ -90,7 +90,7 @@ describe('mission combat flow', () => {
       subcommand: 'spawn',
       options: { dificuldade: 'normal', membro1: '999' },
     });
-    expect(t.gateway.lastReply(unknown)?.content).toBe('<@999> ainda não registrou um mutante.');
+    expect(t.gateway.lastReply(unknown)?.content).toBe('<@999> ainda não registrou um herói.');
     const ok = await t.interact({
       kind: 'command',
       userId: '1',

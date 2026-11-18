@@ -1,9 +1,9 @@
 {
   "cerebro": {
     "welcome": {
-      "title": "🧠 Cérebro detected a new mutant signal…",
-      "body": "{mention}, your genetic signature just showed up on our sensors. To join the Legion, register: it takes less than a minute.",
-      "persistent_body": "Just arrived? Click the button below to start your mutant registration.",
+      "title": "🧠 Cérebro detected a new signal…",
+      "body": "{mention}, your power signature just showed up on our sensors. To join the Legion, register your hero: it takes less than a minute.",
+      "persistent_body": "Just arrived? Click the button below to register your hero.",
       "start_button": "Start registration",
       "back": "🧠 Signal recognized. Welcome back, **{codename}**! Your roles were restored."
     },
@@ -14,9 +14,6 @@
       "accept_button": "I accept the rules"
     },
     "faction": {
-      "title": "⚔️ Choose your faction",
-      "body": "Every mutant fights alongside a faction. Pick one (you can't switch on your own later, for now).",
-      "placeholder": "Choose your faction",
       "xmen": {
         "name": "X-Men",
         "description": "They protect a world that fears them."
@@ -34,7 +31,7 @@
       "title": "🧬 Choose your archetype",
       "body": "Your archetype sets your base stats. Then you describe your power in your own words.",
       "placeholder": "Choose your archetype",
-      "reopen_button": "Fill in the mutant sheet",
+      "reopen_button": "Fill in the hero sheet",
       "Telepata": "Sharp mind: high focus, low defense.",
       "Elemental": "Commands an element: strong attack.",
       "Metamorfo": "Shapeshifter: balanced in everything.",
@@ -43,46 +40,48 @@
       "Tecnopata": "Talks to machines: focus and defense."
     },
     "modal": {
-      "title": "Mutant sheet",
+      "title": "Hero sheet",
       "codename": "Codename (original!)",
       "codename_placeholder": "E.g. Crimson Spark",
       "power": "Describe your power",
       "power_placeholder": "E.g. Creates sparks that blind enemies",
-      "origin": "Origin",
-      "origin_placeholder": "How did your powers awaken?"
+      "origin": "Story",
+      "origin_placeholder": "How did you get your powers?"
     },
     "errors": {
-      "canon_name": "🚫 **{codename}** looks like a Marvel character name. The Legion only accepts **original** mutants: invent a codename of your own!",
+      "canon_name": "🚫 **{codename}** looks like a Marvel character name. The Legion only accepts **original** heroes: invent a codename of your own!",
       "codename_length": "The codename must have between {min} and {max} characters.",
       "codename_chars": "Use only letters, numbers, spaces, hyphens and apostrophes in the codename.",
-      "codename_taken": "The codename **{codename}** already belongs to another mutant. Pick another one.",
+      "codename_taken": "The codename **{codename}** already belongs to another hero. Pick another one.",
       "power_length": "Describe your power in up to 100 characters.",
-      "origin_length": "Tell your origin in up to 300 characters.",
+      "origin_length": "Tell your story in up to 300 characters.",
       "invalid_choice": "That option is not available. Try again.",
       "continue": "Let's continue where you left off:",
       "not_staff": "Only staff (Professor X or the Council) can use this command.",
       "role_permission": "I couldn't adjust your roles right now. Staff can see it in the logs, and I'll try again shortly.",
-      "not_registered_self": "You are not a registered mutant yet. Start in {channel}.",
-      "no_welcome_channel": "the welcome channel"
+      "not_registered_self": "You are not a registered hero yet. Start in {channel}.",
+      "no_welcome_channel": "the welcome channel",
+      "power_origin": "That power is not available for your origin. Pick another one."
     },
     "registered": {
-      "title": "✅ Mutant registered!",
+      "title": "✅ Hero registered!",
       "body": "Welcome to the Legion, **{codename}**. The server is now unlocked for you.",
-      "public_title": "🧬 Mutant registered!",
-      "public_body": "A new mutant joined the Legion: **{codename}**."
+      "public_title": "🦸 Hero registered!",
+      "public_body": "A new hero joined the Legion: **{codename}**."
     },
     "profile": {
-      "title": "🧬 {codename}",
+      "title": "{emoji} {codename}",
       "archetype": "Archetype",
       "faction": "Faction",
       "rank": "Rank",
       "power": "Power",
-      "origin": "Origin",
       "share_button": "Share",
       "shared": "Sheet shared in the channel!",
-      "not_registered": "That member is not a registered mutant yet.",
+      "not_registered": "That member is not a registered hero yet.",
       "powers": "Powers",
-      "power_description": "Power description"
+      "power_description": "Power description",
+      "origin_type": "Origin",
+      "story": "Story"
     },
     "ranks": {
       "recruta": "Recruit",
@@ -110,7 +109,7 @@
       "welcome_posted": "posted",
       "welcome_refreshed": "refreshed",
       "welcome_missing_channel": "set channels.welcome",
-      "reconciled": "Roles re-applied for {count} registered mutant(s).",
+      "reconciled": "Roles re-applied for {count} registered hero(es).",
       "hierarchy_warning": "⚠️ My role is below these roles, so I can't assign them: {roles}. Drag the bot role above them in Server Settings → Roles.",
       "errors": "Errors: {errors}",
       "truncated": "… and {count} more item(s)."
@@ -125,15 +124,16 @@
       "left": "Left the server"
     },
     "help": {
-      "perfil": "Shows your mutant sheet (or another member's).",
+      "perfil": "Shows your hero sheet (or another member's).",
       "preferencias": "Turns optional roles on and off, like Live alerts.",
       "setup": "Syncs roles and, if asked, channel visibility.",
       "status": "Shows how many members are at each registration step.",
-      "mutante_poderes": "Picks catalog powers for an already registered mutant (once)"
+      "heroi_poderes": "Picks catalog powers for an already registered hero (once)",
+      "heroi_origem": "Picks your hero's origin (once, for heroes registered before origins)"
     },
     "commands": {
       "perfil": {
-        "description": "Shows a mutant sheet",
+        "description": "Shows a hero sheet",
         "membro": "Member (default: you)"
       },
       "cerebro": {
@@ -145,8 +145,13 @@
         "status": "Registration status (staff)"
       },
       "mutante": {
-        "description": "Your mutant sheet",
-        "poderes": "Pick your powers from the catalog (once)"
+        "description": "Deprecated: use /heroi"
+      },
+      "heroi": {
+        "description": "Your hero sheet",
+        "ficha": "Shows your sheet",
+        "poderes": "Picks your powers from the catalog (once)",
+        "origem": "Picks your origin (once, heroes from before origins)"
       }
     },
     "powers": {
@@ -158,7 +163,7 @@
         "movement": "Movement",
         "utility": "Utility"
       },
-      "main_title": "🧬 Choose your main power",
+      "main_title": "⚡ Pick your main power",
       "main_body": "Your main power type sets your archetype and base stats. Then you pick secondary powers and describe it all in your own words.",
       "placeholder": "Powers: {types}",
       "main_chosen": "**Main power:** {power}\n**Archetype:** {archetype}",
@@ -176,10 +181,11 @@
       "already_list": "You already chose your powers: {powers}. Ask staff if you need to change them.",
       "disabled": "The power catalog is off on this server.",
       "saved": "✅ Powers saved: {powers}. Archetype: **{archetype}**.",
-      "saved_changed": "✅ Powers saved: {powers}. New archetype: **{archetype}**."
+      "saved_changed": "✅ Powers saved: {powers}. New archetype: **{archetype}**.",
+      "change_origin": "Change origin"
     },
     "card": {
-      "title": "CEREBRO · MUTANT SHEET",
+      "title": "CÉREBRO · HERO SHEET",
       "level": "Level",
       "powers": "POWERS",
       "hp": "HP",
@@ -187,6 +193,53 @@
       "def": "DEF",
       "spd": "SPD",
       "foc": "FOC"
+    },
+    "origin_step": {
+      "title": "🌟 Choose your origin",
+      "body": "Where do your powers come from? Your origin decides which powers you can pick. It does not change your stats: those come from archetype and level. Every hero starts Independent and can join a team through recruitment missions.",
+      "placeholder": "Choose your origin"
+    },
+    "origin_change": {
+      "title": "🌟 Choose your origin (once)",
+      "body": "Your hero was registered before origins existed and became a Mutant. You may pick another origin **only once**. Powers that fit the new origin stay; if any does not fit, you pick again.",
+      "current": "Current origin: **{origin}**",
+      "cancel": "Cancel",
+      "cancelled": "Nothing changed. You can still use `/heroi origem` later.",
+      "used": "The origin change is only for heroes registered before origins, and only once. Ask the staff if you need help.",
+      "pick_powers": "Some powers do not fit **{origin}**. Pick your powers again (or cancel to keep everything).",
+      "saved": "✅ Origin saved: **{origin}**. Your powers stay the same.",
+      "saved_powers": "✅ Origin saved: **{origin}**. Powers: {powers}.",
+      "hint": "💡 New: every hero now has an origin. You can pick yours once with `/heroi origem`."
+    },
+    "origin": {
+      "mutante": {
+        "name": "Mutant",
+        "description": "Born with the X-gene: the powers woke up on their own."
+      },
+      "inumano": {
+        "name": "Inhuman",
+        "description": "Inherited latent powers, woken by the Terrigen mist."
+      },
+      "ciencia": {
+        "name": "Science",
+        "description": "An experiment, accident or serum changed your body."
+      },
+      "tecnologia": {
+        "name": "Technology",
+        "description": "Your powers come from armor, weapons and gadgets."
+      },
+      "mistico": {
+        "name": "Mystic",
+        "description": "Wields magic, artifacts or pacts with other dimensions."
+      },
+      "cosmico": {
+        "name": "Cosmic",
+        "description": "Gained power from a source among the stars."
+      },
+      "treinado": {
+        "name": "Trained",
+        "description": "No superpowers: skill, discipline and courage."
+      }
     }
   }
 }

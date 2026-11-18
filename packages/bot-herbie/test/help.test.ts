@@ -19,7 +19,7 @@ describe('/ajuda', () => {
     t = await setupHerbie({ jarvis: false });
     t.gateway.addMember({ userId: '222' });
     const e = t.gateway.lastReply(await ajuda(t, '222'))?.embeds?.[0];
-    expect(e?.description).toContain(`registre seu mutante no canal <#${CH.welcome}>`);
+    expect(e?.description).toContain(`registre seu herói no canal <#${CH.welcome}>`);
     const all = JSON.stringify(e?.fields);
     expect(all).toContain('/ajuda');
     expect(all).not.toContain('/herbie');
@@ -31,7 +31,7 @@ describe('/ajuda', () => {
     t = await setupHerbie();
     const m = await playerCreated(t, '111');
     expect(t.gateway.lastReply(await ajuda(t, '111'))?.embeds?.[0]?.description).toContain(
-      '**Agora:** Conheça seu mutante',
+      '**Agora:** Conheça seu herói',
     );
     await servicesOf(t).repo.updateProgress(m, { status: 'completed' });
     const d = t.gateway.lastReply(await ajuda(t, '111'))?.embeds?.[0]?.description ?? '';

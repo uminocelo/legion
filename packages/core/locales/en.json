@@ -3,7 +3,7 @@
     "errors": {
       "generic": "Something went wrong, please try again.",
       "expired_component": "This button has expired. Use the command again.",
-      "rate_limited": "Easy, mutant! Try again in {seconds}s.",
+      "rate_limited": "Easy, hero! Try again in {seconds}s.",
       "not_staff": "Only staff can use this command."
     },
     "personas": {

@@ -50,12 +50,62 @@
       "options": []
     },
     {
+      "path": "/heroi ficha",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Mostra a sua ficha",
+        "en": "Shows your sheet"
+      },
+      "options": []
+    },
+    {
+      "path": "/heroi origem",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Escolhe sua origem (uma vez, heróis de antes das origens)",
+        "en": "Picks your origin (once, heroes from before origins)"
+      },
+      "options": []
+    },
+    {
+      "path": "/heroi poderes",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Escolhe seus poderes do catálogo (uma vez)",
+        "en": "Picks your powers from the catalog (once)"
+      },
+      "options": []
+    },
+    {
+      "path": "/mutante ficha",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Mostra a sua ficha",
+        "en": "Shows your sheet"
+      },
+      "options": []
+    },
+    {
+      "path": "/mutante origem",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Escolhe sua origem (uma vez, heróis de antes das origens)",
+        "en": "Picks your origin (once, heroes from before origins)"
+      },
+      "options": []
+    },
+    {
       "path": "/mutante poderes",
       "kind": "slash",
       "staff": false,
       "description": {
         "pt-BR": "Escolhe seus poderes do catálogo (uma vez)",
-        "en": "Pick your powers from the catalog (once)"
+        "en": "Picks your powers from the catalog (once)"
       },
       "options": []
     },
@@ -64,8 +114,8 @@
       "kind": "slash",
       "staff": false,
       "description": {
-        "pt-BR": "Mostra a ficha de um mutante",
-        "en": "Shows a mutant sheet"
+        "pt-BR": "Mostra a ficha de um herói",
+        "en": "Shows a hero sheet"
       },
       "options": [
         {

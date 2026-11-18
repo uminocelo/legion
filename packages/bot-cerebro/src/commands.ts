@@ -21,6 +21,41 @@ export function cerebroCommands(
     return false;
   };
 
+  /** `/heroi` and, until v1.0, the same command as `/mutante` (deprecated alias). */
+  const heroCommand = (name: string, en: string, descKey: string): SlashCommandDefinition => ({
+    name,
+    json: {
+      name,
+      name_localizations: { 'en-US': en },
+      ...desc(i18n, descKey),
+      options: [
+        {
+          type: 1,
+          name: 'ficha',
+          name_localizations: { 'en-US': 'sheet' },
+          ...desc(i18n, 'cerebro.commands.heroi.ficha'),
+        },
+        {
+          type: 1,
+          name: 'poderes',
+          name_localizations: { 'en-US': 'powers' },
+          ...desc(i18n, 'cerebro.commands.heroi.poderes'),
+        },
+        {
+          type: 1,
+          name: 'origem',
+          name_localizations: { 'en-US': 'origin' },
+          ...desc(i18n, 'cerebro.commands.heroi.origem'),
+        },
+      ],
+    },
+    execute: (i, r) => {
+      if (i.subcommand === 'origem') return flow.originChange.command(i, r);
+      if (i.subcommand === 'ficha') return flow.profile({ ...i, options: {} }, r);
+      return flow.powers.command(i, r);
+    },
+  });
+
   return [
     {
       name: 'perfil',
@@ -40,23 +75,8 @@ export function cerebroCommands(
       },
       execute: (i, r) => flow.profile(i, r),
     },
-    {
-      name: 'mutante',
-      json: {
-        name: 'mutante',
-        name_localizations: { 'en-US': 'mutant' },
-        ...desc(i18n, 'cerebro.commands.mutante.description'),
-        options: [
-          {
-            type: 1,
-            name: 'poderes',
-            name_localizations: { 'en-US': 'powers' },
-            ...desc(i18n, 'cerebro.commands.mutante.poderes'),
-          },
-        ],
-      },
-      execute: (i, r) => flow.powers.command(i, r),
-    },
+    heroCommand('heroi', 'hero', 'cerebro.commands.heroi.description'),
+    heroCommand('mutante', 'mutant', 'cerebro.commands.mutante.description'),
     {
       name: 'cerebro',
       json: {
@@ -128,7 +148,7 @@ async function statusMessage(
   const t = (k: string, v: Record<string, string | number> = {}) =>
     ctx.i18n.t(`cerebro.status.${k}`, v, locale);
   const counts = await flow.repo.countsByStep();
-  const steps = ['signal', 'rules_accepted', 'faction_chosen', 'registered']
+  const steps = ['signal', 'rules_accepted', 'origin_chosen', 'registered']
     .map((s) => `${s}: **${counts[s] ?? 0}**`)
     .join('\n');
   const last = await ctx.kv.get<LastRoleSync>(LAST_ROLE_SYNC_KEY);

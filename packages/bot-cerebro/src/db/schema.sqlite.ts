@@ -1,4 +1,4 @@
-import { index, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const members = sqliteTable(
   'members',
@@ -10,6 +10,8 @@ export const members = sqliteTable(
     rulesAcceptedAt: text('rules_accepted_at'),
     faction: text('faction'),
     pendingArchetype: text('pending_archetype'),
+    /** Origin key picked during registration, until the hero is saved. */
+    pendingOrigin: text('pending_origin'),
     /** JSON { main, secondary[] } while picking powers (registration or /mutante poderes). */
     pendingPowers: text('pending_powers'),
     rank: text('rank').notNull().default('recruta'),
@@ -35,7 +37,12 @@ export const mutants = sqliteTable(
     codenameNormalized: text('codename_normalized').notNull(),
     power: text('power').notNull(),
     archetype: text('archetype').notNull(),
+    /** Free-text backstory, shown as "História". */
     origin: text('origin').notNull(),
+    /** Origin category (`cerebro.origins` key). */
+    originType: text('origin_type').notNull().default('mutante'),
+    /** 1 = may change origin once with `/heroi origem` (heroes created before v0.9). */
+    originRechoice: integer('origin_rechoice').notNull().default(0),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },

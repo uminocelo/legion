@@ -1,9 +1,9 @@
 {
   "cerebro": {
     "welcome": {
-      "title": "🧠 Cérebro detectou um novo sinal mutante…",
-      "body": "{mention}, sua assinatura genética acabou de aparecer nos nossos sensores. Para entrar na Legião, faça seu registro: leva menos de um minuto.",
-      "persistent_body": "Chegou agora? Clique no botão abaixo para começar seu registro de mutante.",
+      "title": "🧠 Cérebro detectou um novo sinal…",
+      "body": "{mention}, sua assinatura de poder acabou de aparecer nos nossos sensores. Para entrar na Legião, registre seu herói: leva menos de um minuto.",
+      "persistent_body": "Chegou agora? Clique no botão abaixo para registrar seu herói.",
       "start_button": "Iniciar registro",
       "back": "🧠 Sinal reconhecido. Bem-vindo de volta, **{codename}**! Seus cargos foram restaurados."
     },
@@ -14,9 +14,6 @@
       "accept_button": "Aceito as regras"
     },
     "faction": {
-      "title": "⚔️ Escolha sua facção",
-      "body": "Cada mutante luta ao lado de uma facção. Escolha uma (por enquanto não dá para trocar sozinho depois).",
-      "placeholder": "Escolha sua facção",
       "xmen": {
         "name": "X-Men",
         "description": "Protegem um mundo que os teme."
@@ -34,7 +31,7 @@
       "title": "🧬 Escolha seu arquétipo",
       "body": "Seu arquétipo define seus atributos base. Depois você descreve seu poder com suas palavras.",
       "placeholder": "Escolha seu arquétipo",
-      "reopen_button": "Preencher ficha do mutante",
+      "reopen_button": "Preencher ficha do herói",
       "Telepata": "Mente afiada: foco alto, pouca defesa.",
       "Elemental": "Domina um elemento: ataque forte.",
       "Metamorfo": "Muda de forma: equilibrado em tudo.",
@@ -43,46 +40,48 @@
       "Tecnopata": "Conversa com máquinas: foco e defesa."
     },
     "modal": {
-      "title": "Ficha do mutante",
+      "title": "Ficha do herói",
       "codename": "Codinome (original!)",
       "codename_placeholder": "Ex.: Faísca Rubra",
       "power": "Descreva seu poder",
       "power_placeholder": "Ex.: Cria faíscas que cegam inimigos",
-      "origin": "Origem",
-      "origin_placeholder": "Como seus poderes despertaram?"
+      "origin": "História",
+      "origin_placeholder": "Como você ganhou seus poderes?"
     },
     "errors": {
-      "canon_name": "🚫 **{codename}** parece nome de um personagem da Marvel. A Legião só aceita mutantes **originais**: invente um codinome só seu!",
+      "canon_name": "🚫 **{codename}** parece nome de um personagem da Marvel. A Legião só aceita heróis **originais**: invente um codinome seu!",
       "codename_length": "O codinome precisa ter entre {min} e {max} caracteres.",
       "codename_chars": "Use só letras, números, espaços, hífen e apóstrofo no codinome.",
-      "codename_taken": "O codinome **{codename}** já pertence a outro mutante. Escolha outro.",
+      "codename_taken": "O codinome **{codename}** já pertence a outro herói. Escolha outro.",
       "power_length": "Descreva seu poder em até 100 caracteres.",
-      "origin_length": "Conte sua origem em até 300 caracteres.",
+      "origin_length": "Conte sua história em até 300 caracteres.",
       "invalid_choice": "Essa opção não está disponível. Tente de novo.",
       "continue": "Vamos continuar de onde você parou:",
       "not_staff": "Apenas a staff (Professor X ou Conselho) pode usar este comando.",
       "role_permission": "Não consegui ajustar seus cargos agora. A staff já foi avisada nos logs, e vou tentar de novo em instantes.",
-      "not_registered_self": "Você ainda não é um mutante registrado. Comece pelo canal {channel}.",
-      "no_welcome_channel": "o canal de boas-vindas"
+      "not_registered_self": "Você ainda não é um herói registrado. Comece pelo canal {channel}.",
+      "no_welcome_channel": "o canal de boas-vindas",
+      "power_origin": "Esse poder não está disponível para a sua origem. Escolha outro."
     },
     "registered": {
-      "title": "✅ Mutante registrado!",
+      "title": "✅ Herói registrado!",
       "body": "Bem-vindo à Legião, **{codename}**. O servidor foi liberado para você.",
-      "public_title": "🧬 Mutante registrado!",
-      "public_body": "Um novo mutante entrou para a Legião: **{codename}**."
+      "public_title": "🦸 Herói registrado!",
+      "public_body": "Um novo herói entrou para a Legião: **{codename}**."
     },
     "profile": {
-      "title": "🧬 {codename}",
+      "title": "{emoji} {codename}",
       "archetype": "Arquétipo",
       "faction": "Facção",
       "rank": "Rank",
       "power": "Poder",
-      "origin": "Origem",
       "share_button": "Compartilhar",
       "shared": "Ficha compartilhada no canal!",
-      "not_registered": "Esse membro ainda não é um mutante registrado.",
+      "not_registered": "Esse membro ainda não é um herói registrado.",
       "powers": "Poderes",
-      "power_description": "Descrição do poder"
+      "power_description": "Descrição do poder",
+      "origin_type": "Origem",
+      "story": "História"
     },
     "ranks": {
       "recruta": "Recruta",
@@ -110,7 +109,7 @@
       "welcome_posted": "publicada",
       "welcome_refreshed": "atualizada",
       "welcome_missing_channel": "configure channels.welcome",
-      "reconciled": "Cargos reaplicados para {count} mutante(s) registrado(s).",
+      "reconciled": "Cargos reaplicados para {count} herói(s) registrado(s).",
       "hierarchy_warning": "⚠️ Meu cargo está abaixo destes cargos, então não consigo atribuí-los: {roles}. Arraste o cargo do bot para cima deles em Configurações do servidor → Cargos.",
       "errors": "Erros: {errors}",
       "truncated": "… e mais {count} item(ns)."
@@ -125,15 +124,16 @@
       "left": "Saíram do servidor"
     },
     "help": {
-      "perfil": "Mostra a ficha do seu mutante (ou de outro membro).",
+      "perfil": "Mostra a ficha do seu herói (ou de outro membro).",
       "preferencias": "Liga e desliga cargos opcionais, como Aviso de Live.",
       "setup": "Sincroniza cargos e, se pedido, a visibilidade dos canais.",
       "status": "Mostra quantos membros estão em cada etapa do registro.",
-      "mutante_poderes": "Escolhe poderes do catálogo para um mutante já registrado (uma vez)"
+      "heroi_poderes": "Escolhe poderes do catálogo para um herói já registrado (uma vez)",
+      "heroi_origem": "Escolhe a origem do seu herói (uma vez, para quem se registrou antes das origens)"
     },
     "commands": {
       "perfil": {
-        "description": "Mostra a ficha de um mutante",
+        "description": "Mostra a ficha de um herói",
         "membro": "Membro (padrão: você)"
       },
       "cerebro": {
@@ -145,8 +145,13 @@
         "status": "Status do registro (staff)"
       },
       "mutante": {
-        "description": "Sua ficha de mutante",
-        "poderes": "Escolhe seus poderes do catálogo (uma vez)"
+        "description": "Obsoleto: use /heroi"
+      },
+      "heroi": {
+        "description": "Sua ficha de herói",
+        "ficha": "Mostra a sua ficha",
+        "poderes": "Escolhe seus poderes do catálogo (uma vez)",
+        "origem": "Escolhe sua origem (uma vez, heróis de antes das origens)"
       }
     },
     "powers": {
@@ -158,7 +163,7 @@
         "movement": "Movimento",
         "utility": "Utilitário"
       },
-      "main_title": "🧬 Escolha seu poder principal",
+      "main_title": "⚡ Escolha seu poder principal",
       "main_body": "O tipo do poder principal define seu arquétipo e seus atributos base. Depois você escolhe poderes secundários e descreve tudo com suas palavras.",
       "placeholder": "Poderes: {types}",
       "main_chosen": "**Poder principal:** {power}\n**Arquétipo:** {archetype}",
@@ -176,10 +181,11 @@
       "already_list": "Você já escolheu seus poderes: {powers}. Peça à staff se precisar trocar.",
       "disabled": "O catálogo de poderes está desligado neste servidor.",
       "saved": "✅ Poderes salvos: {powers}. Arquétipo: **{archetype}**.",
-      "saved_changed": "✅ Poderes salvos: {powers}. Novo arquétipo: **{archetype}**."
+      "saved_changed": "✅ Poderes salvos: {powers}. Novo arquétipo: **{archetype}**.",
+      "change_origin": "Trocar origem"
     },
     "card": {
-      "title": "CÉREBRO · FICHA DE MUTANTE",
+      "title": "CÉREBRO · FICHA DE HERÓI",
       "level": "Nível",
       "powers": "PODERES",
       "hp": "VIDA",
@@ -187,6 +193,53 @@
       "def": "DEF",
       "spd": "VEL",
       "foc": "FOCO"
+    },
+    "origin_step": {
+      "title": "🌟 Escolha sua origem",
+      "body": "De onde vêm seus poderes? A origem define quais poderes você pode escolher. Ela não muda seus atributos: eles vêm do arquétipo e do nível. Todo herói começa Independente e pode entrar numa equipe pelas missões de recrutamento.",
+      "placeholder": "Escolha sua origem"
+    },
+    "origin_change": {
+      "title": "🌟 Escolha sua origem (uma vez)",
+      "body": "Seu herói foi registrado antes das origens existirem e virou Mutante. Você pode escolher outra origem **uma única vez**. Poderes que combinam com a nova origem ficam; se algum não combinar, você escolhe de novo.",
+      "current": "Origem atual: **{origin}**",
+      "cancel": "Cancelar",
+      "cancelled": "Nada mudou. Você ainda pode usar `/heroi origem` depois.",
+      "used": "A troca de origem é só para heróis registrados antes das origens, e só uma vez. Fale com a staff se precisar de ajuda.",
+      "pick_powers": "Alguns poderes não combinam com **{origin}**. Escolha seus poderes de novo (ou cancele para manter tudo).",
+      "saved": "✅ Origem salva: **{origin}**. Seus poderes continuam os mesmos.",
+      "saved_powers": "✅ Origem salva: **{origin}**. Poderes: {powers}.",
+      "hint": "💡 Novidade: agora todo herói tem uma origem. Você pode escolher a sua uma vez com `/heroi origem`."
+    },
+    "origin": {
+      "mutante": {
+        "name": "Mutante",
+        "description": "Nasceu com o gene X: os poderes despertaram sozinhos."
+      },
+      "inumano": {
+        "name": "Inumano",
+        "description": "Herdou poderes latentes, despertados pela névoa terrígena."
+      },
+      "ciencia": {
+        "name": "Ciência",
+        "description": "Um experimento, acidente ou soro mudou seu corpo."
+      },
+      "tecnologia": {
+        "name": "Tecnologia",
+        "description": "Seus poderes vêm de armaduras, armas e engenhocas."
+      },
+      "mistico": {
+        "name": "Místico",
+        "description": "Domina magia, artefatos ou pactos com outras dimensões."
+      },
+      "cosmico": {
+        "name": "Cósmico",
+        "description": "Ganhou poder de uma fonte vinda das estrelas."
+      },
+      "treinado": {
+        "name": "Treinado",
+        "description": "Sem superpoderes: técnica, disciplina e coragem."
+      }
     }
   }
 }

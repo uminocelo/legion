@@ -169,7 +169,7 @@ describe('strikes', () => {
     await addMember(t, '222', 'xmen');
     const ev = await raidIn2h(t);
     await at(t, ev.startsAt);
-    expect(t.gateway.lastReply(await strike(t, '999', ev.id))?.content).toMatch(/^Registre seu mutante/);
+    expect(t.gateway.lastReply(await strike(t, '999', ev.id))?.content).toMatch(/^Registre seu herói/);
     expect(t.gateway.lastReply(await strike(t, '111', ev.id))?.content).toMatch(/^Ataque enviado!/);
     expect(t.gateway.lastReply(await strike(t, '111', ev.id))?.content).toBe(
       'Você ainda está se recuperando. Ataque de novo em 10 min.',

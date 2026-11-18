@@ -297,7 +297,7 @@ describe('/treino and /combate', () => {
     t.gateway.addMember({ userId: '222' });
     const r = await t.interact({ kind: 'command', userId: '222', commandName: 'treino' });
     expect(t.gateway.lastReply(r)?.content).toBe(
-      'Registre seu mutante antes de treinar (canal de boas-vindas).',
+      'Registre seu herói antes de treinar (canal de boas-vindas).',
     );
   });
 });

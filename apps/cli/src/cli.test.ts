@@ -325,7 +325,7 @@ describe('several Discord apps', () => {
     expect(res.map((r) => r.app)).toEqual(['main', 'jarvis']);
     const byApp = Object.fromEntries(puts.map((p) => [p.app, p.names]));
     expect(byApp[JAPP]).toEqual(['jarvis', 'missao', 'ranking', 'sequencia', 'trivia']);
-    expect(byApp[APP]).toEqual(['cerebro', 'mutante', 'perfil']);
+    expect(byApp[APP]).toEqual(['cerebro', 'heroi', 'mutante', 'perfil']);
   });
 
   it('init writes per-bot tokens to .env', () => {

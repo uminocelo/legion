@@ -32,10 +32,10 @@ const selects = (tc: TestContext, id: string) =>
   (reply(tc, id)?.components ?? []).flat().filter((c) => c.type === 'select');
 
 describe('power catalog', () => {
-  it('ships 32 generic powers in 6 types that pass the canon filter', () => {
+  it('ships 46 generic powers in 6 types that pass the canon filter', () => {
     const { powers, errors } = readPowers([SHIPPED]);
     expect(errors).toEqual([]);
-    expect(powers).toHaveLength(32);
+    expect(powers).toHaveLength(46);
     expect(new Set(powers.map((p) => p.type)).size).toBe(6);
     expect(powers.every((p) => p.name.en)).toBe(true);
   });
@@ -67,7 +67,7 @@ describe('power catalog', () => {
     const cat = new PowerCatalog(cfg.powers.typeToArchetype, cfg.archetypes);
     const broken = tmpFile('- id: [');
     expect(cat.load([SHIPPED, broken]).errors.length).toBeGreaterThan(0);
-    expect(cat.all()).toHaveLength(32);
+    expect(cat.all()).toHaveLength(46);
     const over = tmpFile(
       '- id: voo\n  type: movement\n  name: { pt-BR: Planar }\n  description: { pt-BR: Plana no vento. }\n',
     );
@@ -100,9 +100,10 @@ describe('power catalog', () => {
     const cat = new PowerCatalog(cfg.powers.typeToArchetype, cfg.archetypes);
     cat.load([SHIPPED]);
     const groups = cat.groups();
-    expect(groups.length).toBe(2);
+    expect(groups.length).toBe(3);
     expect(groups.every((g) => g.length <= 25)).toBe(true);
-    expect(groups.flat()).toHaveLength(32);
+    expect(groups.flat()).toHaveLength(46);
+    expect(cat.groups([], 'mutante').flat()).toHaveLength(33);
   });
 });
 
@@ -110,7 +111,7 @@ async function toPowers(tc: TestContext, userId = USER) {
   await join(tc, userId);
   await tc.interact({ kind: 'component', userId, customId: 'cerebro:v1:start' });
   await tc.interact({ kind: 'component', userId, customId: 'cerebro:v1:rules' });
-  return tc.interact({ kind: 'component', userId, customId: 'cerebro:v1:faction', values: ['xmen'] });
+  return tc.interact({ kind: 'component', userId, customId: 'cerebro:v1:origin', values: ['mutante'] });
 }
 const pick = (tc: TestContext, customId: string, values: string[], userId = USER) =>
   tc.interact({ kind: 'component', userId, customId, values });
@@ -119,10 +120,10 @@ describe('registration with powers', () => {
   it('main power sets the archetype, secondaries are capped, and the sheet shows them', async () => {
     t = await setupCerebro();
     const f = await toPowers(t);
-    expect(reply(t, f)?.embeds?.[0]?.title).toBe('🧬 Escolha seu poder principal');
+    expect(reply(t, f)?.embeds?.[0]?.title).toBe('⚡ Escolha seu poder principal');
     const menus = selects(t, f);
     expect(menus).toHaveLength(2);
-    expect(menus.flatMap((m) => ('options' in m ? m.options : [])).length).toBe(32);
+    expect(menus.flatMap((m) => ('options' in m ? m.options : [])).length).toBe(33);
 
     const m = await pick(t, powerIds.main('r', 0), ['telecinese']);
     expect(reply(t, m)?.embeds?.[0]?.description).toMatch(/Telecinese\n\*\*Arquétipo:\*\* Telepata/);
@@ -141,7 +142,7 @@ describe('registration with powers', () => {
     expect(t.gateway.repliesTo(next)[0]?.kind).toBe('showModal');
     await t.interact({ kind: 'modal', userId: USER, customId: 'cerebro:v1:mutant', fields: FIELDS });
     const [created] = await events(t, 'player.created');
-    expect(created).toMatchObject({ archetype: 'Telepata', faction: 'xmen' });
+    expect(created).toMatchObject({ archetype: 'Telepata', faction: 'independent', originType: 'mutante' });
     expect(Object.keys(created).sort()).toEqual([
       'archetype',
       'codename',
@@ -149,6 +150,7 @@ describe('registration with powers', () => {
       'faction',
       'memberId',
       'mutantId',
+      'originType',
     ]);
 
     const repo = repoOf(t);
@@ -170,9 +172,9 @@ describe('registration with powers', () => {
     await toPowers(t);
     await pick(t, powerIds.main('r', 1), ['voo']);
     const back = await t.interact({ kind: 'component', userId: USER, customId: powerIds.back('r') });
-    expect(reply(t, back)?.embeds?.[0]?.title).toBe('🧬 Escolha seu poder principal');
+    expect(reply(t, back)?.embeds?.[0]?.title).toBe('⚡ Escolha seu poder principal');
     const next = await t.interact({ kind: 'component', userId: USER, customId: powerIds.next('r') });
-    expect(reply(t, next)?.embeds?.[0]?.title).toBe('🧬 Escolha seu poder principal');
+    expect(reply(t, next)?.embeds?.[0]?.title).toBe('⚡ Escolha seu poder principal');
     await pick(t, powerIds.main('r', 1), ['voo']);
     const canon = await t.interact({
       kind: 'modal',
@@ -187,7 +189,7 @@ describe('registration with powers', () => {
       customId: 'cerebro:v1:mutant',
       fields: FIELDS,
     });
-    expect(reply(t, ok)?.embeds?.[0]?.title).toBe('✅ Mutante registrado!');
+    expect(reply(t, ok)?.embeds?.[0]?.title).toBe('✅ Herói registrado!');
     const [created] = await events(t, 'player.created');
     expect(created).toMatchObject({ archetype: 'Velocista' });
   });
@@ -216,7 +218,7 @@ describe('/mutante poderes', () => {
     // Registered before US-11: archetype menu, no catalog powers.
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
-    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:faction', values: ['xmen'] });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['mutante'] });
     await t.interact({
       kind: 'component',
       userId: USER,
@@ -230,7 +232,7 @@ describe('/mutante poderes', () => {
     expect((await repo.powersOf(mutant?.id ?? '')).main).toBeNull();
 
     const open = await cmd(t);
-    expect(reply(t, open)?.embeds?.[0]?.title).toBe('🧬 Escolha seu poder principal');
+    expect(reply(t, open)?.embeds?.[0]?.title).toBe('⚡ Escolha seu poder principal');
     const m = await pick(t, powerIds.main('e', 0), ['telepatia']);
     expect(reply(t, m)?.embeds?.[0]?.description).toMatch(/continua \*\*Elemental\*\*/);
     await pick(t, powerIds.secondary('e', 0), ['criocinese']);
@@ -250,11 +252,11 @@ describe('/mutante poderes', () => {
   it('changes the archetype when staff allows it; unregistered members are refused', async () => {
     t = await setupCerebro({ cerebro: { powers: { allowArchetypeChange: true, maxSecondary: 0 } } });
     const no = await cmd(t);
-    expect(reply(t, no)?.content).toMatch(/ainda não é um mutante registrado/);
+    expect(reply(t, no)?.content).toMatch(/ainda não é um herói registrado/);
     await join(t);
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
-    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:faction', values: ['xmen'] });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['mutante'] });
     await t.interact({
       kind: 'component',
       userId: USER,

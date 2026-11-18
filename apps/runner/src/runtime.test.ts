@@ -95,6 +95,7 @@ describe('buildRuntime', () => {
     expect(consumed).toMatchObject([{ consumerId: 'cerebro.rank-roles', status: 'done' }]);
     expect(gateway.registeredCommands?.map((c) => (c as { name: string }).name)).toEqual([
       'cerebro',
+      'heroi',
       'mutante',
       'perfil',
     ]);

@@ -4,7 +4,15 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- Hero origins: registration now asks for an origin (Mutante, Inumano, Ciência, Tecnologia, Místico, Cósmico, Treinado) instead of a faction, then offers only the powers of that origin. Origins do not change stats. Every new hero starts Independente (`cerebro.teams.startFaction`). Config: `cerebro.origins`, `cerebro.teams` (ADR 0031, `docs/UNIVERSE.md`).
+- 14 new powers: skills for Treinado and gadgets for Tecnologia. Power files accept `origins: [...]` (no key = every origin); `legion doctor` shows ❌ for an origin with no powers, which is also hidden from registration.
+- `/heroi` (`ficha`, `poderes`, `origem`). `/mutante` keeps working as an alias until v1.0.
+- `/heroi origem`: heroes registered before origins become Mutante with everything kept and may change origin once. H.E.R.B.I.E. posts one announcement per server (no DMs) and `/perfil` and `/heroi` remind the hero while the change is open.
+
 ### Changed
+- Player-facing text says "herói" instead of "mutante" in every bot, the guide and the glossary; the sheet and card show the origin, and the free-text "Origem" field is now "História". The default role name "Mutante Registrado" is unchanged (roles are matched by name).
+- `player.created` and `MutantView` include `originType`. Database: `mutants.origin_type`, `mutants.origin_rechoice`, `members.pending_origin` (migration `0002_hero_origins`, both dialects); members left at the old faction step continue from the origin step and keep their faction.
 - Missions can visit the Marvel universe: titles, scenes and choice labels may name canon heroes, teams, villains and places ("O Capitão América convoca você"). Identities stay original: codenames, powers, enemies, items and AI text are still checked (ADR 0030, `docs/UNIVERSE.md`).
 - The canon-name list now covers the wider Marvel universe (Avengers, Fantastic Four, Guardians, Defenders, Thunderbolts, Midnight Sons, S.H.I.E.L.D., Inhumans, major villains and team names). Entries starting with `=` only match the whole name, so common words still work in longer names ("Estrela Nova").
 

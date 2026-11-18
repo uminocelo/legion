@@ -11,10 +11,13 @@ import type { MemberRow } from './db/repo.js';
 import { type PendingPowers, pendingPowersOf } from './db/repo.js';
 import type { CerebroFlow } from './flow.js';
 import { type Power, PowerCatalog, powerDescription, powerName } from './powers.js';
-import { V } from './ui.js';
+import { ids, V } from './ui.js';
 
-/** `r` = registration (before the codename form), `e` = `/mutante poderes` for an existing mutant. */
-export type PickMode = 'r' | 'e';
+/**
+ * `r` = registration (before the codename form), `e` = `/heroi poderes` for an existing hero without
+ * catalog powers, `o` = `/heroi origem` when the current powers do not fit the new origin.
+ */
+export type PickMode = 'r' | 'e' | 'o';
 export const powerIds = {
   main: (mode: PickMode, group: number) => customId('cerebro', V, 'pmain', mode, group),
   secondary: (mode: PickMode, group: number) => customId('cerebro', V, 'psec', mode, group),
@@ -82,14 +85,15 @@ export class PowerFlow {
     mode: PickMode,
     prefix?: string,
     archetype?: string,
+    origin?: string,
   ): OutgoingMessage {
-    const main = pending.main ? this.catalog.get(pending.main) : undefined;
+    const main = pending.main ? this.catalog.get(pending.main, origin) : undefined;
     const rows: ActionRow[] = [];
     let embed: Embed;
     if (!main) {
       embed = { title: this.t('main_title', {}, locale), description: this.t('main_body', {}, locale) };
       this.catalog
-        .groups()
+        .groups([], origin)
         .slice(0, MAX_GROUPS)
         .forEach((group, g) => {
           rows.push([
@@ -107,9 +111,11 @@ export class PowerFlow {
             },
           ]);
         });
+      const extra = this.extraButtons(mode, locale);
+      if (extra.length) rows.push(extra);
     } else {
       const derived = this.catalog.archetypeOf(main);
-      const keeps = mode === 'e' && !this.cfg.allowArchetypeChange && archetype && archetype !== derived;
+      const keeps = mode !== 'r' && !this.cfg.allowArchetypeChange && archetype && archetype !== derived;
       const lines = [
         this.t(
           'main_chosen',
@@ -134,7 +140,7 @@ export class PowerFlow {
       embed = { title: this.t('secondary_title', {}, locale), description: lines.join('\n') };
       if (this.cfg.maxSecondary)
         this.catalog
-          .groups([main.id])
+          .groups([main.id], origin)
           .slice(0, MAX_GROUPS - 1)
           .forEach((group, g) => {
             rows.push([
@@ -167,6 +173,7 @@ export class PowerFlow {
           label: this.t('back', {}, locale),
           style: 'secondary',
         },
+        ...this.extraButtons(mode, locale),
       ]);
     }
     return {
@@ -176,6 +183,29 @@ export class PowerFlow {
       embeds: [embed],
       components: rows,
     };
+  }
+
+  /** Registration can go back to the origin menu; the origin change can be cancelled. */
+  private extraButtons(mode: PickMode, locale: Locale): ActionRow {
+    if (mode === 'r')
+      return [
+        {
+          type: 'button',
+          customId: ids.originBack(),
+          label: this.t('change_origin', {}, locale),
+          style: 'secondary',
+        },
+      ];
+    if (mode === 'o')
+      return [
+        {
+          type: 'button',
+          customId: ids.rechooseCancel(),
+          label: this.flow.ctx.i18n.t('cerebro.origin_change.cancel', {}, locale),
+          style: 'danger',
+        },
+      ];
+    return [];
   }
 
   private placeholder(group: Power[], locale: Locale) {
@@ -190,7 +220,11 @@ export class PowerFlow {
     const locale = await this.flow.locale(i.userId);
     const row = await this.flow.repo.memberByDiscordId(i.userId);
     if (mode === 'r') {
-      if (row?.onboardingStep !== 'faction_chosen' || !this.enabled) {
+      if (
+        row?.onboardingStep !== 'origin_chosen' ||
+        !this.enabled ||
+        !this.flow.isVisibleOrigin(row.pendingOrigin)
+      ) {
         const screen = row
           ? await this.flow.currentScreen(
               row,
@@ -201,7 +235,7 @@ export class PowerFlow {
         await r.update(screen);
         return null;
       }
-      return { locale, row, archetype: undefined };
+      return { locale, row, archetype: undefined, origin: row.pendingOrigin };
     }
     const mutant =
       row?.onboardingStep === 'registered' ? await this.flow.repo.mutantByMemberId(row.id) : null;
@@ -209,15 +243,26 @@ export class PowerFlow {
       await r.update(this.flow.ui.text(this.flow.ctx.i18n.t('cerebro.profile.not_registered', {}, locale)));
       return null;
     }
+    if (mode === 'o') {
+      if (mutant.originRechoice !== 1 || !this.flow.isVisibleOrigin(row.pendingOrigin)) {
+        await r.update({
+          ...this.flow.ui.text(this.flow.ctx.i18n.t('cerebro.origin_change.used', {}, locale)),
+          embeds: [],
+          components: [],
+        });
+        return null;
+      }
+      return { locale, row, mutant, archetype: mutant.archetype, origin: row.pendingOrigin };
+    }
     if ((await this.flow.repo.powersOf(mutant.id)).main) {
       await r.update({ ...this.flow.ui.text(this.t('already', {}, locale)), embeds: [], components: [] });
       return null;
     }
-    return { locale, row, mutant, archetype: mutant.archetype };
+    return { locale, row, mutant, archetype: mutant.archetype, origin: mutant.originType };
   }
 
-  private async save(row: MemberRow, pending: PendingPowers, mode: PickMode) {
-    const main = pending.main ? this.catalog.get(pending.main) : undefined;
+  private async save(row: MemberRow, pending: PendingPowers, mode: PickMode, origin?: string) {
+    const main = pending.main ? this.catalog.get(pending.main, origin) : undefined;
     const patch: Partial<MemberRow> = { pendingPowers: JSON.stringify(pending) };
     if (mode === 'r') patch.pendingArchetype = main ? this.catalog.archetypeOf(main) : null;
     return (await this.flow.repo.updateMember(row.id, patch)) ?? row;
@@ -226,21 +271,22 @@ export class PowerFlow {
   async chooseMain(i: IncomingInteraction, r: Responder, mode: PickMode) {
     const c = await this.context(i, r, mode);
     if (!c) return;
-    const power = this.catalog.get(i.values?.[0] ?? '');
+    const power = this.catalog.get(i.values?.[0] ?? '', c.origin);
     if (!power)
       return r.update(
         this.screen(
           c.locale,
           pendingPowersOf(c.row),
           mode,
-          this.flow.ctx.i18n.t('cerebro.errors.invalid_choice', {}, c.locale),
+          this.flow.ctx.i18n.t('cerebro.errors.power_origin', {}, c.locale),
           c.archetype,
+          c.origin,
         ),
       );
     const prev = pendingPowersOf(c.row);
     const pending = { main: power.id, secondary: prev.secondary.filter((id) => id !== power.id) };
-    await this.save(c.row, pending, mode);
-    await r.update(this.screen(c.locale, pending, mode, undefined, c.archetype));
+    await this.save(c.row, pending, mode, c.origin);
+    await r.update(this.screen(c.locale, pending, mode, undefined, c.archetype, c.origin));
   }
 
   /** One secondary menu changed: replaces the picks from that menu, keeps the others. */
@@ -248,9 +294,9 @@ export class PowerFlow {
     const c = await this.context(i, r, mode);
     if (!c) return;
     const prev = pendingPowersOf(c.row);
-    if (!prev.main) return r.update(this.screen(c.locale, prev, mode, undefined, c.archetype));
-    const inMenu = new Set((this.catalog.groups([prev.main])[group] ?? []).map((p) => p.id));
-    const picked = (i.values ?? []).filter((id) => inMenu.has(id) && this.catalog.get(id));
+    if (!prev.main) return r.update(this.screen(c.locale, prev, mode, undefined, c.archetype, c.origin));
+    const inMenu = new Set((this.catalog.groups([prev.main], c.origin)[group] ?? []).map((p) => p.id));
+    const picked = (i.values ?? []).filter((id) => inMenu.has(id) && this.catalog.get(id, c.origin));
     const secondary = [...prev.secondary.filter((id) => !inMenu.has(id)), ...picked];
     if (secondary.length > this.cfg.maxSecondary)
       return r.update(
@@ -260,19 +306,20 @@ export class PowerFlow {
           mode,
           this.t('too_many', { max: this.cfg.maxSecondary }, c.locale),
           c.archetype,
+          c.origin,
         ),
       );
     const pending = { main: prev.main, secondary };
-    await this.save(c.row, pending, mode);
-    await r.update(this.screen(c.locale, pending, mode, undefined, c.archetype));
+    await this.save(c.row, pending, mode, c.origin);
+    await r.update(this.screen(c.locale, pending, mode, undefined, c.archetype, c.origin));
   }
 
   async back(i: IncomingInteraction, r: Responder, mode: PickMode) {
     const c = await this.context(i, r, mode);
     if (!c) return;
     const pending = { main: null, secondary: [] };
-    await this.save(c.row, pending, mode);
-    await r.update(this.screen(c.locale, pending, mode, undefined, c.archetype));
+    await this.save(c.row, pending, mode, c.origin);
+    await r.update(this.screen(c.locale, pending, mode, undefined, c.archetype, c.origin));
   }
 
   /** Registration: open the codename form. `/mutante poderes`: save once. */
@@ -280,15 +327,19 @@ export class PowerFlow {
     const c = await this.context(i, r, mode);
     if (!c) return;
     const pending = pendingPowersOf(c.row);
-    const main = pending.main ? this.catalog.get(pending.main) : undefined;
+    const main = pending.main ? this.catalog.get(pending.main, c.origin) : undefined;
     if (!main)
-      return r.update(this.screen(c.locale, pending, mode, this.t('pick_main', {}, c.locale), c.archetype));
+      return r.update(
+        this.screen(c.locale, pending, mode, this.t('pick_main', {}, c.locale), c.archetype, c.origin),
+      );
     if (mode === 'r') return r.showModal(this.flow.ui.mutantModal(c.locale));
     const mutant = c.mutant;
     if (!mutant) return;
     const secondary = pending.secondary
-      .filter((id) => id !== main.id && this.catalog.get(id))
+      .filter((id) => id !== main.id && this.catalog.get(id, c.origin))
       .slice(0, this.cfg.maxSecondary);
+    if (mode === 'o')
+      return this.flow.originChange.finish(i, r, c.row, mutant, c.origin ?? '', { main: main.id, secondary });
     const derived = this.catalog.archetypeOf(main);
     const changes = this.cfg.allowArchetypeChange && derived !== mutant.archetype;
     const saved = await this.flow.ctx.db.transaction(async (tx) => {
@@ -318,7 +369,7 @@ export class PowerFlow {
     });
   }
 
-  /** `/mutante poderes`. */
+  /** `/heroi poderes` (and the old `/mutante poderes`). */
   async command(i: IncomingInteraction, r: Responder) {
     const locale = await this.flow.locale(i.userId);
     if (!this.enabled) return r.reply(this.flow.ui.text(this.t('disabled', {}, locale)));
@@ -328,10 +379,13 @@ export class PowerFlow {
     if (!row || !mutant)
       return r.reply(this.flow.ui.text(this.flow.ctx.i18n.t('cerebro.profile.not_registered', {}, locale)));
     const have = await this.flow.repo.powersOf(mutant.id);
-    if (have.main)
-      return r.reply(
-        this.flow.ui.text(this.t('already_list', { powers: this.sheetLine(have, locale) ?? '' }, locale)),
-      );
-    await r.reply(this.screen(locale, pendingPowersOf(row), 'e', undefined, mutant.archetype));
+    const hint = this.flow.originHint(mutant, locale);
+    if (have.main) {
+      const text = this.t('already_list', { powers: this.sheetLine(have, locale) ?? '' }, locale);
+      return r.reply(this.flow.ui.text(hint ? `${text}\n\n${hint}` : text));
+    }
+    await r.reply(
+      this.screen(locale, pendingPowersOf(row), 'e', hint ?? undefined, mutant.archetype, mutant.originType),
+    );
   }
 }

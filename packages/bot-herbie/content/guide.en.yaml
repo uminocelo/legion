@@ -3,28 +3,28 @@
 - id: bem-vindo
   title: "🧬 Welcome to the Legion"
   body: |
-    Here you create your own mutant and play with the community right in Discord: trivia, missions, fights and events that shake the whole server. Everything gives XP and raises your level and rank.
+    Here you create your own hero and play with the community right in Discord: trivia, missions, fights and events that shake the whole server. Everything gives XP and raises your level and rank.
 
     Need help? Use **/help** (commands) and **/rules** (game terms). Change the language with **/language**.
 - id: registro
   bot: cerebro
-  title: "📝 1. Register your mutant"
+  title: "📝 1. Register your hero"
   body: |
     Click **Start** on the welcome message and follow the steps:
     1. Accept the rules.
-    2. Choose your **faction**: X-Men, Brotherhood or Independent.
+    2. Choose your **origin**: Mutant, Inhuman, Science, Technology, Mystic, Cosmic or Trained. It decides which powers you can pick.
     3. Choose your **main power**: its type sets your **archetype** and base stats.
     4. Choose up to **2 secondary powers** (optional).
-    5. Fill in the sheet: an original **codename**, a power description and an origin.
+    5. Fill in the sheet: an original **codename**, a power description and your story.
 
-    Names of existing characters are refused: make up your own!
+    Every hero starts **Independent**. Names of existing characters are refused: make up your own!
 - id: ficha
   bot: cerebro
   title: "🪪 2. Your sheet"
   body: |
-    **/profile** shows your sheet with codename, faction, archetype, powers, level, rank and stats, plus an image **card**. The **Share** button posts the card in the channel.
+    **/profile** (or **/heroi ficha**) shows your sheet with codename, origin, faction, archetype, powers, level, rank and stats, plus an image **card**. The **Share** button posts the card in the channel.
 
-    Registered before the power catalog? Use **/mutant powers** once to pick yours.
+    Registered before the power catalog? Use **/heroi poderes** once to pick yours. Registered before origins? Use **/heroi origem** once to pick yours.
 - id: poderes
   bot: cerebro
   title: "⚡ Powers and archetypes"
