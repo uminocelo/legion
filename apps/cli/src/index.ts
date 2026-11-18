@@ -17,7 +17,7 @@ import { formatPlaytest, parseSince, playtestReport } from './playtest.js';
 import { registerCommands } from './register.js';
 import { createDiscordRest } from './rest.js';
 
-const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('0.8.1');
+const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('0.9.0');
 const configOpt = ['-c, --config <path>', 'legion.config.yaml', DEFAULT_CONFIG_PATH] as const;
 
 program

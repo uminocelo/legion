@@ -97,7 +97,7 @@ describe('trivia editor', () => {
   it('opens the shipped questions and saves them back unchanged in meaning', () => {
     const text = readFileSync(join(ROOT, 'packages/bot-jarvis/content/trivia/pt-BR.yaml'), 'utf8');
     const drafts = trivia.fromYaml(text);
-    expect(drafts).toHaveLength(30);
+    expect(drafts).toHaveLength(118);
     const yaml = trivia.toYaml(drafts);
     expect(trivia.validate(yaml, trivia.DEFAULT_CATEGORIES)).toEqual([]);
     expect(trivia.fromYaml(yaml)).toEqual(drafts);

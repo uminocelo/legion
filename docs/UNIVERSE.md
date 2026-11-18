@@ -61,6 +61,29 @@ As facções agora são as equipes da Marvel. Cada uma tem um cargo no Discord, 
 - A staff move um herói com `/cerebro equipe mover membro equipe motivo`: ignora a regra de origem e o tempo de espera, troca o cargo e guarda quem moveu e o motivo.
 - Toda troca de equipe fica registrada (de onde, para onde, por quê e por quem). Cada equipe tem um **arco de recrutamento** (`/campanha`): quem termina o último capítulo com sucesso entra na equipe, ganha o cargo e o J.A.R.V.I.S. anuncia no tópico da missão. Uma equipe que só aceita certas origens (a Irmandade: Mutante e Inumano) mantém o arco fechado para as outras. Trocar de novo pede outro arco e espera `cerebro.teams.switchCooldownDays` (30 dias) desde a última troca; antes disso o arco conta como feito, mas a troca é recusada e o tópico mostra a data. A primeira equipe depois do cadastro não espera. Os pontos de guerra já conquistados ficam com a equipe antiga.
 
+### Arcos de recrutamento
+
+Cada equipe vem com um arco de três capítulos em pt-BR e en. O primeiro abre no nível 3; o último tem uma luta e põe o herói na equipe.
+
+| Equipe | Arco (`/campanha`) | Id | Quem aparece |
+|---|---|---|---|
+| X-Men | Aula na Mansão X | `aula-na-mansao` | Tempestade, Ciclope, Wolverine, Professor Xavier |
+| Irmandade | O chamado da Irmandade | `convite-no-metro` | Mística, Magneto, Sapo |
+| Vingadores | Teste dos Vingadores | `armadura-roubada` | Capitão América, Viúva Negra, Homem de Ferro |
+| S.H.I.E.L.D. | Agente em teste | `agente-em-teste` | Maria Hill, Coulson, Nick Fury |
+| Guardiões | Carona na Milano | `carona-espacial` | Rocket, Groot, Gamora, Drax, Senhor das Estrelas |
+| Defensores | Noites em Hell's Kitchen | `noites-no-bairro` | Jessica Jones, Matt Murdock, Luke Cage, Punho de Ferro |
+| Thunderbolts | Segunda chance | `segunda-chance` | Yelena Belova, Bucky Barnes, Agente Americano, Fantasma |
+| Filhos da Meia-Noite | Depois da meia-noite | `depois-da-meia-noite` | Elsa Bloodstone, Blade, Motoqueiro Fantasma |
+
+Há também **Visita ao Edifício Baxter** (`visita-ao-baxter`), uma campanha de história com o Quarteto Fantástico: quatro capítulos, duas lutas, grupos de até 3 e aberta a todas as equipes. O Doutor Destino fica nos bastidores; quem luta são as máquinas dele.
+
+Em todos os arcos, as lutas são contra as máquinas originais do ULTRON. Os ids não usam nomes da Marvel (o filtro de nomes também vale para ids). Para mudar um arco, copie o arquivo da campanha ou do capítulo para `./data/content/` com o mesmo id ([MISSIONS.md](MISSIONS.md#campanhas)).
+
+### Trivia
+
+A v0.9 traz quatro categorias novas, com 22 perguntas cada, todas com fonte: **Vingadores** (`vingadores`), **Quarteto Fantástico** (`quarteto`), **Cósmico** (`cosmico`) e **Místico** (`mistico`). Elas entram no padrão de `jarvis.trivia.categories`. Um servidor que escreveu a própria lista precisa acrescentá-las para que as perguntas apareçam.
+
 ### "Herói", não "mutante"
 
 Os bots falam em **herói** com os jogadores. "Mutante" fica para a origem Mutante e para personagens e lugares das histórias. O comando `/mutante` virou `/heroi` e continua funcionando como apelido até a v1.0. O nome padrão do cargo **Mutante Registrado** não mudou, porque os cargos são achados pelo nome: se quiser outro nome ("Herói Registrado"), renomeie o cargo no Discord **e** o `name` do cargo `registered` em `roles` ([CONFIG.md](CONFIG.md)) antes de reiniciar; trocar só no arquivo cria um cargo novo.

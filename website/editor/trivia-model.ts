@@ -4,7 +4,15 @@ import { DIFFICULTIES } from '../../packages/bot-jarvis/src/config.js';
 import { parseTriviaYaml } from '../../packages/bot-jarvis/src/domain/trivia.js';
 
 export { DIFFICULTIES };
-export const DEFAULT_CATEGORIES = ['quadrinhos', 'rivals', 'geral'];
+export const DEFAULT_CATEGORIES = [
+  'quadrinhos',
+  'rivals',
+  'geral',
+  'vingadores',
+  'quarteto',
+  'cosmico',
+  'mistico',
+];
 export const TRIVIA_FILE = 'perguntas.yaml';
 
 export interface TriviaDraft {
