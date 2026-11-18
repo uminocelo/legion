@@ -24,8 +24,8 @@ const write = (text: string) => {
   return file;
 };
 const env = parseEnv({
-  DISCORD_TOKEN: 't',
-  DISCORD_CLIENT_ID: '123456789',
+  CEREBRO_TOKEN: 't',
+  CEREBRO_CLIENT_ID: '123456789',
   DISCORD_GUILD_ID: '100000000000000001',
 });
 

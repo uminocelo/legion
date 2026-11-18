@@ -18,8 +18,8 @@ export const isSnowflake = (v: string) => /^\d{17,20}$/.test(v.trim());
 export function envFile(a: InitAnswers): string {
   return [
     '# Segredos apenas. O resto vai em legion.config.yaml.',
-    `DISCORD_TOKEN=${a.token.trim()}`,
-    `DISCORD_CLIENT_ID=${a.clientId.trim()}`,
+    `CEREBRO_TOKEN=${a.token.trim()}`,
+    `CEREBRO_CLIENT_ID=${a.clientId.trim()}`,
     `DISCORD_GUILD_ID=${a.guildId.trim()}`,
     ...Object.entries(a.ownApps ?? {}).flatMap(([bot, app]) => [
       `# ${bot}: app própria no Discord`,

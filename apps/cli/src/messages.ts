@@ -7,8 +7,11 @@ const pt = {
   'doctor.fix': 'Como corrigir',
   'check.env': 'Arquivo .env e variáveis',
   'check.env.ok': 'Variáveis obrigatórias preenchidas',
+  'check.env.legacy': 'Funcionando, mas com nomes antigos: {vars}',
+  'check.env.legacy_fix':
+    'No .env, troque DISCORD_TOKEN por CEREBRO_TOKEN e DISCORD_CLIENT_ID por CEREBRO_CLIENT_ID (mesmos valores) e reinicie',
   'check.env.fix':
-    'Copie .env.example para .env e preencha DISCORD_TOKEN, DISCORD_CLIENT_ID e DISCORD_GUILD_ID (ou rode "legion init")',
+    'Copie .env.example para .env e preencha CEREBRO_TOKEN, CEREBRO_CLIENT_ID e DISCORD_GUILD_ID (ou rode "legion init")',
   'check.token': 'Token do bot',
   'check.token.ok': 'Token válido (bot {name})',
   'check.token.fail': 'O Discord recusou o token',
@@ -80,8 +83,11 @@ const en: Record<keyof typeof pt, string> = {
   'doctor.fix': 'How to fix',
   'check.env': '.env file and variables',
   'check.env.ok': 'Required variables are set',
+  'check.env.legacy': 'Working, but with old names: {vars}',
+  'check.env.legacy_fix':
+    'In .env, rename DISCORD_TOKEN to CEREBRO_TOKEN and DISCORD_CLIENT_ID to CEREBRO_CLIENT_ID (same values) and restart',
   'check.env.fix':
-    'Copy .env.example to .env and fill DISCORD_TOKEN, DISCORD_CLIENT_ID and DISCORD_GUILD_ID (or run "legion init")',
+    'Copy .env.example to .env and fill CEREBRO_TOKEN, CEREBRO_CLIENT_ID and DISCORD_GUILD_ID (or run "legion init")',
   'check.token': 'Bot token',
   'check.token.ok': 'Valid token (bot {name})',
   'check.token.fail': 'Discord rejected the token',

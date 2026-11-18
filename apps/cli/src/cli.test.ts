@@ -70,8 +70,8 @@ function configAt(dir: string, extra = '') {
   return path;
 }
 const envOk = {
-  DISCORD_TOKEN: 'x',
-  DISCORD_CLIENT_ID: APP,
+  CEREBRO_TOKEN: 'x',
+  CEREBRO_CLIENT_ID: APP,
   DISCORD_GUILD_ID: GUILD,
   DATABASE_URL: 'file::memory:',
 };
@@ -121,9 +121,24 @@ describe('legion doctor', () => {
     expect(doctorExitCode(rs)).toBe(1);
   });
 
+  it('warns about the old DISCORD_TOKEN / DISCORD_CLIENT_ID names and says how to rename them', async () => {
+    const { CEREBRO_TOKEN, CEREBRO_CLIENT_ID, ...rest } = envOk;
+    const res = await doctor(fakeRest(), {
+      ...rest,
+      DISCORD_TOKEN: CEREBRO_TOKEN,
+      DISCORD_CLIENT_ID: CEREBRO_CLIENT_ID,
+    });
+    const env = res.find((r) => r.id === 'env');
+    expect(env).toMatchObject({
+      status: 'warn',
+      message: 'Funcionando, mas com nomes antigos: DISCORD_TOKEN, DISCORD_CLIENT_ID',
+    });
+    expect(env?.fix).toMatch(/troque DISCORD_TOKEN por CEREBRO_TOKEN/);
+    expect(res.find((r) => r.id === 'token')?.status).toBe('ok');
+  });
   it('explains a rejected token, a wrong client id and the members intent', async () => {
     expect(status(await doctor(fakeRest({ tokenOk: false })))).toMatchObject({ token: 'fail', app: 'skip' });
-    const wrongApp = await doctor(fakeRest(), { ...envOk, DISCORD_CLIENT_ID: '999999999999999999' });
+    const wrongApp = await doctor(fakeRest(), { ...envOk, CEREBRO_CLIENT_ID: '999999999999999999' });
     expect(wrongApp.find((r) => r.id === 'app')?.message).toContain('999999999999999999');
     const noIntent = await doctor(fakeRest({ flags: 0 }));
     expect(noIntent.find((r) => r.id === 'intents')).toMatchObject({
@@ -225,7 +240,7 @@ describe('legion init', () => {
     const dir = tmp();
     const r = await writeInitFiles(dir, answers, async () => false);
     expect(r.every((x) => x.written)).toBe(true);
-    expect(readFileSync(join(dir, '.env'), 'utf8')).toContain('DISCORD_TOKEN=tok\n');
+    expect(readFileSync(join(dir, '.env'), 'utf8')).toContain('CEREBRO_TOKEN=tok\n');
     expect(statSync(join(dir, '.env')).mode & 0o777).toBe(0o600);
     expect(configFile(answers)).toContain('bots:\n  - cerebro\n');
   });

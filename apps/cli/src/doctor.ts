@@ -179,7 +179,15 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
   let env: Env | null = null;
   try {
     env = parseEnv(o.envSource, L);
-    add({ id: 'env', title: t('check.env'), status: 'ok', message: t('check.env.ok') });
+    if (env.legacyVars.length)
+      add({
+        id: 'env',
+        title: t('check.env'),
+        status: 'warn',
+        message: t('check.env.legacy', { vars: env.legacyVars.join(', ') }),
+        fix: t('check.env.legacy_fix'),
+      });
+    else add({ id: 'env', title: t('check.env'), status: 'ok', message: t('check.env.ok') });
   } catch (err) {
     const lines = err instanceof ConfigError ? err.lines.join('; ') : String(err);
     add({ id: 'env', title: t('check.env'), status: 'fail', message: lines, fix: t('check.env.fix') });
