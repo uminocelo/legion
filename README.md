@@ -152,7 +152,7 @@ Node 22+, pnpm 10. `pnpm install && pnpm build && pnpm test`. Veja [CONTRIBUTING
 
 ## Marcas e personagens
 
-Legion, Cérebro, H.E.R.B.I.E., J.A.R.V.I.S., ULTRON, Sentinel, X-Men e todos os outros nomes da Marvel pertencem à Marvel/Disney. Este é um **projeto de fã gratuito e sem fins lucrativos**, sem afiliação com a Marvel ou a Disney. Personagens canônicos não podem ser usados como identidade de jogadores ou inimigos: todo mutante é original.
+Legion, Cérebro, H.E.R.B.I.E., J.A.R.V.I.S., ULTRON, Sentinel, X-Men e todos os outros nomes da Marvel pertencem à Marvel/Disney. Este é um **projeto de fã gratuito e sem fins lucrativos**, sem afiliação com a Marvel ou a Disney. Personagens canônicos não podem ser usados como identidade de jogadores ou inimigos: todo mutante é original. As histórias das missões podem citar heróis, equipes e lugares da Marvel ([docs/UNIVERSE.md](docs/UNIVERSE.md)).
 
 ## Apoie
 

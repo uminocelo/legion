@@ -27,17 +27,24 @@ const compact = (s: string) => s.replace(/ /g, '');
 /** Minimum length for a canon name to be matched inside a longer word ("wolverinezinho"). */
 const MIN_INFIX_LEN = 6;
 
+/**
+ * A list entry starting with `=` matches only the whole name ("=Nova" refuses "Nova" but allows
+ * "Estrela Nova"): for canon names that are also common words.
+ */
+export const EXACT_PREFIX = '=';
+
 export class CanonNameFilter {
-  private readonly names: { spaced: string; compact: string }[];
+  private readonly names: { spaced: string; compact: string; exact: boolean }[];
 
   constructor(names: readonly string[]) {
     const seen = new Set<string>();
     this.names = [];
     for (const raw of names) {
-      const spaced = normalizeName(raw);
+      const exact = raw.startsWith(EXACT_PREFIX);
+      const spaced = normalizeName(exact ? raw.slice(EXACT_PREFIX.length) : raw);
       if (!spaced || seen.has(spaced)) continue;
       seen.add(spaced);
-      this.names.push({ spaced, compact: compact(spaced) });
+      this.names.push({ spaced, compact: compact(spaced), exact });
     }
   }
 
@@ -49,6 +56,7 @@ export class CanonNameFilter {
     const flat = compact(spaced);
     for (const n of this.names) {
       if (flat === n.compact) return n.spaced;
+      if (n.exact) continue;
       if (padded.includes(` ${n.spaced} `)) return n.spaced;
       if (n.compact.length >= MIN_INFIX_LEN && flat.includes(n.compact)) return n.spaced;
     }

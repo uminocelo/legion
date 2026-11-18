@@ -4,6 +4,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Changed
+- Missions can visit the Marvel universe: titles, scenes and choice labels may name canon heroes, teams, villains and places ("O Capitão América convoca você"). Identities stay original: codenames, powers, enemies, items and AI text are still checked (ADR 0030, `docs/UNIVERSE.md`).
+- The canon-name list now covers the wider Marvel universe (Avengers, Fantastic Four, Guardians, Defenders, Thunderbolts, Midnight Sons, S.H.I.E.L.D., Inhumans, major villains and team names). Entries starting with `=` only match the whole name, so common words still work in longer names ("Estrela Nova").
+
 ## [0.8.1] - 2026-11-18
 
 ### Added

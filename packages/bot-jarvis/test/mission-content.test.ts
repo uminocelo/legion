@@ -50,14 +50,13 @@ describe('mission content', () => {
       for (const s of Object.values(m.scenes)) expect(typeof s.text === 'object' && s.text.en).toBeTruthy();
   });
 
-  it('gives readable errors for bad YAML, broken links, cycles, canon names and mixed scenes', () => {
+  it('gives readable errors for bad YAML, broken links, cycles and mixed scenes', () => {
     const d = dir({
       'a.yaml': 'id: [unclosed',
       'b.yaml': ok.replace('next: c', 'next: zz').replace('id: teste', 'id: b-link'),
       'c.yaml': ok
         .replace('id: teste', 'id: c-cycle')
         .replace('{ label: Não, next: c }', '{ label: Não, next: a }'),
-      'd.yaml': ok.replace('title: Teste', 'title: Wolverine e eu').replace('id: teste', 'id: d-canon'),
       'e.yaml': ok
         .replace('b: { text: Fim bom, end: success }', 'b: { text: Fim bom, end: success, choices: [] }')
         .replace('id: teste', 'id: e-mixed'),
@@ -68,8 +67,20 @@ describe('mission content', () => {
     expect(all).toMatch(/a\.yaml \(linha \d+\): YAML inválido/);
     expect(all).toMatch(/b\.yaml → scenes\.a: leva a "zz", que não existe/);
     expect(all).toMatch(/c\.yaml → scenes\.a: ciclo: a → a/);
-    expect(all).toMatch(/d\.yaml → title: nome de personagem existente/);
     expect(all).toMatch(/e\.yaml → scenes\.b/);
+  });
+
+  it('accepts canon heroes, teams and places in mission narrative (ADR 0030)', () => {
+    const d = dir({
+      'npc.yaml': ok
+        .replace('id: teste', 'id: npc')
+        .replace('title: Teste', 'title: Capitão América convoca você')
+        .replace('text: Início', 'text: Capitão América convoca você ao Helicarrier da S.H.I.E.L.D.')
+        .replace('{ label: Sim, next: b }', '{ label: Capitão América convoca você, next: b }'),
+    });
+    const r = readMissions([join(d, 'missions')]);
+    expect(r.errors).toEqual([]);
+    expect(r.missions.map((m) => m.title)).toEqual(['Capitão América convoca você']);
   });
 
   it('a server file overrides a shipped mission by id; an invalid one keeps the previous content', async () => {

@@ -36,7 +36,7 @@ Quer uma categoria nova, como `marvel`? Acrescente em `jarvis.trivia.categories`
 Monte a missão no [editor de missões](https://uminocelo.github.io/legion/editor-missoes.html) (cenas, escolhas, combates e finais, conferidos na hora, a partir do zero ou de uma missão pronta) ou escreva o `.yaml` à mão (formato em [MISSIONS.md](MISSIONS.md)).
 
 1. `/jarvis missao importar arquivo:` e anexe o `.yaml` (até 64 KB).
-2. O J.A.R.V.I.S. confere o arquivo com as mesmas regras dos arquivos de conteúdo: campos, cenas ligadas, sem ciclos, com final, sem nomes de personagens existentes nos títulos e escolhas. Se houver erro, ele lista campo e linha, e **nada muda**.
+2. O J.A.R.V.I.S. confere o arquivo com as mesmas regras dos arquivos de conteúdo: campos, cenas ligadas, sem ciclos, com final. Personagens da Marvel podem aparecer na história ([UNIVERSE.md](UNIVERSE.md)). Se houver erro, ele lista campo e linha, e **nada muda**.
 3. Sem erros, aparece uma prévia (tipo, nível, grupo, cenas, lutas). **Publicar** coloca a missão em jogo na hora; **Cancelar** descarta.
 
 Mesmo `id` de uma missão que já existe? A prévia avisa e a importada substitui a de arquivo. Para voltar à versão do arquivo, apague a importada no banco ou importe o arquivo original de novo.

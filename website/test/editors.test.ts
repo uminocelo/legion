@@ -217,16 +217,13 @@ describe('mission editor', () => {
     expect(missions.validate(missions.emptyMission())).toContain('title: obrigatório');
   });
 
-  it('refuses canon names in titles and choice labels', () => {
+  it('accepts canon heroes in titles and choice labels, like the bot (ADR 0030)', () => {
     const m = missions.fromYaml(readFileSync(join(MISSIONS_DIR, 'patrulha-noturna.yaml'), 'utf8'));
-    m.title.pt = 'A vingança do Magneto';
-    expect(missions.validate(m)).toEqual(['title.pt-BR: nome de personagem existente; use nomes originais']);
-    m.title.pt = 'Patrulha noturna';
+    m.title.pt = 'Capitão América convoca você';
     const choice = m.scenes[0]?.choices[0];
     if (choice) choice.label.pt = 'Chamar o Wolverine';
-    expect(missions.validate(m)).toEqual([
-      'scenes.porto.choices.0.label.pt-BR: nome de personagem existente; use nomes originais',
-    ]);
+    expect(missions.validate(m)).toEqual([]);
+    expect(parseMissionYaml(missions.toYaml(m))).toHaveProperty('mission');
   });
 });
 
