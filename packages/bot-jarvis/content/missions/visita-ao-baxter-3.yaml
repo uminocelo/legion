@@ -1,0 +1,53 @@
+# Story campaign at the Baxter Building, open to every team. Chapter 3.
+id: visita-ao-baxter-3
+kind: story
+campaign: { id: visita-ao-baxter, chapter: 3 }
+requires: { missions: [visita-ao-baxter-2] }
+title:
+  pt-BR: "Edifício Baxter 3: O chip"
+  en: "Baxter Building 3: The chip"
+summary:
+  pt-BR: "O chip guarda uma mensagem. Descobrir quem está por trás pede paciência."
+  en: "The chip holds a message. Finding out who is behind it takes patience."
+minLevel: 1
+party: 3
+difficulty: facil
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O Reed conecta o chip a um monitor. Aparece um brasão de ferro e uma frase: "Para Richards, com os cumprimentos do único gênio de verdade."'
+      en: 'Reed plugs the chip into a monitor. An iron crest appears with a line: "To Richards, with the compliments of the only true genius."'
+    choices:
+      - label: { pt-BR: "Rastrear de onde veio o sinal", en: "Trace where the signal came from" }
+        next: caminho-a
+      - label: { pt-BR: "Procurar a terceira máquina", en: "Look for the third machine" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "O sinal vem da Latvéria, mas o último salto é aqui mesmo, no porão do prédio."
+      en: "The signal comes from Latveria, but the last hop is right here, in the building's basement."
+    choices:
+      - label: { pt-BR: "Avisar a família e descer em grupo", en: "Warn the family and go down together" }
+        next: sucesso
+      - label: { pt-BR: "Descer sem avisar", en: "Go down without telling anyone" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: 'O Ben Grimm, o Coisa, já está procurando. "Tá na hora do pau!", ele diz, estalando os dedos de pedra.'
+      en: 'Ben Grimm, the Thing, is already looking. "It''s clobberin'' time!" he says, cracking his rocky knuckles.'
+    choices:
+      - label: { pt-BR: "Ir junto com o Ben", en: "Go with Ben" }
+        next: sucesso
+      - label: { pt-BR: "Deixar o Ben ir sozinho", en: "Let Ben go alone" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: "A terceira assinatura está no porão, perto do gerador. O Doutor Destino fica nas sombras, mas a máquina dele está aqui."
+      en: "The third signature is in the basement, next to the generator. Doctor Doom stays in the shadows, but his machine is here."
+    end: success
+  falha:
+    text:
+      pt-BR: 'A pista se perde no porão escuro. O Reed estica o pescoço pela porta: "Volte com reforço."'
+      en: 'The trail is lost in the dark basement. Reed stretches his neck through the door: "Come back with backup."'
+    end: failure

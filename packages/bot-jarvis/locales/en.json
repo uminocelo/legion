@@ -216,7 +216,8 @@
           "disabled": "**{codename}** finished the arc, but **{team}** is turned off on this server.",
           "same": "**{codename}** is already on **{team}**."
         }
-      }
+      },
+      "list_footer": "Campaigns show only their next chapter. Use /campanha to see them all."
     },
     "staff_trivia": {
       "bad_category": "Category \"{category}\" is not in jarvis.trivia.categories.",

@@ -1,0 +1,53 @@
+# Recruitment arc for the Guardiões da Galáxia. Chapter 2.
+id: carona-espacial-2
+kind: story
+campaign: { id: carona-espacial, chapter: 2 }
+requires: { missions: [carona-espacial-1] }
+title:
+  pt-BR: "Carona na Milano 2: Mercado em Lugarnenhum"
+  en: "A ride on the Milano 2: Market at Knowhere"
+summary:
+  pt-BR: "Gamora leva você a Lugarnenhum para comprar uma informação cara."
+  en: "Gamora takes you to Knowhere to buy an expensive piece of information."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'Em Lugarnenhum, a Gamora para diante de um vendedor de mapas estelares. "Ele sabe onde está o carregamento que procuramos. Negocie."'
+      en: 'At Knowhere, Gamora stops in front of a star-chart dealer. "He knows where the shipment we want is. Negotiate."'
+    choices:
+      - label: { pt-BR: "Oferecer uma troca justa", en: "Offer a fair trade" }
+        next: caminho-a
+      - label: { pt-BR: "Deixar o Drax falar", en: "Let Drax do the talking" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "O vendedor aceita, mas quer metade adiantado. A Gamora observa a sua decisão."
+      en: "The dealer agrees but wants half up front. Gamora watches your decision."
+    choices:
+      - label: { pt-BR: "Pagar metade e guardar o resto", en: "Pay half and keep the rest" }
+        next: sucesso
+      - label: { pt-BR: "Pagar tudo de uma vez", en: "Pay everything at once" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: "O Drax descreve, com detalhes, o que fará se o vendedor mentir. O vendedor sua frio."
+      en: "Drax describes, in detail, what he will do if the dealer lies. The dealer breaks into a cold sweat."
+    choices:
+      - label: { pt-BR: "Acalmar o Drax e fechar o acordo", en: "Calm Drax down and close the deal" }
+        next: sucesso
+      - label: { pt-BR: "Deixar o Drax continuar", en: "Let Drax keep going" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'O mapa aponta para um cargueiro abandonado. A Gamora quase sorri. "Você aprende rápido."'
+      en: 'The map points to an abandoned freighter. Gamora almost smiles. "You learn fast."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'O vendedor some com o pagamento. O Senhor das Estrelas ri: "Bem-vindo a Lugarnenhum. Tenta de novo."'
+      en: 'The dealer vanishes with the payment. Star-Lord laughs: "Welcome to Knowhere. Try again."'
+    end: failure

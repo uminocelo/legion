@@ -1,0 +1,49 @@
+# Story campaign at the Baxter Building, open to every team. Chapter 4 (fight).
+id: visita-ao-baxter-4
+kind: story
+campaign: { id: visita-ao-baxter, chapter: 4 }
+requires: { missions: [visita-ao-baxter-3] }
+title:
+  pt-BR: "Edifício Baxter 4: O gerador"
+  en: "Baxter Building 4: The generator"
+summary:
+  pt-BR: "A última máquina quer sobrecarregar o gerador do prédio. O Quarteto inteiro conta com você."
+  en: "The last machine wants to overload the building's generator. The whole Four is counting on you."
+minLevel: 1
+party: 3
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'No porão, a máquina enfia cabos no gerador e o prédio inteiro treme. A Sue ergue um campo de força em volta do gerador. "Temos um minuto!"'
+      en: 'In the basement, the machine jams cables into the generator and the whole building shakes. Sue raises a force field around the generator. "We have one minute!"'
+    choices:
+      - label: { pt-BR: "Cortar os cabos", en: "Cut the cables" }
+        next: preparo
+      - label: { pt-BR: "Ir direto na máquina", en: "Go straight for the machine" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "Os cabos caem, faiscando. A máquina abandona o gerador e vem até você."
+      en: "The cables fall, sparking. The machine leaves the generator and comes for you."
+    choices:
+      - label: { pt-BR: "Chamar o Ben para segurá-la", en: "Call Ben to hold it" }
+        next: confronto
+      - label: { pt-BR: "Enfrentá-la sozinho", en: "Face it alone" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: '"POR ORDEM DE DESTINO, ESTE PRÉDIO CAI HOJE."'
+      en: '"BY ORDER OF DOOM, THIS BUILDING FALLS TODAY."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina apaga e o prédio para de tremer. O Reed, a Sue, o Johnny e o Ben aplaudem. "O Edifício Baxter tem as portas abertas para você."'
+      en: 'The machine goes dark and the building stops shaking. Reed, Sue, Johnny and Ben applaud. "The Baxter Building''s doors are always open to you."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'O gerador desliga em segurança, mas a máquina foge. O Ben bufa: "Da próxima a gente pega." A Sue sorri: "Você volta?"'
+      en: 'The generator shuts down safely, but the machine escapes. Ben huffs: "We get it next time." Sue smiles: "Will you come back?"'
+    end: failure

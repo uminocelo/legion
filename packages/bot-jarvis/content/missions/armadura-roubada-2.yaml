@@ -1,0 +1,53 @@
+# Recruitment arc for the Vingadores. Chapter 2.
+id: armadura-roubada-2
+kind: story
+campaign: { id: armadura-roubada, chapter: 2 }
+requires: { missions: [armadura-roubada-1] }
+title:
+  pt-BR: "Teste dos Vingadores 2: A Viúva Negra"
+  en: "Avengers trial 2: Black Widow"
+summary:
+  pt-BR: "A Viúva Negra testa se você sabe guardar um segredo e seguir uma pista."
+  en: "Black Widow tests whether you can keep a secret and follow a lead."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A Viúva Negra entrega uma pasta. "Alguém vende peças das armaduras do Stark no mercado negro. Descubra quem, sem ser visto."'
+      en: 'Black Widow hands you a folder. "Someone is selling parts of Stark''s armors on the black market. Find out who, without being seen."'
+    choices:
+      - label: { pt-BR: "Seguir o dinheiro", en: "Follow the money" }
+        next: caminho-a
+      - label: { pt-BR: "Seguir as peças", en: "Follow the parts" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "As contas levam a uma empresa de fachada no porto. Um segurança desconfia de você."
+      en: "The accounts lead to a shell company at the docks. A guard grows suspicious of you."
+    choices:
+      - label: { pt-BR: "Inventar uma desculpa tranquila", en: "Make up a calm excuse" }
+        next: sucesso
+      - label: { pt-BR: "Mostrar o seu poder para assustá-lo", en: "Show your power to scare him" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: "Uma peça marcada aparece numa loja de sucata. O dono sabe mais do que diz."
+      en: "A marked part turns up at a scrap shop. The owner knows more than he says."
+    choices:
+      - label: { pt-BR: "Comprar a peça e seguir o fornecedor", en: "Buy the part and follow the supplier" }
+        next: sucesso
+      - label: { pt-BR: "Ameaçar o dono", en: "Threaten the owner" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'Você descobre o armazém sem levantar suspeitas. A Viúva Negra sorri pela primeira vez: "Nada mal."'
+      en: 'You find the warehouse without raising suspicion. Black Widow smiles for the first time: "Not bad."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'A pista some: alguém avisou o vendedor. "Discrição também é força", diz a Viúva Negra. "De novo."'
+      en: 'The lead goes cold: someone warned the seller. "Discretion is strength too," says Black Widow. "Again."'
+    end: failure

@@ -1,0 +1,53 @@
+# Recruitment arc for the Guardiões da Galáxia. Chapter 1.
+id: carona-espacial-1
+kind: story
+campaign: { id: carona-espacial, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "Carona na Milano 1: O teste do Rocket"
+  en: "A ride on the Milano 1: Rocket's test"
+summary:
+  pt-BR: "O Rocket quer saber se você serve para alguma coisa numa nave."
+  en: "Rocket wants to know if you are good for anything on a ship."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A Milano pousa no estacionamento de um shopping. O Rocket desce com uma chave inglesa maior que ele. "O motor está fazendo um barulho. Conserta ou some."'
+      en: 'The Milano lands in a mall parking lot. Rocket climbs down with a wrench bigger than he is. "The engine is making a noise. Fix it or get lost."'
+    choices:
+      - label: { pt-BR: "Escutar o motor com atenção", en: "Listen carefully to the engine" }
+        next: caminho-a
+      - label: { pt-BR: "Pedir ajuda ao Groot", en: "Ask Groot for help" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "O barulho vem de um cano rachado. O Rocket cruza os braços e espera."
+      en: "The noise comes from a cracked pipe. Rocket crosses his arms and waits."
+    choices:
+      - label: { pt-BR: "Isolar o cano e trocar a peça", en: "Isolate the pipe and replace the part" }
+        next: sucesso
+      - label: { pt-BR: "Bater no motor até parar", en: "Hit the engine until it stops" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: '"Eu sou Groot", diz o Groot, apontando para um painel. Parece uma dica.'
+      en: '"I am Groot," says Groot, pointing at a panel. It looks like a hint.'
+    choices:
+      - label: { pt-BR: "Abrir o painel que ele apontou", en: "Open the panel he pointed at" }
+        next: sucesso
+      - label: { pt-BR: "Ignorar o Groot", en: "Ignore Groot" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'O motor ronrona. O Rocket resmunga: "Tá, tá. Sobe a bordo antes que eu mude de ideia."'
+      en: 'The engine purrs. Rocket grumbles: "Fine, fine. Get on board before I change my mind."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'Uma faísca, um estalo e silêncio total. O Rocket aponta para a saída. "Volta quando aprender a ouvir."'
+      en: 'A spark, a crack and total silence. Rocket points to the exit. "Come back when you learn to listen."'
+    end: failure

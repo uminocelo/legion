@@ -1,0 +1,10 @@
+# Recruitment arc for the X-Men. Format: docs/MISSIONS.md (Campanhas).
+id: aula-na-mansao
+kind: recruitment
+faction: xmen
+title:
+  pt-BR: "Aula na Mansão X"
+  en: "Class at the X-Mansion"
+summary:
+  pt-BR: "O Professor Xavier abre as portas da escola para você. Três aulas, e no fim uma vaga entre os X-Men."
+  en: "Professor Xavier opens the school doors to you. Three lessons, and at the end a place among the X-Men."

@@ -1,0 +1,10 @@
+# Recruitment arc for the Vingadores. Format: docs/MISSIONS.md (Campanhas).
+id: armadura-roubada
+kind: recruitment
+faction: avengers
+title:
+  pt-BR: "Teste dos Vingadores"
+  en: "Avengers trial"
+summary:
+  pt-BR: "Os maiores heróis da Terra estão abrindo uma vaga. O Capitão América quer ver você em ação."
+  en: "Earth's mightiest heroes have an opening. Captain America wants to see you in action."

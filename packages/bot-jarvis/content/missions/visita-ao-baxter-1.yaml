@@ -1,0 +1,52 @@
+# Story campaign at the Baxter Building, open to every team. Chapter 1.
+id: visita-ao-baxter-1
+kind: story
+campaign: { id: visita-ao-baxter, chapter: 1 }
+title:
+  pt-BR: "Edifício Baxter 1: O chamado de Reed"
+  en: "Baxter Building 1: Reed's call"
+summary:
+  pt-BR: "A Sue Storm recebe você no Edifício Baxter. Algo saiu do portal do laboratório."
+  en: "Sue Storm welcomes you at the Baxter Building. Something came out of the lab portal."
+minLevel: 1
+party: 3
+difficulty: facil
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A Sue Storm aparece do nada, literalmente. "Desculpe o susto. O Reed abriu um portal para a Zona Negativa e algo passou. Precisamos de mãos extras."'
+      en: 'Sue Storm appears out of thin air, literally. "Sorry for the scare. Reed opened a portal to the Negative Zone and something got through. We need extra hands."'
+    choices:
+      - label: { pt-BR: "Ir ao laboratório com ela", en: "Go to the lab with her" }
+        next: caminho-a
+      - label: { pt-BR: "Perguntar o que passou", en: "Ask what got through" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: 'No laboratório, o Reed Richards estica o braço até o outro lado da sala. "Os sensores marcam três assinaturas. Duas estão nos andares de baixo."'
+      en: 'In the lab, Reed Richards stretches his arm across the room. "The sensors show three signatures. Two are on the lower floors."'
+    choices:
+      - label: { pt-BR: "Ajudar a calibrar os sensores", en: "Help calibrate the sensors" }
+        next: sucesso
+      - label: { pt-BR: "Mexer no portal", en: "Mess with the portal" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: '"Máquinas", diz a Sue. "Alguém do outro lado as mandou. Suspeitamos de quem, mas sem provas."'
+      en: '"Machines," says Sue. "Someone on the other side sent them. We suspect who, but we have no proof."'
+    choices:
+      - label: { pt-BR: "Pedir para ver as gravações", en: "Ask to see the recordings" }
+        next: sucesso
+      - label: { pt-BR: "Sair procurando sozinho", en: "Go looking alone" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'Os sensores apontam para a garagem. O H.E.R.B.I.E., o robô da família, bipa animado: "Ameaça localizada!"'
+      en: 'The sensors point to the garage. H.E.R.B.I.E., the family robot, beeps excitedly: "Threat located!"'
+    end: success
+  falha:
+    text:
+      pt-BR: 'O portal solta uma faísca e todo o andar fica sem energia. O Reed suspira: "Vamos recomeçar."'
+      en: 'The portal throws a spark and the whole floor loses power. Reed sighs: "Let us start over."'
+    end: failure

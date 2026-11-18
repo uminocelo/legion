@@ -1,0 +1,50 @@
+# Recruitment arc for the Guardiões da Galáxia. Chapter 3 (fight).
+id: carona-espacial-3
+kind: story
+campaign: { id: carona-espacial, chapter: 3 }
+requires: { missions: [carona-espacial-2] }
+reward: { joinFaction: guardians }
+title:
+  pt-BR: "Carona na Milano 3: O cargueiro"
+  en: "A ride on the Milano 3: The freighter"
+summary:
+  pt-BR: "No cargueiro, uma máquina de segurança acorda. Hora de provar o seu valor à tripulação."
+  en: "On the freighter, a security machine wakes up. Time to prove yourself to the crew."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O cargueiro flutua em silêncio. O Senhor das Estrelas aperta o play no walkman. "Pega a carga, a gente cobre você. Fácil."'
+      en: 'The freighter floats in silence. Star-Lord presses play on his Walkman. "Grab the cargo, we cover you. Easy."'
+    choices:
+      - label: { pt-BR: "Entrar pelo hangar", en: "Go in through the hangar" }
+        next: preparo
+      - label: { pt-BR: "Ir direto ao porão de carga", en: "Go straight to the cargo hold" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "No hangar, luzes vermelhas acendem. Uma máquina de segurança desce do teto."
+      en: "In the hangar, red lights come on. A security machine drops from the ceiling."
+    choices:
+      - label: { pt-BR: "Desviar e atacar pelas costas", en: "Dodge and strike from behind" }
+        next: confronto
+      - label: { pt-BR: "Esperar o ataque dela", en: "Wait for its attack" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: 'A máquina estende lâminas. "SAQUEADORES DETECTADOS."'
+      en: 'The machine extends its blades. "LOOTERS DETECTED."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina cai e a carga é sua. O Senhor das Estrelas anuncia: "Oficialmente um Guardião da Galáxia. Escolhe a próxima música."'
+      en: 'The machine goes down and the cargo is yours. Star-Lord announces: "Officially a Guardian of the Galaxy. You pick the next song."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'Vocês fogem de mãos vazias. O Rocket conta os buracos na Milano. "De novo. E dessa vez sem buracos."'
+      en: 'You flee empty-handed. Rocket counts the holes in the Milano. "Again. And no holes this time."'
+    end: failure

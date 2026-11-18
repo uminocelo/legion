@@ -1,0 +1,53 @@
+# Recruitment arc for the Filhos da Meia-Noite. Chapter 1.
+id: depois-da-meia-noite-1
+kind: story
+campaign: { id: depois-da-meia-noite, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "Depois da meia-noite 1: O cemitério"
+  en: "After midnight 1: The cemetery"
+summary:
+  pt-BR: "Elsa Bloodstone leva você para uma patrulha num cemitério antigo."
+  en: "Elsa Bloodstone takes you on a patrol through an old cemetery."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A Elsa Bloodstone carrega uma espingarda e um livro velho. "Túmulos abertos de dentro para fora. Fica perto e não toca em nada brilhante."'
+      en: 'Elsa Bloodstone carries a shotgun and an old book. "Graves opened from the inside. Stay close and do not touch anything shiny."'
+    choices:
+      - label: { pt-BR: "Seguir as marcas no chão", en: "Follow the marks on the ground" }
+        next: caminho-a
+      - label: { pt-BR: "Ler o livro com ela", en: "Read the book with her" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "As marcas levam a uma cripta com um símbolo que brilha. Algo se mexe lá dentro."
+      en: "The marks lead to a crypt with a glowing symbol. Something moves inside."
+    choices:
+      - label: { pt-BR: "Chamar a Elsa antes de entrar", en: "Call Elsa before going in" }
+        next: sucesso
+      - label: { pt-BR: "Tocar no símbolo", en: "Touch the symbol" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: "O livro descreve um ritual que acorda os mortos por uma noite. Falta uma página."
+      en: "The book describes a ritual that wakes the dead for one night. A page is missing."
+    choices:
+      - label: { pt-BR: "Procurar a página nos túmulos", en: "Search the graves for the page" }
+        next: sucesso
+      - label: { pt-BR: "Recitar o ritual em voz alta", en: "Read the ritual out loud" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'Vocês fecham a cripta antes do amanhecer. A Elsa guarda a espingarda. "Nada mal. O Blade vai querer conhecer você."'
+      en: 'You seal the crypt before dawn. Elsa puts the shotgun away. "Not bad. Blade will want to meet you."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'Um vento gelado apaga as lanternas e a Elsa arrasta você para fora. "Regra um: não toca. De novo amanhã."'
+      en: 'An icy wind blows out the lanterns and Elsa drags you out. "Rule one: do not touch. Again tomorrow."'
+    end: failure

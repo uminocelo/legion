@@ -1,0 +1,50 @@
+# Recruitment arc for the Irmandade (mutante and inumano only, by the team rule). Chapter 3 (fight).
+id: convite-no-metro-3
+kind: story
+campaign: { id: convite-no-metro, chapter: 3 }
+requires: { missions: [convite-no-metro-2] }
+reward: { joinFaction: brotherhood }
+title:
+  pt-BR: "O chamado da Irmandade 3: O laboratório"
+  en: "The Brotherhood's call 3: The lab"
+summary:
+  pt-BR: "Liberte os mutantes presos. Uma máquina de guarda protege a saída."
+  en: "Free the imprisoned mutants. A guard machine protects the exit."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: "O Sapo segura a porta de serviço aberta. Lá dentro, celas com mutantes e um corredor guardado por uma máquina de contenção."
+      en: "Toad holds the service door open. Inside, cells with mutants and a hallway guarded by a containment machine."
+    choices:
+      - label: { pt-BR: "Abrir as celas primeiro", en: "Open the cells first" }
+        next: preparo
+      - label: { pt-BR: "Enfrentar a máquina primeiro", en: "Face the machine first" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "As celas abrem e os presos correm para a saída. A máquina de contenção bloqueia o corredor."
+      en: "The cells open and the prisoners run for the exit. The containment machine blocks the hallway."
+    choices:
+      - label: { pt-BR: "Ficar entre ela e os presos", en: "Stand between it and the prisoners" }
+        next: confronto
+      - label: { pt-BR: "Atacar o núcleo de energia", en: "Strike its power core" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: '"FUGA DETECTADA. CONTENÇÃO AUTORIZADA." A máquina avança.'
+      en: '"ESCAPE DETECTED. CONTAINMENT AUTHORIZED." The machine advances.'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina cai e os presos saem livres. No céu, o Magneto observa: "A Irmandade é sua casa agora."'
+      en: 'The machine falls and the prisoners walk out free. Above, Magneto watches: "The Brotherhood is your home now."'
+    end: success
+  derrota:
+    text:
+      pt-BR: "A máquina fecha o corredor. Os presos voltam às celas e você mal escapa. Tente de novo."
+      en: "The machine seals the hallway. The prisoners are back in their cells and you barely escape. Try again."
+    end: failure

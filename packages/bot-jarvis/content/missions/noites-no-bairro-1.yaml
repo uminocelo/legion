@@ -1,0 +1,53 @@
+# Recruitment arc for the Defensores. Chapter 1.
+id: noites-no-bairro-1
+kind: story
+campaign: { id: noites-no-bairro, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "Noites em Hell's Kitchen 1: O escritório"
+  en: "Nights in Hell's Kitchen 1: The office"
+summary:
+  pt-BR: "Jessica Jones tem um caso e pouca paciência. Ela precisa de alguém para vigiar um prédio."
+  en: "Jessica Jones has a case and little patience. She needs someone to watch a building."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'Na Alias Investigações, a Jessica Jones joga uma foto na mesa. "Moradores somem desse prédio. Vigia a porta esta noite. Sem heroísmo."'
+      en: 'At Alias Investigations, Jessica Jones tosses a photo on the desk. "Tenants are vanishing from this building. Watch the door tonight. No heroics."'
+    choices:
+      - label: { pt-BR: "Vigiar da janela em frente", en: "Watch from the window across the street" }
+        next: caminho-a
+      - label: { pt-BR: "Conversar com os moradores", en: "Talk to the tenants" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "Às três da manhã, uma van sem placa para na porta. Dois homens levam um morador sonolento."
+      en: "At three in the morning, an unmarked van stops at the door. Two men lead a sleepy tenant away."
+    choices:
+      - label: { pt-BR: "Anotar tudo e seguir a van", en: "Note everything and follow the van" }
+        next: sucesso
+      - label: { pt-BR: "Pular sobre a van", en: "Jump on the van" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: 'Uma senhora conta que um "empresário" ofereceu dinheiro para todos saírem. Quem recusou, sumiu.'
+      en: 'An old lady says a "businessman" offered everyone money to move out. Those who refused vanished.'
+    choices:
+      - label: { pt-BR: "Pedir o cartão do empresário", en: "Ask for the businessman's card" }
+        next: sucesso
+      - label: { pt-BR: "Prometer resolver tudo sozinho", en: "Promise to fix everything alone" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'A Jessica lê as suas anotações. "Útil. Raro, mas útil. O Matt vai querer ver isso."'
+      en: 'Jessica reads your notes. "Useful. Rare, but useful. Matt will want to see this."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'A van some e a Jessica massageia a testa. "Eu disse sem heroísmo. Amanhã de novo."'
+      en: 'The van disappears and Jessica rubs her forehead. "I said no heroics. Again tomorrow."'
+    end: failure

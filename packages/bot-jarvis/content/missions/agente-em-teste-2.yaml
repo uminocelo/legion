@@ -1,0 +1,55 @@
+# Recruitment arc for S.H.I.E.L.D. Chapter 2.
+id: agente-em-teste-2
+kind: story
+campaign: { id: agente-em-teste, chapter: 2 }
+requires: { missions: [agente-em-teste-1] }
+title:
+  pt-BR: "Agente em teste 2: O agente Coulson"
+  en: "Agent on probation 2: Agent Coulson"
+summary:
+  pt-BR: "O agente Coulson leva você a investigar um sinal estranho no interior."
+  en: "Agent Coulson takes you to investigate a strange signal in the countryside."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O agente Coulson dirige pela estrada de terra. "Um fazendeiro diz que o milharal está falando com ele. Provavelmente nada. Provavelmente."'
+      en: 'Agent Coulson drives down the dirt road. "A farmer says his cornfield is talking to him. Probably nothing. Probably."'
+    choices:
+      - label: { pt-BR: "Falar com o fazendeiro", en: "Talk to the farmer" }
+        next: caminho-a
+      - label: { pt-BR: "Ir direto ao milharal", en: "Go straight to the cornfield" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "O fazendeiro mostra um aparelho enterrado que transmite números. Coulson olha para você."
+      en: "The farmer shows a buried device broadcasting numbers. Coulson looks at you."
+    choices:
+      - label:
+          { pt-BR: "Isolar a área e chamar a equipe técnica", en: "Secure the area and call the tech team" }
+        next: sucesso
+      - label: { pt-BR: "Desmontar o aparelho na hora", en: "Take the device apart right away" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: "No meio do milharal, um transmissor pisca. Há pegadas de botas militares em volta."
+      en: "In the middle of the cornfield, a transmitter blinks. There are military boot prints around it."
+    choices:
+      - label:
+          { pt-BR: "Fotografar tudo e seguir as pegadas", en: "Photograph everything and follow the tracks" }
+        next: sucesso
+      - label: { pt-BR: "Chutar o transmissor", en: "Kick the transmitter" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'A equipe técnica decifra o sinal: coordenadas de uma base escondida. Coulson sorri. "Bom instinto."'
+      en: 'The tech team decodes the signal: coordinates to a hidden base. Coulson smiles. "Good instinct."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'O aparelho se apaga e a pista se perde. Coulson suspira. "Protocolo existe por um motivo. Vamos de novo."'
+      en: 'The device goes dark and the lead is lost. Coulson sighs. "Protocol exists for a reason. Let us try again."'
+    end: failure

@@ -1,0 +1,57 @@
+# Recruitment arc for the Vingadores. Chapter 1.
+id: armadura-roubada-1
+kind: story
+campaign: { id: armadura-roubada, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "Teste dos Vingadores 1: A convocação"
+  en: "Avengers trial 1: The summons"
+summary:
+  pt-BR: "O Capitão América convoca você à Mansão dos Vingadores para uma conversa."
+  en: "Captain America summons you to Avengers Mansion for a talk."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O Capitão América recebe você na Mansão dos Vingadores. "Força a gente ensina. Quero saber por que você quer estar aqui."'
+      en: 'Captain America welcomes you at Avengers Mansion. "Strength we can teach. I want to know why you want to be here."'
+    choices:
+      - label:
+          {
+            pt-BR: "Para proteger quem não pode se proteger",
+            en: "To protect those who cannot protect themselves",
+          }
+        next: caminho-a
+      - label: { pt-BR: "Para ficar famoso", en: "To be famous" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: 'Ele assente. Um alarme toca: um ônibus escolar está preso numa ponte instável. "Vamos ver se é verdade."'
+      en: 'He nods. An alarm rings: a school bus is stuck on an unstable bridge. "Let us see if that is true."'
+    choices:
+      - label: { pt-BR: "Correr para a ponte com ele", en: "Run to the bridge with him" }
+        next: sucesso
+      - label: { pt-BR: "Esperar ordens detalhadas", en: "Wait for detailed orders" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: '"A fama vem e vai", diz ele, sem sorrir. "Me dê outra resposta."'
+      en: '"Fame comes and goes," he says, without a smile. "Give me another answer."'
+    choices:
+      - label: { pt-BR: "Falar a verdade sobre o seu passado", en: "Tell the truth about your past" }
+        next: sucesso
+      - label: { pt-BR: "Insistir na fama", en: "Insist on fame" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'As crianças saem a salvo e o Capitão aperta a sua mão. "A Viúva Negra vai querer falar com você."'
+      en: 'The children get out safely and Cap shakes your hand. "Black Widow will want to talk to you."'
+    end: success
+  falha:
+    text:
+      pt-BR: "O Capitão agradece a visita e pede que você volte quando souber por que quer ser um Vingador."
+      en: "Cap thanks you for coming and asks you to return when you know why you want to be an Avenger."
+    end: failure

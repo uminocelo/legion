@@ -1,0 +1,50 @@
+# Recruitment arc for the Defensores. Chapter 3 (fight).
+id: noites-no-bairro-3
+kind: story
+campaign: { id: noites-no-bairro, chapter: 3 }
+requires: { missions: [noites-no-bairro-2] }
+reward: { joinFaction: defenders }
+title:
+  pt-BR: "Noites em Hell's Kitchen 3: O depósito"
+  en: "Nights in Hell's Kitchen 3: The warehouse"
+summary:
+  pt-BR: "Os moradores estão presos num depósito no porto, vigiados por uma máquina."
+  en: "The tenants are held in a warehouse at the docks, guarded by a machine."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'No porto, o Punho de Ferro aponta para um depósito. "Os moradores estão lá. A empresa trabalha para o Rei do Crime, mas quem vigia é uma máquina."'
+      en: 'At the docks, Iron Fist points at a warehouse. "The tenants are in there. The company works for the Kingpin, but a machine stands guard."'
+    choices:
+      - label: { pt-BR: "Entrar pelo telhado", en: "Go in through the roof" }
+        next: preparo
+      - label: { pt-BR: "Abrir o portão da frente", en: "Open the front gate" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "Do telhado você vê os moradores amarrados e a máquina andando entre eles."
+      en: "From the roof you see the tenants tied up and the machine pacing among them."
+    choices:
+      - label: { pt-BR: "Descer longe dos reféns", en: "Drop down away from the hostages" }
+        next: confronto
+      - label: { pt-BR: "Descer bem na frente dela", en: "Drop right in front of it" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: 'A máquina gira o tronco e mira em você. "INVASÃO. ELIMINAR."'
+      en: 'The machine swivels its torso and aims at you. "INTRUSION. ELIMINATE."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'Os moradores voltam para casa. Os quatro Defensores esperam na saída. A Jessica dá de ombros: "Tá. Você é dos nossos."'
+      en: 'The tenants go home. The four Defenders wait at the exit. Jessica shrugs: "Fine. You are one of us."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'A máquina leva os reféns para outro depósito. O Luke põe a mão no seu ombro: "Amanhã a gente acha. Você vem junto."'
+      en: 'The machine moves the hostages to another warehouse. Luke puts a hand on your shoulder: "We find them tomorrow. You are coming."'
+    end: failure

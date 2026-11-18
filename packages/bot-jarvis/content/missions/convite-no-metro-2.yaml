@@ -1,0 +1,54 @@
+# Recruitment arc for the Irmandade (mutante and inumano only, by the team rule). Chapter 2.
+id: convite-no-metro-2
+kind: story
+campaign: { id: convite-no-metro, chapter: 2 }
+requires: { missions: [convite-no-metro-1] }
+title:
+  pt-BR: "O chamado da Irmandade 2: Asteroide M"
+  en: "The Brotherhood's call 2: Asteroid M"
+summary:
+  pt-BR: "No refúgio da Irmandade, o Magneto quer saber até onde você vai."
+  en: "At the Brotherhood's refuge, Magneto wants to know how far you will go."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: "O endereço leva a um galpão, e o galpão a uma nave de metal que sobe até o Asteroide M. O Magneto espera de costas para você."
+      en: "The address leads to a warehouse, and the warehouse to a metal ship that rises to Asteroid M. Magneto waits with his back to you."
+    choices:
+      - label: { pt-BR: "Falar do laboratório", en: "Talk about the lab" }
+        next: caminho-a
+      - label: { pt-BR: "Perguntar por que você", en: "Ask why you" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: '"Então você viu", ele diz. "Os guardas daquele lugar não vão abrir as portas por pedido. O que você faria?"'
+      en: '"So you saw it," he says. "The guards of that place will not open the doors because you ask. What would you do?"'
+    choices:
+      - label:
+          { pt-BR: "Libertar os presos sem ferir ninguém", en: "Free the prisoners without hurting anyone" }
+        next: sucesso
+      - label: { pt-BR: "Destruir o lugar com todos dentro", en: "Destroy the place with everyone inside" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: '"Porque você não tem medo do que é. Poucos têm essa coragem." Ele vira e espera uma resposta.'
+      en: '"Because you are not afraid of what you are. Few have that courage." He turns and waits for an answer.'
+    choices:
+      - label: { pt-BR: "Dizer que vai lutar pelos seus", en: "Say you will fight for your own" }
+        next: sucesso
+      - label: { pt-BR: "Dizer que só quer paz", en: "Say you only want peace" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'O Magneto acena. "Amanhã, o laboratório. Mostre que eu não me enganei."'
+      en: 'Magneto nods. "Tomorrow, the lab. Show me I was not wrong."'
+    end: success
+  falha:
+    text:
+      pt-BR: '"A paz deles nunca incluiu você", diz o Magneto, e manda você de volta à Terra. A porta continua aberta, se mudar de ideia.'
+      en: '"Their peace never included you," says Magneto, and sends you back to Earth. The door stays open if you change your mind.'
+    end: failure
