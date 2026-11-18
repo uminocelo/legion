@@ -4,6 +4,9 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Fixed
+- CLI (`legion doctor`, `register-commands`): waits Discord's `retry_after` and retries when rate limited (HTTP 429) instead of reporting ❌.
+
 ## [0.7.1] - 2026-11-17
 
 ### Changed
