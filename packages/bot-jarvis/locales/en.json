@@ -83,7 +83,8 @@
       "trivia": "Answer a quick question and earn XP.",
       "ranking": "See who earned the most XP this week, this month or all time.",
       "sequencia": "See your active-day streak and tomorrow's bonus.",
-      "missao": "Missions with choices (and fights), solo or in a party"
+      "missao": "Missions with choices (and fights), solo or in a party",
+      "campanha": "Shows your campaigns, progress and next chapter."
     },
     "commands": {
       "trivia": {
@@ -127,7 +128,10 @@
         "missao_desativar": "Takes a mission out of play",
         "missao_ativar": "Brings a disabled mission back",
         "trivia_importar": "Imports questions from a .yaml file",
-        "trivia_arquivo": "The .yaml file with the questions (same format as export)"
+        "trivia_arquivo": "The .yaml file with the questions (same format as export)",
+        "campanha": "Campaigns (staff)",
+        "campanha_importar": "Imports a campaign and its missions from a .yaml",
+        "campanha_arquivo": "A .yaml file with campaign and missions"
       },
       "missao": {
         "description": "Missions: short stories with choices, solo or in a party",
@@ -135,6 +139,10 @@
         "iniciar": "Starts a mission",
         "missao": "The mission",
         "abandonar": "Abandons your current mission (no XP)"
+      },
+      "campanha": {
+        "description": "Your campaigns: progress and next chapter",
+        "campanha": "One campaign (default: all)"
       }
     },
     "missions": {
@@ -153,7 +161,8 @@
         "daily_limit": "You already did your daily mission today",
         "weekly_limit": "You already did your weekly mission this week",
         "story_done": "You already played this story",
-        "combat_unavailable": "Fights unavailable (ULTRON or Sentinel is off)"
+        "combat_unavailable": "Fights unavailable (ULTRON or Sentinel is off)",
+        "requires": "Locked: you still need to {missing}"
       },
       "already_open": "You already have a mission in progress: {thread}. Finish it or use /mission abandon.",
       "started": "Mission started in {thread}. Good luck, agent.",
@@ -189,7 +198,16 @@
         "start": "Start"
       },
       "fight": "⚔️ Fight in progress: Sentinel runs the turns here.",
-      "combat_timeout": "⌛ The fight did not end in time. The mission failed."
+      "combat_timeout": "⌛ The fight did not end in time. The mission failed.",
+      "requires": {
+        "missions": "finish {missions}",
+        "level": "reach level {level}",
+        "origin": "have origin {origins}",
+        "faction": "be on {factions}",
+        "team": "this mission is not available to you"
+      },
+      "party_locked": "You cannot start yet. Missing:\n{members}",
+      "party_locked_title": "⚠️ Missing to start"
     },
     "staff_trivia": {
       "bad_category": "Category \"{category}\" is not in jarvis.trivia.categories.",
@@ -256,6 +274,25 @@
       "review_note": "ℹ️ Review is on: new and changed questions wait for another staff member's approval.",
       "published": "✅ Questions published: {added} new, {changed} changed, {same} unchanged. They are live in /trivia.",
       "published_review": "📝 Questions sent for review: {added} new, {changed} changed ({same} unchanged). They go live in /trivia once approved."
+    },
+    "campaigns": {
+      "title": "🗺️ Campaigns",
+      "none": "No campaigns available yet.",
+      "unknown": "I could not find that campaign. Use /campanha to see the list.",
+      "kind": {
+        "tutorial": "Tutorial",
+        "recruitment": "Recruitment",
+        "story": "Story"
+      },
+      "progress": "{done}/{total} chapters",
+      "complete": "✅ Campaign complete!",
+      "next_open": "▶️ Next: **{title}** (`/missao iniciar {id}`)",
+      "next_locked": "🔒 Next: **{title}** · you still need to {why}",
+      "chapter_done": "✅ {n}. {title}",
+      "chapter_open": "▶️ {n}. **{title}** · `/missao iniciar {id}`",
+      "chapter_locked": "🔒 {n}. {title} · you still need to {why}",
+      "import_meta": "`{id}` · {kind} · {chapters} chapter(s)",
+      "published": "✅ Campaign `{id}` published with {n} mission(s). It already shows in /campanha and /missao."
     }
   }
 }

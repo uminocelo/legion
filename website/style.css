@@ -672,6 +672,31 @@ section:last-child {
 .out h2 {
   font-size: 1.3rem;
 }
+/* Mission editor: the mission file and the campaign file panels scroll together. */
+.outs {
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  display: grid;
+  gap: 16px;
+  max-height: calc(100vh - 100px);
+  overflow: auto;
+}
+.outs .out {
+  position: static;
+}
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.chapters {
+  margin: 12px 0;
+  padding-left: 20px;
+}
+.chapters li {
+  margin: 4px 0;
+}
 .errs .ok {
   color: #7dcea0;
   font-weight: 700;
@@ -745,6 +770,11 @@ footer {
   }
   .out {
     position: static;
+  }
+  .outs {
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
   .hero,
   .host {

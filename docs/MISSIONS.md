@@ -54,3 +54,67 @@ Regras que o Legion confere:
 - Toda escolha e luta aponta para uma cena que existe, toda cena é alcançável a partir de `start`, não há ciclos (a história sempre termina) e há pelo menos um `end`.
 - A história pode citar personagens, equipes e lugares da Marvel (título, cenas e botões): "O Capitão América convoca você" vale. Os **inimigos** das lutas continuam originais; veja [UNIVERSE.md](UNIVERSE.md).
 - Um arquivo com erro não é carregado e a versão anterior da missão continua valendo. Missões que somem dos arquivos ficam inativas (o histórico continua).
+
+## Campanhas
+
+Uma **campanha** junta missões em capítulos que liberam em ordem. O jogador vê o progresso com `/campanha` (todas) ou `/campanha campanha:<id>` (os capítulos: ✅ feito, ▶️ disponível, 🔒 bloqueado com o motivo). O progresso vem das missões terminadas com **sucesso**: não há outra tabela para sincronizar.
+
+Cada campanha é um arquivo em `./data/content/campaigns/<id>.yaml` (o mesmo `id` de uma campanha que vem com o Legion a substitui):
+
+```yaml
+id: sombras-da-cidade           # único; letras minúsculas, números e "-"
+kind: story                     # tutorial | recruitment | story
+title: { pt-BR: Sombras sobre a cidade, en: Shadows over the city }
+summary: { pt-BR: Um mistério em três capítulos., en: A mystery in three chapters. }
+# faction: avengers             # só em kind: recruitment (a equipe que recruta)
+```
+
+As missões apontam para a campanha e dizem o que precisam:
+
+```yaml
+id: sombras-2
+kind: story
+campaign: { id: sombras-da-cidade, chapter: 2 }
+requires:
+  missions: [sombras-1]         # terminadas com sucesso
+  level: 3                      # nível mínimo (além do minLevel)
+  origins: [ciencia, tecnologia] # origens aceitas
+  factions: [independent, xmen] # equipe atual do herói
+title: Rastros no porto
+# ... summary, start e scenes como qualquer missão
+```
+
+- Todos os campos de `requires` são opcionais; cada um que aparece precisa ser cumprido.
+- **Em grupo**, todo membro precisa cumprir. Quem não cumpre pode entrar no grupo, mas o grupo mostra o que falta para cada um e o líder só começa quando todos cumprem.
+- No `/missao iniciar`, missões bloqueadas não aparecem na lista; digitar o id de uma mostra "Bloqueada: falta …".
+- **Recrutamento** (`kind: recruitment`, com `faction`): a missão final pode ter `reward: { joinFaction: <equipe> }`, que tem de ser a equipe da campanha. O arco some para quem já está nessa equipe e para todos quando a equipe está desligada. Entrar na equipe ao terminar o arco chega na próxima versão; por enquanto a staff move com `/cerebro equipe mover`.
+
+Regras que o Legion confere (no arquivo, no editor e no import):
+
+- a campanha da missão existe e cada capítulo aparece uma vez;
+- toda missão em `requires.missions` existe, e não há ciclo (A exige B, B exige A);
+- `joinFaction` só numa campanha de recrutamento, para a equipe dela, e a equipe está ligada.
+
+Num arquivo do servidor, uma missão com erro é ignorada (❌ no `legion doctor`). Um `requires` que cita uma missão que ainda não existe só bloqueia a missão (⚠️ no `legion doctor`).
+
+### Importar uma campanha pelo Discord
+
+`/jarvis campanha importar arquivo:` com um `.yaml` que tem a campanha e as missões juntas:
+
+```yaml
+campaign:
+  id: noite-longa
+  kind: story
+  title: Noite longa
+  summary: Três capítulos numa noite.
+missions:
+  - id: noite-1
+    campaign: { id: noite-longa, chapter: 1 }
+    # ... o resto da missão
+  - id: noite-2
+    campaign: { id: noite-longa, chapter: 2 }
+    requires: { missions: [noite-1] }
+    # ...
+```
+
+O J.A.R.V.I.S. mostra uma prévia com os capítulos; **Publicar** grava tudo de uma vez (um erro em qualquer missão não grava nada). Ids de campanhas e missões que vêm com o Legion são recusados. O editor de missões do site baixa esse arquivo pronto.

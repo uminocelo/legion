@@ -136,6 +136,26 @@ export function jarvisCommands(
       autocomplete: (i, r) => s.missions.autocomplete(i, r),
     },
     {
+      name: 'campanha',
+      json: {
+        name: 'campanha',
+        name_localizations: { 'en-US': 'campaign' },
+        ...desc(i18n, 'jarvis.commands.campanha.description'),
+        options: [
+          {
+            type: 3,
+            name: 'campanha',
+            name_localizations: { 'en-US': 'campaign' },
+            required: false,
+            autocomplete: true,
+            ...desc(i18n, 'jarvis.commands.campanha.campanha'),
+          },
+        ],
+      },
+      execute: (i, r) => s.campaigns.command(i, r),
+      autocomplete: (i, r) => s.campaigns.autocomplete(i, r),
+    },
+    {
       name: 'jarvis',
       json: {
         name: 'jarvis',
@@ -306,6 +326,29 @@ export function jarvisCommands(
           },
           {
             type: 2,
+            name: 'campanha',
+            name_localizations: { 'en-US': 'campaign' },
+            ...desc(i18n, 'jarvis.commands.jarvis.campanha'),
+            options: [
+              {
+                type: 1,
+                name: 'importar',
+                name_localizations: { 'en-US': 'import' },
+                ...desc(i18n, 'jarvis.commands.jarvis.campanha_importar'),
+                options: [
+                  {
+                    type: 11,
+                    name: 'arquivo',
+                    name_localizations: { 'en-US': 'file' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.campanha_arquivo'),
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 2,
             name: 'missao',
             name_localizations: { 'en-US': 'mission' },
             ...desc(i18n, 'jarvis.commands.jarvis.missao'),
@@ -399,6 +442,7 @@ export function jarvisCommands(
         if (sub === 'trivia exportar') return s.staffTrivia.export(i, r);
         if (sub === 'trivia importar') return s.triviaImports.import(i, r);
         if (sub === 'missao importar') return s.imports.import(i, r);
+        if (sub === 'campanha importar') return s.campaigns.import(i, r);
         if (sub === 'missao lista') return s.imports.list(i, r);
         if (sub === 'missao desativar') return s.imports.setActive(i, r, false);
         if (sub === 'missao ativar') return s.imports.setActive(i, r, true);

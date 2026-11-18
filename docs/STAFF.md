@@ -46,6 +46,14 @@ Mesmo `id` de uma missão que já existe? A prévia avisa e a importada substitu
 | `/jarvis missao lista` | Todas as missões, ligadas ou não, e quem importou (ou "arquivo") |
 | `/jarvis missao desativar` / `ativar` | Tira ou volta uma missão para novas partidas. Partidas em andamento terminam normalmente |
 
+### Campanhas
+
+Uma campanha (missões em capítulos, [MISSIONS.md](MISSIONS.md#campanhas)) vai num arquivo só, com `campaign` e `missions`. No editor de missões, preencha a campanha e baixe o **arquivo de campanha**.
+
+1. `/jarvis campanha importar arquivo:` e anexe o `.yaml` (até 64 KB).
+2. O J.A.R.V.I.S. confere a campanha e cada missão: capítulos sem repetir, `requires` com missões que existem e sem ciclos, `joinFaction` só em recrutamento e para uma equipe ligada. Ids de campanhas e missões que vêm com o Legion são recusados. Com qualquer erro, **nada muda**.
+3. A prévia lista os capítulos. **Publicar** grava a campanha e todas as missões juntas; elas aparecem na hora em `/campanha` e `/missao`.
+
 ## Inimigos do ULTRON
 
 Mesmo formato do `enemies.yaml` ([WORLD_EVENTS.md](WORLD_EVENTS.md)): uma lista com um ou mais inimigos.

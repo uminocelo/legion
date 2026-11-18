@@ -1,6 +1,13 @@
 // Mission editor: a branching mission → <id>.yaml for `/jarvis missao importar`.
 import {
+  addChapter,
+  CAMPAIGN_KINDS,
+  type CampaignDraft,
+  campaignFileName,
+  campaignFromYaml,
+  campaignToYaml,
   DIFFICULTIES,
+  emptyCampaign,
   emptyMission,
   emptyScene,
   fileName,
@@ -10,6 +17,8 @@ import {
   type MissionDraft,
   mapProblems,
   nextSceneId,
+  ORIGINS,
+  removeChapter,
   removeScene,
   renameScene,
   type SceneDraft,
@@ -18,14 +27,32 @@ import {
   targets,
   toYaml,
   validate,
+  validateCampaign,
+  withDefaults,
 } from './mission-model.js';
 import { SHIPPED_MISSIONS } from './missions-shipped.js';
 import { copy, download, field, h, outputPanel, readFile, showResult, store } from './shared.js';
 
 const saved = store<MissionDraft>('legion.editor.mission');
-let m: MissionDraft = saved.load() ?? emptyMission();
+let m: MissionDraft = withDefaults(saved.load() ?? emptyMission());
+const savedCampaign = store<CampaignDraft>('legion.editor.campaign');
+let c: CampaignDraft = savedCampaign.load() ?? emptyCampaign();
 
 const KIND_LABEL: Record<string, string> = { daily: 'Diária', weekly: 'Semanal', story: 'História' };
+const CAMPAIGN_LABEL: Record<string, string> = {
+  tutorial: 'Tutorial',
+  recruitment: 'Recrutamento',
+  story: 'História',
+};
+const ORIGIN_LABEL: Record<string, string> = {
+  mutante: 'Mutante',
+  inumano: 'Inumano',
+  ciencia: 'Ciência',
+  tecnologia: 'Tecnologia',
+  mistico: 'Místico',
+  cosmico: 'Cósmico',
+  treinado: 'Treinado',
+};
 const DIFF_LABEL: Record<string, string> = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
 const TYPE_LABEL: Record<SceneType, string> = { choice: 'Escolhas', combat: 'Combate', end: 'Final' };
 
@@ -36,12 +63,27 @@ const meta = h('div');
 const map = h('nav', { class: 'scene-map', 'aria-label': 'Mapa das cenas' });
 const list = h('div', { class: 'items' });
 const out = outputPanel('/jarvis missao importar arquivo:', 'missao.yaml');
+const campaignPanel = h('div');
+const cOut = outputPanel('/jarvis campanha importar arquivo:', 'campanha.yaml');
+cOut.el.querySelector('h2')?.replaceChildren('Arquivo de campanha');
 
 function refresh() {
   saved.save(m);
   out.parts.download.textContent = `Baixar ${fileName(m)}`;
   showResult(out.parts, toYaml(m), validate(m), `Missão pronta: ${m.scenes.length} cena(s).`);
+  refreshCampaign();
   drawMap();
+}
+
+function refreshCampaign() {
+  savedCampaign.save(c);
+  cOut.parts.download.textContent = `Baixar ${campaignFileName(c)}`;
+  showResult(
+    cOut.parts,
+    campaignToYaml(c),
+    validateCampaign(c),
+    `Campanha pronta: ${c.missions.length} capítulo(s).`,
+  );
 }
 
 const select = (value: string, options: [string, string][], onChange: (v: string) => void, attrs = {}) => {
@@ -83,6 +125,98 @@ function text2(label: string, t: Text2, max: number, area = false, hint?: string
     h('div', { class: 'pair' }, make('pt', 'Português'), make('en', 'English (opcional)')),
     hint,
     true,
+  );
+}
+
+const textInput = (get: () => string, set: (v: string) => void, attrs = {}) => {
+  const el = h('input', { type: 'text', value: get(), ...attrs });
+  el.addEventListener('input', () => {
+    set(el.value);
+    refresh();
+  });
+  return el;
+};
+
+/** Campaign, chapter, requires and joinFaction of the mission being edited. */
+function missionCampaignFields(): HTMLElement {
+  const origins = h(
+    'div',
+    { class: 'checks' },
+    ...ORIGINS.map((o) => {
+      const box = h('input', { type: 'checkbox', checked: m.requires.origins.includes(o) });
+      box.addEventListener('change', () => {
+        m.requires.origins = ORIGINS.filter((x) => (x === o ? box.checked : m.requires.origins.includes(x)));
+        refresh();
+      });
+      return h('label', { class: 'check' }, box, ` ${ORIGIN_LABEL[o] ?? o}`);
+    }),
+  );
+  return h(
+    'fieldset',
+    {},
+    h('legend', {}, 'Campanha e requisitos (opcional)'),
+    h(
+      'div',
+      { class: 'grid' },
+      field(
+        'Campanha (id)',
+        textInput(
+          () => m.campaign.id,
+          (v) => (m.campaign.id = v),
+          { maxlength: 41 },
+        ),
+        'Vazio = missão solta',
+      ),
+      field(
+        'Capítulo',
+        number(
+          () => m.campaign.chapter,
+          (n) => {
+            m.campaign.chapter = n;
+          },
+          1,
+          50,
+        ),
+      ),
+      field(
+        'Missões antes desta',
+        textInput(
+          () => m.requires.missions,
+          (v) => (m.requires.missions = v),
+        ),
+        'Ids separados por vírgula, terminadas com sucesso',
+      ),
+      field(
+        'Nível exigido',
+        number(
+          () => m.requires.level,
+          (n) => {
+            m.requires.level = n;
+          },
+          0,
+          100,
+        ),
+        '0 = sem exigência (além do nível mínimo)',
+      ),
+      field(
+        'Equipes aceitas',
+        textInput(
+          () => m.requires.factions,
+          (v) => (m.requires.factions = v),
+        ),
+        'Chaves separadas por vírgula, como independent, xmen; vazio = todas',
+      ),
+      field(
+        'Entrar na equipe ao vencer',
+        textInput(
+          () => m.joinFaction,
+          (v) => (m.joinFaction = v),
+          { maxlength: 40 },
+        ),
+        'Só no capítulo final de uma campanha de recrutamento',
+      ),
+    ),
+    field('Origens aceitas (nenhuma marcada = todas)', origins, undefined, true),
   );
 }
 
@@ -162,6 +296,7 @@ function drawMeta() {
           }),
         ),
       ),
+      missionCampaignFields(),
       h('label', { class: 'check' }, xp, ' XP próprio (senão vale o padrão do servidor para o tipo)'),
       m.customXp
         ? h(
@@ -333,8 +468,108 @@ function sceneCard(s: SceneDraft): HTMLElement {
   );
 }
 
+function drawCampaign() {
+  const kind = select(
+    c.kind,
+    CAMPAIGN_KINDS.map((k) => [k, CAMPAIGN_LABEL[k] ?? k]),
+    (v) => {
+      c.kind = v;
+      drawCampaign();
+      refreshCampaign();
+    },
+  );
+  const cText = (label: string, t: Text2, max: number, area = false) => {
+    const el = text2(label, t, max, area);
+    el.addEventListener('input', () => refreshCampaign());
+    return el;
+  };
+  const addThis = h(
+    'button',
+    { type: 'button', class: 'btn primary' },
+    'Adicionar esta missão como capítulo',
+  );
+  addThis.addEventListener('click', () => {
+    m.campaign.id = c.id.trim();
+    addChapter(c, m);
+    render();
+  });
+  const chapters = c.missions.map((x) => {
+    const edit = h('button', { type: 'button', class: 'mini' }, 'Editar');
+    edit.addEventListener('click', () => {
+      m = withDefaults(structuredClone(x));
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    const rm = h('button', { type: 'button', class: 'mini danger' }, 'Remover');
+    rm.addEventListener('click', () => {
+      removeChapter(c, x.id);
+      drawCampaign();
+      refreshCampaign();
+    });
+    return h('li', {}, `${x.campaign.chapter}. ${x.title.pt || x.id} (${x.id}) `, edit, ' ', rm);
+  });
+  const fileIn = h('input', { type: 'file', accept: '.yaml,.yml', hidden: true });
+  const openC = h('button', { type: 'button', class: 'btn' }, 'Abrir arquivo de campanha');
+  const msg = h('span', { class: 'copied', role: 'status' });
+  openC.addEventListener('click', () => fileIn.click());
+  fileIn.addEventListener('change', async () => {
+    const f = fileIn.files?.[0];
+    fileIn.value = '';
+    if (!f) return;
+    try {
+      c = campaignFromYaml(await readFile(f));
+      drawCampaign();
+      refreshCampaign();
+    } catch (err) {
+      msg.textContent = `Não consegui abrir: ${(err as Error).message}`;
+    }
+  });
+  const fresh = h('button', { type: 'button', class: 'btn' }, 'Campanha em branco');
+  fresh.addEventListener('click', () => {
+    c = emptyCampaign();
+    drawCampaign();
+    refreshCampaign();
+  });
+  const id = h('input', { type: 'text', value: c.id, maxlength: 41 });
+  id.addEventListener('input', () => {
+    c.id = id.value;
+    refreshCampaign();
+  });
+  const faction = h('input', { type: 'text', value: c.faction, maxlength: 40 });
+  faction.addEventListener('input', () => {
+    c.faction = faction.value;
+    refreshCampaign();
+  });
+  campaignPanel.replaceChildren(
+    h(
+      'article',
+      { class: 'item', id: 'campanha' },
+      h('header', {}, h('h3', {}, 'Campanha'), h('div', {}, openC, ' ', fresh, fileIn, msg)),
+      h(
+        'p',
+        {},
+        'Junte missões em capítulos e baixe um arquivo só para ',
+        h('code', {}, '/jarvis campanha importar'),
+        '.',
+      ),
+      h(
+        'div',
+        { class: 'grid' },
+        cText('Título da campanha', c.title, 80),
+        cText('Resumo da campanha', c.summary, 300, true),
+        field('Id da campanha', id),
+        field('Tipo', kind),
+        c.kind === 'recruitment' ? field('Equipe que recruta', faction, 'Chave, como avengers') : null,
+      ),
+      h('ol', { class: 'chapters' }, ...chapters),
+      addThis,
+    ),
+  );
+}
+
 function render() {
   drawMeta();
+  drawCampaign();
   list.replaceChildren(...m.scenes.map(sceneCard));
   refresh();
 }
@@ -349,7 +584,7 @@ add.addEventListener('click', () => {
 const openMsg = h('span', { class: 'copied', role: 'status' });
 const load = (text: string, from: string) => {
   try {
-    m = fromYaml(text);
+    m = withDefaults(fromYaml(text));
     openMsg.textContent = `Aberta: ${from}`;
     render();
   } catch (err) {
@@ -388,6 +623,12 @@ out.parts.copy.addEventListener('click', async () => {
   out.parts.status.textContent = (await copy(toYaml(m))) ? 'Copiado!' : 'Não deu para copiar; use Baixar.';
 });
 out.el.insertBefore(map, out.el.querySelector('.howto'));
+cOut.parts.download.addEventListener('click', () => download(campaignFileName(c), campaignToYaml(c)));
+cOut.parts.copy.addEventListener('click', async () => {
+  cOut.parts.status.textContent = (await copy(campaignToYaml(c)))
+    ? 'Copiado!'
+    : 'Não deu para copiar; use Baixar.';
+});
 
 root.replaceChildren(
   h(
@@ -399,8 +640,9 @@ root.replaceChildren(
       h('div', { class: 'toolbar' }, add, shipped, open, clear, fileInput, openMsg),
       meta,
       list,
+      campaignPanel,
     ),
-    out.el,
+    h('div', { class: 'outs' }, out.el, cOut.el),
   ),
 );
 render();

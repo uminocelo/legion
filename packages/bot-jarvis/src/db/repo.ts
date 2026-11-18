@@ -7,6 +7,7 @@ export type ProgressRow = JarvisTables['jarvisProgress']['$inferSelect'];
 export type LedgerRow = JarvisTables['jarvisXpLedger']['$inferSelect'];
 export type QuestionRow = JarvisTables['jarvisTriviaQuestions']['$inferSelect'];
 export type AttemptRow = JarvisTables['jarvisTriviaAttempts']['$inferSelect'];
+export type CampaignRow = JarvisTables['jarvisCampaigns']['$inferSelect'];
 export type MissionRow = JarvisTables['jarvisMissions']['$inferSelect'];
 export type RunRow = JarvisTables['jarvisMissionRuns']['$inferSelect'];
 export type ChoiceRow = JarvisTables['jarvisMissionChoices']['$inferSelect'];
@@ -212,6 +213,21 @@ export class JarvisRepo {
 
   async allMissions(): Promise<MissionRow[]> {
     return this.db.orm.select().from(this.t.jarvisMissions).orderBy(this.t.jarvisMissions.id);
+  }
+
+  async allCampaigns(): Promise<CampaignRow[]> {
+    return this.db.orm.select().from(this.t.jarvisCampaigns).orderBy(this.t.jarvisCampaigns.id);
+  }
+
+  async campaign(id: string, ex: Executor = this.db.orm): Promise<CampaignRow | null> {
+    const c = this.t.jarvisCampaigns;
+    const [row] = await ex.select().from(c).where(eq(c.id, id)).limit(1);
+    return row ?? null;
+  }
+
+  /** Missions this member finished with `success` (campaign progress and `requires`, D13). */
+  async doneMissionIds(memberId: string): Promise<Set<string>> {
+    return new Set((await this.runsOf(memberId, ['success'])).map((r) => r.missionId));
   }
 
   async mission(id: string, ex: Executor = this.db.orm): Promise<MissionRow | null> {
