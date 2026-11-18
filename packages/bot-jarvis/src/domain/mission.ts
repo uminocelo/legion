@@ -1,5 +1,5 @@
 import type { Locale } from '@legion/core';
-import { contentIssues } from '@legion/core';
+import { contentIssues, ORIGINS } from '@legion/core';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 import { z } from 'zod';
 import { DIFFICULTIES, type JarvisConfig, MISSION_KINDS } from '../config.js';
@@ -9,7 +9,7 @@ import { DIFFICULTIES, type JarvisConfig, MISSION_KINDS } from '../config.js';
  * canon heroes, teams and places may appear (ADR 0030), so it does not go through the canon filter.
  * Identities (codenames, powers, enemies, items, AI flavour text) still do.
  */
-const text = (max: number) => {
+export const text = (max: number) => {
   const one = z.string().min(1).max(max);
   return z.union([one, z.object({ 'pt-BR': one, en: one.optional() }).strict()]);
 };
@@ -35,9 +35,27 @@ const sceneSchema = z
   });
 export type Scene = z.infer<typeof sceneSchema>;
 
+export const contentId = z
+  .string()
+  .regex(/^[a-z0-9][a-z0-9-]{1,40}$/, 'use letras minúsculas, números e "-" (2-41)');
+const teamKey = z.string().regex(/^[a-z][a-z0-9_]*$/, 'use a chave da equipe, como "avengers"');
+
+/** What a member needs before a mission unlocks (v0.9). Every listed requirement must be met. */
+export const requiresSchema = z
+  .object({
+    /** Missions the member finished with success (chapters before this one). */
+    missions: z.array(contentId).min(1).max(10).optional(),
+    level: z.number().int().min(1).max(100).optional(),
+    origins: z.array(z.enum(ORIGINS)).min(1).optional(),
+    /** The member's current team must be one of these. */
+    factions: z.array(teamKey).min(1).optional(),
+  })
+  .strict();
+export type Requires = z.infer<typeof requiresSchema>;
+
 export const missionSchema = z
   .object({
-    id: z.string().regex(/^[a-z0-9][a-z0-9-]{1,40}$/, 'use letras minúsculas, números e "-" (2-41)'),
+    id: contentId,
     kind: z.enum(MISSION_KINDS),
     title: text(80),
     summary: text(300),
@@ -51,6 +69,14 @@ export const missionSchema = z
       })
       .strict()
       .optional(),
+    /** The campaign this mission is a chapter of (`content/campaigns/<id>.yaml`). */
+    campaign: z
+      .object({ id: contentId, chapter: z.number().int().min(1).max(50) })
+      .strict()
+      .optional(),
+    requires: requiresSchema.optional(),
+    /** On a `success` ending of a recruitment campaign: ask Cérebro to put the hero on this team (US-28). */
+    reward: z.object({ joinFaction: teamKey }).strict().optional(),
     start: sceneId,
     scenes: z.record(sceneId, sceneSchema),
   })

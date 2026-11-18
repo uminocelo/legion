@@ -76,7 +76,7 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose exec legion legion playtest-report --since 3h` — resumo do que aconteceu (missões, XP, lutas, conteúdo da staff) e se XP e limites batem. Roteiro de uma sessão de teste com amigos: [docs/PLAYTEST.md](docs/PLAYTEST.md).
 - `docker compose logs -f` — logs.
 
-No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`; `/mutante` ainda funciona), `/cerebro preferencias`.
+No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`; `/mutante` ainda funciona), `/cerebro preferencias`.
 
 No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e até dois secundários de um catálogo: veja [docs/POWERS.md](docs/POWERS.md).
 
@@ -105,8 +105,9 @@ Com `bots: [cerebro, jarvis]`, rode `legion register-commands` (ou reinicie) e o
 - `/perfil` passa a mostrar nível, XP e sequência. Ao cruzar 500 e 2000 XP, o Cérebro troca o cargo para Agente e Veterano.
 
 - `/missao lista | iniciar | abandonar`: histórias curtas com escolhas, sozinho ou em grupo (até 4), num tópico do `channels.missions`. Missões com luta usam o ULTRON e o Sentinel. Diárias, semanais e de história, com XP e limites configuráveis. Para escrever as suas, veja [docs/MISSIONS.md](docs/MISSIONS.md).
+- `/campanha [campanha]`: missões em capítulos que liberam em ordem (missões anteriores, nível, origem, equipe), com o progresso de cada um.
 
-Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia nova | importar | lista | editar | desativar | ativar | exportar | recarregar | estatisticas`, `/jarvis missao importar | lista | desativar | ativar`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Crie perguntas e importe missões pelo próprio Discord: [docs/STAFF.md](docs/STAFF.md).
+Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia nova | importar | lista | editar | desativar | ativar | exportar | recarregar | estatisticas`, `/jarvis missao importar | lista | desativar | ativar`, `/jarvis campanha importar`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Crie perguntas e importe missões pelo próprio Discord: [docs/STAFF.md](docs/STAFF.md).
 
 ### H.E.R.B.I.E. (tutorial e ajuda)
 

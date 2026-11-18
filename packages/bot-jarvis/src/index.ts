@@ -10,12 +10,14 @@ import { JARVIS_LOCALES_DIR, JARVIS_MIGRATIONS_DIR } from './paths.js';
 import { jarvisServices } from './services.js';
 import { V } from './ui.js';
 
+export { campaignImportIds, JarvisCampaigns } from './campaigns.js';
 export * from './config.js';
 export * from './consumers.js';
 export * from './content.js';
 export * from './db/repo.js';
 export * from './db/tables.js';
 export { jarvisDoctorChecks } from './doctor.js';
+export * from './domain/campaign.js';
 export * from './domain/mission.js';
 export * from './domain/periods.js';
 export * from './domain/selection.js';
@@ -70,6 +72,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
       { action: 'trivia-edit', version: V, handle: (i, r, args) => s.staffTrivia.submitEdit(i, r, args) },
       { action: 'trivia-review', version: V, handle: (i, r, args) => s.staffTrivia.review(i, r, args) },
       { action: 'mission-import', version: V, handle: (i, r, args) => s.imports.decide(i, r, args) },
+      { action: 'campaign-import', version: V, handle: (i, r, args) => s.campaigns.decide(i, r, args) },
       { action: 'trivia-import', version: V, handle: (i, r, args) => s.triviaImports.decide(i, r, args) },
       {
         action: 'lobby',
@@ -112,6 +115,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.help.add({ bot: 'jarvis', command: '/ranking', descriptionKey: 'jarvis.help.ranking' });
     ctx.help.add({ bot: 'jarvis', command: '/sequencia', descriptionKey: 'jarvis.help.sequencia' });
     ctx.help.add({ bot: 'jarvis', command: '/missao', descriptionKey: 'jarvis.help.missao' });
+    ctx.help.add({ bot: 'jarvis', command: '/campanha', descriptionKey: 'jarvis.help.campanha' });
   },
   doctorChecks: (ctx) => [...jarvisDoctorChecks(ctx), staffCommandsCheck(ctx, ['jarvis'])],
   onReady: async (ctx) => {

@@ -1,4 +1,5 @@
 import type { BotContext } from '@legion/core';
+import { JarvisCampaigns } from './campaigns.js';
 import type { JarvisConfig } from './config.js';
 import { JarvisRepo } from './db/repo.js';
 import { JarvisLeaderboard } from './leaderboard.js';
@@ -18,6 +19,7 @@ export interface JarvisServices {
   staffTrivia: StaffTrivia;
   imports: MissionImports;
   triviaImports: TriviaImports;
+  campaigns: JarvisCampaigns;
 }
 
 const cache = new WeakMap<object, JarvisServices>();
@@ -34,6 +36,7 @@ export function jarvisServices(ctx: BotContext<JarvisConfig>): JarvisServices {
     partial.staffTrivia = new StaffTrivia(ctx, partial);
     partial.imports = new MissionImports(ctx, partial);
     partial.triviaImports = new TriviaImports(ctx, partial);
+    partial.campaigns = new JarvisCampaigns(ctx, partial);
     s = partial;
     cache.set(ctx, s);
   }
