@@ -49,7 +49,7 @@ Abra o link. Ele já pede só as permissões que os bots ligados usam (gerenciar
 
 ### ⚠️ Suba o cargo do bot
 
-O Discord só deixa um bot dar cargos **abaixo** do cargo mais alto dele. Em **Configurações do servidor → Cargos**, arraste o cargo do bot (**Cérebro**, o nome do app) para **acima** de todos os cargos que o Legion gerencia (Sinal Detectado, Mutante Registrado, X-Men, Irmandade, Independente, Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). `legion doctor` e `/cerebro status` listam exatamente quais estão acima dele.
+O Discord só deixa um bot dar cargos **abaixo** do cargo mais alto dele. Em **Configurações do servidor → Cargos**, arraste o cargo do bot (**Cérebro**, o nome do app) para **acima** de todos os cargos que o Legion gerencia (Sinal Detectado, Mutante Registrado, as nove equipes (Independente, X-Men, Irmandade, Vingadores, S.H.I.E.L.D., Guardiões, Defensores, Thunderbolts, Filhos da Meia-Noite), Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). `legion doctor` e `/cerebro status` listam exatamente quais estão acima dele.
 
 O cargo **Assinante TikTok** é da integração do TikTok: o Legion nunca cria, edita, dá ou tira esse cargo.
 

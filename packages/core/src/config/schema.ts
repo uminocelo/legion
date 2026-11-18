@@ -29,7 +29,8 @@ export const sharedConfigSchema = z
     bots: z.array(z.enum(BOT_IDS)).default(['cerebro']),
     channels: channelsSchema.prefault({}),
     roles: z.array(roleSchema).prefault(DEFAULT_ROLES),
-    factions: z.array(factionSchema).prefault(DEFAULT_FACTIONS),
+    /** Absent = the default teams whose role exists in `roles` (a custom `roles` list keeps booting). */
+    factions: z.array(factionSchema).optional(),
     events: z.object({ replayLookbackDays: z.number().int().positive().default(7) }).prefault({}),
     scheduler: z.object({ pollIntervalMs: z.number().int().min(500).default(5000) }).prefault({}),
   })
@@ -50,11 +51,23 @@ export const sharedConfigSchema = z
         ctx.addIssue({ code: 'custom', path: ['roles', i, 'managedBy'], message: 'config.tiktok_managed' });
       }
     });
-    cfg.factions.forEach((f, i) => {
+    const fkeys = new Set<string>();
+    (cfg.factions ?? []).forEach((f, i) => {
       if (!keys.has(f.roleKey))
         ctx.addIssue({ code: 'custom', path: ['factions', i, 'roleKey'], message: 'config.unknown_role' });
+      if (fkeys.has(f.key))
+        ctx.addIssue({ code: 'custom', path: ['factions', i, 'key'], message: 'config.duplicate_key' });
+      fkeys.add(f.key);
     });
-  });
+  })
+  .transform((cfg) => ({
+    ...cfg,
+    factions:
+      cfg.factions ??
+      DEFAULT_FACTIONS.map((f) => factionSchema.parse(f)).filter((f) =>
+        cfg.roles.some((r) => r.key === f.roleKey),
+      ),
+  }));
 
 export type SharedConfig = z.infer<typeof sharedConfigSchema>;
 /** The whole validated config: shared keys plus each bot's raw/validated section. */

@@ -9,6 +9,8 @@ export interface MemberView {
   discordUserId: string;
   onboardingStep: OnboardingStep;
   faction: string | null;
+  /** Last team switch (arc or staff); null = never switched. */
+  factionChangedAt: string | null;
   rank: Rank;
   optIns: string[];
   leftAt: string | null;

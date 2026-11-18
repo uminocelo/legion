@@ -63,6 +63,7 @@ describe('CerebroRepo', () => {
       discordUserId: 'u1',
       onboardingStep: 'registered',
       faction: 'xmen',
+      factionChangedAt: null,
       rank: 'recruta',
       optIns: ['live_ping'],
       leftAt: null,

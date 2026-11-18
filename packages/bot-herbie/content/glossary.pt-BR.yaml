@@ -2,9 +2,23 @@
 # bot: o termo só aparece quando esse bot está ligado.
 - id: faccoes
   term: "Facções"
-  aliases: [faccao, facção, x-men, irmandade, independente]
+  aliases:
+    [
+      faccao,
+      facção,
+      equipes,
+      x-men,
+      irmandade,
+      independente,
+      vingadores,
+      shield,
+      guardioes,
+      defensores,
+      thunderbolts,
+      filhos da meia-noite,
+    ]
   summary: "Todo herói começa Independente. A facção (ou equipe) vira um cargo e aparece no /perfil e no /ranking."
-  details: "Novos heróis começam na facção inicial do servidor (Independente). Quem se registrou antes das origens mantém a facção que escolheu. Por enquanto só a staff troca a facção. Ela soma pontos para o total da facção no /ranking. Não muda seus poderes nem limita com quem você joga."
+  details: "Novos heróis começam na facção inicial do servidor (Independente). Quem se registrou antes das origens mantém a facção que escolheu. Há nove equipes (X-Men, Irmandade, Vingadores, S.H.I.E.L.D., Guardiões, Defensores, Thunderbolts, Filhos da Meia-Noite e Independente); a Irmandade só aceita Mutantes e Inumanos. Por enquanto só a staff troca a equipe. Ela soma pontos para o total da facção no /ranking. Não muda seus poderes nem limita com quem você joga."
   related: [origens, arquetipos, rank]
   bot: cerebro
 - id: origens

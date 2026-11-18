@@ -14,6 +14,8 @@ export const members = pgTable(
     pendingOrigin: text('pending_origin'),
     /** JSON { main, secondary[] } while picking powers (registration or /mutante poderes). */
     pendingPowers: text('pending_powers'),
+    /** Last team switch (arc or staff); null = never switched. Registration is not a switch. */
+    factionChangedAt: text('faction_changed_at'),
     rank: text('rank').notNull().default('recruta'),
     optIns: text('opt_ins').notNull().default('[]'),
     leftAt: text('left_at'),
@@ -75,4 +77,30 @@ export const cerebroMutantPowers = pgTable(
     createdAt: text('created_at').notNull(),
   },
   (t) => [uniqueIndex('cerebro_mutant_powers_unique').on(t.mutantId, t.powerId)],
+);
+
+/**
+ * Every faction change, append-only (US-26). `source_key` makes a change idempotent
+ * (`onboarding:<memberId>`, `staff:<interactionId>`, later `arc:<runId>`). Wars (v1.0) read past
+ * membership from here.
+ */
+export const cerebroFactionChanges = pgTable(
+  'cerebro_faction_changes',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    memberId: text('member_id').notNull(),
+    fromFaction: text('from_faction'),
+    toFaction: text('to_faction').notNull(),
+    // onboarding | arc | staff
+    reason: text('reason').notNull(),
+    sourceKey: text('source_key').notNull(),
+    /** Staff Discord id for `staff`, else null. */
+    byDiscordUserId: text('by_discord_user_id'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('cerebro_faction_changes_source_unique').on(t.guildId, t.sourceKey),
+    index('cerebro_faction_changes_member_idx').on(t.memberId, t.createdAt),
+  ],
 );

@@ -13,6 +13,7 @@ Entrega: gravado na transação de quem emite (outbox), entregue após o commit,
 | `member.joined` | Cérebro | Sentinel (account-age check, v3) | `{ discordUserId, accountCreatedAt, isRejoin: boolean }` |
 | `player.created` | Cérebro | H.E.R.B.I.E. (start tutorial), J.A.R.V.I.S. (create progress row) | `{ memberId, discordUserId, mutantId, codename, archetype, faction, originType }` (`originType` since v0.9) |
 | `player.rejoined` | Cérebro | J.A.R.V.I.S. (optional welcome back) | `{ memberId, discordUserId }` |
+| `player.faction_changed` | Cérebro | (none yet; US-28 announces arc switches) | `{ memberId, discordUserId, from: string \| null, to, reason: 'onboarding' \| 'arc' \| 'staff', sourceKey }` (v0.9; today only `/cerebro equipe mover` emits it, with `reason: 'staff'` and `sourceKey: staff:<interactionId>`) |
 | `player.optins_changed` | Cérebro | (none yet) | `{ memberId, optIns: string[] }` |
 | `command.executed` | core router | H.E.R.B.I.E. (tutorial triggers) | `{ discordUserId, memberId: string \| null, bot: BotId, command: string, subcommand: string \| null }` |
 | `xp.grant_requested` | any bot | J.A.R.V.I.S. | `{ memberId, amount: number (1–1000), reason: string, sourceEventId: string }` (idempotency key = `sourceEventId` + `reason`) |

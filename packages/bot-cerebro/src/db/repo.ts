@@ -23,6 +23,7 @@ export const toMemberView = (m: MemberRow): MemberView => ({
   discordUserId: m.discordUserId,
   onboardingStep: toStep(m.onboardingStep),
   faction: m.faction,
+  factionChangedAt: m.factionChangedAt,
   rank: m.rank as Rank,
   optIns: optInsSchema.parse(JSON.parse(m.optIns)),
   leftAt: m.leftAt,
@@ -183,6 +184,52 @@ export class CerebroRepo {
       .update(this.t.mutants)
       .set({ ...patch, updatedAt: this.now() })
       .where(eq(this.t.mutants.id, id));
+  }
+
+  /** Records a faction change; false when `sourceKey` was already recorded (idempotent). */
+  async insertFactionChange(
+    v: {
+      memberId: string;
+      from: string | null;
+      to: string;
+      reason: 'onboarding' | 'arc' | 'staff';
+      sourceKey: string;
+      by: string | null;
+    },
+    ex: Executor,
+  ): Promise<boolean> {
+    const rows = await ex
+      .insert(this.t.cerebroFactionChanges)
+      .values({
+        id: this.newId(),
+        guildId: this.guildId,
+        memberId: v.memberId,
+        fromFaction: v.from,
+        toFaction: v.to,
+        reason: v.reason,
+        sourceKey: v.sourceKey,
+        byDiscordUserId: v.by,
+        createdAt: this.now(),
+      })
+      .onConflictDoNothing()
+      .returning({ id: this.t.cerebroFactionChanges.id });
+    return rows.length > 0;
+  }
+
+  async factionChanges(memberId: string) {
+    const t = this.t.cerebroFactionChanges;
+    return this.db.orm.select().from(t).where(eq(t.memberId, memberId)).orderBy(t.createdAt, t.id);
+  }
+
+  /** Registered members (still on the server) per stored faction key. */
+  async countsByFaction(): Promise<Record<string, number>> {
+    const m = this.t.members;
+    const rows = await this.db.orm
+      .select({ faction: m.faction, n: count() })
+      .from(m)
+      .where(and(eq(m.guildId, this.guildId), eq(m.onboardingStep, 'registered'), isNull(m.leftAt)))
+      .groupBy(m.faction);
+    return Object.fromEntries(rows.map((r) => [r.faction ?? '', Number(r.n)]));
   }
 
   async listRegistered(opts: { faction?: string; includeLeft?: boolean } = {}): Promise<MemberRow[]> {

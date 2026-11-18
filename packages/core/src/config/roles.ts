@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ORIGINS } from '../game/origins.js';
 
 export const ROLE_GROUPS = ['staff', 'onboarding', 'faction', 'rank', 'community', 'rivals'] as const;
 export const ROLE_MANAGERS = ['manual', 'cerebro', 'integration'] as const;
@@ -72,6 +73,23 @@ export const DEFAULT_ROLES: RoleInput[] = [
     managedBy: 'cerebro',
     hoist: true,
   },
+  ...(
+    [
+      ['faction_avengers', 'Vingadores', '#D4AC0D'],
+      ['faction_shield', 'S.H.I.E.L.D.', '#566573'],
+      ['faction_guardians', 'Guardiões', '#8E44AD'],
+      ['faction_defenders', 'Defensores', '#E67E22'],
+      ['faction_thunderbolts', 'Thunderbolts', '#17A589'],
+      ['faction_midnight_sons', 'Filhos da Meia-Noite', '#6C3483'],
+    ] as const
+  ).map(([key, name, color]) => ({
+    key,
+    group: 'faction' as const,
+    name,
+    color,
+    managedBy: 'cerebro' as const,
+    hoist: true,
+  })),
   { key: 'rank_recruta', group: 'rank', name: 'Recruta', color: null, managedBy: 'cerebro' },
   { key: 'rank_agente', group: 'rank', name: 'Agente', color: null, managedBy: 'cerebro' },
   { key: 'rank_veterano', group: 'rank', name: 'Veterano', color: null, managedBy: 'cerebro' },
@@ -87,11 +105,37 @@ export const factionSchema = z.object({
   key: z.string().regex(/^[a-z][a-z0-9_]*$/, { message: 'config.role_key' }),
   roleKey: z.string(),
   emoji: z.string().default(''),
+  /** Origins that may join this team (v0.9); absent = every origin. */
+  origins: z.array(z.enum(ORIGINS)).min(1).optional(),
 });
 export type FactionConfig = z.infer<typeof factionSchema>;
 
+/**
+ * The nine default teams (v0.9). The first three keys are the v0 factions and never change, so
+ * members keep their teams. Order = list order on screen.
+ */
 export const DEFAULT_FACTIONS: z.input<typeof factionSchema>[] = [
-  { key: 'xmen', roleKey: 'faction_xmen', emoji: '🔵' },
-  { key: 'brotherhood', roleKey: 'faction_brotherhood', emoji: '🔴' },
   { key: 'independent', roleKey: 'faction_independent', emoji: '🟢' },
+  { key: 'xmen', roleKey: 'faction_xmen', emoji: '🔵' },
+  { key: 'brotherhood', roleKey: 'faction_brotherhood', emoji: '🔴', origins: ['mutante', 'inumano'] },
+  { key: 'avengers', roleKey: 'faction_avengers', emoji: '🟡' },
+  { key: 'shield', roleKey: 'faction_shield', emoji: '⚫' },
+  { key: 'guardians', roleKey: 'faction_guardians', emoji: '🟣' },
+  { key: 'defenders', roleKey: 'faction_defenders', emoji: '🟠' },
+  { key: 'thunderbolts', roleKey: 'faction_thunderbolts', emoji: '⚡' },
+  { key: 'midnight_sons', roleKey: 'faction_midnight_sons', emoji: '🌙' },
 ];
+export const DEFAULT_FACTION_KEYS = DEFAULT_FACTIONS.map((f) => f.key);
+
+/**
+ * The team key to show for a stored one: a key that is no longer in `factions` (team turned off,
+ * rollback) shows as Independente. The stored key is never rewritten.
+ */
+export const shownFaction = (
+  factions: readonly Pick<FactionConfig, 'key'>[],
+  key: string | null,
+): string | null => (!key ? null : factions.some((f) => f.key === key) ? key : 'independent');
+
+/** May a hero of `origin` be on `faction`? */
+export const factionAllowsOrigin = (f: Pick<FactionConfig, 'origins'>, origin: string) =>
+  !f.origins || (f.origins as readonly string[]).includes(origin);
