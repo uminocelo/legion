@@ -13,13 +13,17 @@ import { customId } from '@legion/core';
 import { eq } from 'drizzle-orm';
 import type { JarvisConfig } from './config.js';
 import { OPEN_RUN, type RunRow } from './db/repo.js';
+import { type Campaign, type HeroFacts, type Unmet, unmet } from './domain/campaign.js';
 import { loc, type Mission, missionXp, resolveVote, type StepResult, step } from './domain/mission.js';
 import { periodStart } from './domain/periods.js';
 import {
+  campaignDirs,
   type MissionSyncResult,
   missionDirs,
+  parseCampaign,
   parseMission,
-  readMissions,
+  readContent,
+  syncCampaigns,
   syncMissions,
 } from './mission-content.js';
 import type { JarvisServices } from './services.js';
@@ -42,7 +46,11 @@ type Outcome = 'success' | 'failure' | 'abandoned';
 /** Why a member cannot start a mission (null when they can). */
 export type Blocker =
   | { key: 'level'; vars: { level: number } }
-  | { key: 'daily_limit' | 'weekly_limit' | 'story_done' | 'combat_unavailable'; vars?: undefined };
+  | { key: 'daily_limit' | 'weekly_limit' | 'story_done' | 'combat_unavailable'; vars?: undefined }
+  /** Campaign requirements (v0.9): what is missing. */
+  | { key: 'requires'; unmet: Unmet[] }
+  /** Not offered: a recruitment arc for the member's own team, or an inactive/disabled campaign. */
+  | { key: 'hidden' };
 
 /** J.A.R.V.I.S. missions: branching scenes in a thread, XP through the ledger (`reason: mission`). */
 export class JarvisMissions {
@@ -62,9 +70,14 @@ export class JarvisMissions {
     return { persona: 'jarvis', content, ephemeral: true };
   }
 
-  async reload(dirs = missionDirs()): Promise<MissionSyncResult> {
-    const res = await syncMissions(this.s.repo, readMissions(dirs));
+  /** Loads missions and campaigns from the files (shipped, then the server's own). */
+  async reload(dirs = missionDirs(), cdirs = campaignDirs()): Promise<MissionSyncResult> {
+    const loaded = readContent(dirs, cdirs);
+    await syncCampaigns(this.s.repo, loaded.campaigns ?? [], loaded.errors.length === 0);
+    const res = await syncMissions(this.s.repo, loaded);
     if (res.errors.length) this.ctx.log.warn({ errors: res.errors }, 'mission content has errors');
+    if (loaded.warnings?.length)
+      this.ctx.log.warn({ warnings: loaded.warnings }, 'missions locked by unknown requirements');
     return res;
   }
 
@@ -87,8 +100,87 @@ export class JarvisMissions {
 
   private today = () => this.s.xp.today();
 
-  /** Level and daily/weekly/story limits for one member. */
-  async blocker(memberId: string, m: Mission): Promise<Blocker | null> {
+  /** Active campaigns by id. */
+  async campaigns(): Promise<Map<string, Campaign>> {
+    const rows = await this.s.repo.allCampaigns();
+    return new Map(rows.filter((r) => r.active === 1).map((r) => [r.id, parseCampaign(r)]));
+  }
+
+  /** What `unmet()` needs to know about a member. */
+  async facts(memberId: string): Promise<HeroFacts> {
+    const [progress, member, hero, done] = await Promise.all([
+      this.s.repo.progress(memberId),
+      this.ctx.read.members.getById(memberId),
+      this.ctx.read.mutants.getByMemberId(memberId),
+      this.s.repo.doneMissionIds(memberId),
+    ]);
+    return {
+      level: progress?.level ?? 1,
+      originType: hero?.originType ?? null,
+      faction: member?.faction ?? null,
+      done,
+    };
+  }
+
+  /** Campaign requirements only (hidden arcs and `requires`), for one member. */
+  async requirements(
+    memberId: string,
+    m: Mission,
+    campaigns?: Map<string, Campaign>,
+  ): Promise<Blocker | null> {
+    if (!m.campaign && !m.requires) return null;
+    const all = campaigns ?? (await this.campaigns());
+    const campaign = m.campaign ? all.get(m.campaign.id) : undefined;
+    if (m.campaign && !campaign) return { key: 'hidden' };
+    const factions = this.ctx.config.factions.map((f) => f.key);
+    const res = unmet(m, await this.facts(memberId), campaign ?? null, factions);
+    if (res.hidden) return { key: 'hidden' };
+    return res.missing.length ? { key: 'requires', unmet: res.missing } : null;
+  }
+
+  /** "Bloqueada: falta concluir X; nível 3" in the member's language. */
+  async blockerText(b: Blocker, l: Locale): Promise<string> {
+    if (b.key === 'hidden') return this.t('jarvis.missions.unknown', {}, l);
+    if (b.key !== 'requires') return this.t(`jarvis.missions.blocked.${b.key}`, b.vars ?? {}, l);
+    return this.t('jarvis.missions.blocked.requires', { missing: await this.unmetText(b.unmet, l) }, l);
+  }
+
+  async unmetText(list: Unmet[], l: Locale): Promise<string> {
+    const parts: string[] = [];
+    for (const u of list) {
+      if (u.key === 'missions') {
+        const titles = [];
+        for (const id of u.missions) {
+          const row = await this.s.repo.mission(id);
+          titles.push(row ? `**${loc(parseMission(row).title, l)}**` : `\`${id}\``);
+        }
+        parts.push(this.t('jarvis.missions.requires.missions', { missions: titles.join(', ') }, l));
+      } else if (u.key === 'level')
+        parts.push(this.t('jarvis.missions.requires.level', { level: u.level }, l));
+      else if (u.key === 'origin')
+        parts.push(
+          this.t(
+            'jarvis.missions.requires.origin',
+            { origins: u.origins.map((o) => this.t(`cerebro.origin.${o}.name`, {}, l)).join(', ') },
+            l,
+          ),
+        );
+      else
+        parts.push(
+          this.t(
+            'jarvis.missions.requires.faction',
+            { factions: u.factions.map((f) => this.t(`cerebro.faction.${f}.name`, {}, l)).join(', ') },
+            l,
+          ),
+        );
+    }
+    return parts.join('; ');
+  }
+
+  /** Campaign requirements, then level and daily/weekly/story limits, for one member. */
+  async blocker(memberId: string, m: Mission, campaigns?: Map<string, Campaign>): Promise<Blocker | null> {
+    const req = await this.requirements(memberId, m, campaigns);
+    if (req) return req;
     const level = (await this.s.repo.progress(memberId))?.level ?? 1;
     if (level < m.minLevel) return { key: 'level', vars: { level: m.minLevel } };
     const runs = await this.s.repo.countedRunsOf(memberId);
@@ -125,9 +217,11 @@ export class JarvisMissions {
     const all = await this.missions();
     if (!all.length) return r.reply(this.text(this.t('jarvis.missions.none', {}, l)));
     const fields = [];
+    const campaigns = await this.campaigns();
     for (const m of all) {
-      const b = await this.blocker(member.id, m);
-      const status = b ? `🔒 ${this.t(`jarvis.missions.blocked.${b.key}`, b.vars ?? {}, l)}` : '✅';
+      const b = await this.blocker(member.id, m, campaigns);
+      if (b?.key === 'hidden') continue;
+      const status = b ? `🔒 ${await this.blockerText(b, l)}` : '✅';
       fields.push({
         name: `${loc(m.title, l)} · ${this.t(`jarvis.missions.kind.${m.kind}`, {}, l)}`,
         value: [
@@ -161,10 +255,11 @@ export class JarvisMissions {
     const q = (i.focused?.value ?? '').toLowerCase();
     const member = await this.ctx.read.members.getByDiscordId(i.userId);
     const out = [];
+    const campaigns = await this.campaigns();
     for (const m of await this.missions()) {
       const name = `${loc(m.title, l)} (${this.t(`jarvis.missions.kind.${m.kind}`, {}, l)})`;
       if (q && !name.toLowerCase().includes(q) && !m.id.includes(q)) continue;
-      if (member && (await this.blocker(member.id, m))) continue;
+      if (member && (await this.blocker(member.id, m, campaigns))) continue;
       out.push({ name: name.slice(0, 100), value: m.id });
     }
     await r.autocomplete(out.slice(0, 25));
@@ -182,7 +277,7 @@ export class JarvisMissions {
     if (open)
       return r.reply(this.text(this.t('jarvis.missions.already_open', { thread: this.where(open) }, l)));
     const b = await this.blocker(member.id, m);
-    if (b) return r.reply(this.text(this.t(`jarvis.missions.blocked.${b.key}`, b.vars ?? {}, l)));
+    if (b) return r.reply(this.text(await this.blockerText(b, l)));
 
     const party = m.party > 1;
     const now = this.ctx.clock.now().toISOString();
@@ -480,6 +575,13 @@ export class JarvisMissions {
     if (action !== 'start') return r.reply(this.text(this.t('jarvis.missions.stale', {}, l)));
     if (member.id !== run.leaderMemberId)
       return r.reply(this.text(this.t('jarvis.missions.leader_only', {}, l)));
+    const locked = await this.lockedMembers(members, m, l);
+    if (locked.length)
+      return r.reply(
+        this.text(
+          this.t('jarvis.missions.party_locked', { members: locked.map((x) => x.line).join('\n') }, l),
+        ),
+      );
     const started = await this.ctx.bus.transaction(async (tx) => {
       if (!(await this.s.repo.updateRun(run.id, run.version, { status: 'active' }, tx))) return null;
       const next = { ...run, status: 'active', version: run.version + 1 };
@@ -506,8 +608,10 @@ export class JarvisMissions {
     const open = await this.openRunOf(member.id);
     if (open)
       return r.reply(this.text(this.t('jarvis.missions.already_open', { thread: this.where(open) }, l)));
+    // Campaign requirements do not refuse the join: the lobby lists who is missing what.
     const b = await this.blocker(member.id, m);
-    if (b) return r.reply(this.text(this.t(`jarvis.missions.blocked.${b.key}`, b.vars ?? {}, l)));
+    if (b?.key === 'hidden') return r.reply(this.text(await this.blockerText(b, l)));
+    if (b && b.key !== 'requires') return r.reply(this.text(await this.blockerText(b, l)));
     const ok = await this.ctx.bus.transaction(async (tx) => {
       const cur = await this.s.repo.run(run.id, tx);
       if (cur?.status !== 'lobby') return false;
@@ -517,6 +621,24 @@ export class JarvisMissions {
     });
     if (!ok) return r.reply(this.text(this.t('jarvis.missions.full', {}, l)));
     await r.update(await this.lobbyMessage(run, m));
+  }
+
+  /** Party members who miss a campaign requirement, with a "@member: falta …" line each. */
+  private async lockedMembers(memberIds: string[], m: Mission, l: Locale) {
+    if (!m.campaign && !m.requires) return [];
+    const campaigns = await this.campaigns();
+    const out: { memberId: string; line: string }[] = [];
+    for (const id of memberIds) {
+      const b = await this.requirements(id, m, campaigns);
+      if (!b) continue;
+      const who = (await this.ctx.read.members.getById(id))?.discordUserId;
+      const why =
+        b.key === 'requires'
+          ? await this.unmetText(b.unmet, l)
+          : this.t('jarvis.missions.requires.team', {}, l);
+      out.push({ memberId: id, line: `⚠️ <@${who}>: ${why}` });
+    }
+    return out;
   }
 
   /** Takes a member out of a run; the leader role passes to the next member. */
@@ -558,6 +680,7 @@ export class JarvisMissions {
           ? this.t('jarvis.missions.lobby_wait', { minutes: this.cfg.lobbyTimeoutMinutes }, l)
           : this.t('jarvis.missions.lobby_started', { thread: thread ? `<#${thread}>` : '—' }, l);
     const leader = (await this.ctx.read.members.getById(run.leaderMemberId))?.discordUserId;
+    const locked = open ? await this.lockedMembers(members, m, l) : [];
     return {
       persona: 'jarvis',
       embeds: [
@@ -570,6 +693,17 @@ export class JarvisMissions {
               name: this.t('jarvis.missions.party', { n: ids.length, max: m.party }, l),
               value: ids.map((d) => (d === leader ? `👑 <@${d}>` : `<@${d}>`)).join('\n') || '—',
             },
+            ...(locked.length
+              ? [
+                  {
+                    name: this.t('jarvis.missions.party_locked_title', {}, l),
+                    value: locked
+                      .map((x) => x.line)
+                      .join('\n')
+                      .slice(0, 1024),
+                  },
+                ]
+              : []),
           ],
         },
       ],

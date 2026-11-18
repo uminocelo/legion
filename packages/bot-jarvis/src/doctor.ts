@@ -1,7 +1,7 @@
 import type { BotContext, DoctorCheck, DoctorResult } from '@legion/core';
 import type { JarvisConfig } from './config.js';
 import { hasCombat } from './domain/mission.js';
-import { missionDirs, readMissions } from './mission-content.js';
+import { campaignDirs, missionDirs, readContent } from './mission-content.js';
 
 /** Missions: content, the missions channel and whether fights can run. */
 export function jarvisDoctorChecks(ctx: BotContext<JarvisConfig>): DoctorCheck[] {
@@ -13,12 +13,18 @@ export function jarvisDoctorChecks(ctx: BotContext<JarvisConfig>): DoctorCheck[]
       run: async (): Promise<DoctorResult> => {
         if (!cfg.enabled)
           return { status: 'ok', message: 'missões desligadas (jarvis.missions.enabled: false)' };
-        const { missions, errors } = readMissions(missionDirs());
+        const { missions, errors, warnings = [] } = readContent(missionDirs(), campaignDirs());
         if (errors.length)
           return {
             status: 'fail',
-            message: `${errors.length} erro(s) nos arquivos de missão: ${errors.slice(0, 3).join(' · ')}`,
-            fix: 'Corrija os arquivos em data/content/missions (veja docs/MISSIONS.md)',
+            message: `${errors.length} erro(s) nos arquivos de missão ou campanha: ${errors.slice(0, 3).join(' · ')}`,
+            fix: 'Corrija os arquivos em data/content/missions e data/content/campaigns (veja docs/MISSIONS.md)',
+          };
+        if (warnings.length)
+          return {
+            status: 'warn',
+            message: `${warnings.length} missão(ões) ficam bloqueadas para sempre: ${warnings.slice(0, 3).join(' · ')}`,
+            fix: 'Corrija o requires (a missão exigida precisa existir) ou importe a missão que falta',
           };
         const bots = ctx.config.bots;
         const fights = missions.filter(hasCombat).length;

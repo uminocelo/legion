@@ -6,6 +6,7 @@ import { CanonNameFilter, parseCanonList } from '../../packages/core/src/game/ca
 const filter = new CanonNameFilter(parseCanonList(canonList));
 
 export { contentIssue, contentIssues } from '../../packages/core/src/game/content-issues.js';
+export { ORIGINS } from '../../packages/core/src/game/origins.js';
 
 export const isCanonName = (text: string): boolean => filter.isCanon(text);
 export const LOCALES = ['pt-BR', 'en'] as const;

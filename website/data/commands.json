@@ -170,6 +170,46 @@
   ],
   "jarvis": [
     {
+      "path": "/campanha",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Suas campanhas: progresso e próximo capítulo",
+        "en": "Your campaigns: progress and next chapter"
+      },
+      "options": [
+        {
+          "name": "campanha",
+          "nameEn": "campaign",
+          "required": false,
+          "description": {
+            "pt-BR": "Uma campanha (padrão: todas)",
+            "en": "One campaign (default: all)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis campanha importar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Importa uma campanha e suas missões de um .yaml",
+        "en": "Imports a campaign and its missions from a .yaml"
+      },
+      "options": [
+        {
+          "name": "arquivo",
+          "nameEn": "file",
+          "required": true,
+          "description": {
+            "pt-BR": "Arquivo .yaml com campaign e missions",
+            "en": "A .yaml file with campaign and missions"
+          }
+        }
+      ]
+    },
+    {
       "path": "/jarvis missao ativar",
       "kind": "slash",
       "staff": true,

@@ -87,22 +87,47 @@ export const jarvisTriviaAttempts = table(
 );
 
 /** Missions loaded from content files (definition = the validated mission as JSON). */
-export const jarvisMissions = table('jarvis_missions', {
+export const jarvisMissions = table(
+  'jarvis_missions',
+  {
+    id: text('id').primaryKey(),
+    kind: text('kind').notNull(),
+    minLevel: integer('min_level').notNull(),
+    party: integer('party').notNull(),
+    difficulty: text('difficulty').notNull(),
+    hasCombat: integer('has_combat').notNull(),
+    definition: text('definition').notNull(),
+    contentHash: text('content_hash').notNull(),
+    active: integer('active').notNull().default(1),
+    updatedAt: text('updated_at').notNull(),
+    // file (content folders) | staff (imported in Discord; file reloads never touch it)
+    origin: text('origin').notNull().default('file'),
+    importedBy: text('imported_by'),
+    // Set when staff turned it off: stays off across file reloads until turned on again.
+    disabledBy: text('disabled_by'),
+    // v0.9 campaigns (copied from the definition for queries): chapter of `campaign_id`, `requires` JSON.
+    campaignId: text('campaign_id'),
+    chapter: integer('chapter'),
+    requires: text('requires'),
+  },
+  (t) => [index('jarvis_missions_campaign_idx').on(t.campaignId, t.chapter)],
+);
+
+/** Campaign metadata (v0.9, US-27). Mirrors `jarvis_missions`: files or staff imports. */
+export const jarvisCampaigns = table('jarvis_campaigns', {
   id: text('id').primaryKey(),
+  // tutorial | recruitment | story
   kind: text('kind').notNull(),
-  minLevel: integer('min_level').notNull(),
-  party: integer('party').notNull(),
-  difficulty: text('difficulty').notNull(),
-  hasCombat: integer('has_combat').notNull(),
+  // The team a recruitment campaign recruits for; null otherwise.
+  faction: text('faction'),
   definition: text('definition').notNull(),
   contentHash: text('content_hash').notNull(),
   active: integer('active').notNull().default(1),
-  updatedAt: text('updated_at').notNull(),
-  // file (content folders) | staff (imported in Discord; file reloads never touch it)
+  // file | staff
   origin: text('origin').notNull().default('file'),
   importedBy: text('imported_by'),
-  // Set when staff turned it off: stays off across file reloads until turned on again.
   disabledBy: text('disabled_by'),
+  updatedAt: text('updated_at').notNull(),
 });
 
 /** One play of a mission. `version` grows on every state change (idempotent clicks and timers). */

@@ -83,7 +83,8 @@
       "trivia": "Responda uma pergunta rápida e ganhe XP.",
       "ranking": "Veja quem mais ganhou XP na semana, no mês ou no total.",
       "sequencia": "Veja sua sequência de dias ativos e o bônus de amanhã.",
-      "missao": "Missões com escolhas (e lutas), sozinho ou em grupo"
+      "missao": "Missões com escolhas (e lutas), sozinho ou em grupo",
+      "campanha": "Mostra suas campanhas, o progresso e o próximo capítulo."
     },
     "commands": {
       "trivia": {
@@ -127,7 +128,10 @@
         "missao_desativar": "Tira uma missão de jogo",
         "missao_ativar": "Volta uma missão desativada",
         "trivia_importar": "Importa perguntas de um arquivo .yaml",
-        "trivia_arquivo": "O arquivo .yaml com as perguntas (mesmo formato do exportar)"
+        "trivia_arquivo": "O arquivo .yaml com as perguntas (mesmo formato do exportar)",
+        "campanha": "Campanhas (staff)",
+        "campanha_importar": "Importa uma campanha e suas missões de um .yaml",
+        "campanha_arquivo": "Arquivo .yaml com campaign e missions"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
@@ -135,6 +139,10 @@
         "iniciar": "Começa uma missão",
         "missao": "A missão",
         "abandonar": "Abandona a sua missão em andamento (sem XP)"
+      },
+      "campanha": {
+        "description": "Suas campanhas: progresso e próximo capítulo",
+        "campanha": "Uma campanha (padrão: todas)"
       }
     },
     "missions": {
@@ -153,7 +161,8 @@
         "daily_limit": "Você já fez sua missão diária hoje",
         "weekly_limit": "Você já fez sua missão semanal nesta semana",
         "story_done": "Você já jogou esta história",
-        "combat_unavailable": "Lutas indisponíveis (ULTRON ou Sentinel desligado)"
+        "combat_unavailable": "Lutas indisponíveis (ULTRON ou Sentinel desligado)",
+        "requires": "Bloqueada: falta {missing}"
       },
       "already_open": "Você já tem uma missão em andamento: {thread}. Termine ou use /missao abandonar.",
       "started": "Missão iniciada em {thread}. Boa sorte, agente.",
@@ -189,7 +198,16 @@
         "start": "Começar"
       },
       "fight": "⚔️ Luta em andamento: o Sentinel conduz os turnos aqui.",
-      "combat_timeout": "⌛ A luta não terminou a tempo. A missão fracassou."
+      "combat_timeout": "⌛ A luta não terminou a tempo. A missão fracassou.",
+      "requires": {
+        "missions": "concluir {missions}",
+        "level": "chegar ao nível {level}",
+        "origin": "ser de origem {origins}",
+        "faction": "estar em {factions}",
+        "team": "esta missão não está disponível para você"
+      },
+      "party_locked": "Ainda não dá para começar. Falta:\n{members}",
+      "party_locked_title": "⚠️ Falta para começar"
     },
     "staff_trivia": {
       "bad_category": "A categoria \"{category}\" não está em jarvis.trivia.categories.",
@@ -256,6 +274,25 @@
       "review_note": "ℹ️ Com revisão ligada, novas e alteradas esperam a aprovação de outra pessoa da staff.",
       "published": "✅ Perguntas publicadas: {added} nova(s), {changed} alterada(s), {same} sem mudança. Já valem no /trivia.",
       "published_review": "📝 Perguntas enviadas para revisão: {added} nova(s), {changed} alterada(s) ({same} sem mudança). Elas entram no /trivia depois de aprovadas."
+    },
+    "campaigns": {
+      "title": "🗺️ Campanhas",
+      "none": "Nenhuma campanha disponível por enquanto.",
+      "unknown": "Não encontrei essa campanha. Use /campanha para ver a lista.",
+      "kind": {
+        "tutorial": "Tutorial",
+        "recruitment": "Recrutamento",
+        "story": "História"
+      },
+      "progress": "{done}/{total} capítulos",
+      "complete": "✅ Campanha concluída!",
+      "next_open": "▶️ Próximo: **{title}** (`/missao iniciar {id}`)",
+      "next_locked": "🔒 Próximo: **{title}** · falta {why}",
+      "chapter_done": "✅ {n}. {title}",
+      "chapter_open": "▶️ {n}. **{title}** · `/missao iniciar {id}`",
+      "chapter_locked": "🔒 {n}. {title} · falta {why}",
+      "import_meta": "`{id}` · {kind} · {chapters} capítulo(s)",
+      "published": "✅ Campanha `{id}` publicada com {n} missão(ões). Já aparece em /campanha e /missao."
     }
   }
 }
