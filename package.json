@@ -14,7 +14,10 @@
     "format": "biome check --write .",
     "dev": "tsc -b && node --enable-source-maps apps/runner/dist/main.js",
     "legion": "node apps/cli/dist/index.js",
-    "start": "node --enable-source-maps apps/runner/dist/main.js"
+    "start": "node --enable-source-maps apps/runner/dist/main.js",
+    "site:commands": "node website/scripts/commands.mjs",
+    "site:check": "node website/scripts/commands.mjs --check",
+    "site:build": "node website/scripts/build.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",

@@ -1,10 +1,14 @@
 name: Pages
 
-# Publishes website/ to GitHub Pages (https://uminocelo.github.io/legion/).
+# Builds website/ and publishes it to GitHub Pages (https://uminocelo.github.io/legion/).
 on:
   push:
     branches: [main]
-    paths: ["website/**", ".github/workflows/pages.yml"]
+    paths:
+      - "website/**"
+      - "packages/*/content/**"
+      - "legion.config.example.yaml"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -24,9 +28,14 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      # Pages, command tables (website/data/commands.json, checked by the tests) and example files.
+      - run: node website/scripts/build.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: website
+          path: website/dist
       - id: deploy
         uses: actions/deploy-pages@v4

@@ -1,0 +1,230 @@
+// Builds the static site into website/dist: pages from website/src with the shared layout, command
+// tables from data/commands.json, config blocks from legion.config.example.yaml and example content
+// files copied from the bots. No dependencies beyond Node.
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const SITE = fileURLToPath(new URL('..', import.meta.url));
+const ROOT = join(SITE, '..');
+export const DIST = join(SITE, 'dist');
+const REPO = 'https://github.com/uminocelo/legion/blob/main/';
+
+/** Pages: output file, source fragment, title, description, nav key, accent color, bot id. */
+export const PAGES = [
+  {
+    out: 'index.html',
+    src: 'index.html',
+    title: 'Legion · RPG mutante para Discord',
+    description:
+      'Legion é um kit gratuito e auto-hospedável de bots de RPG para Discord: crie seu mutante, ganhe XP com trivia e missões, lute e enfrente eventos com o servidor inteiro.',
+    nav: 'home',
+  },
+  {
+    out: 'cerebro.html',
+    src: 'bots/cerebro.html',
+    title: 'Cérebro · Legion',
+    description: 'Recepção, cadastro do mutante com poderes, ficha com cartão, facções e cargos.',
+    nav: 'bots',
+    bot: 'cerebro',
+    color: '#5DADE2',
+  },
+  {
+    out: 'jarvis.html',
+    src: 'bots/jarvis.html',
+    title: 'J.A.R.V.I.S. · Legion',
+    description: 'XP, níveis, ranks, trivia, sequências e missões com escolhas.',
+    nav: 'bots',
+    bot: 'jarvis',
+    color: '#F1C40F',
+  },
+  {
+    out: 'herbie.html',
+    src: 'bots/herbie.html',
+    title: 'H.E.R.B.I.E. · Legion',
+    description: 'Tutorial, ajuda, glossário, idioma, dicas e o guia "como jogar".',
+    nav: 'bots',
+    bot: 'herbie',
+    color: '#2ECC71',
+  },
+  {
+    out: 'sentinel.html',
+    src: 'bots/sentinel.html',
+    title: 'Sentinel · Legion',
+    description: 'Combate por turnos com dados conferíveis, limites contra abuso e denúncias.',
+    nav: 'bots',
+    bot: 'sentinel',
+    color: '#95A5A6',
+  },
+  {
+    out: 'ultron.html',
+    src: 'bots/ultron.html',
+    title: 'ULTRON · Legion',
+    description: 'Inimigos, invasões semanais e raids com chefe.',
+    nav: 'bots',
+    bot: 'ultron',
+    color: '#E74C3C',
+  },
+  {
+    out: 'personalizar.html',
+    src: 'personalizar.html',
+    title: 'Personalizar · Legion',
+    description: 'Missões, perguntas de trivia, inimigos, poderes e textos do seu servidor.',
+    nav: 'custom',
+  },
+];
+
+export const BOT_LINKS = [
+  ['cerebro', 'Cérebro'],
+  ['jarvis', 'J.A.R.V.I.S.'],
+  ['herbie', 'H.E.R.B.I.E.'],
+  ['sentinel', 'Sentinel'],
+  ['ultron', 'ULTRON'],
+];
+
+/** Example files offered for download: [source in the repo, published path]. */
+export const EXAMPLES = [
+  ...readdirSync(join(ROOT, 'packages/bot-jarvis/content/missions'))
+    .filter((f) => f.endsWith('.yaml'))
+    .map((f) => [`packages/bot-jarvis/content/missions/${f}`, `exemplos/missoes/${f}`]),
+  ['packages/bot-jarvis/content/trivia/pt-BR.yaml', 'exemplos/trivia/pt-BR.yaml'],
+  ['packages/bot-ultron/content/enemies.yaml', 'exemplos/enemies.yaml'],
+  ['packages/bot-cerebro/content/powers.yaml', 'exemplos/powers.yaml'],
+  ['packages/bot-herbie/content/guide.pt-BR.yaml', 'exemplos/guide.pt-BR.yaml'],
+  ['packages/bot-herbie/content/glossary.pt-BR.yaml', 'exemplos/glossary.pt-BR.yaml'],
+  ['packages/bot-herbie/content/tips.pt-BR.yaml', 'exemplos/tips.pt-BR.yaml'],
+  ['packages/bot-herbie/content/tutorial.yaml', 'exemplos/tutorial.yaml'],
+];
+
+export const esc = (s) =>
+  String(s).replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+  );
+
+/** The `<bot>:` block of the example config, comments included. */
+export function configBlock(yaml, bot) {
+  const lines = yaml.split('\n');
+  const start = lines.findIndex((l) => l.startsWith(`${bot}:`));
+  if (start < 0) return '';
+  let end = start + 1;
+  while (end < lines.length && (lines[end] === '' || /^[\s#]/.test(lines[end]))) end++;
+  // Trailing comment lines belong to the next block.
+  while (end > start + 1 && (lines[end - 1] === '' || lines[end - 1].startsWith('#'))) end--;
+  return lines.slice(start, end).join('\n');
+}
+
+const optionList = (c) =>
+  c.options.length
+    ? `<div class="opts">${c.options
+        .map(
+          (o) =>
+            `<span class="opt${o.required ? ' req' : ''}" title="${esc(o.description['pt-BR'])}">${esc(o.name)}${o.required ? '' : '?'}</span>`,
+        )
+        .join(' ')}</div>`
+    : '';
+
+export function commandTable(commands, staff) {
+  const rows = commands.filter((c) => c.staff === staff);
+  if (!rows.length) return '<p class="muted">Nenhum comando.</p>';
+  return `<div class="cmds">${rows
+    .map(
+      (c) =>
+        `<div class="cmd"><code>${esc(c.path)}</code>${optionList(c)}<p>${esc(c.description['pt-BR'])}</p></div>`,
+    )
+    .join('\n')}</div>`;
+}
+
+function layout(page, body) {
+  const nav = (key, href, label) =>
+    `<a href="${href}"${page.nav === key ? ' aria-current="page"' : ''}>${label}</a>`;
+  const bots = BOT_LINKS.map(
+    ([id, label]) => `<a href="${id}.html"${page.bot === id ? ' aria-current="page"' : ''}>${label}</a>`,
+  ).join('');
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(page.title)}</title>
+  <meta name="description" content="${esc(page.description)}">
+  <meta property="og:title" content="${esc(page.title)}">
+  <meta property="og:description" content="${esc(page.description)}">
+  <meta property="og:image" content="assets/ficha-exemplo.png">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body${page.color ? ` style="--accent:${page.color}"` : ''}>
+  <header class="top">
+    <a class="brand" href="index.html">LEGION</a>
+    <nav>
+      <details class="menu"><summary${page.nav === 'bots' ? ' aria-current="page"' : ''}>Bots</summary><div>${bots}</div></details>
+      ${nav('custom', 'personalizar.html', 'Personalizar')}
+      <a class="hide-sm" href="https://github.com/uminocelo/legion/blob/main/TUTORIAL.md">Hospedar</a>
+      <a class="gh" href="https://github.com/uminocelo/legion">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+${body.trim()}
+  </main>
+
+  <footer>
+    <p><strong>Legion</strong> é um projeto de fã gratuito e sem fins lucrativos, sem afiliação com a Marvel ou a Disney. Cérebro, J.A.R.V.I.S., H.E.R.B.I.E., ULTRON, Sentinel, X-Men e os demais nomes pertencem à Marvel/Disney.</p>
+    <p><a href="https://github.com/uminocelo/legion">GitHub</a> · <a href="https://github.com/uminocelo/legion/blob/main/TUTORIAL.md">Tutorial</a> · <a href="personalizar.html">Personalizar</a> · <a href="https://github.com/uminocelo/legion/blob/main/CHANGELOG.md">Novidades</a></p>
+  </footer>
+</body>
+</html>
+`;
+}
+
+/** Fills `{{player}}`, `{{staff}}`, `{{config}}`, `{{doc:path}}` and `{{example:path}}` in a fragment. */
+export function render(page, fragment, data) {
+  const commands = page.bot ? (data.commands[page.bot] ?? []) : [];
+  const body = fragment
+    .replaceAll('{{player}}', commandTable(commands, false))
+    .replaceAll('{{staff}}', commandTable(commands, true))
+    .replaceAll(
+      '{{config}}',
+      page.bot ? `<pre class="cfg"><code>${esc(configBlock(data.configYaml, page.bot))}</code></pre>` : '',
+    )
+    .replace(/\{\{doc:([^}]+)\}\}/g, (_, p) => `${REPO}${p}`)
+    .replace(/\{\{example:([^}]+)\}\}/g, (_, p) => p);
+  return layout(page, body);
+}
+
+export function readData() {
+  return {
+    commands: JSON.parse(readFileSync(join(SITE, 'data/commands.json'), 'utf8')),
+    configYaml: readFileSync(join(ROOT, 'legion.config.example.yaml'), 'utf8'),
+  };
+}
+
+/** Writes every page, the stylesheet, assets and example files into `out`. Returns the written paths. */
+export function build(out = DIST) {
+  const data = readData();
+  rmSync(out, { recursive: true, force: true });
+  mkdirSync(out, { recursive: true });
+  const written = [];
+  const write = (rel, content) => {
+    const p = join(out, rel);
+    mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p, content);
+    written.push(rel);
+  };
+  for (const page of PAGES)
+    write(page.out, render(page, readFileSync(join(SITE, 'src', page.src), 'utf8'), data));
+  cpSync(join(SITE, 'style.css'), join(out, 'style.css'));
+  cpSync(join(SITE, 'assets'), join(out, 'assets'), { recursive: true });
+  for (const [from, to] of EXAMPLES) {
+    if (!existsSync(join(ROOT, from))) throw new Error(`example missing: ${from}`);
+    write(to, readFileSync(join(ROOT, from)));
+  }
+  return written;
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  const files = build();
+  console.log(`built ${files.length} files into ${DIST}`);
+}

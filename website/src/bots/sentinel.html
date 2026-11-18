@@ -1,0 +1,35 @@
+<section class="page-hero">
+  <p class="eyebrow">Combate e moderação</p>
+  <h1>Sentinel</h1>
+  <p class="lead">Conduz as lutas por turnos com dados que podem ser conferidos depois, e protege o servidor com limites de uso e denúncias que vão só para a staff.</p>
+</section>
+
+<section>
+  <h2>Para jogadores</h2>
+  <div class="facts">
+    <div><h3>Lutas por turnos</h3><p>Cada luta abre um tópico. A cada rodada, cada participante escolhe <strong>Atacar</strong>, <strong>Poder</strong> ou <strong>Defender</strong>. A rodada fecha quando todos escolhem ou o tempo acaba.</p></div>
+    <div><h3>Treino</h3><p><code>/treino</code> luta contra o Drone de Treino para aprender sem risco.</p></div>
+    <div><h3>Dados justos</h3><p>Toda luta usa uma semente salva e uma ordem fixa de dados. Qualquer luta pode ser refeita e conferida pela staff.</p></div>
+    <div><h3>Denunciar</h3><p><code>/denunciar</code> ou clique direito numa mensagem → Apps → <strong>Denunciar mensagem</strong>. Só a staff vê a denúncia.</p></div>
+  </div>
+  <h3 class="table-title">Comandos</h3>
+  {{player}}
+</section>
+
+<section>
+  <h2>Para a staff</h2>
+  <div class="facts">
+    <div><h3>Fila de denúncias</h3><p>Chegam em <code>channels.modQueue</code> com botões: resolver, ignorar, avisar por DM, timeouts e histórico. O Sentinel nunca pune sozinho.</p></div>
+    <div><h3>Contra abuso</h3><p>Limites de uso em todos os bots (a staff nunca é bloqueada) e alertas de XP fora do normal e de contas novas.</p></div>
+    <div><h3>Replay</h3><p><code>/sentinel replay</code> refaz uma luta a partir da semente e confere o hash do log.</p></div>
+  </div>
+  <h3 class="table-title">Comandos da staff</h3>
+  {{staff}}
+</section>
+
+<section>
+  <h2>Configuração</h2>
+  <p class="section-lead">Trecho do <code>legion.config.yaml</code> com os padrões. Para os timeouts, o cargo do bot precisa de <strong>Moderar membros</strong>.</p>
+  {{config}}
+  <p class="more">Leia mais: <a href="{{doc:docs/COMBAT.md}}">regras e fórmulas do combate</a> · <a href="{{doc:docs/CONFIG.md}}">todas as opções</a></p>
+</section>
