@@ -50,8 +50,28 @@ export interface DiscordRest {
   ): Promise<{ id: string; permissions: { id: string; type: 1 | 2 | 3; permission: boolean }[] }[]>;
 }
 
-export function createDiscordRest(token: string, base = 'https://discord.com/api/v10'): DiscordRest {
-  const call = async <T>(method: string, path: string, body?: unknown): Promise<T> => {
+/** Waits Discord's `retry_after` on 429 up to this many times, each wait capped at `MAX_WAIT_MS`. */
+const MAX_RETRIES = 3;
+const MAX_WAIT_MS = 60_000;
+
+/** Seconds to wait from a 429 (JSON `retry_after`, else the `Retry-After` header), or null when unknown. */
+export async function retryAfterSeconds(res: Response): Promise<number | null> {
+  const body = (await res
+    .clone()
+    .json()
+    .catch(() => null)) as { retry_after?: unknown } | null;
+  const fromBody = typeof body?.retry_after === 'number' ? body.retry_after : null;
+  const fromHeader = Number(res.headers.get('retry-after'));
+  const s = fromBody ?? (Number.isFinite(fromHeader) && fromHeader > 0 ? fromHeader : null);
+  return s === null ? null : Math.max(0, s);
+}
+
+export function createDiscordRest(
+  token: string,
+  base = 'https://discord.com/api/v10',
+  wait: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms)),
+): DiscordRest {
+  const call = async <T>(method: string, path: string, body?: unknown, attempt = 0): Promise<T> => {
     const res = await fetch(`${base}${path}`, {
       method,
       headers: {
@@ -61,6 +81,13 @@ export function createDiscordRest(token: string, base = 'https://discord.com/api
       },
       ...(body ? { body: JSON.stringify(body) } : {}),
     });
+    if (res.status === 429 && attempt < MAX_RETRIES) {
+      const s = await retryAfterSeconds(res);
+      if (s !== null && s * 1000 <= MAX_WAIT_MS) {
+        await wait(Math.ceil(s * 1000) + 250);
+        return call<T>(method, path, body, attempt + 1);
+      }
+    }
     if (!res.ok)
       throw new RestError(
         res.status,
