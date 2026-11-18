@@ -9,6 +9,9 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - 14 new powers: skills for Treinado and gadgets for Tecnologia. Power files accept `origins: [...]` (no key = every origin); `legion doctor` shows ❌ for an origin with no powers, which is also hidden from registration.
 - `/heroi` (`ficha`, `poderes`, `origem`). `/mutante` keeps working as an alias until v1.0.
 - `/heroi origem`: heroes registered before origins become Mutante with everything kept and may change origin once. H.E.R.B.I.E. posts one announcement per server (no DMs) and `/perfil` and `/heroi` remind the hero while the change is open.
+- Nine teams as factions: Independente, X-Men, Irmandade (Mutante and Inumano only), Vingadores, S.H.I.E.L.D., Guardiões, Defensores, Thunderbolts and Filhos da Meia-Noite, each with a role, emoji and description. The six new roles are created on the next start. Factions accept `origins: [...]`; `cerebro.teams.switchCooldownDays` (30) is read by the recruitment arcs. Servers with their own `factions` or `roles` keep them; `legion doctor` lists the new teams (ℹ️), fails when `startFaction` is not a team, and warns about heroes on a team that was turned off (they show and get the role as Independente).
+- `/cerebro equipe mover membro equipe motivo` (staff): moves a hero to any enabled team, ignoring the origin rule and the cooldown, swaps the role and records who did it and why. Every team change is stored in `cerebro_faction_changes`; registration writes the first row. New event `player.faction_changed`.
+- `legion doctor` has an ℹ️ status for tips that need no action.
 
 ### Changed
 - Player-facing text says "herói" instead of "mutante" in every bot, the guide and the glossary; the sheet and card show the origin, and the free-text "Origem" field is now "História". The default role name "Mutante Registrado" is unchanged (roles are matched by name).

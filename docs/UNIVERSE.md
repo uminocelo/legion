@@ -1,6 +1,6 @@
 # Universo Marvel
 
-O Legion é um projeto de fã do universo Marvel. Este guia explica de onde vêm os heróis dos jogadores e o que pode e o que não pode aparecer no conteúdo do seu servidor. As equipes entram na próxima versão e serão descritas aqui.
+O Legion é um projeto de fã do universo Marvel. Este guia explica de onde vêm os heróis dos jogadores e o que pode e o que não pode aparecer no conteúdo do seu servidor. As equipes estão na seção [Equipes](#equipes).
 
 ## Origens
 
@@ -24,7 +24,7 @@ Todo herói tem uma **origem**: de onde vêm os poderes dele. O jogador escolhe 
 
 Detalhes do formato em [POWERS.md](POWERS.md#origens). A staff escolhe a ordem, os emojis e quais origens aparecem em `cerebro.origins` ([CONFIG.md](CONFIG.md#cerebro)).
 
-Todo herói novo começa **Independente** (`cerebro.teams.startFaction`). Entrar numa equipe (Vingadores, Quarteto, Guardiões...) vai acontecer pelas missões de recrutamento.
+Todo herói novo começa **Independente** (`cerebro.teams.startFaction`). Entrar numa equipe vai acontecer pelas missões de recrutamento ([Equipes](#equipes)).
 
 ### Heróis de antes das origens
 
@@ -37,6 +37,29 @@ Na atualização, todo herói que já existia virou **Mutante** e manteve tudo: 
 O H.E.R.B.I.E. avisa o servidor uma vez, num post no canal do tutorial (ou de boas-vindas), sem mandar DM para ninguém. Enquanto a troca estiver aberta, `/perfil` e `/heroi` lembram o próprio herói.
 
 O campo livre da ficha que antes se chamava "Origem" agora aparece como **História**: é o texto do jogador contando como ganhou os poderes.
+
+## Equipes
+
+As facções agora são as equipes da Marvel. Cada uma tem um cargo no Discord, um emoji e uma descrição:
+
+| Equipe | Chave | Quem aceita |
+|---|---|---|
+| 🟢 Independente | `independent` | todos (é onde todo herói novo começa) |
+| 🔵 X-Men | `xmen` | todos |
+| 🔴 Irmandade | `brotherhood` | só **Mutante** e **Inumano** |
+| 🟡 Vingadores | `avengers` | todos |
+| ⚫ S.H.I.E.L.D. | `shield` | todos |
+| 🟣 Guardiões | `guardians` | todos |
+| 🟠 Defensores | `defenders` | todos |
+| ⚡ Thunderbolts | `thunderbolts` | todos |
+| 🌙 Filhos da Meia-Noite | `midnight_sons` | todos |
+
+- **Quem aceita** é o `origins` da equipe em `factions` ([CONFIG.md](CONFIG.md)). Sem `origins`, a equipe aceita todas as origens.
+- As chaves `xmen`, `brotherhood` e `independent` são as mesmas de antes: quem já estava numa delas continua lá.
+- Servidores que escreveram a própria lista `factions` (ou a própria `roles`) continuam com ela; o `legion doctor` mostra com ℹ️ as equipes novas que ficaram de fora.
+- **Desligar uma equipe** é tirá-la de `factions`. Ela some do `/ranking` e dos menus; quem estava nela continua com a chave guardada, mas aparece e recebe o cargo como **Independente**. O `legion doctor` avisa (⚠️) quantos heróis estão em equipes desligadas. Religar a equipe devolve todos.
+- A staff move um herói com `/cerebro equipe mover membro equipe motivo`: ignora a regra de origem e o tempo de espera, troca o cargo e guarda quem moveu e o motivo.
+- Toda troca de equipe fica registrada (de onde, para onde, por quê e por quem). Entrar numa equipe pelas missões de recrutamento chega na próxima versão; essas trocas vão respeitar `cerebro.teams.switchCooldownDays` (30 dias).
 
 ### "Herói", não "mutante"
 

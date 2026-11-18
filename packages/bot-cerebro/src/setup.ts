@@ -25,6 +25,11 @@ export interface LastRoleSync {
 export class CerebroSetup {
   constructor(private readonly flow: CerebroFlow) {}
 
+  /** Registered heroes per stored team key (the doctor's disabled-team check). */
+  membersByFaction(): Promise<Record<string, number>> {
+    return this.flow.repo.countsByFaction();
+  }
+
   private get ctx() {
     return this.flow.ctx;
   }

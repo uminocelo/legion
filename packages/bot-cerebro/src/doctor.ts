@@ -1,4 +1,4 @@
-import { type BotContext, type DoctorCheck, TIKTOK_ROLE_NAME } from '@legion/core';
+import { type BotContext, DEFAULT_FACTION_KEYS, type DoctorCheck, TIKTOK_ROLE_NAME } from '@legion/core';
 import type { CerebroConfig } from './config.js';
 import { allowsOrigin, powerFiles, readPowers } from './powers.js';
 import type { CerebroSetup } from './setup.js';
@@ -46,6 +46,37 @@ export function cerebroDoctorChecks(ctx: BotContext<CerebroConfig>, setup: Cereb
             fix: 'Dê a cada origem poderes de pelo menos 2 tipos (veja docs/POWERS.md)',
           };
         return { status: 'ok', message: `${res.powers.length} poderes; todas as origens têm poderes` };
+      },
+    },
+    {
+      id: 'cerebro.teams',
+      title: 'Equipes',
+      run: async () => {
+        const keys = ctx.config.factions.map((f) => f.key);
+        const { startFaction } = ctx.botConfig.teams;
+        if (!keys.includes(startFaction))
+          return {
+            status: 'fail',
+            message: `cerebro.teams.startFaction "${startFaction}" não está em factions; novos heróis entram em "${keys[0] ?? '—'}"`,
+            fix: `Use uma destas chaves: ${keys.join(', ')}`,
+          };
+        // The doctor opens the DB without migrating; the `db` check already reports pending migrations.
+        const counts = await setup.membersByFaction().catch(() => ({}) as Record<string, number>);
+        const off = Object.entries(counts).filter(([k, n]) => k && n > 0 && !keys.includes(k));
+        if (off.length)
+          return {
+            status: 'warn',
+            message: `Heróis em equipes desligadas (aparecem como Independente): ${off.map(([k, n]) => `${k} (${n})`).join(', ')}`,
+            fix: 'Volte a equipe para factions, ou mova cada herói com /cerebro equipe mover',
+          };
+        const missing = DEFAULT_FACTION_KEYS.filter((k) => !keys.includes(k));
+        if (missing.length)
+          return {
+            status: 'info',
+            message: `${keys.length} equipes. Equipes novas da v0.9 fora da sua lista factions: ${missing.join(', ')}`,
+            fix: 'Para usá-las, acrescente-as em factions e o cargo em roles (veja docs/CONFIG.md)',
+          };
+        return { status: 'ok', message: `${keys.length} equipes; novos heróis entram em ${startFaction}` };
       },
     },
     {

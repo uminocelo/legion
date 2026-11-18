@@ -1,5 +1,5 @@
 import type { BotContext, IncomingInteraction, Locale, OutgoingMessage, Responder } from '@legion/core';
-import { addDays } from '@legion/core';
+import { addDays, shownFaction } from '@legion/core';
 import type { JarvisConfig } from './config.js';
 import { type Period, periodStart } from './domain/periods.js';
 import { advanceStreak, displayedStreak, levelFor } from './domain/xp.js';
@@ -50,7 +50,10 @@ export class JarvisLeaderboard {
   }
 
   private emoji(faction: string | null): string {
-    return this.ctx.config.factions.find((f) => f.key === faction)?.emoji ?? '▫️';
+    const shown = shownFaction(this.ctx.config.factions, faction);
+    return (
+      this.ctx.config.factions.find((f) => f.key === shown)?.emoji ?? (shown === 'independent' ? '🟢' : '▫️')
+    );
   }
 
   private factionName(key: string, l: Locale): string {

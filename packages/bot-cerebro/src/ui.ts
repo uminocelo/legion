@@ -7,6 +7,7 @@ import {
   type Modal,
   mentionOnly,
   type OutgoingMessage,
+  shownFaction,
 } from '@legion/core';
 import type { CerebroConfig } from './config.js';
 import type { MemberRow, MutantRow } from './db/repo.js';
@@ -277,10 +278,13 @@ export class CerebroUi {
     };
   }
 
+  /** "🟡 Vingadores". A key that is no longer in `factions` (disabled team) shows as Independente. */
   factionLabel(key: string | null, locale?: Locale): string {
     if (!key) return '—';
-    const f = this.shared.factions.find((x) => x.key === key);
-    return `${f?.emoji ? `${f.emoji} ` : ''}${this.t(`faction.${key}.name`, {}, locale)}`;
+    const shown = shownFaction(this.shared.factions, key) ?? key;
+    const emoji =
+      this.shared.factions.find((x) => x.key === shown)?.emoji ?? (shown === 'independent' ? '🟢' : '');
+    return `${emoji ? `${emoji} ` : ''}${this.t(`faction.${shown}.name`, {}, locale)}`;
   }
 
   publicRegistryCard(member: MemberRow, mutant: MutantRow): OutgoingMessage {

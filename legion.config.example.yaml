@@ -38,9 +38,11 @@ cerebro:
     max: 32
   # Origens do cadastro, na ordem do menu (docs/UNIVERSE.md). Tire uma para escondê-la.
   # origins: [{ key: mutante }, { key: inumano }, { key: ciencia }, { key: tecnologia }, { key: mistico }, { key: cosmico }, { key: treinado }]
-  # Facção de quem acaba de se registrar (as equipes chegam pelas missões de recrutamento)
+  # Equipes (docs/UNIVERSE.md#equipes): onde todo herói novo começa, e os dias entre duas trocas
+  # pelas missões de recrutamento (a staff move com /cerebro equipe mover, sem esperar)
   teams:
     startFaction: independent
+    switchCooldownDays: 30
   # Arquétipos oferecidos no cadastro
   archetypes: [Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata]
   # Catálogo de poderes no cadastro (docs/POWERS.md). O tipo do poder principal define o arquétipo.

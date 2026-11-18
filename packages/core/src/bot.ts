@@ -35,7 +35,8 @@ export interface ComponentDefinition {
   handle(i: IncomingInteraction, r: Responder, args: string[]): Promise<void>;
 }
 
-export type DoctorStatus = 'ok' | 'warn' | 'fail';
+/** `info` (ℹ️) is a tip that needs no action; only `fail` makes `legion doctor` exit non-zero. */
+export type DoctorStatus = 'ok' | 'info' | 'warn' | 'fail';
 export interface DoctorResult {
   status: DoctorStatus;
   message: string;

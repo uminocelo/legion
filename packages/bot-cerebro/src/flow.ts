@@ -8,6 +8,7 @@ import {
   type Locale,
   type OutgoingMessage,
   type Responder,
+  shownFaction,
 } from '@legion/core';
 import { z } from 'zod';
 import type { CerebroConfig } from './config.js';
@@ -17,6 +18,7 @@ import { expectedRoles, transition } from './domain/onboarding.js';
 import { OriginChange } from './origin-change.js';
 import { PowerFlow } from './power-flow.js';
 import { CARD_FILE, SheetCard } from './sheet.js';
+import { TeamMove } from './team-move.js';
 import { CerebroUi, channelMention } from './ui.js';
 
 const stepOf = (row: MemberRow) => toMemberView(row).onboardingStep;
@@ -31,6 +33,7 @@ export class CerebroFlow {
   readonly powers: PowerFlow;
   readonly sheet: SheetCard;
   readonly originChange: OriginChange;
+  readonly teamMove: TeamMove;
 
   constructor(readonly ctx: BotContext<CerebroConfig>) {
     this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
@@ -41,6 +44,7 @@ export class CerebroFlow {
     this.powers = new PowerFlow(this);
     this.sheet = new SheetCard(this);
     this.originChange = new OriginChange(this);
+    this.teamMove = new TeamMove(this);
   }
 
   /** Origins offered now: configured ones that have at least one power (when the catalog is on). */
@@ -77,8 +81,14 @@ export class CerebroFlow {
   locale(userId: string) {
     return this.ctx.i18n.localeFor(userId);
   }
+  /** The team to show: a key no longer in `factions` (disabled team, rollback) shows as Independente. */
+  displayFaction(faction: string | null): string | null {
+    return shownFaction(this.ctx.config.factions, faction);
+  }
+  /** The Discord role for a member's team; a disabled team maps to Independente's role, like the screen. */
   factionRoleKey(faction: string | null): string | null {
-    return this.ctx.config.factions.find((f) => f.key === faction)?.roleKey ?? null;
+    const shown = this.displayFaction(faction);
+    return this.ctx.config.factions.find((f) => f.key === shown)?.roleKey ?? null;
   }
   private factionRoleKeys(): string[] {
     return this.ctx.config.factions.map((f) => f.roleKey);
@@ -408,6 +418,17 @@ export class CerebroFlow {
           tx,
         );
         if (!member) throw new Error('member vanished');
+        await this.repo.insertFactionChange(
+          {
+            memberId: member.id,
+            from: null,
+            to: faction,
+            reason: 'onboarding',
+            sourceKey: `onboarding:${member.id}`,
+            by: null,
+          },
+          tx,
+        );
         await this.ctx.bus.emit(tx, 'player.created', {
           memberId: member.id,
           discordUserId: member.discordUserId,

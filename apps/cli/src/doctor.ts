@@ -167,7 +167,7 @@ async function checkApp(
   return { botUserId, applicationId, inGuild };
 }
 
-/** Runs every check and returns the results (✅ ok, ⚠️ warn, ❌ fail). Never throws. */
+/** Runs every check and returns the results (✅ ok, ℹ️ info, ⚠️ warn, ❌ fail). Never throws. */
 export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
   const L = o.locale;
   const t = (k: MessageKey, v: Record<string, string | number> = {}) => msg(L, k, v);
@@ -410,7 +410,13 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
   return results;
 }
 
-const ICON: Record<CheckResult['status'], string> = { ok: '✅', warn: '⚠️ ', fail: '❌', skip: '⏭️ ' };
+const ICON: Record<CheckResult['status'], string> = {
+  ok: '✅',
+  info: 'ℹ️ ',
+  warn: '⚠️ ',
+  fail: '❌',
+  skip: '⏭️ ',
+};
 
 export function formatDoctor(results: CheckResult[], locale: Locale): string {
   const lines = [msg(locale, 'doctor.title'), ''];

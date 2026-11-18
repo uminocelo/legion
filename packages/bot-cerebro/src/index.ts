@@ -110,6 +110,12 @@ export const cerebro: LegionBot<CerebroConfig> = {
     });
     ctx.help.add({
       bot: 'cerebro',
+      command: '/cerebro equipe mover',
+      descriptionKey: 'cerebro.help.equipe_mover',
+      adminOnly: true,
+    });
+    ctx.help.add({
+      bot: 'cerebro',
       command: '/cerebro status',
       descriptionKey: 'cerebro.help.status',
       adminOnly: true,
