@@ -1,4 +1,4 @@
-import { CerebroRepo, cerebro } from '@legion/bot-cerebro';
+import { CerebroRepo, cerebro, cerebroTables } from '@legion/bot-cerebro';
 import { jarvis, jarvisServices, jarvisTables } from '@legion/bot-jarvis';
 import { createTestContext, type TestContext } from '@legion/core';
 import { eq } from 'drizzle-orm';
@@ -132,6 +132,26 @@ describe('legion playtest-report', () => {
       ]),
     );
     expect(formatPlaytest(r)).toMatch(/❌ 3 problema\(s\)/);
+  });
+
+  it('does not expect XP for a member who left the server', async () => {
+    t = await setup();
+    const memberId = await addPlayer(t, '111', 'Pulso');
+    const other = await addPlayer(t, '222', 'Brasa');
+    await playPatrol(t, '111');
+    const j = jarvisTables(t.db);
+    const [run] = await jarvisServices(t.ctxOf(jarvis)).repo.runsOf(memberId);
+    // Brasa was in the party too, but got no mission XP.
+    await t.db.orm
+      .insert(j.jarvisMissionMembers)
+      .values({ runId: run?.id ?? '', memberId: other, joinedAt: run?.createdAt ?? '' });
+    expect((await report(t)).problems).toEqual([expect.stringMatching(/success, mas sem XP para Brasa$/)]);
+    const c = cerebroTables(t.db);
+    await t.db.orm
+      .update(c.members)
+      .set({ leftAt: run?.createdAt ?? '' })
+      .where(eq(c.members.id, other));
+    expect((await report(t)).problems).toEqual([]);
   });
 
   it('only reports what happened since --since and warns about missions left open', async () => {
