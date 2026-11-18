@@ -4,6 +4,14 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- `/jarvis trivia importar arquivo:`: up to 50 questions from a `.yaml` (the `/jarvis trivia exportar` format), with a preview and Publicar/Cancelar. All or nothing; the same `id` updates a staff question; `jarvis.trivia.review: second_staff` sends imported questions to review.
+- Website: a page for each bot (commands generated from the bots' own definitions; CI fails when stale) and a "Personalizar" guide with downloadable examples.
+- Website editors for missions, trivia and enemies: they check drafts with the bots' own rules (including the filter for existing character names), keep drafts in the browser, open existing files, and offer Download, Copy and the import command. Nothing is sent anywhere.
+
+### Changed
+- Errors in content files and imports (missions, trivia, enemies) are now in Portuguese, like the rest of the staff messages.
+
 ## [0.7.2] - 2026-11-17
 
 ### Added

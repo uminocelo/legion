@@ -2,12 +2,13 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { cerebro } from '@legion/bot-cerebro';
-import { jarvis, jarvisServices } from '@legion/bot-jarvis';
+import { jarvis, jarvisServices, parseMissionYaml } from '@legion/bot-jarvis';
 import { sentinel } from '@legion/bot-sentinel';
 import { ultron, ultronServices } from '@legion/bot-ultron';
 import { createTestContext, type TestContext } from '@legion/core';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as enemies from '../editor/enemy-model.js';
+import * as missions from '../editor/mission-model.js';
 import { store } from '../editor/shared.js';
 import * as trivia from '../editor/trivia-model.js';
 // @ts-expect-error plain ESM script without types
@@ -140,6 +141,95 @@ describe('enemy editor', () => {
   });
 });
 
+const MISSIONS_DIR = join(ROOT, 'packages/bot-jarvis/content/missions');
+const shippedMissions = () => readdirSync(MISSIONS_DIR).filter((f) => f.endsWith('.yaml'));
+
+describe('mission editor', () => {
+  it('opens every shipped mission and saves it back with the same meaning', () => {
+    expect(shippedMissions().length).toBeGreaterThan(0);
+    for (const f of shippedMissions()) {
+      const text = readFileSync(join(MISSIONS_DIR, f), 'utf8');
+      const original = parseMissionYaml(text);
+      const draft = missions.fromYaml(text);
+      expect(missions.validate(draft), f).toEqual([]);
+      const again = parseMissionYaml(missions.toYaml(draft));
+      expect(again, f).toEqual(original);
+      expect(missions.fromYaml(missions.toYaml(draft)), f).toEqual(draft);
+    }
+  });
+
+  it('lists the shipped missions the bundle offers as starting points', () => {
+    const src = readFileSync(join(import.meta.dirname, '../editor/missions-shipped.ts'), 'utf8');
+    for (const f of shippedMissions()) expect(src, f).toContain(`content/missions/${f}'`);
+  });
+
+  it('writes a mission with a fight that /jarvis missao importar accepts and publishes', async () => {
+    const m = missions.emptyMission();
+    m.id = 'resgate-no-tunel';
+    m.title = { pt: 'Resgate no túnel', en: 'Tunnel rescue' };
+    m.summary = { pt: 'Um trem parou no escuro.', en: '' };
+    m.party = 2;
+    const [start, win, lose] = m.scenes;
+    if (!start || !win || !lose) throw new Error('skeleton changed');
+    start.text.pt = 'Faróis vermelhos piscam no fim do túnel.';
+    start.choices[0] = { label: { pt: 'Avançar', en: 'Advance' }, next: 'luta' };
+    start.choices[1] = { label: { pt: 'Recuar', en: '' }, next: 'falha' };
+    win.text.pt = 'Os passageiros saem em segurança.';
+    lose.text.pt = 'O trem some na escuridão.';
+    m.scenes.push({
+      ...missions.emptyScene('luta', 'combat'),
+      text: { pt: 'Drones bloqueiam a saída!', en: '' },
+      win: 'sucesso',
+      lose: 'falha',
+    });
+    missions.renameScene(m, 'sucesso', 'vitoria');
+    expect(m.scenes.find((x) => x.id === 'luta')?.win).toBe('vitoria');
+    expect(missions.validate(m)).toEqual([]);
+
+    t = await createTestContext({ bots: [cerebro, jarvis] });
+    expect(
+      await importAndPublish(t, 'jarvis', 'missao importar', missions.toYaml(m), missions.fileName(m)),
+    ).toMatch(/resgate-no-tunel/);
+    const row = await jarvisServices(t.ctxOf(jarvis)).repo.mission('resgate-no-tunel');
+    expect(row).toMatchObject({ active: 1, origin: 'staff', hasCombat: 1, party: 2 });
+  });
+
+  it('shows dangling links, unreachable scenes, cycles and repeated ids', () => {
+    const m = missions.emptyMission();
+    m.scenes.push(missions.emptyScene('solta', 'end'));
+    missions.removeScene(m, 'falha');
+    const map = missions.mapProblems(m);
+    expect(map.get('inicio')).toEqual(['leva a "", que não existe']);
+    const fixed = m.scenes[0]?.choices[1];
+    if (fixed) fixed.next = 'sucesso';
+    expect(missions.mapProblems(m).get('solta')).toEqual(['cena inalcançável a partir de start']);
+
+    const loop = missions.emptyMission();
+    const first = loop.scenes[0]?.choices[0];
+    if (first) first.next = 'inicio';
+    expect(missions.mapProblems(loop).get('inicio')?.[0]).toMatch(/^ciclo: inicio → inicio/);
+
+    const dup = missions.emptyMission();
+    dup.scenes.push(missions.emptyScene('falha', 'end'));
+    expect(missions.validate(dup)).toContain(
+      'scenes: a cena "falha" aparece duas vezes; os ids precisam ser únicos',
+    );
+    expect(missions.validate(missions.emptyMission())).toContain('title: obrigatório');
+  });
+
+  it('refuses canon names in titles and choice labels', () => {
+    const m = missions.fromYaml(readFileSync(join(MISSIONS_DIR, 'patrulha-noturna.yaml'), 'utf8'));
+    m.title.pt = 'A vingança do Magneto';
+    expect(missions.validate(m)).toEqual(['title.pt-BR: nome de personagem existente; use nomes originais']);
+    m.title.pt = 'Patrulha noturna';
+    const choice = m.scenes[0]?.choices[0];
+    if (choice) choice.label.pt = 'Chamar o Wolverine';
+    expect(missions.validate(m)).toEqual([
+      'scenes.porto.choices.0.label.pt-BR: nome de personagem existente; use nomes originais',
+    ]);
+  });
+});
+
 describe('drafts and bundle', () => {
   it('keeps drafts across reloads and survives a browser without storage', () => {
     const mem = new Map<string, string>();
@@ -170,7 +260,7 @@ describe('drafts and bundle', () => {
     try {
       await bundleEditors(out);
       const files = readdirSync(join(out, 'assets/js'));
-      expect(files).toEqual(expect.arrayContaining(['trivia.js', 'enemy.js']));
+      expect(files).toEqual(expect.arrayContaining(['trivia.js', 'enemy.js', 'mission.js']));
       const all = files.map((f) => readFileSync(join(out, 'assets/js', f), 'utf8')).join('\n');
       expect(all).not.toMatch(/from\s*["']node:/);
       expect(all.toLowerCase()).toContain('magneto');

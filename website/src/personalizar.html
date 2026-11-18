@@ -8,6 +8,11 @@
   <h2>Editores</h2>
   <p class="section-lead">Monte o arquivo no navegador, com as mesmas regras que o bot usa para conferir. Baixe e importe no seu servidor. Nada sai do seu navegador.</p>
   <div class="bots">
+    <article class="bot" style="--c:#00B0F4">
+      <h3><a href="editor-missoes.html">Missões</a></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Cenas, escolhas, combates e finais, com um mapa que mostra cenas soltas e links quebrados. Comece do zero ou de uma missão pronta.</p>
+    </article>
     <article class="bot" style="--c:#F1C40F">
       <h3><a href="editor-trivia.html">Perguntas de trivia</a></h3>
       <p class="role">J.A.R.V.I.S.</p>
@@ -35,6 +40,7 @@
   <h2>Missões</h2>
   <p class="section-lead">Histórias com escolhas, conduzidas pelo <a href="jarvis.html">J.A.R.V.I.S.</a>. Cada missão é um arquivo com cenas: cada cena tem escolhas, uma luta (com saída para vitória e para derrota) ou um final.</p>
   <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-missoes.html">Editor de missões</a>: monte a missão e importe</td></tr>
     <tr><th>Importar</th><td><code>/jarvis missao importar arquivo:</code> e anexe o <code>.yaml</code> (até 64 KB)</td></tr>
     <tr><th>Ou na pasta</th><td><code>data/content/missions/&lt;id&gt;.yaml</code> e reinicie</td></tr>
     <tr><th>Regras</th><td>Toda cena alcançável a partir de <code>start</code>, sem ciclos, pelo menos um final. Lutas precisam do ULTRON e do Sentinel.</td></tr>
