@@ -38,7 +38,7 @@ export const eventCatalog = {
     originType: z.string().min(1),
   }),
   'player.rejoined': z.object({ memberId: id, discordUserId: id }),
-  /** A hero switched team (US-26 staff move; US-28 recruitment arcs). Not emitted at registration. */
+  /** A hero switched team (staff move or recruitment arc). Not emitted at registration. */
   'player.faction_changed': z.object({
     memberId: id,
     discordUserId: id,
@@ -46,6 +46,23 @@ export const eventCatalog = {
     to: z.string().min(1),
     reason: z.enum(['onboarding', 'arc', 'staff']),
     sourceKey: z.string().min(1).max(200),
+  }),
+  /**
+   * J.A.R.V.I.S. asks Cérebro to put a hero on a team at a `success` ending of a recruitment campaign
+   * (ADR 0032, D12). Cérebro decides; `sourceKey` = `arc:<runId>:<memberId>` makes it idempotent.
+   */
+  'faction.join_requested': z.object({
+    memberId: id,
+    faction: z.string().min(1),
+    sourceKey: z.string().min(1).max(200),
+  }),
+  /** Cérebro refused a join request. `availableAt` (ISO) tells when a `cooldown` ends. */
+  'player.faction_change_refused': z.object({
+    memberId: id,
+    faction: z.string().min(1),
+    sourceKey: z.string().min(1).max(200),
+    code: z.enum(['cooldown', 'origin', 'disabled', 'same']),
+    availableAt: z.string().datetime().optional(),
   }),
   'player.optins_changed': z.object({ memberId: id, optIns: z.array(z.string()) }),
   'command.executed': z.object({

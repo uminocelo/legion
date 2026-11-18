@@ -133,7 +133,12 @@ export class JarvisMissions {
     const campaign = m.campaign ? all.get(m.campaign.id) : undefined;
     if (m.campaign && !campaign) return { key: 'hidden' };
     const factions = this.ctx.config.factions.map((f) => f.key);
-    const res = unmet(m, await this.facts(memberId), campaign ?? null, factions);
+    // A recruitment arc follows its team's origin rule (e.g. Irmandade: mutante, inumano).
+    const team =
+      campaign?.kind === 'recruitment'
+        ? this.ctx.config.factions.find((f) => f.key === campaign.faction)
+        : undefined;
+    const res = unmet(m, await this.facts(memberId), campaign ?? null, factions, team?.origins);
     if (res.hidden) return { key: 'hidden' };
     return res.missing.length ? { key: 'requires', unmet: res.missing } : null;
   }
@@ -454,7 +459,67 @@ export class JarvisMissions {
         });
       }
     await this.ctx.bus.emit(tx, 'mission.completed', { missionId: run.id, memberIds: who, outcome });
+    await this.requestJoins(tx, run, m, outcome, who);
     return { ...run, status: outcome, version: version + 1, endedAt };
+  }
+
+  /**
+   * At a `success` ending of a recruitment campaign with `reward.joinFaction`, ask Cérebro to put each
+   * member on the team (ADR 0032, D12). Runs in the same transaction as the XP, after the run's
+   * version check, so a replayed ending never asks twice; `sourceKey` makes Cérebro idempotent too.
+   */
+  private async requestJoins(tx: Executor, run: RunRow, m: Mission, outcome: Outcome, who: string[]) {
+    const faction = m.reward?.joinFaction;
+    if (outcome !== 'success' || !faction || !m.campaign) return;
+    const campaign = await this.s.repo.campaign(m.campaign.id, tx);
+    if (campaign?.kind !== 'recruitment' || campaign.active !== 1) return;
+    for (const memberId of who) {
+      const member = await this.ctx.read.members.getById(memberId);
+      if (!member || member.leftAt) continue;
+      await this.ctx.bus.emit(tx, 'faction.join_requested', {
+        memberId,
+        faction,
+        sourceKey: `arc:${run.id}:${memberId}`,
+      });
+    }
+  }
+
+  // ---------- team joins (results from Cérebro) ----------
+
+  /**
+   * `player.faction_changed` (reason `arc`) and `player.faction_change_refused` for a request made at
+   * the end of a run (`arc:<runId>:<memberId>`): posts the result once in that run's thread.
+   */
+  async onFactionResult(
+    p: { memberId: string; sourceKey: string } & (
+      | { kind: 'changed'; to: string }
+      | { kind: 'refused'; faction: string; code: string; availableAt?: string }
+    ),
+  ): Promise<void> {
+    const [prefix, runId, memberId] = p.sourceKey.split(':');
+    if (prefix !== 'arc' || !runId || memberId !== p.memberId) return;
+    const doneKey = `jarvis.faction-result.${p.sourceKey}`;
+    if (await this.ctx.kv.get<boolean>(doneKey)) return;
+    const run = await this.s.repo.run(runId);
+    if (!run) return;
+    const l = run.locale as Locale;
+    const codename = (await this.ctx.read.mutants.getByMemberId(p.memberId))?.codename ?? '—';
+    const key = p.kind === 'changed' ? p.to : p.faction;
+    const f = this.ctx.config.factions.find((x) => x.key === key);
+    const team = `${f?.emoji ? `${f.emoji} ` : ''}${this.t(`cerebro.faction.${key}.name`, {}, l)}`;
+    const vars: Record<string, string> = { codename, team };
+    if (p.kind === 'refused' && p.availableAt)
+      vars.date = `<t:${Math.floor(new Date(p.availableAt).getTime() / 1000)}:D>`;
+    const text =
+      p.kind === 'changed'
+        ? this.t('jarvis.missions.join.joined', vars, l)
+        : this.t(`jarvis.missions.join.refused.${p.code}`, vars, l);
+    await this.ctx.gateway.sendMessage(run.threadId ?? run.channelId, {
+      persona: 'jarvis',
+      content: text,
+      allowedMentions: { parse: [] },
+    });
+    await this.ctx.kv.set(doneKey, true);
   }
 
   // ---------- timers and recovery ----------

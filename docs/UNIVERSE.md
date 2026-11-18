@@ -59,7 +59,7 @@ As facções agora são as equipes da Marvel. Cada uma tem um cargo no Discord, 
 - Servidores que escreveram a própria lista `factions` (ou a própria `roles`) continuam com ela; o `legion doctor` mostra com ℹ️ as equipes novas que ficaram de fora.
 - **Desligar uma equipe** é tirá-la de `factions`. Ela some do `/ranking` e dos menus; quem estava nela continua com a chave guardada, mas aparece e recebe o cargo como **Independente**. O `legion doctor` avisa (⚠️) quantos heróis estão em equipes desligadas. Religar a equipe devolve todos.
 - A staff move um herói com `/cerebro equipe mover membro equipe motivo`: ignora a regra de origem e o tempo de espera, troca o cargo e guarda quem moveu e o motivo.
-- Toda troca de equipe fica registrada (de onde, para onde, por quê e por quem). Entrar numa equipe pelas missões de recrutamento chega na próxima versão; essas trocas vão respeitar `cerebro.teams.switchCooldownDays` (30 dias).
+- Toda troca de equipe fica registrada (de onde, para onde, por quê e por quem). Cada equipe tem um **arco de recrutamento** (`/campanha`): quem termina o último capítulo com sucesso entra na equipe, ganha o cargo e o J.A.R.V.I.S. anuncia no tópico da missão. Uma equipe que só aceita certas origens (a Irmandade: Mutante e Inumano) mantém o arco fechado para as outras. Trocar de novo pede outro arco e espera `cerebro.teams.switchCooldownDays` (30 dias) desde a última troca; antes disso o arco conta como feito, mas a troca é recusada e o tópico mostra a data. A primeira equipe depois do cadastro não espera. Os pontos de guerra já conquistados ficam com a equipe antiga.
 
 ### "Herói", não "mutante"
 

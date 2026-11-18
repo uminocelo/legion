@@ -3,6 +3,7 @@ import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { cerebroCommands } from './commands.js';
 import { type CerebroConfig, cerebroConfigSchema } from './config.js';
 import { cerebroDoctorChecks } from './doctor.js';
+import { FACTION_JOIN } from './faction-join.js';
 import { CerebroFlow, RECONCILE_JOB } from './flow.js';
 import { CEREBRO_LOCALES_DIR, CEREBRO_MIGRATIONS_DIR } from './paths.js';
 import type { PickMode } from './power-flow.js';
@@ -90,6 +91,7 @@ export const cerebro: LegionBot<CerebroConfig> = {
     ctx.provide('mutants', mutantsReadModel(flow.repo));
     ctx.guildEvents.onMemberAdd((m) => flow.memberJoined(m));
     ctx.guildEvents.onMemberRemove((userId) => flow.memberLeft(userId));
+    ctx.bus.on('faction.join_requested', FACTION_JOIN, (e) => flow.factionJoin.onRequest(e));
     ctx.bus.on('rank.changed', 'cerebro.rank-roles', (e) =>
       flow.onRankChanged(e.payload.memberId, e.payload.to),
     );
