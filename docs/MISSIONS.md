@@ -96,6 +96,8 @@ Regras que o Legion confere (no arquivo, no editor e no import):
 - toda missão em `requires.missions` existe, e não há ciclo (A exige B, B exige A);
 - `joinFaction` só numa campanha de recrutamento, para a equipe dela, e a equipe está ligada.
 
+No `/missao lista`, cada campanha mostra só o próximo capítulo (o primeiro ainda não vencido); o `/campanha` mostra todos.
+
 Um capítulo de campanha só conta como jogado quando é vencido: quem perde pode tentar de novo. Uma história avulsa (sem `campaign`) continua sendo de uma vez só, a não ser com `missions.limits.storyRepeatable: true`.
 
 Num arquivo do servidor, uma missão com erro é ignorada (❌ no `legion doctor`). Um `requires` que cita uma missão que ainda não existe só bloqueia a missão (⚠️ no `legion doctor`).

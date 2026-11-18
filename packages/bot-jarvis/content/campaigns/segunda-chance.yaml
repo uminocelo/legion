@@ -1,0 +1,10 @@
+# Recruitment arc for the Thunderbolts. Format: docs/MISSIONS.md (Campanhas).
+id: segunda-chance
+kind: recruitment
+faction: thunderbolts
+title:
+  pt-BR: "Segunda chance"
+  en: "Second chance"
+summary:
+  pt-BR: "Os Thunderbolts são feitos de gente com passado. Eles querem saber o que você faz com o seu."
+  en: "The Thunderbolts are made of people with a past. They want to know what you do with yours."

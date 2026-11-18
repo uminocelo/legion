@@ -1,0 +1,53 @@
+# Recruitment arc for the X-Men. Chapter 1.
+id: aula-na-mansao-1
+kind: story
+campaign: { id: aula-na-mansao, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "Aula na Mansão X 1: A sala de aula"
+  en: "Class at the X-Mansion 1: The classroom"
+summary:
+  pt-BR: "Tempestade dá a primeira aula: controlar o próprio poder quando todos estão olhando."
+  en: "Storm teaches the first lesson: control your own power while everyone is watching."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'Tempestade espera no jardim da Mansão X. "Aqui ninguém esconde o que é. Mas todo poder precisa de controle. Mostre o seu."'
+      en: 'Storm waits in the X-Mansion garden. "Nobody hides what they are here. But every power needs control. Show me yours."'
+    choices:
+      - label: { pt-BR: "Usar o poder com calma", en: "Use your power calmly" }
+        next: caminho-a
+      - label: { pt-BR: "Perguntar como ela aprendeu", en: "Ask how she learned" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "Seu poder vacila quando um grupo de alunos para para assistir. Tempestade observa sem dizer nada."
+      en: "Your power flickers when a group of students stops to watch. Storm watches without a word."
+    choices:
+      - label: { pt-BR: "Respirar e recomeçar devagar", en: "Breathe and start again slowly" }
+        next: sucesso
+      - label: { pt-BR: "Forçar até o fim", en: "Force it to the end" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: '"Errando na frente de todo mundo", ela ri. "A diferença é que eu nunca parei." Ela aponta para o lago.'
+      en: '"By failing in front of everyone," she laughs. "The difference is I never stopped." She points at the lake.'
+    choices:
+      - label: { pt-BR: "Treinar no lago, longe dos outros", en: "Train by the lake, away from the others" }
+        next: sucesso
+      - label: { pt-BR: "Desistir por hoje", en: "Give up for today" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'O poder obedece. Tempestade sorri: "Amanhã, o Ciclope quer ver você na Sala de Perigo."'
+      en: 'Your power obeys. Storm smiles: "Tomorrow, Cyclops wants to see you in the Danger Room."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'O poder escapa e uma janela da estufa estoura. "Tente de novo amanhã", diz Tempestade.'
+      en: 'Your power slips and a greenhouse window shatters. "Try again tomorrow," Storm says.'
+    end: failure

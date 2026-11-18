@@ -1,0 +1,10 @@
+# Recruitment arc for S.H.I.E.L.D. Format: docs/MISSIONS.md (Campanhas).
+id: agente-em-teste
+kind: recruitment
+faction: shield
+title:
+  pt-BR: "Agente em teste"
+  en: "Agent on probation"
+summary:
+  pt-BR: "A S.H.I.E.L.D. recruta quem sabe seguir protocolos e quebrá-los na hora certa."
+  en: "S.H.I.E.L.D. recruits those who can follow protocol and break it at the right time."

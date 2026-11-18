@@ -228,7 +228,18 @@ export class JarvisMissions {
     if (!all.length) return r.reply(this.text(this.t('jarvis.missions.none', {}, l)));
     const fields = [];
     const campaigns = await this.campaigns();
+    // A campaign shows only its next chapter (the first one not won yet); /campanha lists them all.
+    const done = await this.s.repo.doneMissionIds(member.id);
+    const next = new Map<string, string>();
+    for (const m of all)
+      if (m.campaign && !done.has(m.id)) {
+        const cur = all.find((x) => x.id === next.get(m.campaign?.id ?? ''));
+        if (!cur || (cur.campaign?.chapter ?? 0) > m.campaign.chapter) next.set(m.campaign.id, m.id);
+      }
+    let size = 0;
+    let more = false;
     for (const m of all) {
+      if (m.campaign && next.get(m.campaign.id) !== m.id) continue;
       const b = await this.blocker(member.id, m, campaigns);
       if (b?.key === 'hidden') continue;
       const status = b ? `🔒 ${await this.blockerText(b, l)}` : '✅';
@@ -249,12 +260,24 @@ export class JarvisMissions {
           status,
         ].join('\n'),
       });
+      const last = fields.at(-1);
+      size += (last?.name.length ?? 0) + (last?.value.length ?? 0);
+      // Discord: at most 25 fields and 6000 characters per embed.
+      if (fields.length > 24 || size > 5000) {
+        more = true;
+        break;
+      }
     }
     await r.reply({
       persona: 'jarvis',
       ephemeral: true,
       embeds: [
-        { title: this.t('jarvis.missions.list_title', {}, l), color: COLOR, fields: fields.slice(0, 25) },
+        {
+          title: this.t('jarvis.missions.list_title', {}, l),
+          color: COLOR,
+          fields,
+          ...(more || next.size ? { footer: { text: this.t('jarvis.missions.list_footer', {}, l) } } : {}),
+        },
       ],
     });
   }

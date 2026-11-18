@@ -1,0 +1,50 @@
+# Recruitment arc for S.H.I.E.L.D. Chapter 3 (fight).
+id: agente-em-teste-3
+kind: story
+campaign: { id: agente-em-teste, chapter: 3 }
+requires: { missions: [agente-em-teste-2] }
+reward: { joinFaction: shield }
+title:
+  pt-BR: "Agente em teste 3: A base escondida"
+  en: "Agent on probation 3: The hidden base"
+summary:
+  pt-BR: "Nick Fury autoriza a invasão da base. Uma máquina guarda o servidor central."
+  en: "Nick Fury authorizes the raid on the base. A machine guards the main server."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'No Aeroporta-aviões, Nick Fury aponta para o mapa. "Base de uma célula que trabalha para quem paga mais. Quero o servidor intacto."'
+      en: 'On the Helicarrier, Nick Fury points at the map. "Base of a cell that works for the highest bidder. I want the server intact."'
+    choices:
+      - label: { pt-BR: "Entrar pelos dutos", en: "Go in through the vents" }
+        next: preparo
+      - label: { pt-BR: "Entrar pela porta principal", en: "Go in through the front door" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "Os dutos levam à sala do servidor. Uma máquina de vigilância gira no centro da sala."
+      en: "The vents lead to the server room. A surveillance machine spins in the middle of the room."
+    choices:
+      - label: { pt-BR: "Desligar o alarme antes", en: "Switch off the alarm first" }
+        next: confronto
+      - label: { pt-BR: "Pular sobre ela", en: "Jump on it" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: 'A máquina trava as portas. "INTRUSO. APAGANDO DADOS EM 60 SEGUNDOS."'
+      en: 'The machine locks the doors. "INTRUDER. WIPING DATA IN 60 SECONDS."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'Você salva o servidor a tempo. Nick Fury entrega um distintivo: "Bem-vindo à S.H.I.E.L.D., agente."'
+      en: 'You save the server in time. Nick Fury hands you a badge: "Welcome to S.H.I.E.L.D., agent."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'Os dados se apagam e a máquina foge. Fury não grita, o que é pior. "Revise o plano e volte."'
+      en: 'The data is wiped and the machine escapes. Fury does not shout, which is worse. "Review the plan and come back."'
+    end: failure

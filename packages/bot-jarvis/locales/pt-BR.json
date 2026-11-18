@@ -216,7 +216,8 @@
           "disabled": "**{codename}** cumpriu o arco, mas **{team}** está desligada neste servidor.",
           "same": "**{codename}** já está em **{team}**."
         }
-      }
+      },
+      "list_footer": "Campanhas mostram só o próximo capítulo. Use /campanha para ver todos."
     },
     "staff_trivia": {
       "bad_category": "A categoria \"{category}\" não está em jarvis.trivia.categories.",

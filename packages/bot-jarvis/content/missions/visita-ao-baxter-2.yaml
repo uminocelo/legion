@@ -1,0 +1,49 @@
+# Story campaign at the Baxter Building, open to every team. Chapter 2 (fight).
+id: visita-ao-baxter-2
+kind: story
+campaign: { id: visita-ao-baxter, chapter: 2 }
+requires: { missions: [visita-ao-baxter-1] }
+title:
+  pt-BR: "Edifício Baxter 2: A garagem"
+  en: "Baxter Building 2: The garage"
+summary:
+  pt-BR: "Na garagem do Fantasticarro, a primeira máquina espera. O Tocha Humana vem junto."
+  en: "In the Fantasticar garage, the first machine waits. The Human Torch comes along."
+minLevel: 1
+party: 3
+difficulty: facil
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O Johnny Storm acende as mãos. "Eu esquento, você bate. Combinado?" Na garagem, uma máquina desmonta o Fantasticarro peça por peça.'
+      en: 'Johnny Storm lights up his hands. "I heat it, you hit it. Deal?" In the garage, a machine is taking the Fantasticar apart piece by piece.'
+    choices:
+      - label: { pt-BR: "Combinar o plano com o Johnny", en: "Agree on the plan with Johnny" }
+        next: preparo
+      - label: { pt-BR: "Entrar logo", en: "Go in right away" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "O Johnny voa em círculos e a máquina se distrai com o fogo."
+      en: "Johnny flies in circles and the machine is distracted by the fire."
+    choices:
+      - label: { pt-BR: "Atacar pelo flanco", en: "Attack from the flank" }
+        next: confronto
+      - label: { pt-BR: "Proteger o Fantasticarro", en: "Protect the Fantasticar" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: 'A máquina larga as peças e vira para você. "INTERFERÊNCIA DETECTADA."'
+      en: 'The machine drops the parts and turns to you. "INTERFERENCE DETECTED."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina cai. O Johnny comemora: "Chama!" Dentro dela, um chip com a marca de quem a enviou.'
+      en: 'The machine falls. Johnny cheers: "Flame on!" Inside it, a chip with the mark of whoever sent it.'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'A máquina foge pelo poço do elevador. O Johnny apaga as mãos. "Ela volta. A gente também."'
+      en: 'The machine escapes down the elevator shaft. Johnny puts his hands out. "It will be back. So will we."'
+    end: failure

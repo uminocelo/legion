@@ -1,0 +1,50 @@
+# Recruitment arc for the X-Men. Chapter 3 (fight).
+id: aula-na-mansao-3
+kind: story
+campaign: { id: aula-na-mansao, chapter: 3 }
+requires: { missions: [aula-na-mansao-2] }
+reward: { joinFaction: xmen }
+title:
+  pt-BR: "Aula na Mansão X 3: A prova de campo"
+  en: "Class at the X-Mansion 3: The field test"
+summary:
+  pt-BR: "Uma máquina caçadora de mutantes ronda Salem Center. O Professor Xavier pede que você a detenha."
+  en: "A mutant-hunting machine prowls Salem Center. Professor Xavier asks you to stop it."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A voz do Professor Xavier soa na sua mente: "Uma máquina de caça entrou em Salem Center, a serviço de quem odeia o nosso povo. Os alunos mais novos estão na cidade."'
+      en: 'Professor Xavier''s voice sounds in your mind: "A hunting machine entered Salem Center, serving those who hate our kind. The youngest students are in town."'
+    choices:
+      - label: { pt-BR: "Tirar os alunos de lá primeiro", en: "Get the students out first" }
+        next: preparo
+      - label: { pt-BR: "Ir direto até a máquina", en: "Go straight for the machine" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "Os alunos se escondem na lanchonete. A máquina percebe o movimento e vira os sensores para você."
+      en: "The students hide in the diner. The machine notices the movement and turns its sensors on you."
+    choices:
+      - label: { pt-BR: "Atraí-la para a praça vazia", en: "Lure it into the empty square" }
+        next: confronto
+      - label: { pt-BR: "Enfrentá-la ali mesmo", en: "Face it right there" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: 'A máquina abre as placas de blindagem. "ALVO MUTANTE CONFIRMADO."'
+      en: 'The machine opens its armor plates. "MUTANT TARGET CONFIRMED."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina cai. Tempestade, Ciclope e o Wolverine chegam a tempo de ver. O Professor Xavier diz: "Bem-vindo aos X-Men."'
+      en: 'The machine falls. Storm, Cyclops and Wolverine arrive in time to see it. Professor Xavier says: "Welcome to the X-Men."'
+    end: success
+  derrota:
+    text:
+      pt-BR: "A máquina recua com dados sobre você. Os alunos estão a salvo, mas a prova não terminou. Treine e volte."
+      en: "The machine retreats with data about you. The students are safe, but the test is not over. Train and come back."
+    end: failure

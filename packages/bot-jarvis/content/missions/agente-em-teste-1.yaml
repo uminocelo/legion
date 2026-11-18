@@ -1,0 +1,53 @@
+# Recruitment arc for S.H.I.E.L.D. Chapter 1.
+id: agente-em-teste-1
+kind: story
+campaign: { id: agente-em-teste, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "Agente em teste 1: A entrevista"
+  en: "Agent on probation 1: The interview"
+summary:
+  pt-BR: "A agente Maria Hill entrevista você numa sala sem janelas."
+  en: "Agent Maria Hill interviews you in a windowless room."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A agente Maria Hill coloca uma ficha na mesa. "Sabemos tudo sobre você. Quase tudo. Por que a S.H.I.E.L.D.?"'
+      en: 'Agent Maria Hill puts a file on the table. "We know everything about you. Almost everything. Why S.H.I.E.L.D.?"'
+    choices:
+      - label: { pt-BR: "Porque ameaças não esperam heróis", en: "Because threats do not wait for heroes" }
+        next: caminho-a
+      - label: { pt-BR: "Perguntar o que falta na ficha", en: "Ask what is missing from the file" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: 'Ela anota algo. "Cenário: um agente seu desobedece uma ordem e salva vidas. O que você faz?"'
+      en: 'She writes something. "Scenario: one of your agents disobeys an order and saves lives. What do you do?"'
+    choices:
+      - label: { pt-BR: "Defender o agente e relatar tudo", en: "Defend the agent and report everything" }
+        next: sucesso
+      - label: { pt-BR: "Esconder o caso", en: "Hide the incident" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: '"O que você faria com poder e sem supervisão." Ela espera a resposta.'
+      en: '"What you would do with power and no oversight." She waits for the answer.'
+    choices:
+      - label: { pt-BR: "Dizer que aceita prestar contas", en: "Say you accept being accountable" }
+        next: sucesso
+      - label: { pt-BR: "Dizer que ninguém precisa saber", en: "Say nobody needs to know" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'Maria Hill fecha a ficha. "Acesso aprovado. O Coulson vai levar você ao campo."'
+      en: 'Maria Hill closes the file. "Clearance approved. Coulson will take you to the field."'
+    end: success
+  falha:
+    text:
+      pt-BR: '"Resposta errada para esta agência", diz ela. "Você pode pedir outra entrevista."'
+      en: '"Wrong answer for this agency," she says. "You may request another interview."'
+    end: failure

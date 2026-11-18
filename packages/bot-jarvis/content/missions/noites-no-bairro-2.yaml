@@ -1,0 +1,53 @@
+# Recruitment arc for the Defensores. Chapter 2.
+id: noites-no-bairro-2
+kind: story
+campaign: { id: noites-no-bairro, chapter: 2 }
+requires: { missions: [noites-no-bairro-1] }
+title:
+  pt-BR: "Noites em Hell's Kitchen 2: O advogado"
+  en: "Nights in Hell's Kitchen 2: The lawyer"
+summary:
+  pt-BR: "Matt Murdock ouve a sua história e pede provas que aguentem num tribunal."
+  en: "Matt Murdock hears your story and asks for evidence that will hold up in court."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'No escritório de advocacia, Matt Murdock vira o rosto para você como se pudesse ver. "Se quisermos fechar essa empresa, precisamos de provas. Legais."'
+      en: 'At the law office, Matt Murdock turns his face to you as if he could see. "If we want to shut that company down, we need evidence. Legal evidence."'
+    choices:
+      - label: { pt-BR: "Buscar documentos no cartório", en: "Look for records at the registry" }
+        next: caminho-a
+      - label: { pt-BR: "Convencer um morador a depor", en: "Convince a tenant to testify" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "Os documentos mostram que a empresa comprou o prédio com um nome falso."
+      en: "The records show the company bought the building under a false name."
+    choices:
+      - label: { pt-BR: "Copiar tudo com autorização", en: "Copy everything with authorization" }
+        next: sucesso
+      - label: { pt-BR: "Roubar os originais", en: "Steal the originals" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: 'O morador tem medo. "Se eu falar, eles vêm atrás de mim." O Luke Cage, encostado na porta, escuta.'
+      en: 'The tenant is afraid. "If I talk, they come for me." Luke Cage, leaning on the door, listens.'
+    choices:
+      - label: { pt-BR: "Prometer proteção com o Luke", en: "Promise protection with Luke" }
+        next: sucesso
+      - label: { pt-BR: "Pressionar até ele falar", en: "Push until he talks" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'O Matt sorri. "Isso fecha o caso. Agora só falta o depósito onde eles guardam as pessoas."'
+      en: 'Matt smiles. "That closes the case. Now we just need the warehouse where they keep the people."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'A prova não vale no tribunal. "Do jeito certo", diz o Matt. "Sempre do jeito certo."'
+      en: 'The evidence will not hold in court. "The right way," Matt says. "Always the right way."'
+    end: failure
