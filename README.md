@@ -111,7 +111,7 @@ Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia nova | importar 
 
 ### H.E.R.B.I.E. (tutorial e ajuda)
 
-Com `herbie` em `bots:`, quem termina o cadastro recebe uma DM do H.E.R.B.I.E. com um tutorial curto (ver o `/perfil`, fazer uma `/trivia`, escolher preferências). Cada passo dá XP pelo J.A.R.V.I.S. Se a DM estiver fechada, a mensagem vai para `channels.tutorial` (ou o canal de boas-vindas), mencionando a pessoa.
+Com `herbie` em `bots:`, quem termina o cadastro recebe uma DM do H.E.R.B.I.E. com um tutorial curto: a campanha **Primeiro contato** (ver o `/perfil`, três capítulos de missão com uma primeira luta, e uma `/trivia`), e no fim uma explicação das equipes e do `/campanha` ([docs/TUTORIAL.md](docs/TUTORIAL.md)). Cada passo dá XP pelo J.A.R.V.I.S. Se a DM estiver fechada, a mensagem vai para `channels.tutorial` (ou o canal de boas-vindas), mencionando a pessoa.
 
 - `/ajuda [tópico]`: o que fazer agora (conforme o momento do membro) e a lista de comandos dos bots ligados.
 - `/regras [termo]`: regras do servidor ou um termo do glossário, com autocompletar.

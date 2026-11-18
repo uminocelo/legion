@@ -105,7 +105,8 @@ async function setup(campaigns: Campaign[] = [campaign()], missions: Mission[] =
   t.gateway.addChannel({ id: MISSIONS_CH, name: 'missoes', kind: 'text', parentId: null, overwrites: [] });
   const dir = contentDir(campaigns, missions);
   const s = servicesOf(t);
-  const res = await s.missions.reload(missionDirs(dir), campaignDirs(dir));
+  // Only this test's files (not the shipped tutorial campaign).
+  const res = await s.missions.reload([join(dir, 'missions')], [join(dir, 'campaigns')]);
   expect(res.errors).toEqual([]);
   return { t, s, dir };
 }
@@ -816,5 +817,19 @@ describe('recruitment arcs: finishing the arc joins the team', () => {
     expect(await autocomplete(t, B)).toContain('ri-1');
     const id = await startCmd(t, 'ri-1', A);
     expect(reply(t, id)?.content).toMatch(/Bloqueada: falta ser de origem Mutante, Inumano/);
+  });
+});
+
+describe('replaying a lost chapter', () => {
+  it('a lost campaign chapter can be tried again; a won one cannot; a standalone story stays once only', async () => {
+    const { t } = await setup([campaign()], [chapter('sombras-1', 1), mission('avulsa')]);
+    await hero(t, A);
+    await startCmd(t, 'sombras-1');
+    await t.interact({ kind: 'component', userId: A, customId: lastButtons(t)[1] ?? '' }); // failure
+    await win(t, 'sombras-1');
+    expect(reply(t, await startCmd(t, 'sombras-1'))?.content).toBe('Você já jogou esta história');
+    await startCmd(t, 'avulsa');
+    await t.interact({ kind: 'component', userId: A, customId: lastButtons(t)[1] ?? '' }); // failure
+    expect(reply(t, await startCmd(t, 'avulsa'))?.content).toBe('Você já jogou esta história');
   });
 });

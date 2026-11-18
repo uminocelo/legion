@@ -1,0 +1,52 @@
+# Tutorial chapter 1: a short story mission, solo, choices only. Format: docs/MISSIONS.md
+id: primeiro-contato-1
+kind: story
+campaign: { id: primeiro-contato, chapter: 1 }
+title:
+  pt-BR: "Primeiro contato 1: O chamado"
+  en: "First contact 1: The call"
+summary:
+  pt-BR: O Cérebro tem uma tarefa para você. Cada escolha muda o caminho da cena; o fim diz se a missão deu certo.
+  en: Cérebro has a task for you. Each choice changes the path of the scene; the ending says whether the mission worked.
+minLevel: 1
+party: 1
+difficulty: facil
+start: chamado
+scenes:
+  chamado:
+    text:
+      pt-BR: O Cérebro chama você à sala de controle. "Uma assinatura metálica passou três vezes pelo bosque esta semana. Quero olhos lá antes que escureça."
+      en: Cérebro calls you to the control room. "A metallic signature went through the woods three times this week. I want eyes there before dark."
+    choices:
+      - label: { pt-BR: Ir agora mesmo, en: Go right now }
+        next: bosque
+      - label: { pt-BR: Ver os registros primeiro, en: Check the records first }
+        next: registros
+  registros:
+    text:
+      pt-BR: Os registros mostram um padrão. A assinatura sempre para perto da estufa, sempre às seis da tarde.
+      en: The records show a pattern. The signature always stops near the greenhouse, always at six in the evening.
+    choices:
+      - label: { pt-BR: Esperar na estufa, en: Wait at the greenhouse }
+        next: estufa
+      - label: { pt-BR: Ir ao bosque mesmo assim, en: Go to the woods anyway }
+        next: bosque
+  bosque:
+    text:
+      pt-BR: O bosque está em silêncio. Você encontra marcas de garras de metal num tronco, ainda quentes, indo em direção à estufa.
+      en: The woods are silent. You find metal claw marks on a trunk, still warm, heading toward the greenhouse.
+    choices:
+      - label: { pt-BR: Seguir as marcas, en: Follow the marks }
+        next: estufa
+      - label: { pt-BR: Voltar e dar o alarme, en: Go back and raise the alarm }
+        next: alarme
+  estufa:
+    text:
+      pt-BR: Na estufa, um pequeno drone recolhe amostras das plantas. Ao ver você, ele foge, mas deixa cair um sensor com o símbolo do ULTRON.
+      en: In the greenhouse, a small drone is collecting plant samples. When it sees you it flees, but drops a sensor with ULTRON's mark.
+    end: success
+  alarme:
+    text:
+      pt-BR: Quando a equipe chega, a assinatura já sumiu. Sem pistas, o Cérebro pede que você tente de novo amanhã.
+      en: By the time the team arrives, the signature is gone. With no leads, Cérebro asks you to try again tomorrow.
+    end: failure

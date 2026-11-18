@@ -92,7 +92,8 @@ describe('party missions', () => {
       expect(xp).toEqual([120]);
     }
     expect((await events(t, 'mission.completed'))[0]).toMatchObject({
-      missionId: run?.id,
+      missionId: run?.missionId,
+      runId: run?.id,
       outcome: 'success',
     });
 

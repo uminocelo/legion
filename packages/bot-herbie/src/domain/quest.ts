@@ -17,6 +17,14 @@ const trigger = z.object({
   where: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
 });
 const baseStep = z.object({ id: stepId, titleKey: key, bodyKey: key, trigger });
+const BOTS = ['cerebro', 'jarvis', 'herbie', 'sentinel', 'ultron'] as const;
+/** `missions`: J.A.R.V.I.S. missions are on. `mission-combat`: also ULTRON and Sentinel, for fights. */
+export const QUEST_FEATURES = ['missions', 'mission-combat'] as const;
+/** A chain text; `fallbackBodyKey` is used when `requiresBot` is off (none = no text). */
+const chainText = z
+  .object({ bodyKey: key, requiresBot: z.enum(BOTS).optional(), fallbackBodyKey: key.optional() })
+  .strict();
+export type ChainText = z.infer<typeof chainText>;
 
 export const chainSchema = z
   .object({
@@ -24,8 +32,8 @@ export const chainSchema = z
     steps: z
       .array(
         baseStep.extend({
-          requiresBot: z.enum(['cerebro', 'jarvis', 'herbie', 'sentinel', 'ultron']).optional(),
-          requiresFeature: z.enum(['missions']).optional(),
+          requiresBot: z.enum(BOTS).optional(),
+          requiresFeature: z.enum(QUEST_FEATURES).optional(),
           fallback: baseStep.optional(),
           rewardXp: z.number().int().min(0).max(1000),
         }),
@@ -33,6 +41,10 @@ export const chainSchema = z
       .min(1)
       .max(20),
     completionRewardXp: z.number().int().min(0).max(1000).default(0),
+    /** Text of the first message (`{count}` = number of steps); default `herbie.tutorial.intro`. */
+    intro: chainText.optional(),
+    /** Extra text when the chain is completed. */
+    completion: chainText.optional(),
   })
   .superRefine((c, ctx) => {
     const ids = c.steps.flatMap((s) => [s.id, ...(s.fallback ? [s.fallback.id] : [])]);
@@ -55,6 +67,12 @@ export interface EffectiveStep {
 export interface QuestEnv {
   enabledBots: readonly BotId[];
   features: ReadonlySet<string>;
+}
+
+/** The locale key of a chain text on this server, or null. */
+export function chainTextKey(c: ChainText | undefined, env: QuestEnv): string | null {
+  if (!c) return null;
+  return !c.requiresBot || env.enabledBots.includes(c.requiresBot) ? c.bodyKey : (c.fallbackBodyKey ?? null);
 }
 
 /** Steps in order; a step whose bot or feature is missing uses its fallback, or is skipped. */

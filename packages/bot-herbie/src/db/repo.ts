@@ -52,6 +52,17 @@ export class HerbieRepo {
     return rows.length > 0;
   }
 
+  /** Moves every progress row of chain `from` to `to` on this server; returns how many moved. */
+  async renameChain(from: string, to: string): Promise<number> {
+    const p = this.t.herbieTutorialProgress;
+    const rows = await this.db.orm
+      .update(p)
+      .set({ chainId: to, updatedAt: this.now() })
+      .where(and(eq(p.guildId, this.guildId), eq(p.chainId, from)))
+      .returning({ memberId: p.memberId });
+    return rows.length;
+  }
+
   async updateProgress(
     memberId: string,
     patch: Partial<Omit<TutorialProgressRow, 'memberId' | 'guildId'>>,
