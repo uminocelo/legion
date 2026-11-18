@@ -12,7 +12,7 @@ Kit de bots de RPG para Discord, **auto-hospedável**, inspirado nos X-Men. Um �
 
 ![Ficha mutante de exemplo gerada pelo /perfil](website/assets/ficha-exemplo.png)
 
-**Primeira vez?** Siga o [TUTORIAL.md](TUTORIAL.md): do zero ao primeiro jogo, com uma conferência no fim de cada passo. Site do projeto: [`website/`](website/).
+**Primeira vez?** Siga o [TUTORIAL.md](TUTORIAL.md): do zero ao primeiro jogo, com uma conferência no fim de cada passo. Site do projeto: [uminocelo.github.io/legion](https://uminocelo.github.io/legion/).
 
 ## Início rápido (3 passos)
 
@@ -143,7 +143,7 @@ Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
 
 ## Site
 
-A página do projeto fica em [`website/`](website/): HTML e CSS estáticos, sem build e sem chamadas externas. Para ver localmente, abra `website/index.html` no navegador. Detalhes em [website/README.md](website/README.md).
+A página do projeto fica em [`website/`](website/): HTML e CSS estáticos, sem build e sem chamadas externas. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente, abra `website/index.html` no navegador. Detalhes em [website/README.md](website/README.md).
 
 ## Desenvolvimento
 
