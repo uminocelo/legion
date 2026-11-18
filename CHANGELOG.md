@@ -4,6 +4,8 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-17
+
 ### Changed
 - `.env`: the main app is now `CEREBRO_TOKEN` and `CEREBRO_CLIENT_ID`. Without them, `DISCORD_TOKEN` and `DISCORD_CLIENT_ID` still work as the main app; the log and `legion doctor` warn until you rename them. Set together with `CEREBRO_*`, `DISCORD_*` keeps its old meaning: the shared app for bots without their own. `legion init` writes the new names.
 
@@ -87,7 +89,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/uminocelo/legion/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/uminocelo/legion/compare/v0.4.0...v0.7.0
 [0.4.0]: https://github.com/uminocelo/legion/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/uminocelo/legion/compare/v0.2.0...v0.3.0
