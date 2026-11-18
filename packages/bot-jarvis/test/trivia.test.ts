@@ -198,7 +198,7 @@ describe('/trivia', () => {
     expect(await events(t, 'trivia.answered')).toHaveLength(1);
     expect((await servicesOf(t).repo.ledgerFor(m)).filter((l) => l.reason === 'trivia')).toHaveLength(1);
     // the bundled content reload on the second boot changed nothing
-    expect((await servicesOf(t).repo.allQuestions()).filter((q) => q.active === 1)).toHaveLength(30);
+    expect((await servicesOf(t).repo.allQuestions()).filter((q) => q.active === 1)).toHaveLength(118);
   });
 
   it('end to end: /trivia → right answer → rank up → Cérebro gives the Agente role', async () => {

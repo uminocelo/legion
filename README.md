@@ -85,7 +85,7 @@ No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e 
 ```bash
 docker compose pull && docker compose up -d
 ```
-As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.8.1` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
+As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.9.0` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
 
 ## Backup
 
@@ -99,13 +99,13 @@ Adicione o bot em `bots:` no `legion.config.yaml` (o Cérebro é sempre obrigat�
 
 Com `bots: [cerebro, jarvis]`, rode `legion register-commands` (ou reinicie) e os membros registrados ganham:
 
-- `/trivia [categoria]`: pergunta rápida e só sua (quadrinhos, Marvel Rivals, geral). Acerto rápido vale mais XP; há limite diário.
+- `/trivia [categoria]`: pergunta rápida e só sua (quadrinhos, Marvel Rivals, geral, Vingadores, Quarteto Fantástico, cósmico, místico). Acerto rápido vale mais XP; há limite diário.
 - `/ranking [período] [facção]`: quem mais ganhou XP na semana (começa na segunda), no mês ou no total.
 - `/sequencia`: dias seguidos com XP e o bônus de amanhã.
 - `/perfil` passa a mostrar nível, XP e sequência. Ao cruzar 500 e 2000 XP, o Cérebro troca o cargo para Agente e Veterano.
 
 - `/missao lista | iniciar | abandonar`: histórias curtas com escolhas, sozinho ou em grupo (até 4), num tópico do `channels.missions`. Missões com luta usam o ULTRON e o Sentinel. Diárias, semanais e de história, com XP e limites configuráveis. Para escrever as suas, veja [docs/MISSIONS.md](docs/MISSIONS.md).
-- `/campanha [campanha]`: missões em capítulos que liberam em ordem (missões anteriores, nível, origem, equipe), com o progresso de cada um.
+- `/campanha [campanha]`: missões em capítulos que liberam em ordem (missões anteriores, nível, origem, equipe), com o progresso de cada um. Cada equipe tem um arco de recrutamento a partir do nível 3, e há uma campanha com o Quarteto Fantástico ([docs/UNIVERSE.md](docs/UNIVERSE.md#arcos-de-recrutamento)).
 
 Staff: `/jarvis xp` (ajuste manual com motivo), `/jarvis trivia nova | importar | lista | editar | desativar | ativar | exportar | recarregar | estatisticas`, `/jarvis missao importar | lista | desativar | ativar`, `/jarvis campanha importar`, `/jarvis recalcular` (refaz o progresso a partir do histórico). Crie perguntas e importe missões pelo próprio Discord: [docs/STAFF.md](docs/STAFF.md).
 

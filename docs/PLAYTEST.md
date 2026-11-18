@@ -15,7 +15,7 @@ Com uma quinta conta dá para testar o "grupo cheio" no passo 4.
 
 ## Antes (só o dono, uns 15 minutos)
 
-1. Atualize para a versão mais nova: `LEGION_VERSION=0.8.1` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
+1. Atualize para a versão mais nova: `LEGION_VERSION=0.9.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
 2. No `legion.config.yaml`, para esta sessão:
    ```yaml
    channels:
@@ -132,6 +132,23 @@ Os editores ficam em [uminocelo.github.io/legion](https://uminocelo.github.io/le
 | 9.5 | No [editor de missões](https://uminocelo.github.io/legion/editor-missoes.html): uma missão de **história**, grupo até 4, com uma cena de combate; no [de inimigos](https://uminocelo.github.io/legion/editor-inimigos.html): um lacaio nível 1. Importe os dois | As prévias batem com o que foi montado; entram em jogo | | |
 | 9.6 | J2 e J3 jogam a missão nova | A luta acontece; o inimigo novo pode aparecer | | |
 | 9.7 | Abram cada editor no celular, escrevam algo, fechem e abram de novo | Dá para usar; o rascunho continua lá | | |
+
+## 10. Novidades da v0.9: origens, equipes e arcos (J1, J3, Staff 2, 30 min)
+
+Para não esperar o nível 3, a staff pode dar XP com `/jarvis xp` (com motivo).
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 10.1 | J3 se cadastra do zero | Escolhe uma origem, vê só os poderes dela e começa Independente | | |
+| 10.2 | J1 (cadastrado antes da v0.9): `/heroi origem` | Pode trocar a origem uma vez; a segunda é recusada | | |
+| 10.3 | J3 termina o tutorial (`/tutorial`) | Três capítulos do Primeiro contato, a primeira luta e a mensagem final sobre equipes | | |
+| 10.4 | J3: `/missao lista` e `/campanha` | A lista mostra só o próximo capítulo de cada campanha, com um rodapé; `/campanha` mostra todas | | |
+| 10.5 | J3 (nível 3, origem que não é Mutante nem Inumano): `/missao iniciar convite-no-metro-1` | Bloqueada, dizendo a origem que falta | | |
+| 10.6 | J3 joga um arco inteiro (por exemplo `armadura-roubada`) | Ao vencer a luta do capítulo 3, entra na equipe, ganha o cargo e o tópico anuncia | | |
+| 10.7 | J3 termina outro arco logo depois | A troca é recusada e o tópico mostra a data em que pode trocar | | |
+| 10.8 | Staff 2: `/cerebro equipe mover` com J3 e um motivo | Move na hora, sem esperar | | |
+| 10.9 | J1, J2 e J3 jogam `visita-ao-baxter-2` juntos | Lobby de até 3; a luta acontece | | |
+| 10.10 | Todos: `/trivia categoria:vingadores`, `quarteto`, `cosmico` e `mistico` | Cada uma traz perguntas da categoria | | |
 
 ## Depois
 

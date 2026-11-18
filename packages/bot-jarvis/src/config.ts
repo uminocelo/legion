@@ -18,7 +18,7 @@ export const jarvisConfigSchema = z.object({
       categories: z
         .array(z.string().regex(/^[a-z][a-z0-9_-]*$/))
         .min(1)
-        .default(['quadrinhos', 'rivals', 'geral']),
+        .default(['quadrinhos', 'rivals', 'geral', 'vingadores', 'quarteto', 'cosmico', 'mistico']),
       timeLimitSeconds: posInt.default(20),
       cooldownSeconds: posInt.default(30),
       noRepeatDays: posInt.default(30),

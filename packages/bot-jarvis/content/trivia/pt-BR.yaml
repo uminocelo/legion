@@ -259,3 +259,741 @@
   answer: 2
   explanation: Stan Lee morreu em 12 de novembro de 2018.
   source: https://en.wikipedia.org/wiki/Stan_Lee
+
+# ---------- vingadores ----------
+- id: ving-0001
+  category: vingadores
+  difficulty: facil
+  question: "Em que ano os Vingadores estrearam nos quadrinhos?"
+  choices: ["1961", "1963", "1965", "1968"]
+  answer: 1
+  explanation: "The Avengers #1 saiu em 1963."
+  source: https://en.wikipedia.org/wiki/Avengers_(comics)
+- id: ving-0002
+  category: vingadores
+  difficulty: normal
+  question: "Quem criou os Vingadores?"
+  choices:
+    [
+      "Stan Lee e Jack Kirby",
+      "Stan Lee e Steve Ditko",
+      "Roy Thomas e John Buscema",
+      "Jim Shooter e George Pérez",
+    ]
+  answer: 0
+  explanation: "Stan Lee e Jack Kirby criaram a equipe em The Avengers #1 (1963)."
+  source: https://en.wikipedia.org/wiki/Avengers_(comics)
+- id: ving-0003
+  category: vingadores
+  difficulty: facil
+  question: "Contra qual vilão os Vingadores se uniram pela primeira vez?"
+  choices: ["Ultron", "Loki", "Kang", "Barão Zemo"]
+  answer: 1
+  explanation: "Em The Avengers #1, Loki manipula o Hulk e os heróis se unem para detê-lo."
+  source: https://en.wikipedia.org/wiki/Avengers_(comics)
+- id: ving-0004
+  category: vingadores
+  difficulty: normal
+  question: "Qual destes heróis NÃO era um membro fundador dos Vingadores?"
+  choices: ["Homem de Ferro", "Thor", "Capitão América", "Vespa"]
+  answer: 2
+  explanation: "Os fundadores foram Homem de Ferro, Thor, Hulk, Homem-Formiga e Vespa. O Capitão América entrou na edição #4."
+  source: https://en.wikipedia.org/wiki/Avengers_(comics)
+- id: ving-0005
+  category: vingadores
+  difficulty: dificil
+  question: "Em qual edição o Capitão América é encontrado congelado e se junta aos Vingadores?"
+  choices: ["The Avengers #1", "The Avengers #4", "The Avengers #16", "Tales of Suspense #59"]
+  answer: 1
+  explanation: "The Avengers #4 (1964) traz o Capitão América de volta, encontrado no gelo."
+  source: https://en.wikipedia.org/wiki/Captain_America
+- id: ving-0006
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o grito de guerra dos Vingadores em inglês?"
+  choices: ["Avengers Assemble!", "Excelsior!", "Flame on!", "Hulk smash!"]
+  answer: 0
+  explanation: '"Avengers Assemble!" é o grito clássico da equipe, "Vingadores, avante!" no Brasil.'
+  source: https://en.wikipedia.org/wiki/Avengers_(comics)
+- id: ving-0007
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o nome do mordomo da Mansão dos Vingadores?"
+  choices: ["Alfred Pennyworth", "Edwin Jarvis", "Happy Hogan", "Wong"]
+  answer: 1
+  explanation: "Edwin Jarvis, mordomo de Tony Stark, cuida da Mansão dos Vingadores."
+  source: https://en.wikipedia.org/wiki/Edwin_Jarvis
+- id: ving-0008
+  category: vingadores
+  difficulty: normal
+  question: "Nos quadrinhos, quem criou o robô Ultron?"
+  choices: ["Tony Stark", "Hank Pym", "Reed Richards", "Bruce Banner"]
+  answer: 1
+  explanation: "Nos quadrinhos, Ultron foi criado por Hank Pym, o primeiro Homem-Formiga."
+  source: https://en.wikipedia.org/wiki/Ultron
+- id: ving-0009
+  category: vingadores
+  difficulty: normal
+  question: "Quem construiu o sintozoide Visão nos quadrinhos?"
+  choices: ["Ultron", "Tony Stark", "Arnim Zola", "Hank Pym"]
+  answer: 0
+  explanation: "O Visão foi criado por Ultron para atacar os Vingadores, mas se voltou contra ele."
+  source: https://en.wikipedia.org/wiki/Vision_(Marvel_Comics)
+- id: ving-0010
+  category: vingadores
+  difficulty: facil
+  question: "Qual metal raro faz parte da liga do escudo circular do Capitão América?"
+  choices: ["Adamantium", "Uru", "Vibranium", "Carbonádio"]
+  answer: 2
+  explanation: "O escudo circular é uma liga de vibranium e aço."
+  source: https://en.wikipedia.org/wiki/Captain_America's_shield
+- id: ving-0011
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o nome do martelo de Thor?"
+  choices: ["Stormbreaker", "Mjolnir", "Gungnir", "Jarnbjorn"]
+  answer: 1
+  explanation: "Mjolnir é o martelo encantado de Thor, forjado em uru."
+  source: https://en.wikipedia.org/wiki/Mjolnir_(comics)
+- id: ving-0012
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o nome civil do Homem de Ferro?"
+  choices: ["Tony Stark", "Steve Rogers", "James Rhodes", "Hank Pym"]
+  answer: 0
+  explanation: 'Anthony "Tony" Stark é o Homem de Ferro.'
+  source: https://en.wikipedia.org/wiki/Iron_Man
+- id: ving-0013
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o nome civil do Gavião Arqueiro original?"
+  choices: ["Clint Barton", "Kate Bishop", "Bucky Barnes", "Sam Wilson"]
+  answer: 0
+  explanation: "Clint Barton é o Gavião Arqueiro original."
+  source: https://en.wikipedia.org/wiki/Hawkeye_(Clint_Barton)
+- id: ving-0014
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o codinome de Wanda Maximoff?"
+  choices: ["Feiticeira Escarlate", "Vampira", "Tempestade", "Mulher-Hulk"]
+  answer: 0
+  explanation: "Wanda Maximoff é a Feiticeira Escarlate."
+  source: https://en.wikipedia.org/wiki/Scarlet_Witch
+- id: ving-0015
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o nome civil do Hulk?"
+  choices: ["Bruce Banner", "Bruce Wayne", "Ben Grimm", "Rick Jones"]
+  answer: 0
+  explanation: "Robert Bruce Banner vira o Hulk."
+  source: https://en.wikipedia.org/wiki/Hulk
+- id: ving-0016
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o país de origem do Pantera Negra?"
+  choices: ["Latvéria", "Wakanda", "Genosha", "Sokovia"]
+  answer: 1
+  explanation: "T'Challa, o Pantera Negra, é o rei de Wakanda."
+  source: https://en.wikipedia.org/wiki/Black_Panther_(character)
+- id: ving-0017
+  category: vingadores
+  difficulty: normal
+  question: "Antes de ser a Capitã Marvel, Carol Danvers usou qual codinome?"
+  choices: ["Miss Marvel", "Pássaro Trovejante", "Safira", "Mulher-Aranha"]
+  answer: 0
+  explanation: "Carol Danvers foi Miss Marvel (Ms. Marvel) a partir de 1977 e virou Capitã Marvel em 2012."
+  source: https://en.wikipedia.org/wiki/Carol_Danvers
+- id: ving-0018
+  category: vingadores
+  difficulty: facil
+  question: "Qual é o codinome de Sam Wilson ao estrear nos quadrinhos?"
+  choices: ["Falcão", "Máquina de Combate", "Soldado Invernal", "Patriota"]
+  answer: 0
+  explanation: "Sam Wilson estreou como Falcão em Captain America #117 (1969)."
+  source: https://en.wikipedia.org/wiki/Falcon_(Marvel_Comics)
+- id: ving-0019
+  category: vingadores
+  difficulty: dificil
+  question: 'Quem escreveu a saga "Vingadores: A Queda" (Avengers Disassembled, 2004)?'
+  choices: ["Brian Michael Bendis", "Kurt Busiek", "Jonathan Hickman", "Mark Millar"]
+  answer: 0
+  explanation: "Brian Michael Bendis escreveu Avengers Disassembled, que levou aos Novos Vingadores."
+  source: https://en.wikipedia.org/wiki/Avengers_Disassembled
+- id: ving-0020
+  category: vingadores
+  difficulty: dificil
+  question: 'Quem escreveu a "Guerra Kree-Skrull" nos Vingadores (1971-1972)?'
+  choices: ["Roy Thomas", "Jim Starlin", "Steve Englehart", "Stan Lee"]
+  answer: 0
+  explanation: "Roy Thomas escreveu a Guerra Kree-Skrull em The Avengers #89 a #97."
+  source: https://en.wikipedia.org/wiki/Kree–Skrull_War
+- id: ving-0021
+  category: vingadores
+  difficulty: normal
+  question: "Quem dirigiu o filme Os Vingadores (2012)?"
+  choices: ["Joss Whedon", "Jon Favreau", "Irmãos Russo", "Kenneth Branagh"]
+  answer: 0
+  explanation: "Joss Whedon dirigiu The Avengers (2012)."
+  source: https://en.wikipedia.org/wiki/The_Avengers_(2012_film)
+- id: ving-0022
+  category: vingadores
+  difficulty: normal
+  question: "Qual é o nome civil da Viúva Negra?"
+  choices: ["Natasha Romanoff", "Yelena Belova", "Maria Hill", "Sharon Carter"]
+  answer: 0
+  explanation: "Natasha Romanoff (Natalia Romanova) é a Viúva Negra."
+  source: https://en.wikipedia.org/wiki/Black_Widow_(Natasha_Romanova)
+
+# ---------- quarteto ----------
+- id: quar-0001
+  category: quarteto
+  difficulty: facil
+  question: "Em que ano o Quarteto Fantástico estreou nos quadrinhos?"
+  choices: ["1958", "1961", "1963", "1966"]
+  answer: 1
+  explanation: "The Fantastic Four #1 saiu em 1961."
+  source: https://en.wikipedia.org/wiki/Fantastic_Four
+- id: quar-0002
+  category: quarteto
+  difficulty: facil
+  question: "Quem criou o Quarteto Fantástico?"
+  choices:
+    [
+      "Stan Lee e Jack Kirby",
+      "Stan Lee e Steve Ditko",
+      "John Byrne e Chris Claremont",
+      "Mark Waid e Mike Wieringo",
+    ]
+  answer: 0
+  explanation: "Stan Lee e Jack Kirby criaram o Quarteto em 1961."
+  source: https://en.wikipedia.org/wiki/Fantastic_Four
+- id: quar-0003
+  category: quarteto
+  difficulty: facil
+  question: "Qual é o codinome de Reed Richards?"
+  choices: ["Senhor Fantástico", "Homem-Elástico", "Professor X", "Homem-Plástico"]
+  answer: 0
+  explanation: "Reed Richards é o Senhor Fantástico."
+  source: https://en.wikipedia.org/wiki/Mister_Fantastic
+- id: quar-0004
+  category: quarteto
+  difficulty: normal
+  question: "Qual foi o primeiro codinome de Sue Storm?"
+  choices: ["Mulher Invisível", "Garota Invisível", "Malícia", "Moça Fantasma"]
+  answer: 1
+  explanation: "Sue Storm estreou como Garota Invisível e passou a Mulher Invisível em 1985."
+  source: https://en.wikipedia.org/wiki/Invisible_Woman
+- id: quar-0005
+  category: quarteto
+  difficulty: facil
+  question: "Qual é o codinome de Johnny Storm?"
+  choices: ["Tocha Humana", "Fênix", "Ciclope", "Fogo Solar"]
+  answer: 0
+  explanation: "Johnny Storm, irmão de Sue, é o Tocha Humana."
+  source: https://en.wikipedia.org/wiki/Human_Torch_(Johnny_Storm)
+- id: quar-0006
+  category: quarteto
+  difficulty: facil
+  question: "Qual é o nome civil do Coisa?"
+  choices: ["Ben Grimm", "Ben Parker", "Bruce Banner", "Bobby Drake"]
+  answer: 0
+  explanation: 'Benjamin "Ben" Grimm é o Coisa.'
+  source: https://en.wikipedia.org/wiki/Thing_(comics)
+- id: quar-0007
+  category: quarteto
+  difficulty: facil
+  question: "Qual é o famoso grito do Coisa em inglês?"
+  choices: ["It's clobberin' time!", "Hulk smash!", "Excelsior!", "Flame on!"]
+  answer: 0
+  explanation: '"It''s clobberin'' time!" ("Tá na hora do pau!") é o bordão do Ben Grimm.'
+  source: https://en.wikipedia.org/wiki/Thing_(comics)
+- id: quar-0008
+  category: quarteto
+  difficulty: facil
+  question: "Qual é o grito do Tocha Humana ao acender as chamas, em inglês?"
+  choices: ["Flame on!", "Burn baby burn!", "Fire away!", "Light it up!"]
+  answer: 0
+  explanation: '"Flame on!" é o bordão de Johnny Storm.'
+  source: https://en.wikipedia.org/wiki/Human_Torch_(Johnny_Storm)
+- id: quar-0009
+  category: quarteto
+  difficulty: facil
+  question: "Como o Quarteto ganhou os poderes?"
+  choices:
+    [
+      "Picada de aranha radioativa",
+      "Raios cósmicos numa viagem espacial",
+      "Explosão de raios gama",
+      "Soro do supersoldado",
+    ]
+  answer: 1
+  explanation: "Os quatro foram atingidos por raios cósmicos num voo experimental."
+  source: https://en.wikipedia.org/wiki/Fantastic_Four
+- id: quar-0010
+  category: quarteto
+  difficulty: facil
+  question: "Qual é o prédio que serve de sede ao Quarteto em Nova York?"
+  choices: ["Torre Stark", "Edifício Baxter", "Mansão X", "Sanctum Sanctorum"]
+  answer: 1
+  explanation: "O Edifício Baxter é a sede clássica do Quarteto."
+  source: https://en.wikipedia.org/wiki/Baxter_Building
+- id: quar-0011
+  category: quarteto
+  difficulty: facil
+  question: "Qual vilão governa a Latvéria?"
+  choices: ["Doutor Destino", "Barão Zemo", "Caveira Vermelha", "Magneto"]
+  answer: 0
+  explanation: "O Doutor Destino é o monarca da Latvéria e arqui-inimigo do Quarteto."
+  source: https://en.wikipedia.org/wiki/Doctor_Doom
+- id: quar-0012
+  category: quarteto
+  difficulty: normal
+  question: "Qual é o nome civil do Doutor Destino?"
+  choices: ["Victor von Doom", "Werner von Strucker", "Helmut Zemo", "Otto Octavius"]
+  answer: 0
+  explanation: "Victor von Doom é o Doutor Destino."
+  source: https://en.wikipedia.org/wiki/Doctor_Doom
+- id: quar-0013
+  category: quarteto
+  difficulty: normal
+  question: "Contra qual vilão o Quarteto luta em Fantastic Four #1?"
+  choices: ["Toupeira", "Doutor Destino", "Galactus", "Namor"]
+  answer: 0
+  explanation: "O Toupeira (Mole Man) é o primeiro vilão do Quarteto, em Fantastic Four #1."
+  source: https://en.wikipedia.org/wiki/Mole_Man
+- id: quar-0014
+  category: quarteto
+  difficulty: dificil
+  question: "Em qual edição Galactus estreou?"
+  choices: ["Fantastic Four #1", "Fantastic Four #48", "Fantastic Four #100", "Silver Surfer #1"]
+  answer: 1
+  explanation: "Galactus chegou em Fantastic Four #48 (1966), no começo da Trilogia de Galactus."
+  source: https://en.wikipedia.org/wiki/Galactus
+- id: quar-0015
+  category: quarteto
+  difficulty: normal
+  question: "Qual arauto de Galactus estreou na Trilogia de Galactus?"
+  choices: ["Surfista Prateado", "Terrax", "Nova", "Estrela Polar"]
+  answer: 0
+  explanation: "O Surfista Prateado estreou em Fantastic Four #48 (1966), junto com Galactus."
+  source: https://en.wikipedia.org/wiki/Silver_Surfer
+- id: quar-0016
+  category: quarteto
+  difficulty: normal
+  question: "Como se chama o filho de Reed e Sue?"
+  choices: ["Franklin Richards", "Valeria Richards", "Johnny Richards", "Nathan Summers"]
+  answer: 0
+  explanation: "Franklin Richards é o primeiro filho de Reed e Sue."
+  source: https://en.wikipedia.org/wiki/Franklin_Richards
+- id: quar-0017
+  category: quarteto
+  difficulty: normal
+  question: "Como se chama a filha de Reed e Sue?"
+  choices: ["Valeria Richards", "Franklin Richards", "Crystal Richards", "Alicia Richards"]
+  answer: 0
+  explanation: "Valeria Richards é a filha de Reed e Sue."
+  source: https://en.wikipedia.org/wiki/Valeria_Richards
+- id: quar-0018
+  category: quarteto
+  difficulty: normal
+  question: "Que dimensão o Reed Richards explora com um portal no Edifício Baxter?"
+  choices: ["Zona Negativa", "Dimensão Sombria", "Reino Quântico", "Limbo"]
+  answer: 0
+  explanation: "A Zona Negativa é um universo de antimatéria que Reed explora."
+  source: https://en.wikipedia.org/wiki/Negative_Zone
+- id: quar-0019
+  category: quarteto
+  difficulty: normal
+  question: "Como se chama a escultora cega que ama o Ben Grimm?"
+  choices: ["Alicia Masters", "Crystal Amaquelin", "Debbie Green", "Frankie Raye"]
+  answer: 0
+  explanation: "Alicia Masters, escultora cega, é o grande amor do Coisa."
+  source: https://en.wikipedia.org/wiki/Alicia_Masters
+- id: quar-0020
+  category: quarteto
+  difficulty: normal
+  question: "Onde o robô H.E.R.B.I.E. apareceu pela primeira vez?"
+  choices:
+    ["Num desenho animado de 1978", "Em Fantastic Four #1", "Num filme de 2005", "Num videogame de 1997"]
+  answer: 0
+  explanation: "O H.E.R.B.I.E. foi criado para o desenho The New Fantastic Four (1978) e depois chegou aos quadrinhos."
+  source: https://en.wikipedia.org/wiki/H.E.R.B.I.E.
+- id: quar-0021
+  category: quarteto
+  difficulty: dificil
+  question: "Em qual edição Namor, o Príncipe Submarino, voltou na era Marvel?"
+  choices: ["Fantastic Four #4", "Fantastic Four #12", "Avengers #3", "Tales to Astonish #70"]
+  answer: 0
+  explanation: "Namor reaparece em Fantastic Four #4 (1962), encontrado como mendigo pelo Tocha Humana."
+  source: https://en.wikipedia.org/wiki/Namor
+- id: quar-0022
+  category: quarteto
+  difficulty: dificil
+  question: "Em qual revista os Inumanos estrearam?"
+  choices: ["Fantastic Four #45", "Thor #146", "X-Men #1", "Amazing Adventures #1"]
+  answer: 0
+  explanation: "Os Inumanos estrearam em Fantastic Four #45 (1965)."
+  source: https://en.wikipedia.org/wiki/Inhumans
+
+# ---------- cosmico ----------
+- id: cosm-0001
+  category: cosmico
+  difficulty: normal
+  question: "Quem criou o Thanos?"
+  choices: ["Jim Starlin", "Jack Kirby", "Steve Englehart", "John Byrne"]
+  answer: 0
+  explanation: "Jim Starlin criou o Thanos em 1973."
+  source: https://en.wikipedia.org/wiki/Thanos
+- id: cosm-0002
+  category: cosmico
+  difficulty: dificil
+  question: "Em qual revista o Thanos estreou?"
+  choices: ["Iron Man #55", "Captain Marvel #25", "Avengers #125", "Warlock #9"]
+  answer: 0
+  explanation: "Thanos estreou em The Invincible Iron Man #55 (1973)."
+  source: https://en.wikipedia.org/wiki/Thanos
+- id: cosm-0003
+  category: cosmico
+  difficulty: normal
+  question: "De onde vem o Thanos?"
+  choices: ["Titã, lua de Saturno", "Hala", "Xandar", "Zenn-La"]
+  answer: 0
+  explanation: "Thanos é um Eterno nascido em Titã, a lua de Saturno."
+  source: https://en.wikipedia.org/wiki/Thanos
+- id: cosm-0004
+  category: cosmico
+  difficulty: facil
+  question: "Quantas Joias do Infinito existem na formação clássica?"
+  choices: ["Quatro", "Cinco", "Seis", "Sete"]
+  answer: 2
+  explanation: "As Joias clássicas são seis: Poder, Espaço, Tempo, Realidade, Mente e Alma."
+  source: https://en.wikipedia.org/wiki/Infinity_Gems
+- id: cosm-0005
+  category: cosmico
+  difficulty: facil
+  question: "Qual destas NÃO é uma Joia do Infinito clássica?"
+  choices: ["Joia do Tempo", "Joia da Alma", "Joia da Gravidade", "Joia da Mente"]
+  answer: 2
+  explanation: "As seis são Poder, Espaço, Tempo, Realidade, Mente e Alma."
+  source: https://en.wikipedia.org/wiki/Infinity_Gems
+- id: cosm-0006
+  category: cosmico
+  difficulty: facil
+  question: "Do que Galactus se alimenta?"
+  choices: ["Da energia de planetas", "De estrelas mortas", "De almas", "De raios gama"]
+  answer: 0
+  explanation: "Galactus consome a energia vital de planetas."
+  source: https://en.wikipedia.org/wiki/Galactus
+- id: cosm-0007
+  category: cosmico
+  difficulty: normal
+  question: "Qual é o nome verdadeiro do Surfista Prateado?"
+  choices: ["Norrin Radd", "Mar-Vell", "Richard Rider", "Adam Warlock"]
+  answer: 0
+  explanation: "Norrin Radd virou arauto de Galactus para salvar o seu planeta."
+  source: https://en.wikipedia.org/wiki/Silver_Surfer
+- id: cosm-0008
+  category: cosmico
+  difficulty: dificil
+  question: "Qual é o planeta natal do Surfista Prateado?"
+  choices: ["Zenn-La", "Hala", "Xandar", "Titã"]
+  answer: 0
+  explanation: "Norrin Radd nasceu em Zenn-La."
+  source: https://en.wikipedia.org/wiki/Silver_Surfer
+- id: cosm-0009
+  category: cosmico
+  difficulty: facil
+  question: "Qual é a única frase que o Groot costuma dizer?"
+  choices: ["Eu sou Groot", "Groot esmaga", "Nós somos Groot", "Árvore!"]
+  answer: 0
+  explanation: '"Eu sou Groot" é quase tudo o que ele diz nas versões modernas.'
+  source: https://en.wikipedia.org/wiki/Groot
+- id: cosm-0010
+  category: cosmico
+  difficulty: facil
+  question: "Qual é o nome civil do Senhor das Estrelas?"
+  choices: ["Peter Quill", "Peter Parker", "Richard Rider", "Scott Lang"]
+  answer: 0
+  explanation: "Peter Quill é o Senhor das Estrelas."
+  source: https://en.wikipedia.org/wiki/Star-Lord
+- id: cosm-0011
+  category: cosmico
+  difficulty: facil
+  question: "Quem adotou e criou a Gamora?"
+  choices: ["Thanos", "Ronan", "Yondu", "Nebulosa"]
+  answer: 0
+  explanation: "Gamora foi criada por Thanos como assassina."
+  source: https://en.wikipedia.org/wiki/Gamora
+- id: cosm-0012
+  category: cosmico
+  difficulty: facil
+  question: "Qual é o apelido do Drax?"
+  choices: ["O Destruidor", "O Vingador", "O Caçador", "O Imortal"]
+  answer: 0
+  explanation: "Drax, o Destruidor, foi criado para caçar o Thanos."
+  source: https://en.wikipedia.org/wiki/Drax_the_Destroyer
+- id: cosm-0013
+  category: cosmico
+  difficulty: facil
+  question: "Qual raça alienígena da Marvel muda de forma?"
+  choices: ["Kree", "Skrull", "Shi'ar", "Badoon"]
+  answer: 1
+  explanation: "Os Skrulls podem mudar de forma, o que os torna ótimos espiões."
+  source: https://en.wikipedia.org/wiki/Skrull
+- id: cosm-0014
+  category: cosmico
+  difficulty: normal
+  question: "Qual é o planeta natal da Tropa Nova?"
+  choices: ["Xandar", "Hala", "Titã", "Lugarnenhum"]
+  answer: 0
+  explanation: "A Tropa Nova tem base em Xandar."
+  source: https://en.wikipedia.org/wiki/Nova_Corps
+- id: cosm-0015
+  category: cosmico
+  difficulty: normal
+  question: "Qual é o nome do primeiro Capitão Marvel, um guerreiro Kree?"
+  choices: ["Mar-Vell", "Ronan", "Yon-Rogg", "Genis-Vell"]
+  answer: 0
+  explanation: "Mar-Vell estreou em 1967 como o Capitão Marvel Kree."
+  source: https://en.wikipedia.org/wiki/Mar-Vell
+- id: cosm-0016
+  category: cosmico
+  difficulty: dificil
+  question: "Quem escreveu os Guardiões da Galáxia de 2008, base da equipe moderna?"
+  choices: ["Dan Abnett e Andy Lanning", "Brian Michael Bendis", "Jim Starlin", "Keith Giffen"]
+  answer: 0
+  explanation: "Dan Abnett e Andy Lanning montaram a formação moderna em 2008."
+  source: https://en.wikipedia.org/wiki/Guardians_of_the_Galaxy_(2008_team)
+- id: cosm-0017
+  category: cosmico
+  difficulty: dificil
+  question: "De que século vinha a primeira formação dos Guardiões da Galáxia (1969)?"
+  choices: ["Século 21", "Século 25", "Século 31", "Século 41"]
+  answer: 2
+  explanation: "A equipe original de 1969 vinha do século 31."
+  source: https://en.wikipedia.org/wiki/Guardians_of_the_Galaxy_(1969_team)
+- id: cosm-0018
+  category: cosmico
+  difficulty: normal
+  question: "Qual música dos Beatles inspirou o nome do Rocket Raccoon?"
+  choices: ["Rocky Raccoon", "Yellow Submarine", "Help!", "Blackbird"]
+  answer: 0
+  explanation: 'O nome vem da canção "Rocky Raccoon" (1968).'
+  source: https://en.wikipedia.org/wiki/Rocket_Raccoon
+- id: cosm-0019
+  category: cosmico
+  difficulty: normal
+  question: "O que é Lugarnenhum (Knowhere)?"
+  choices: ["A cabeça cortada de um Celestial", "Uma lua de Titã", "Uma nave Kree", "Um planeta vivo"]
+  answer: 0
+  explanation: "Lugarnenhum fica dentro da cabeça decepada de um Celestial."
+  source: https://en.wikipedia.org/wiki/Knowhere
+- id: cosm-0020
+  category: cosmico
+  difficulty: dificil
+  question: "Em qual revista estreou Ego, o Planeta Vivo?"
+  choices: ["Thor #132", "Fantastic Four #48", "Silver Surfer #1", "Avengers #4"]
+  answer: 0
+  explanation: "Ego estreou em Thor #132 (1966)."
+  source: https://en.wikipedia.org/wiki/Ego_the_Living_Planet
+- id: cosm-0021
+  category: cosmico
+  difficulty: dificil
+  question: "Como Adam Warlock foi chamado na primeira aparição?"
+  choices: ["Ele", "Magus", "Adão", "Warlock"]
+  answer: 0
+  explanation: 'Adam Warlock estreou como "Him" ("Ele") em Fantastic Four #66-67 (1967).'
+  source: https://en.wikipedia.org/wiki/Adam_Warlock
+- id: cosm-0022
+  category: cosmico
+  difficulty: normal
+  question: "Quem escreveu a minissérie Desafio Infinito (The Infinity Gauntlet, 1991)?"
+  choices: ["Jim Starlin", "Jonathan Hickman", "Ron Marz", "Jim Shooter"]
+  answer: 0
+  explanation: "Jim Starlin escreveu The Infinity Gauntlet, com arte de George Pérez e Ron Lim."
+  source: https://en.wikipedia.org/wiki/The_Infinity_Gauntlet
+
+# ---------- mistico ----------
+- id: mist-0001
+  category: mistico
+  difficulty: facil
+  question: "Qual é o nome civil do Doutor Estranho?"
+  choices: ["Stephen Strange", "Stephen Vincent", "Steven Grant", "Victor Strange"]
+  answer: 0
+  explanation: "Stephen Strange é o Doutor Estranho."
+  source: https://en.wikipedia.org/wiki/Doctor_Strange
+- id: mist-0002
+  category: mistico
+  difficulty: facil
+  question: "Qual era a profissão do Doutor Estranho antes da magia?"
+  choices: ["Neurocirurgião", "Advogado", "Professor", "Arqueólogo"]
+  answer: 0
+  explanation: "Strange era um neurocirurgião brilhante até um acidente ferir as suas mãos."
+  source: https://en.wikipedia.org/wiki/Doctor_Strange
+- id: mist-0003
+  category: mistico
+  difficulty: normal
+  question: "Quem criou o Doutor Estranho?"
+  choices:
+    [
+      "Stan Lee e Steve Ditko",
+      "Stan Lee e Jack Kirby",
+      "Roy Thomas e Gene Colan",
+      "Steve Englehart e Frank Brunner",
+    ]
+  answer: 0
+  explanation: "Steve Ditko criou o personagem com Stan Lee."
+  source: https://en.wikipedia.org/wiki/Doctor_Strange
+- id: mist-0004
+  category: mistico
+  difficulty: dificil
+  question: "Em qual revista o Doutor Estranho estreou?"
+  choices: ["Strange Tales #110", "Amazing Fantasy #15", "Tales of Suspense #39", "Journey into Mystery #83"]
+  answer: 0
+  explanation: "O Doutor Estranho estreou em Strange Tales #110 (1963)."
+  source: https://en.wikipedia.org/wiki/Doctor_Strange
+- id: mist-0005
+  category: mistico
+  difficulty: normal
+  question: "Qual é o endereço do Sanctum Sanctorum?"
+  choices: ["177A Bleecker Street", "890 Fifth Avenue", "1407 Graymalkin Lane", "42 Baxter Street"]
+  answer: 0
+  explanation: "O Sanctum Sanctorum fica no 177A da Bleecker Street."
+  source: https://en.wikipedia.org/wiki/Sanctum_Sanctorum
+- id: mist-0006
+  category: mistico
+  difficulty: normal
+  question: "Em qual bairro de Nova York fica o Sanctum Sanctorum?"
+  choices: ["Greenwich Village", "Hell's Kitchen", "Harlem", "Brooklyn"]
+  answer: 0
+  explanation: "O Sanctum fica no Greenwich Village, em Manhattan."
+  source: https://en.wikipedia.org/wiki/Sanctum_Sanctorum
+- id: mist-0007
+  category: mistico
+  difficulty: facil
+  question: "Quem foi o mestre de Stephen Strange nas artes místicas?"
+  choices: ["O Ancião", "Wong", "Barão Mordo", "Agamotto"]
+  answer: 0
+  explanation: "O Ancião treinou Strange no Himalaia."
+  source: https://en.wikipedia.org/wiki/Ancient_One
+- id: mist-0008
+  category: mistico
+  difficulty: facil
+  question: "Quem é o fiel assistente do Doutor Estranho?"
+  choices: ["Wong", "Jarvis", "Mordo", "Clea"]
+  answer: 0
+  explanation: "Wong ajuda Strange e cuida do Sanctum."
+  source: https://en.wikipedia.org/wiki/Wong_(Marvel_Comics)
+- id: mist-0009
+  category: mistico
+  difficulty: facil
+  question: "Qual é o nome do amuleto que o Doutor Estranho usa no peito?"
+  choices: ["Olho de Agamotto", "Joia da Alma", "Coração de Khonshu", "Pedra de Bloodstone"]
+  answer: 0
+  explanation: "O Olho de Agamotto revela verdades e ilusões."
+  source: https://en.wikipedia.org/wiki/Eye_of_Agamotto
+- id: mist-0010
+  category: mistico
+  difficulty: facil
+  question: "Qual dimensão é governada pelo Dormammu?"
+  choices: ["Dimensão Sombria", "Zona Negativa", "Limbo", "Asgard"]
+  answer: 0
+  explanation: "Dormammu é o senhor da Dimensão Sombria."
+  source: https://en.wikipedia.org/wiki/Dormammu
+- id: mist-0011
+  category: mistico
+  difficulty: normal
+  question: "Qual discípulo do Ancião virou rival do Doutor Estranho?"
+  choices: ["Barão Mordo", "Dormammu", "Nightmare", "Kaecilius"]
+  answer: 0
+  explanation: "O Barão Mordo inveja Strange desde os tempos de discípulo."
+  source: https://en.wikipedia.org/wiki/Baron_Mordo
+- id: mist-0012
+  category: mistico
+  difficulty: dificil
+  question: "Qual é o livro de magia sombria escrito pelo deus antigo Chthon?"
+  choices: ["Darkhold", "Livro dos Vishanti", "Necronomicon", "Livro de Cagliostro"]
+  answer: 0
+  explanation: "O Darkhold é o grimório de Chthon."
+  source: https://en.wikipedia.org/wiki/Darkhold
+- id: mist-0013
+  category: mistico
+  difficulty: facil
+  question: "Qual peça de roupa mágica dá ao Doutor Estranho o poder de voar?"
+  choices: ["Capa de Levitação", "Botas de Hermes", "Cinto de Agamotto", "Manto de Ikaris"]
+  answer: 0
+  explanation: "A Capa de Levitação permite que Strange voe."
+  source: https://en.wikipedia.org/wiki/Cloak_of_Levitation
+- id: mist-0014
+  category: mistico
+  difficulty: facil
+  question: "Qual título o Doutor Estranho tem como maior mago da Terra?"
+  choices: ["Mago Supremo", "Mestre do Místico", "Sumo Feiticeiro", "Guardião de Agamotto"]
+  answer: 0
+  explanation: "Strange é o Mago Supremo (Sorcerer Supreme) da Terra."
+  source: https://en.wikipedia.org/wiki/Sorcerer_Supreme
+- id: mist-0015
+  category: mistico
+  difficulty: normal
+  question: "Qual é o nome civil do Motoqueiro Fantasma que estreou em 1972?"
+  choices: ["Johnny Blaze", "Danny Ketch", "Robbie Reyes", "Johnny Storm"]
+  answer: 0
+  explanation: "Johnny Blaze estreou em Marvel Spotlight #5 (1972)."
+  source: https://en.wikipedia.org/wiki/Ghost_Rider_(Johnny_Blaze)
+- id: mist-0016
+  category: mistico
+  difficulty: normal
+  question: "Como se chama o ataque em que o Motoqueiro Fantasma faz a vítima sentir a dor que causou?"
+  choices: ["Olhar da Penitência", "Chama do Inferno", "Corrente da Culpa", "Fogo do Juízo"]
+  answer: 0
+  explanation: "O Olhar da Penitência (Penance Stare) faz o pecador sentir a dor que causou."
+  source: https://en.wikipedia.org/wiki/Ghost_Rider
+- id: mist-0017
+  category: mistico
+  difficulty: dificil
+  question: "Em qual revista o Blade estreou?"
+  choices: ["The Tomb of Dracula #10", "Marvel Spotlight #5", "Strange Tales #110", "Werewolf by Night #32"]
+  answer: 0
+  explanation: "Blade estreou em The Tomb of Dracula #10 (1973)."
+  source: https://en.wikipedia.org/wiki/Blade_(character)
+- id: mist-0018
+  category: mistico
+  difficulty: normal
+  question: "De qual dimensão vem a Clea, aprendiz e companheira do Doutor Estranho?"
+  choices: ["Dimensão Sombria", "Limbo", "Zona Negativa", "Mojoverso"]
+  answer: 0
+  explanation: "Clea vem da Dimensão Sombria e é sobrinha do Dormammu."
+  source: https://en.wikipedia.org/wiki/Clea_(character)
+- id: mist-0019
+  category: mistico
+  difficulty: normal
+  question: "Qual bruxa foi tutora da Feiticeira Escarlate nos quadrinhos?"
+  choices: ["Agatha Harkness", "Morgana le Fay", "Encantor", "Satana"]
+  answer: 0
+  explanation: "Agatha Harkness ensinou magia a Wanda Maximoff."
+  source: https://en.wikipedia.org/wiki/Agatha_Harkness
+- id: mist-0020
+  category: mistico
+  difficulty: dificil
+  question: "Qual é o nome do pai de Elsa Bloodstone, também caçador de monstros?"
+  choices: ["Ulysses Bloodstone", "Abraham Bloodstone", "Elliott Bloodstone", "Victor Bloodstone"]
+  answer: 0
+  explanation: "Ulysses Bloodstone foi um caçador de monstros quase imortal."
+  source: https://en.wikipedia.org/wiki/Elsa_Bloodstone
+- id: mist-0021
+  category: mistico
+  difficulty: dificil
+  question: "Qual saga de 1992 reuniu heróis sobrenaturais como Filhos da Meia-Noite?"
+  choices: ["Rise of the Midnight Sons", "Infinity War", "Inferno", "Atlantis Attacks"]
+  answer: 0
+  explanation: "O crossover Rise of the Midnight Sons (1992) formou o grupo."
+  source: https://en.wikipedia.org/wiki/Midnight_Sons
+- id: mist-0022
+  category: mistico
+  difficulty: dificil
+  question: "Que lugar o Homem-Coisa protege no pântano da Flórida?"
+  choices:
+    ["O Nexo de Todas as Realidades", "A Dimensão Sombria", "O Poço do Destino", "A Torre de Cagliostro"]
+  answer: 0
+  explanation: "O Homem-Coisa guarda o Nexo de Todas as Realidades."
+  source: https://en.wikipedia.org/wiki/Man-Thing
