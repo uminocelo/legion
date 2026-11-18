@@ -143,7 +143,7 @@ Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
 
 ## Site
 
-A página do projeto fica em [`website/`](website/): HTML e CSS estáticos, sem build e sem chamadas externas. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente, abra `website/index.html` no navegador. Detalhes em [website/README.md](website/README.md).
+A página do projeto fica em [`website/`](website/): uma página por bot (com os comandos gerados do próprio código) e um guia para [personalizar](https://uminocelo.github.io/legion/personalizar.html) missões, trivia, inimigos e textos. HTML e CSS estáticos, sem chamadas externas. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente: `pnpm site:build` e abra `website/dist/index.html`. Detalhes em [website/README.md](website/README.md).
 
 ## Desenvolvimento
 

@@ -1,0 +1,976 @@
+{
+  "cerebro": [
+    {
+      "path": "/cerebro preferencias",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Liga e desliga cargos opcionais",
+        "en": "Turn optional roles on and off"
+      },
+      "options": []
+    },
+    {
+      "path": "/cerebro setup",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Sincroniza cargos e canais (staff)",
+        "en": "Sync roles and channels (staff)"
+      },
+      "options": [
+        {
+          "name": "aplicar",
+          "nameEn": "apply",
+          "required": false,
+          "description": {
+            "pt-BR": "Aplicar as mudanças (padrão: só simular)",
+            "en": "Apply the changes (default: dry run)"
+          }
+        },
+        {
+          "name": "canais",
+          "nameEn": "channels",
+          "required": false,
+          "description": {
+            "pt-BR": "Também ajustar a visibilidade dos canais",
+            "en": "Also adjust channel visibility"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/cerebro status",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Status do registro (staff)",
+        "en": "Registration status (staff)"
+      },
+      "options": []
+    },
+    {
+      "path": "/mutante poderes",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Escolhe seus poderes do catálogo (uma vez)",
+        "en": "Pick your powers from the catalog (once)"
+      },
+      "options": []
+    },
+    {
+      "path": "/perfil",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Mostra a ficha de um mutante",
+        "en": "Shows a mutant sheet"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": false,
+          "description": {
+            "pt-BR": "Membro (padrão: você)",
+            "en": "Member (default: you)"
+          }
+        }
+      ]
+    }
+  ],
+  "jarvis": [
+    {
+      "path": "/jarvis missao ativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Volta uma missão desativada",
+        "en": "Brings a disabled mission back"
+      },
+      "options": [
+        {
+          "name": "missao",
+          "nameEn": "mission",
+          "required": true,
+          "description": {
+            "pt-BR": "A missão",
+            "en": "The mission"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis missao desativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Tira uma missão de jogo",
+        "en": "Takes a mission out of play"
+      },
+      "options": [
+        {
+          "name": "missao",
+          "nameEn": "mission",
+          "required": true,
+          "description": {
+            "pt-BR": "A missão",
+            "en": "The mission"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis missao importar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Importa uma missão de um arquivo .yaml",
+        "en": "Imports a mission from a .yaml file"
+      },
+      "options": [
+        {
+          "name": "arquivo",
+          "nameEn": "file",
+          "required": true,
+          "description": {
+            "pt-BR": "O arquivo .yaml da missão (veja docs/MISSIONS.md)",
+            "en": "The mission .yaml file (see docs/MISSIONS.md)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis missao lista",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Lista as missões e de onde vieram",
+        "en": "Lists missions and where they came from"
+      },
+      "options": []
+    },
+    {
+      "path": "/jarvis recalcular",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Recalcular o progresso de um membro a partir do ledger",
+        "en": "Rebuild a member's progress from the ledger"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "Membro",
+            "en": "Member"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis trivia ativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Volta uma pergunta desativada",
+        "en": "Brings a disabled question back"
+      },
+      "options": [
+        {
+          "name": "pergunta",
+          "nameEn": "question",
+          "required": true,
+          "description": {
+            "pt-BR": "A pergunta (id ou texto)",
+            "en": "The question (id or text)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis trivia desativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Tira uma pergunta de jogo na hora",
+        "en": "Takes a question out of play at once"
+      },
+      "options": [
+        {
+          "name": "pergunta",
+          "nameEn": "question",
+          "required": true,
+          "description": {
+            "pt-BR": "A pergunta (id ou texto)",
+            "en": "The question (id or text)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis trivia editar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Edita uma pergunta criada pela staff",
+        "en": "Edits a question created by staff"
+      },
+      "options": [
+        {
+          "name": "pergunta",
+          "nameEn": "question",
+          "required": true,
+          "description": {
+            "pt-BR": "A pergunta (id ou texto)",
+            "en": "The question (id or text)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis trivia estatisticas",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Estatísticas das perguntas",
+        "en": "Question statistics"
+      },
+      "options": []
+    },
+    {
+      "path": "/jarvis trivia exportar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Baixa as perguntas da staff em YAML",
+        "en": "Downloads the staff questions as YAML"
+      },
+      "options": []
+    },
+    {
+      "path": "/jarvis trivia lista",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Lista as perguntas com filtros",
+        "en": "Lists questions with filters"
+      },
+      "options": [
+        {
+          "name": "status",
+          "nameEn": "status",
+          "required": false,
+          "description": {
+            "pt-BR": "Ativas, pendentes, desativadas ou todas",
+            "en": "Active, pending, disabled or all"
+          }
+        },
+        {
+          "name": "categoria",
+          "nameEn": "category",
+          "required": false,
+          "description": {
+            "pt-BR": "Categoria da pergunta",
+            "en": "Question category"
+          }
+        },
+        {
+          "name": "autor",
+          "nameEn": "author",
+          "required": false,
+          "description": {
+            "pt-BR": "Só perguntas criadas por este membro da staff",
+            "en": "Only questions created by this staff member"
+          }
+        },
+        {
+          "name": "pagina",
+          "nameEn": "page",
+          "required": false,
+          "description": {
+            "pt-BR": "Página da lista",
+            "en": "List page"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis trivia nova",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Cria uma pergunta de trivia (abre um formulário)",
+        "en": "Creates a trivia question (opens a form)"
+      },
+      "options": [
+        {
+          "name": "categoria",
+          "nameEn": "category",
+          "required": true,
+          "description": {
+            "pt-BR": "Categoria da pergunta",
+            "en": "Question category"
+          }
+        },
+        {
+          "name": "dificuldade",
+          "nameEn": "difficulty",
+          "required": true,
+          "description": {
+            "pt-BR": "Dificuldade da pergunta",
+            "en": "Question difficulty"
+          }
+        },
+        {
+          "name": "idioma",
+          "nameEn": "language",
+          "required": false,
+          "description": {
+            "pt-BR": "Idioma da pergunta (padrão: o do servidor)",
+            "en": "Question language (default: the server one)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis trivia recarregar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Recarregar as perguntas dos arquivos",
+        "en": "Reload questions from the files"
+      },
+      "options": []
+    },
+    {
+      "path": "/jarvis xp",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Adicionar ou remover XP de um membro",
+        "en": "Add or remove XP from a member"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "Membro",
+            "en": "Member"
+          }
+        },
+        {
+          "name": "quantidade",
+          "nameEn": "amount",
+          "required": true,
+          "description": {
+            "pt-BR": "Quantidade (-1000 a 1000)",
+            "en": "Amount (-1000 to 1000)"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo",
+            "en": "Reason"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/missao abandonar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Abandona a sua missão em andamento (sem XP)",
+        "en": "Abandons your current mission (no XP)"
+      },
+      "options": []
+    },
+    {
+      "path": "/missao iniciar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Começa uma missão",
+        "en": "Starts a mission"
+      },
+      "options": [
+        {
+          "name": "missao",
+          "nameEn": "mission",
+          "required": true,
+          "description": {
+            "pt-BR": "A missão",
+            "en": "The mission"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/missao lista",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Mostra as missões e o que você pode jogar agora",
+        "en": "Shows the missions and what you can play now"
+      },
+      "options": []
+    },
+    {
+      "path": "/ranking",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Ranking de XP",
+        "en": "XP leaderboard"
+      },
+      "options": [
+        {
+          "name": "periodo",
+          "nameEn": "period",
+          "required": false,
+          "description": {
+            "pt-BR": "Período (padrão: semana)",
+            "en": "Period (default: week)"
+          }
+        },
+        {
+          "name": "faccao",
+          "nameEn": "faction",
+          "required": false,
+          "description": {
+            "pt-BR": "Filtrar por facção",
+            "en": "Filter by faction"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/sequencia",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Sua sequência de dias ativos",
+        "en": "Your active-day streak"
+      },
+      "options": []
+    },
+    {
+      "path": "/trivia",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Responda uma pergunta e ganhe XP",
+        "en": "Answer a question and earn XP"
+      },
+      "options": [
+        {
+          "name": "categoria",
+          "nameEn": "category",
+          "required": false,
+          "description": {
+            "pt-BR": "Categoria da pergunta",
+            "en": "Question category"
+          }
+        }
+      ]
+    }
+  ],
+  "herbie": [
+    {
+      "path": "/ajuda",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Ajuda do H.E.R.B.I.E.",
+        "en": "H.E.R.B.I.E.'s help"
+      },
+      "options": [
+        {
+          "name": "topico",
+          "nameEn": "topic",
+          "required": false,
+          "description": {
+            "pt-BR": "Um termo ou comando",
+            "en": "A term or command"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/herbie dica-agora",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Postar a próxima dica agora",
+        "en": "Post the next tip now"
+      },
+      "options": []
+    },
+    {
+      "path": "/herbie guia publicar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Posta (ou atualiza) o guia e fixa a mensagem",
+        "en": "Posts (or updates) the guide and pins it"
+      },
+      "options": [
+        {
+          "name": "canal",
+          "nameEn": "channel",
+          "required": false,
+          "description": {
+            "pt-BR": "Canal (padrão: channels.rules)",
+            "en": "Channel (default: channels.rules)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/herbie status",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Funil do tutorial",
+        "en": "Tutorial funnel"
+      },
+      "options": []
+    },
+    {
+      "path": "/idioma",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Idioma das respostas dos bots para você",
+        "en": "Language of the bots' replies to you"
+      },
+      "options": [
+        {
+          "name": "idioma",
+          "nameEn": "language",
+          "required": true,
+          "description": {
+            "pt-BR": "Idioma",
+            "en": "Language"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/regras",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Regras e glossário",
+        "en": "Rules and glossary"
+      },
+      "options": [
+        {
+          "name": "termo",
+          "nameEn": "term",
+          "required": false,
+          "description": {
+            "pt-BR": "Termo do glossário",
+            "en": "Glossary term"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/tutorial",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Seu tutorial com o H.E.R.B.I.E.",
+        "en": "Your tutorial with H.E.R.B.I.E."
+      },
+      "options": [
+        {
+          "name": "reiniciar",
+          "nameEn": "restart",
+          "required": false,
+          "description": {
+            "pt-BR": "Recomeçar um tutorial pulado",
+            "en": "Restart a skipped tutorial"
+          }
+        }
+      ]
+    }
+  ],
+  "sentinel": [
+    {
+      "path": "/combate log",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Log de um combate encerrado",
+        "en": "Log of a finished combat"
+      },
+      "options": [
+        {
+          "name": "id",
+          "nameEn": "id",
+          "required": true,
+          "description": {
+            "pt-BR": "ID do combate",
+            "en": "Combat ID"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/combate status",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Seu combate atual",
+        "en": "Your current combat"
+      },
+      "options": []
+    },
+    {
+      "path": "/denunciar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Denunciar um membro para a staff",
+        "en": "Report a member to staff"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "Membro",
+            "en": "Member"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo",
+            "en": "Reason"
+          }
+        },
+        {
+          "name": "detalhes",
+          "nameEn": "details",
+          "required": false,
+          "description": {
+            "pt-BR": "Detalhes (opcional)",
+            "en": "Details (optional)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/sentinel denuncias",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Listar denúncias",
+        "en": "List reports"
+      },
+      "options": [
+        {
+          "name": "status",
+          "nameEn": "status",
+          "required": false,
+          "description": {
+            "pt-BR": "Situação (padrão: abertas)",
+            "en": "Status (default: open)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/sentinel historico",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Denúncias e ações de um membro",
+        "en": "Reports and actions for a member"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "Membro",
+            "en": "Member"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/sentinel replay",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Verificar se um combate se repete igual",
+        "en": "Check that a combat replays the same"
+      },
+      "options": [
+        {
+          "name": "combate",
+          "nameEn": "combat",
+          "required": true,
+          "description": {
+            "pt-BR": "ID do combate",
+            "en": "Combat ID"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/treino",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Luta de treino contra o Drone de Treino",
+        "en": "Training fight against the Training Drone"
+      },
+      "options": []
+    },
+    {
+      "path": "Denunciar mensagem",
+      "kind": "message",
+      "staff": false,
+      "description": {
+        "pt-BR": "Clique direito na mensagem → Apps → Denunciar mensagem",
+        "en": "Right-click the message → Apps → Report message"
+      },
+      "options": []
+    }
+  ],
+  "ultron": [
+    {
+      "path": "/ameaca",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Evento mundial atual ou próximo: HP, tempo e seu dano",
+        "en": "Current or next world event: HP, time left and your damage"
+      },
+      "options": []
+    },
+    {
+      "path": "/ultron evento agendar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Agendar uma invasão ou raid",
+        "en": "Schedule an invasion or raid"
+      },
+      "options": [
+        {
+          "name": "tipo",
+          "nameEn": "kind",
+          "required": true,
+          "description": {
+            "pt-BR": "Tipo de evento",
+            "en": "Event kind"
+          }
+        },
+        {
+          "name": "quando",
+          "nameEn": "when",
+          "required": true,
+          "description": {
+            "pt-BR": "AAAA-MM-DD HH:mm (horário do servidor) ou +30m",
+            "en": "YYYY-MM-DD HH:mm (server time) or +30m"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron evento cancelar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Cancelar o evento agendado ou em andamento",
+        "en": "Cancel the scheduled or running event"
+      },
+      "options": [
+        {
+          "name": "tipo",
+          "nameEn": "kind",
+          "required": false,
+          "description": {
+            "pt-BR": "Tipo de evento",
+            "en": "Event kind"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron evento iniciar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Começar uma invasão ou raid agora (ainda anuncia)",
+        "en": "Start an invasion or raid now (still announces)"
+      },
+      "options": [
+        {
+          "name": "tipo",
+          "nameEn": "kind",
+          "required": true,
+          "description": {
+            "pt-BR": "Tipo de evento",
+            "en": "Event kind"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron inimigo ativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Volta um inimigo desativado",
+        "en": "Brings a disabled enemy back"
+      },
+      "options": [
+        {
+          "name": "inimigo",
+          "nameEn": "enemy",
+          "required": true,
+          "description": {
+            "pt-BR": "O inimigo",
+            "en": "The enemy"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron inimigo desativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Tira um inimigo de jogo",
+        "en": "Takes an enemy out of play"
+      },
+      "options": [
+        {
+          "name": "inimigo",
+          "nameEn": "enemy",
+          "required": true,
+          "description": {
+            "pt-BR": "O inimigo",
+            "en": "The enemy"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron inimigo importar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Importa inimigos de um arquivo .yaml",
+        "en": "Imports enemies from a .yaml file"
+      },
+      "options": [
+        {
+          "name": "arquivo",
+          "nameEn": "file",
+          "required": true,
+          "description": {
+            "pt-BR": "Lista de inimigos no formato de enemies.yaml",
+            "en": "A list of enemies in the enemies.yaml format"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron inimigo lista",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Lista os inimigos e de onde vieram",
+        "en": "Lists enemies and where they came from"
+      },
+      "options": []
+    },
+    {
+      "path": "/ultron spawn",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Encontro de teste: inimigos escalados para até 4 membros",
+        "en": "Test encounter: scaled enemies for up to 4 members"
+      },
+      "options": [
+        {
+          "name": "dificuldade",
+          "nameEn": "difficulty",
+          "required": true,
+          "description": {
+            "pt-BR": "Dificuldade do encontro",
+            "en": "Encounter difficulty"
+          }
+        },
+        {
+          "name": "membro1",
+          "nameEn": "member1",
+          "required": false,
+          "description": {
+            "pt-BR": "Membro que luta (padrão: você)",
+            "en": "Member who fights (default: you)"
+          }
+        },
+        {
+          "name": "membro2",
+          "nameEn": "member2",
+          "required": false,
+          "description": {
+            "pt-BR": "Membro que luta (padrão: você)",
+            "en": "Member who fights (default: you)"
+          }
+        },
+        {
+          "name": "membro3",
+          "nameEn": "member3",
+          "required": false,
+          "description": {
+            "pt-BR": "Membro que luta (padrão: você)",
+            "en": "Member who fights (default: you)"
+          }
+        },
+        {
+          "name": "membro4",
+          "nameEn": "member4",
+          "required": false,
+          "description": {
+            "pt-BR": "Membro que luta (padrão: você)",
+            "en": "Member who fights (default: you)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron status",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Próximos eventos, resultados, dificuldade adaptativa e IA",
+        "en": "Next events, results, adaptive difficulty and AI"
+      },
+      "options": []
+    }
+  ]
+}
