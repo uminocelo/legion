@@ -131,7 +131,7 @@ Doctor Strange
 Gaviao Arqueiro
 Hawkeye
 Visao
-Vision
+=Vision
 Kang
 Red Skull
 Caveira Vermelha
@@ -153,3 +153,339 @@ Demolidor
 Daredevil
 Elektra
 Wade Wilson
+# Lines starting with = match only the whole name (canon names that are also common words).
+
+# X-Men and mutants
+Scott Summers
+Ororo Munroe
+Hank McCoy
+Bobby Drake
+Kurt Wagner
+Remy LeBeau
+Piotr Rasputin
+Betsy Braddock
+Lorna Dane
+Alex Summers
+Rachel Summers
+Nate Grey
+Hope Summers
+Madelyne Pryor
+Sebastian Shaw
+Clube do Inferno
+Hellfire Club
+=Cypher
+=Magma
+=Karma
+=Mirage
+=Miragem
+Sunspot
+Mancha Solar
+=Warpath
+Siryn
+Rictor
+Boom-Boom
+=Pixie
+Nimrod
+Krakoa
+
+# Avengers and allies
+Homem-Formiga
+Ant-Man
+Scott Lang
+Hank Pym
+=Vespa
+=Wasp
+Janet van Dyne
+Hope van Dyne
+=Falcao
+=Falcon
+Sam Wilson
+Soldado Invernal
+Winter Soldier
+Bucky Barnes
+Maquina de Combate
+War Machine
+James Rhodes
+Capita Marvel
+Captain Marvel
+Carol Danvers
+Ms Marvel
+Miss Marvel
+Kamala Khan
+Mulher-Hulk
+She-Hulk
+Jennifer Walters
+=Hercules
+Sersi
+=Tigra
+Mockingbird
+Kate Bishop
+Clint Barton
+Natasha Romanoff
+Yelena Belova
+Mulher-Aranha
+Spider-Woman
+Jessica Drew
+Miles Morales
+Gwen Stacy
+Spider-Gwen
+Ghost-Spider
+Wonder Man
+Simon Williams
+Monica Rambeau
+=Photon
+=Quasar
+Sentry
+Shang-Chi
+America Chavez
+Miss America
+Cavaleiro Negro
+Black Knight
+Dane Whitman
+Moon Knight
+Cavaleiro da Lua
+Marc Spector
+Khonshu
+Vingadores
+Avengers
+Wakanda
+T'Challa
+Shuri
+Okoye
+M'Baku
+Killmonger
+Ulysses Klaue
+
+# Fantastic Four
+Quarteto Fantastico
+Fantastic Four
+Senhor Fantastico
+Sr Fantastico
+Mister Fantastic
+Mr Fantastic
+Reed Richards
+Mulher Invisivel
+Invisible Woman
+Sue Storm
+Susan Storm
+Tocha Humana
+=Tocha
+Human Torch
+Johnny Storm
+=Coisa
+=O Coisa
+=Thing
+=The Thing
+Ben Grimm
+Franklin Richards
+Valeria Richards
+Surfista Prateado
+Silver Surfer
+Norrin Radd
+Homem-Toupeira
+Mole Man
+Annihilus
+Aniquilador
+Super-Skrull
+Puppet Master
+Mestre dos Bonecos
+Alicia Masters
+Edificio Baxter
+Baxter Building
+
+# Guardians of the Galaxy and cosmic
+Guardioes da Galaxia
+Guardians of the Galaxy
+=Rocket
+Peter Quill
+=Nebulosa
+=Nebula
+Yondu
+Adam Warlock
+Kraglin
+=Cosmo
+=Ego
+Ronan
+Ronan o Acusador
+Ronan the Accuser
+=Nova
+Richard Rider
+Sam Alexander
+Tropa Nova
+Nova Corps
+Moondragon
+Phyla-Vell
+Korath
+Alto Evolucionario
+High Evolutionary
+Grao-Mestre
+Grandmaster
+=Colecionador
+=Collector
+Inteligencia Suprema
+Supreme Intelligence
+Knull
+Mar-Vell
+Skrull
+Kree
+Shi'ar
+Lilandra
+Uatu
+=O Vigia
+=The Watcher
+
+# Inhumans
+Raio Negro
+Black Bolt
+=Medusa
+=Karnak
+=Gorgon
+=Crystal
+=Cristal
+Lockjaw
+=Dentinho
+=Maximus
+=Triton
+Attilan
+
+# Defenders and street level
+Defensores
+=Defenders
+Matt Murdock
+Jessica Jones
+Luke Cage
+Punho de Ferro
+Iron Fist
+Danny Rand
+Stephen Strange
+=Wong
+Valquiria
+Valkyrie
+Misty Knight
+Colleen Wing
+Herois de Aluguel
+Heroes for Hire
+Kingpin
+Rei do Crime
+Wilson Fisk
+=Bullseye
+=Mercenario
+Frank Castle
+=Tentaculo
+=The Hand
+
+# Thunderbolts
+Thunderbolts
+Barao Zemo
+Baron Zemo
+Helmut Zemo
+Zemo
+=Songbird
+Moonstone
+Pedra Lunar
+=Atlas
+U.S. Agent
+Agente Americano
+John Walker
+Taskmaster
+=Treinadora
+Red Hulk
+Hulk Vermelho
+Thunderbolt Ross
+General Ross
+Red Guardian
+Guardiao Vermelho
+=Fantasma
+=Ghost
+
+# Midnight Sons and the supernatural
+Filhos da Meia-Noite
+Midnight Sons
+Johnny Blaze
+Danny Ketch
+Robbie Reyes
+Morbius
+=Lilith
+Hellstrom
+Daimon Hellstrom
+=Satana
+Elsa Bloodstone
+Man-Thing
+Homem-Coisa
+Nico Minoru
+Mephisto
+Dormammu
+Agatha Harkness
+=Clea
+Barao Mordo
+Baron Mordo
+Sanctum Sanctorum
+
+# S.H.I.E.L.D. and Hydra
+=S.H.I.E.L.D.
+=SHIELD
+Maria Hill
+Phil Coulson
+Daisy Johnson
+=Quake
+=Tremor
+Sharon Carter
+Agente 13
+Dum Dum Dugan
+Melinda May
+=Hidra
+=Hydra
+Helicarrier
+Arnim Zola
+Barao Strucker
+Baron Strucker
+Crossbones
+Ossos Cruzados
+
+# Villains
+Doutor Octopus
+Doctor Octopus
+Dr Octopus
+Duende Verde
+Green Goblin
+Norman Osborn
+Abominavel
+Abomination
+=Lider
+=Leader
+MODOK
+Mandarim
+Mandarin
+Obadiah Stane
+Iron Monger
+Whiplash
+Hela
+Surtur
+Enchantress
+Encantor
+Absorbing Man
+Homem Absorvente
+=Electro
+=Mysterio
+=Misterio
+=Rino
+=Rhino
+=Abutre
+=Vulture
+=Lagarto
+=Lizard
+=Escorpiao
+=Scorpion
+Kraven
+Homem-Areia
+=Sandman
+=Shocker
+Morlun
+Klaw
+Kang o Conquistador
+Kang the Conqueror
+Immortus
+Mestres do Mal
+Masters of Evil
+Sinister Six
+Sexteto Sinistro

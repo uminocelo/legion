@@ -83,11 +83,12 @@ describe('mission imports', () => {
     expect(reply(t, id)?.content).toMatch(/nowhere/);
     const yaml = await importCmd(t, upload(t, 'id: [x', 'ruim.yaml'));
     expect(reply(t, yaml)?.content).toMatch(/YAML inválido \(linha \d+\)/);
+    // Canon heroes are allowed in the narrative now (ADR 0030): the preview lists the mission.
     const canon = await importCmd(
       t,
       upload(t, shangChi.replace('pt-BR: Os Cinco Anéis', 'pt-BR: Wolverine'), 'canon.yaml'),
     );
-    expect(reply(t, canon)?.content).toMatch(/title\.pt-BR: nome de personagem existente/);
+    expect(reply(t, canon)?.content ?? '').not.toMatch(/nome de personagem existente/);
     expect(await servicesOf(t).repo.mission('shang-chi-4')).toBeNull();
   });
 

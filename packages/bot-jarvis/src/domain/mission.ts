@@ -1,20 +1,16 @@
 import type { Locale } from '@legion/core';
-import { contentIssues, isCanonName } from '@legion/core';
+import { contentIssues } from '@legion/core';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 import { z } from 'zod';
 import { DIFFICULTIES, type JarvisConfig, MISSION_KINDS } from '../config.js';
 
-const canonFree = (s: string) => !isCanonName(s);
-const canonMsg = 'nome de personagem existente; use nomes originais';
-
 /**
- * A text in one language, or per language (`pt-BR` required, `en` optional). Names (titles, choice
- * labels) pass the canon filter; story prose does not, since it legitimately mentions ULTRON or the
- * Legion (the contained-name match would reject it).
+ * A text in one language, or per language (`pt-BR` required, `en` optional). Mission text is narrative:
+ * canon heroes, teams and places may appear (ADR 0030), so it does not go through the canon filter.
+ * Identities (codenames, powers, enemies, items, AI flavour text) still do.
  */
-const text = (max: number, names = false) => {
-  const base = z.string().min(1).max(max);
-  const one = names ? base.refine(canonFree, canonMsg) : base;
+const text = (max: number) => {
+  const one = z.string().min(1).max(max);
   return z.union([one, z.object({ 'pt-BR': one, en: one.optional() }).strict()]);
 };
 export type LocalText = z.infer<ReturnType<typeof text>>;
@@ -24,7 +20,7 @@ export const loc = (t: LocalText, l: Locale): string =>
 
 const sceneId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,31}$/, 'use letras minúsculas, números e "-" (1-32)');
 
-const choiceSchema = z.object({ label: text(80, true), next: sceneId }).strict();
+const choiceSchema = z.object({ label: text(80), next: sceneId }).strict();
 
 const sceneSchema = z
   .object({
@@ -43,7 +39,7 @@ export const missionSchema = z
   .object({
     id: z.string().regex(/^[a-z0-9][a-z0-9-]{1,40}$/, 'use letras minúsculas, números e "-" (2-41)'),
     kind: z.enum(MISSION_KINDS),
-    title: text(80, true),
+    title: text(80),
     summary: text(300),
     minLevel: z.number().int().min(1).max(100).default(1),
     party: z.number().int().min(1).max(4).default(1),
