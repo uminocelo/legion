@@ -1,0 +1,53 @@
+# Recruitment arc for the Irmandade (mutante and inumano only, by the team rule). Chapter 1.
+id: convite-no-metro-1
+kind: story
+campaign: { id: convite-no-metro, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "O chamado da Irmandade 1: O convite"
+  en: "The Brotherhood's call 1: The invitation"
+summary:
+  pt-BR: "Mística aparece disfarçada e faz uma pergunta: de que lado você está?"
+  en: "Mystique appears in disguise and asks one question: whose side are you on?"
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'Uma desconhecida senta ao seu lado no metrô e a pele dela muda de cor. É a Mística. "Os humanos já escolheram um lado. E você?"'
+      en: 'A stranger sits next to you on the subway and her skin changes color. It is Mystique. "Humans already picked a side. Have you?"'
+    choices:
+      - label: { pt-BR: "Ouvir o que ela tem a dizer", en: "Hear what she has to say" }
+        next: caminho-a
+      - label: { pt-BR: "Perguntar o que a Irmandade quer", en: "Ask what the Brotherhood wants" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: 'Ela mostra fotos de um laboratório que estuda mutantes capturados. "Ninguém vai salvá-los. Só nós."'
+      en: 'She shows photos of a lab that studies captured mutants. "Nobody is going to save them. Only us."'
+    choices:
+      - label: { pt-BR: "Aceitar olhar o laboratório de perto", en: "Agree to take a closer look at the lab" }
+        next: sucesso
+      - label: { pt-BR: "Chamar a segurança do metrô", en: "Call subway security" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: '"Que ninguém mais precise se esconder", ela diz. "O Magneto quer conhecer você. Se tiver coragem."'
+      en: '"That nobody has to hide again," she says. "Magneto wants to meet you. If you dare."'
+    choices:
+      - label: { pt-BR: "Aceitar o encontro", en: "Accept the meeting" }
+        next: sucesso
+      - label: { pt-BR: "Rir e ir embora", en: "Laugh and walk away" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: "A Mística deixa um endereço no seu bolso e some na multidão."
+      en: "Mystique slips an address into your pocket and vanishes into the crowd."
+    end: success
+  falha:
+    text:
+      pt-BR: "Quando você olha de novo, o banco está vazio. A Irmandade não convida duas vezes no mesmo dia."
+      en: "When you look again, the seat is empty. The Brotherhood does not invite twice on the same day."
+    end: failure

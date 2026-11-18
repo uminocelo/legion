@@ -130,7 +130,7 @@ describe('/jarvis staff', () => {
       subcommand: 'trivia recarregar',
     });
     expect(t.gateway.lastReply(rl)?.content).toBe(
-      'Perguntas recarregadas: 0 novas, 0 atualizadas, 0 desativadas, 30 iguais.',
+      'Perguntas recarregadas: 0 novas, 0 atualizadas, 0 desativadas, 118 iguais.',
     );
     const st = await t.interact({
       kind: 'command',
@@ -139,7 +139,7 @@ describe('/jarvis staff', () => {
       subcommand: 'trivia estatisticas',
     });
     expect(t.gateway.lastReply(st)?.embeds?.[0]?.fields?.[0]?.value).toBe(
-      'Quadrinhos: 10\nMarvel Rivals: 10\nGeral: 10',
+      'Quadrinhos: 10\nMarvel Rivals: 10\nGeral: 10\nVingadores: 22\nQuarteto Fantástico: 22\nCósmico: 22\nMístico: 22',
     );
     await servicesOf(t).repo.updateProgress(m, { xp: 9999 });
     const rc = await t.interact({

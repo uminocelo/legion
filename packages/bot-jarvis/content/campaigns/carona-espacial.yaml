@@ -1,0 +1,10 @@
+# Recruitment arc for the Guardiões da Galáxia. Format: docs/MISSIONS.md (Campanhas).
+id: carona-espacial
+kind: recruitment
+faction: guardians
+title:
+  pt-BR: "Carona na Milano"
+  en: "A ride on the Milano"
+summary:
+  pt-BR: "O Senhor das Estrelas precisa de mais um tripulante. A entrevista é no meio do espaço."
+  en: "Star-Lord needs one more crew member. The interview happens in the middle of space."

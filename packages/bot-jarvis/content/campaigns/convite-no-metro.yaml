@@ -1,0 +1,10 @@
+# Recruitment arc for the Irmandade (mutante and inumano only, by the team rule). Format: docs/MISSIONS.md (Campanhas).
+id: convite-no-metro
+kind: recruitment
+faction: brotherhood
+title:
+  pt-BR: "O chamado da Irmandade"
+  en: "The Brotherhood's call"
+summary:
+  pt-BR: "A Irmandade só aceita quem nasceu diferente. Mostre que não vai abaixar a cabeça."
+  en: "The Brotherhood only takes those born different. Show that you will not bow your head."

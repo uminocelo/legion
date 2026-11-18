@@ -110,7 +110,7 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 
 | Chave | Padrão | Descrição |
 |---|---|---|
-| `trivia.categories` | `[quadrinhos, rivals, geral]` | Categorias aceitas (letras minúsculas, `-`, `_`). Pode acrescentar outras, como `marvel`; sem texto no locale, aparece o próprio nome |
+| `trivia.categories` | `[quadrinhos, rivals, geral, vingadores, quarteto, cosmico, mistico]` | Categorias aceitas (letras minúsculas, `-`, `_`). Pode acrescentar outras, como `marvel`; sem texto no locale, aparece o próprio nome |
 | `trivia.timeLimitSeconds` | `20` | Tempo para responder; depois disso a pergunta expira com 0 XP |
 | `trivia.cooldownSeconds` | `30` | Espera entre perguntas do mesmo membro |
 | `trivia.noRepeatDays` | `30` | Não repete pergunta vista nesse período (se todas foram vistas, usa a mais antiga) |

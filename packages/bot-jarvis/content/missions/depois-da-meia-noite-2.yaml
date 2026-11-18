@@ -1,0 +1,53 @@
+# Recruitment arc for the Filhos da Meia-Noite. Chapter 2.
+id: depois-da-meia-noite-2
+kind: story
+campaign: { id: depois-da-meia-noite, chapter: 2 }
+requires: { missions: [depois-da-meia-noite-1] }
+title:
+  pt-BR: "Depois da meia-noite 2: O caçador"
+  en: "After midnight 2: The hunter"
+summary:
+  pt-BR: "Blade quer saber se você aguenta uma noite inteira de caça."
+  en: "Blade wants to know if you can last a whole night of hunting."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O Blade espera num beco sem luz. "A página do ritual foi vendida numa casa noturna. Os donos não são humanos. Fica atrás de mim."'
+      en: 'Blade waits in an unlit alley. "The ritual page was sold at a nightclub. The owners are not human. Stay behind me."'
+    choices:
+      - label: { pt-BR: "Entrar pela pista de dança", en: "Go in through the dance floor" }
+        next: caminho-a
+      - label: { pt-BR: "Vigiar a porta dos fundos", en: "Watch the back door" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "A música para quando vocês entram. Todos se viram ao mesmo tempo."
+      en: "The music stops when you walk in. Everyone turns at the same time."
+    choices:
+      - label: { pt-BR: "Ficar de costas para o Blade", en: "Stand back to back with Blade" }
+        next: sucesso
+      - label: { pt-BR: "Sair correndo", en: "Run away" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: "Pelos fundos sai um homem com um envelope. Ele não tem reflexo na poça."
+      en: "A man with an envelope comes out the back. He has no reflection in the puddle."
+    choices:
+      - label: { pt-BR: "Segui-lo sem ser visto", en: "Follow him unseen" }
+        next: sucesso
+      - label: { pt-BR: "Gritar pelo Blade", en: "Shout for Blade" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'Você recupera a página. O Blade não sorri, mas diz: "Você sobreviveu. Já é mais que a maioria."'
+      en: 'You recover the page. Blade does not smile, but says: "You survived. That is more than most."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'A página some na noite. "Amanhã", diz o Blade, já de costas. "Se você voltar."'
+      en: 'The page disappears into the night. "Tomorrow," says Blade, already turning away. "If you come back."'
+    end: failure

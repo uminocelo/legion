@@ -7,7 +7,8 @@ import { readTriviaContent, syncTriviaContent } from '../src/content.js';
 import { JARVIS_CONTENT_DIR } from '../src/paths.js';
 import { servicesOf, setupJarvis } from './helpers.js';
 
-const CATS = ['quadrinhos', 'rivals', 'geral'];
+const CATS = ['quadrinhos', 'rivals', 'geral', 'vingadores', 'quarteto', 'cosmico', 'mistico'];
+const V09 = ['vingadores', 'quarteto', 'cosmico', 'mistico'];
 const dir = (files: Record<string, string>) => {
   const d = mkdtempSync(join(tmpdir(), 'trivia-'));
   for (const [name, text] of Object.entries(files)) writeFileSync(join(d, name), text);
@@ -23,11 +24,14 @@ afterEach(async () => {
 });
 
 describe('trivia content', () => {
-  it('ships 30 valid pt-BR questions, 10 per category, all with sources', () => {
+  it('ships valid pt-BR questions with sources: 10 in each v0.8 category, 20+ in each v0.9 one', () => {
     const { questions, errors } = readTriviaContent([join(JARVIS_CONTENT_DIR, 'trivia')], CATS, 'pt-BR');
-    expect(errors).toEqual([]);
-    expect(questions).toHaveLength(30);
-    for (const c of CATS) expect(questions.filter((x) => x.category === c)).toHaveLength(10);
+    expect(errors).toEqual([]); // includes "no repeated id"
+    expect(new Set(questions.map((x) => x.id)).size).toBe(questions.length);
+    for (const c of ['quadrinhos', 'rivals', 'geral'])
+      expect(questions.filter((x) => x.category === c)).toHaveLength(10);
+    for (const c of V09)
+      expect(questions.filter((x) => x.category === c).length, c).toBeGreaterThanOrEqual(20);
     expect(questions.every((x) => x.locale === 'pt-BR' && x.source.startsWith('https://'))).toBe(true);
   });
 
@@ -50,11 +54,11 @@ describe('trivia content', () => {
     t = await setupJarvis();
     const { repo } = servicesOf(t);
     const v1 = dir({ 'pt-BR.yaml': q('qa') + q('qb') + q('qc') });
-    // The 30 bundled questions were loaded at boot; a pack without them deactivates them.
+    // The bundled questions were loaded at boot; a pack without them deactivates them.
     expect(await syncTriviaContent(repo, readTriviaContent([v1], CATS, 'pt-BR'))).toMatchObject({
       added: 3,
       updated: 0,
-      deactivated: 30,
+      deactivated: readTriviaContent([join(JARVIS_CONTENT_DIR, 'trivia')], CATS, 'pt-BR').questions.length,
     });
     expect(await syncTriviaContent(repo, readTriviaContent([v1], CATS, 'pt-BR'))).toMatchObject({
       added: 0,

@@ -1,0 +1,9 @@
+# Story campaign at the Baxter Building, open to every team. Format: docs/MISSIONS.md (Campanhas).
+id: visita-ao-baxter
+kind: story
+title:
+  pt-BR: "Visita ao Edifício Baxter"
+  en: "A visit to the Baxter Building"
+summary:
+  pt-BR: "Reed Richards precisa de ajuda com um experimento que deu errado. Qualquer herói, de qualquer equipe, pode atender."
+  en: "Reed Richards needs help with an experiment gone wrong. Any hero, from any team, can answer."

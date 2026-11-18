@@ -22,12 +22,15 @@ describe('shipped content and the canon list', () => {
     expect(items.flatMap(names).filter(isCanonName)).toEqual([]);
   });
 
-  it('no shipped power, enemy, mission or trivia id is refused', () => {
+  it('no shipped power, enemy, mission, campaign or trivia id is refused', () => {
     const dir = 'packages/bot-jarvis/content/missions';
     const ids = [
       ...yamlAt('packages/bot-cerebro/content/powers.yaml').map((p: Named) => p.id),
       ...yamlAt('packages/bot-ultron/content/enemies.yaml').map((e: Named) => e.id),
       ...readdirSync(join(ROOT, dir)).map((f) => yamlAt(`${dir}/${f}`).id as string),
+      ...readdirSync(join(ROOT, 'packages/bot-jarvis/content/campaigns')).map(
+        (f) => yamlAt(`packages/bot-jarvis/content/campaigns/${f}`).id as string,
+      ),
       ...yamlAt('packages/bot-jarvis/content/trivia/pt-BR.yaml').map((q: Named) => q.id),
     ];
     expect(ids.length).toBeGreaterThan(50);

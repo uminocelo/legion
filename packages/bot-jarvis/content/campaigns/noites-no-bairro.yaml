@@ -1,0 +1,10 @@
+# Recruitment arc for the Defensores. Format: docs/MISSIONS.md (Campanhas).
+id: noites-no-bairro
+kind: recruitment
+faction: defenders
+title:
+  pt-BR: "Noites em Hell's Kitchen"
+  en: "Nights in Hell's Kitchen"
+summary:
+  pt-BR: "Os Defensores cuidam das ruas que ninguém vê. Ajude o bairro e eles vão notar."
+  en: "The Defenders look after the streets nobody sees. Help the neighborhood and they will notice."

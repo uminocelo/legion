@@ -1,0 +1,53 @@
+# Recruitment arc for the Thunderbolts. Chapter 2.
+id: segunda-chance-2
+kind: story
+campaign: { id: segunda-chance, chapter: 2 }
+requires: { missions: [segunda-chance-1] }
+title:
+  pt-BR: "Segunda chance 2: O Soldado Invernal"
+  en: "Second chance 2: The Winter Soldier"
+summary:
+  pt-BR: "Bucky Barnes acompanha você até um prédio de escritórios cheio de segredos."
+  en: "Bucky Barnes goes with you to an office building full of secrets."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O Bucky Barnes para na esquina. "Três guardas, duas câmeras, um cofre no sexto andar. Você escolhe a entrada."'
+      en: 'Bucky Barnes stops at the corner. "Three guards, two cameras, a safe on the sixth floor. You pick the way in."'
+    choices:
+      - label: { pt-BR: "Entrar como entregador", en: "Go in as a delivery person" }
+        next: caminho-a
+      - label: { pt-BR: "Subir pela escada de incêndio", en: "Climb the fire escape" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: "O guarda da recepção pede a nota da entrega. Você não tem nota."
+      en: "The front desk guard asks for the delivery slip. You do not have one."
+    choices:
+      - label: { pt-BR: "Dizer que a nota está no caminhão", en: "Say the slip is in the truck" }
+        next: sucesso
+      - label: { pt-BR: "Correr para o elevador", en: "Run for the elevator" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: 'No sexto andar, uma câmera gira na sua direção. O Bucky sussurra: "Dois segundos."'
+      en: 'On the sixth floor, a camera swings toward you. Bucky whispers: "Two seconds."'
+    choices:
+      - label: { pt-BR: "Esperar a câmera passar", en: "Wait for the camera to pass" }
+        next: sucesso
+      - label: { pt-BR: "Quebrar a câmera", en: "Smash the camera" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: "A pasta sai do cofre sem alarme. O Bucky acena, o que nele vale por um elogio."
+      en: "The briefcase leaves the safe with no alarm. Bucky nods, which from him counts as praise."
+    end: success
+  falha:
+    text:
+      pt-BR: 'O alarme toca e vocês saem sem a pasta. "Acontece", diz o Bucky. "De novo, com calma."'
+      en: 'The alarm rings and you leave without the briefcase. "It happens," says Bucky. "Again, calmly."'
+    end: failure

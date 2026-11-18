@@ -36,18 +36,17 @@ function dir(files: Record<string, string>) {
 }
 
 describe('mission content', () => {
-  it('ships 4 valid missions, 2 with a fight, in pt-BR and en', () => {
+  it('ships valid missions in pt-BR and en: 3 standalone, the rest campaign chapters', () => {
     const r = readMissions(missionDirs('/nonexistent'));
     expect(r.errors).toEqual([]);
-    expect(r.missions.map((m) => m.id).sort()).toEqual([
-      'fabrica-silenciosa',
-      'patrulha-noturna',
-      'primeiro-contato-1',
-      'primeiro-contato-2',
-      'primeiro-contato-3',
-      'sinal-fantasma',
-    ]);
-    expect(r.missions.filter((m) => Object.values(m.scenes).some((s) => s.combat))).toHaveLength(2);
+    expect(
+      r.missions
+        .filter((m) => !m.campaign)
+        .map((m) => m.id)
+        .sort(),
+    ).toEqual(['fabrica-silenciosa', 'patrulha-noturna', 'sinal-fantasma']);
+    expect(r.missions.filter((m) => m.campaign).length).toBe(31);
+    expect(r.missions.filter((m) => Object.values(m.scenes).some((s) => s.combat)).length).toBe(12);
     for (const m of r.missions)
       for (const s of Object.values(m.scenes)) expect(typeof s.text === 'object' && s.text.en).toBeTruthy();
   });
@@ -107,7 +106,7 @@ describe('mission content', () => {
     expect(JSON.parse(row?.definition ?? '{}').title).toBe('Minha patrulha');
     // Gone from valid files → inactive (never deleted).
     const r2 = await syncMissions(s.repo, readMissions([join(dir({ 'x.yaml': ok }), 'missions')]));
-    expect(r2.deactivated).toBe(6);
+    expect(r2.deactivated).toBe(readMissions(missionDirs('/nonexistent')).missions.length);
     expect((await s.repo.mission('primeiro-contato-3'))?.active).toBe(0);
   });
 });

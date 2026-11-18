@@ -198,7 +198,7 @@ describe('J.A.R.V.I.S. mission fights through ULTRON and Sentinel', () => {
     const { t } = await setup();
     const id = await t.interact({ kind: 'command', userId: U, commandName: 'missao', subcommand: 'lista' });
     const names = (t.gateway.lastReply(id)?.embeds?.[0]?.fields ?? []).map((f) => f.name);
-    expect(names).toContain('Primeiro contato 3: A unidade de varredura · História');
+    expect(names.some((n) => n.startsWith('A fábrica silenciosa'))).toBe(true); // a fight mission
     const ok = await jarvisDoctorChecks(t.ctxOf(jarvis))[0]?.run();
     expect(ok?.status).toBe('ok');
   });
@@ -210,14 +210,13 @@ describe('without ULTRON and Sentinel', () => {
     const { cerebro } = await import('@legion/bot-cerebro');
     t = await createTestContext({ bots: [cerebro, jarvis], config: { channels: { combat: CH.combat } } });
     const s = jarvisServices(t.ctxOf(jarvis));
-    expect((await s.missions.missions()).map((m) => m.id).sort()).toEqual([
-      'patrulha-noturna',
-      'primeiro-contato-1',
-      'primeiro-contato-2',
-      'sinal-fantasma',
-    ]);
+    const ids = (await s.missions.missions()).map((m) => m.id);
+    expect(ids).toContain('patrulha-noturna');
+    expect(ids).toContain('primeiro-contato-2');
+    expect(ids).not.toContain('fabrica-silenciosa');
+    expect(ids).not.toContain('primeiro-contato-3');
     const res = await jarvisDoctorChecks(t.ctxOf(jarvis))[0]?.run();
     expect(res).toMatchObject({ status: 'warn' });
-    expect(res?.message).toMatch(/2 missão\(ões\) com luta ficam escondidas/);
+    expect(res?.message).toMatch(/12 missão\(ões\) com luta ficam escondidas/);
   });
 });

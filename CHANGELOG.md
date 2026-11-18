@@ -4,6 +4,16 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-18
+
+### Upgrade notes
+- **New team roles.** Cérebro creates the six new team roles (Vingadores, S.H.I.E.L.D., Guardiões, Defensores, Thunderbolts, Filhos da Meia-Noite) on the first start. Drag the bot's role above them in Server Settings → Roles; `legion doctor` and `/cerebro status` list any role above it. `/cerebro setup` (dry run by default) shows what else would change.
+- **One-time origin change.** Heroes registered before v0.9 become Mutante with everything kept and may pick another origin once with `/heroi origem`. H.E.R.B.I.E. posts one announcement in the server; no DMs are sent.
+- **`/mutante` is deprecated.** It keeps working as an alias of `/heroi` until v1.0. Run `legion register-commands` (or restart) so the new commands appear.
+- **Custom trivia categories.** Servers that set their own `jarvis.trivia.categories` must add `vingadores`, `quarteto`, `cosmico` and `mistico` to get the new questions.
+- **Tutorial.** Members of the old `boas-vindas` tutorial move to `primeiro-contato` once, at startup, with no message. A server `tutorial.yaml` with `chain: boas-vindas` is left as is.
+- Migrations run on their own at startup, on SQLite and Postgres: Cérebro `0002_hero_origins` and `0003_faction_changes`, J.A.R.V.I.S. `0004_campaigns`. Back up `data/` first, as for every upgrade.
+
 ### Added
 - Hero origins: registration now asks for an origin (Mutante, Inumano, Ciência, Tecnologia, Místico, Cósmico, Treinado) instead of a faction, then offers only the powers of that origin. Origins do not change stats. Every new hero starts Independente (`cerebro.teams.startFaction`). Config: `cerebro.origins`, `cerebro.teams` (ADR 0031, `docs/UNIVERSE.md`).
 - 14 new powers: skills for Treinado and gadgets for Tecnologia. Power files accept `origins: [...]` (no key = every origin); `legion doctor` shows ❌ for an origin with no powers, which is also hidden from registration.
@@ -15,10 +25,14 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - Campaigns: missions grouped into chapters that unlock in order. Campaign files in `content/campaigns/` (server files override by id); missions gain `campaign: { id, chapter }`, `requires` (missions, level, origins, current team) and `reward.joinFaction` (see below). Locked missions are hidden from `/missao iniciar`, a typed id says what is missing, and in a party the lobby lists who is missing what and the leader cannot start. Progress is derived from runs ended in success (ADR 0032, `docs/MISSIONS.md`).
 - Recruitment arcs join the team: finishing the last chapter of a recruitment campaign with success asks Cérebro (`faction.join_requested`), which checks the team, the origin rule and `cerebro.teams.switchCooldownDays` since the last switch (the first team after registration does not wait), swaps the role, records the change and emits `player.faction_changed`; a refusal emits `player.faction_change_refused` and the mission thread shows the reason and the date. Arcs of a team that does not take the hero's origin stay locked.
 - Tutorial arc: H.E.R.B.I.E.'s tutorial is now the **Primeiro contato** campaign (`primeiro-contato`, three chapters: choices, an optional group, a first fight), with profile and trivia steps in between and a final message about teams and `/campanha`. Without J.A.R.V.I.S. it falls back to `/cerebro preferencias` and `/heroi poderes`; without ULTRON or Sentinel the fight step is left out. Members of the old `boas-vindas` tutorial are moved once at startup with no message (finished stays finished). `docs/TUTORIAL.md`.
+- Eight recruitment arcs, one per team, each 3 chapters ending in a fight, pt-BR and en: X-Men "Aula na Mansão X" (`aula-na-mansao`), Irmandade "O chamado da Irmandade" (`convite-no-metro`, Mutante and Inumano only), Vingadores "Teste dos Vingadores" (`armadura-roubada`), S.H.I.E.L.D. "Agente em teste" (`agente-em-teste`), Guardiões "Carona na Milano" (`carona-espacial`), Defensores "Noites em Hell's Kitchen" (`noites-no-bairro`), Thunderbolts "Segunda chance" (`segunda-chance`) and Filhos da Meia-Noite "Depois da meia-noite" (`depois-da-meia-noite`). Each opens at level 3; canon team members appear in the story and every enemy is one of ULTRON's original machines. Every shipped campaign is played to the end in CI.
+- "Visita ao Edifício Baxter" (`visita-ao-baxter`): a story campaign with the Fantastic Four, 4 chapters with 2 fights, parties of up to 3, open to every team.
+- Four trivia categories with 22 sourced pt-BR questions each: `vingadores`, `quarteto`, `cosmico` and `mistico` (118 shipped questions in all). They are in the default `jarvis.trivia.categories`.
 - `/campanha [campanha]`: campaigns with progress and the next chapter, or one campaign's chapters (done, available, locked with the reason).
 - `/jarvis campanha importar`: one YAML with a campaign and its missions; preview, then Publicar writes everything or nothing. Shipped ids are refused. Database: `jarvis_campaigns` and `jarvis_missions.campaign_id`, `chapter`, `requires` (migration `0004`, both dialects).
 
 ### Changed
+- `/missao lista` shows only the next chapter of each campaign (the first one not won yet) and says to use `/campanha` for the rest; the list also stays within Discord's embed limits instead of cutting at 25 missions.
 - `mission.completed` now carries `missionId` = the mission's id from its file (e.g. `primeiro-contato-1`) and a new `runId`; before, `missionId` held the run id. Tutorial steps match chapters with `where: { missionId, outcome: success }`.
 - The shipped mission `primeiro-contato` is replaced by the chapters `primeiro-contato-1`, `-2` and `-3`; the old one is turned off on the next start, and its past runs stay in the history.
 - A lost campaign chapter can be played again until it is won. Standalone story missions are still once only unless `missions.limits.storyRepeatable` is on.
@@ -137,7 +151,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/uminocelo/legion/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/uminocelo/legion/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/uminocelo/legion/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/uminocelo/legion/compare/v0.7.1...v0.7.2

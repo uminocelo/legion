@@ -1,0 +1,53 @@
+# Recruitment arc for the Thunderbolts. Chapter 1.
+id: segunda-chance-1
+kind: story
+campaign: { id: segunda-chance, chapter: 1 }
+requires: { level: 3 }
+title:
+  pt-BR: "Segunda chance 1: O contato"
+  en: "Second chance 1: The contact"
+summary:
+  pt-BR: "Yelena Belova encontra você num café e oferece um trabalho sem perguntas."
+  en: "Yelena Belova meets you at a café and offers a job, no questions asked."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A Yelena Belova mexe o café sem beber. "Trabalho simples: recuperar uma pasta. Ninguém sai ferido, se você for bom."'
+      en: 'Yelena Belova stirs her coffee without drinking. "Simple job: recover a briefcase. Nobody gets hurt, if you are good."'
+    choices:
+      - label: { pt-BR: "Perguntar o que tem na pasta", en: "Ask what is in the briefcase" }
+        next: caminho-a
+      - label: { pt-BR: "Aceitar sem perguntar", en: "Accept without asking" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: '"Provas contra quem nos usou", diz ela. "Isso importa para você?"'
+      en: '"Evidence against the people who used us," she says. "Does that matter to you?"'
+    choices:
+      - label: { pt-BR: "Dizer que sim, e aceitar", en: "Say yes, and accept" }
+        next: sucesso
+      - label: { pt-BR: "Pedir o dobro do pagamento", en: "Ask for double the pay" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: 'Ela ergue uma sobrancelha. "Quem não pergunta, não dura. Quer tentar de novo?"'
+      en: 'She raises an eyebrow. "People who do not ask do not last. Want to try again?"'
+    choices:
+      - label: { pt-BR: "Perguntar quem é o alvo", en: "Ask who the target is" }
+        next: sucesso
+      - label: { pt-BR: "Insistir em não saber", en: "Insist on not knowing" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'A Yelena deixa um endereço e o dinheiro do café. "O Bucky vai junto. Ele fala pouco."'
+      en: 'Yelena leaves an address and money for the coffee. "Bucky goes with you. He does not talk much."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'Ela se levanta e vai embora. "Talvez outro dia, quando você souber por que está aqui."'
+      en: 'She gets up and leaves. "Maybe another day, when you know why you are here."'
+    end: failure

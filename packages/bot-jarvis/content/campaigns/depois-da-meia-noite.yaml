@@ -1,0 +1,10 @@
+# Recruitment arc for the Filhos da Meia-Noite. Format: docs/MISSIONS.md (Campanhas).
+id: depois-da-meia-noite
+kind: recruitment
+faction: midnight_sons
+title:
+  pt-BR: "Depois da meia-noite"
+  en: "After midnight"
+summary:
+  pt-BR: "Há coisas que só aparecem depois da meia-noite. Os Filhos da Meia-Noite precisam de quem não tenha medo do escuro."
+  en: "Some things only show up after midnight. The Midnight Sons need someone who is not afraid of the dark."

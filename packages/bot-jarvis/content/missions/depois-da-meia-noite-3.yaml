@@ -1,0 +1,50 @@
+# Recruitment arc for the Filhos da Meia-Noite. Chapter 3 (fight).
+id: depois-da-meia-noite-3
+kind: story
+campaign: { id: depois-da-meia-noite, chapter: 3 }
+requires: { missions: [depois-da-meia-noite-2] }
+reward: { joinFaction: midnight_sons }
+title:
+  pt-BR: "Depois da meia-noite 3: O ritual"
+  en: "After midnight 3: The ritual"
+summary:
+  pt-BR: "Alguém tenta completar o ritual. Uma máquina amaldiçoada guarda o altar."
+  en: "Someone is trying to finish the ritual. A cursed machine guards the altar."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: "Numa igreja abandonada, o Motoqueiro Fantasma acende o caminho com fogo. No altar, uma máquina possuída protege um círculo de velas."
+      en: "In an abandoned church, Ghost Rider lights the way with fire. At the altar, a possessed machine guards a circle of candles."
+    choices:
+      - label: { pt-BR: "Apagar as velas primeiro", en: "Put out the candles first" }
+        next: preparo
+      - label: { pt-BR: "Enfrentar a máquina", en: "Face the machine" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "Metade das velas se apaga. A máquina solta um grito metálico e avança."
+      en: "Half the candles go out. The machine lets out a metallic scream and charges."
+    choices:
+      - label: { pt-BR: "Firmar os pés e esperar", en: "Plant your feet and wait" }
+        next: confronto
+      - label: { pt-BR: "Usar o altar como escudo", en: "Use the altar as a shield" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: 'Os olhos da máquina queimam em verde. "A MEIA-NOITE É NOSSA."'
+      en: 'The machine''s eyes burn green. "MIDNIGHT IS OURS."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'As velas se apagam e o ritual se desfaz. O Blade, a Elsa e o Motoqueiro Fantasma acenam. "Bem-vindo aos Filhos da Meia-Noite."'
+      en: 'The candles go out and the ritual comes undone. Blade, Elsa and Ghost Rider nod. "Welcome to the Midnight Sons."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'A máquina foge e o ritual fica pela metade. A Elsa recarrega a espingarda. "Ainda é noite. Tenta de novo."'
+      en: 'The machine flees and the ritual stays half done. Elsa reloads her shotgun. "It is still night. Try again."'
+    end: failure

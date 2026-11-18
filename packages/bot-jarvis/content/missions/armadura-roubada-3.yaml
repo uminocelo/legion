@@ -1,0 +1,50 @@
+# Recruitment arc for the Vingadores. Chapter 3 (fight).
+id: armadura-roubada-3
+kind: story
+campaign: { id: armadura-roubada, chapter: 3 }
+requires: { missions: [armadura-roubada-2] }
+reward: { joinFaction: avengers }
+title:
+  pt-BR: "Teste dos Vingadores 3: A armadura roubada"
+  en: "Avengers trial 3: The stolen armor"
+summary:
+  pt-BR: "No armazém, uma máquina montada com peças roubadas acorda. O Homem de Ferro assiste de longe."
+  en: "In the warehouse, a machine built from stolen parts wakes up. Iron Man watches from afar."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'O armazém está cheio de peças vermelhas e douradas. No centro, uma máquina montada às pressas liga os olhos. No rádio, o Homem de Ferro: "É toda sua, recruta."'
+      en: 'The warehouse is full of red and gold parts. In the middle, a hastily built machine lights its eyes. On the radio, Iron Man: "It is all yours, recruit."'
+    choices:
+      - label: { pt-BR: "Cortar a energia do armazém", en: "Cut the warehouse power" }
+        next: preparo
+      - label: { pt-BR: "Atacar antes que ela termine de ligar", en: "Attack before it finishes booting" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "As luzes caem, mas a máquina tem bateria própria. Ela vira para você no escuro."
+      en: "The lights go out, but the machine has its own battery. It turns to you in the dark."
+    choices:
+      - label: { pt-BR: "Usar o escuro a seu favor", en: "Use the dark to your advantage" }
+        next: confronto
+      - label: { pt-BR: "Chamar a atenção dela para longe das peças", en: "Draw it away from the parts" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: 'A máquina ergue os braços remendados. "PROTOCOLO DE DEFESA ATIVO."'
+      en: 'The machine raises its patched arms. "DEFENSE PROTOCOL ACTIVE."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina desaba. O Capitão América, a Viúva Negra e o Homem de Ferro entram juntos. "Vingadores, avante. E isso inclui você."'
+      en: 'The machine collapses. Captain America, Black Widow and Iron Man walk in together. "Avengers assemble. That includes you."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'A máquina foge pelo teto com as peças. O Homem de Ferro suspira no rádio: "Quase. Vamos rastreá-la, e você tenta de novo."'
+      en: 'The machine escapes through the roof with the parts. Iron Man sighs on the radio: "Almost. We will track it, and you try again."'
+    end: failure

@@ -20,7 +20,11 @@
       "category": {
         "quadrinhos": "Comics",
         "rivals": "Marvel Rivals",
-        "geral": "General"
+        "geral": "General",
+        "vingadores": "Avengers",
+        "quarteto": "Fantastic Four",
+        "cosmico": "Cosmic",
+        "mistico": "Mystic"
       },
       "meta": "Difficulty: {difficulty} · Answer within {seconds}s",
       "correct": "✅ Correct!",
@@ -216,7 +220,8 @@
           "disabled": "**{codename}** finished the arc, but **{team}** is turned off on this server.",
           "same": "**{codename}** is already on **{team}**."
         }
-      }
+      },
+      "list_footer": "Campaigns show only their next chapter. Use /campanha to see them all."
     },
     "staff_trivia": {
       "bad_category": "Category \"{category}\" is not in jarvis.trivia.categories.",

@@ -1,0 +1,54 @@
+# Recruitment arc for the X-Men. Chapter 2.
+id: aula-na-mansao-2
+kind: story
+campaign: { id: aula-na-mansao, chapter: 2 }
+requires: { missions: [aula-na-mansao-1] }
+title:
+  pt-BR: "Aula na Mansão X 2: A Sala de Perigo"
+  en: "Class at the X-Mansion 2: The Danger Room"
+summary:
+  pt-BR: "O Ciclope testa o seu trabalho em equipe numa simulação da Sala de Perigo."
+  en: "Cyclops tests your teamwork in a Danger Room simulation."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A Sala de Perigo vira uma cidade em chamas. O Ciclope fala pelo rádio: "Civis no prédio da esquerda, ameaça à direita. Escolha."'
+      en: 'The Danger Room becomes a burning city. Cyclops speaks over the radio: "Civilians in the left building, threat on the right. Choose."'
+    choices:
+      - label: { pt-BR: "Salvar os civis primeiro", en: "Save the civilians first" }
+        next: caminho-a
+      - label: { pt-BR: "Conter a ameaça primeiro", en: "Contain the threat first" }
+        next: caminho-b
+  caminho-a:
+    text:
+      pt-BR: 'Você tira os civis do prédio, mas a ameaça avança. O Wolverine aparece na simulação e grunhe: "Precisa de ajuda, novato?"'
+      en: 'You get the civilians out, but the threat advances. Wolverine shows up in the simulation and growls: "Need a hand, rookie?"'
+    choices:
+      - label: { pt-BR: "Aceitar e coordenar com ele", en: "Accept and coordinate with him" }
+        next: sucesso
+      - label: { pt-BR: "Recusar e ir sozinho", en: "Refuse and go alone" }
+        next: falha
+  caminho-b:
+    text:
+      pt-BR: "Você segura a ameaça, mas o prédio começa a cair. Pelo rádio, o Ciclope espera a sua decisão."
+      en: "You hold the threat back, but the building starts to fall. On the radio, Cyclops waits for your call."
+    choices:
+      - label:
+          { pt-BR: "Pedir apoio e voltar para os civis", en: "Call for backup and go back for the civilians" }
+        next: sucesso
+      - label: { pt-BR: "Ignorar o prédio", en: "Ignore the building" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'A simulação termina sem vítimas. O Ciclope anota algo: "Você pensa como equipe. Isso não se ensina."'
+      en: 'The simulation ends with no casualties. Cyclops writes something down: "You think like a team. That cannot be taught."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'A simulação termina com vítimas virtuais. "Na vida real não tem reinício", diz o Ciclope. "Volte quando estiver pronto."'
+      en: 'The simulation ends with virtual casualties. "Real life has no reset," Cyclops says. "Come back when you are ready."'
+    end: failure

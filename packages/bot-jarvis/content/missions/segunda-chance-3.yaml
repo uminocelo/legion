@@ -1,0 +1,50 @@
+# Recruitment arc for the Thunderbolts. Chapter 3 (fight).
+id: segunda-chance-3
+kind: story
+campaign: { id: segunda-chance, chapter: 3 }
+requires: { missions: [segunda-chance-2] }
+reward: { joinFaction: thunderbolts }
+title:
+  pt-BR: "Segunda chance 3: A entrega"
+  en: "Second chance 3: The handoff"
+summary:
+  pt-BR: "Na entrega da pasta, uma máquina de cobrança aparece para levar tudo de volta."
+  en: "At the handoff, a collection machine shows up to take everything back."
+minLevel: 1
+party: 1
+difficulty: normal
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: "No ponto de encontro, o Agente Americano espera ao lado da Fantasma. Antes que você entregue a pasta, uma máquina enviada pelos antigos chefes deles cai do céu."
+      en: "At the meeting point, U.S. Agent waits next to Ghost. Before you hand over the briefcase, a machine sent by their old bosses drops from the sky."
+    choices:
+      - label: { pt-BR: "Proteger a pasta e recuar", en: "Protect the briefcase and fall back" }
+        next: preparo
+      - label: { pt-BR: "Avançar contra a máquina", en: "Charge the machine" }
+        next: confronto
+  preparo:
+    text:
+      pt-BR: "A Fantasma some com a pasta pelas paredes. A máquina vira para você."
+      en: "Ghost phases away with the briefcase through the walls. The machine turns on you."
+    choices:
+      - label: { pt-BR: "Ganhar tempo para a Fantasma", en: "Buy time for Ghost" }
+        next: confronto
+      - label: { pt-BR: "Atacar os sensores dela", en: "Attack its sensors" }
+        next: confronto
+  confronto:
+    text:
+      pt-BR: '"RECUPERAR ATIVO. NEUTRALIZAR TESTEMUNHAS."'
+      en: '"RECOVER ASSET. NEUTRALIZE WITNESSES."'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina para de vez. A Yelena abre a pasta e sorri. "Bem-vindo aos Thunderbolts. Ninguém aqui é santo, mas ninguém volta atrás."'
+      en: 'The machine stops for good. Yelena opens the briefcase and smiles. "Welcome to the Thunderbolts. Nobody here is a saint, but nobody goes back."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'A máquina leva a pasta. O Agente Americano bufa. A Yelena só diz: "Segunda chance. É o nosso nome, afinal."'
+      en: 'The machine takes the briefcase. U.S. Agent huffs. Yelena only says: "Second chance. That is our thing, after all."'
+    end: failure

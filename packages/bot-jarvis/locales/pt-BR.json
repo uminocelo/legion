@@ -20,7 +20,11 @@
       "category": {
         "quadrinhos": "Quadrinhos",
         "rivals": "Marvel Rivals",
-        "geral": "Geral"
+        "geral": "Geral",
+        "vingadores": "Vingadores",
+        "quarteto": "Quarteto Fantástico",
+        "cosmico": "Cósmico",
+        "mistico": "Místico"
       },
       "meta": "Dificuldade: {difficulty} · Responda em {seconds}s",
       "correct": "✅ Correto!",
@@ -216,7 +220,8 @@
           "disabled": "**{codename}** cumpriu o arco, mas **{team}** está desligada neste servidor.",
           "same": "**{codename}** já está em **{team}**."
         }
-      }
+      },
+      "list_footer": "Campanhas mostram só o próximo capítulo. Use /campanha para ver todos."
     },
     "staff_trivia": {
       "bad_category": "A categoria \"{category}\" não está em jarvis.trivia.categories.",

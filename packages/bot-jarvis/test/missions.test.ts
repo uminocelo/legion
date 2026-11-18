@@ -185,14 +185,23 @@ describe('solo missions', () => {
     const { t } = await setup();
     const id = await t.interact({ kind: 'command', userId: U, commandName: 'missao', subcommand: 'lista' });
     const fields = t.gateway.lastReply(id)?.embeds?.[0]?.fields ?? [];
-    expect(fields.map((f) => f.name)).toEqual([
-      'Patrulha noturna · Diária',
-      'Primeiro contato 1: O chamado · História',
-      'Primeiro contato 2: Rastro metálico · História',
-      'Sinal fantasma · Semanal',
-    ]);
-    expect(fields[2]?.value).toMatch(/🔒 Bloqueada: falta concluir/);
-    expect(fields[3]?.value).toMatch(/🔒 Precisa do nível 2/);
+    const names = fields.map((f) => f.name);
+    const field = (name: string) => fields.find((f) => f.name === name)?.value ?? '';
+    // Standalone missions; each campaign shows only its next chapter; fights are hidden (no ULTRON),
+    // and the X-Men arc is hidden from a hero who is already on the X-Men.
+    expect(names).toContain('Patrulha noturna · Diária');
+    expect(names).toContain('Primeiro contato 1: O chamado · História');
+    expect(names).not.toContain('Primeiro contato 2: Rastro metálico · História');
+    expect(names).not.toContain('Fábrica silenciosa · Diária');
+    expect(names.some((n) => n.startsWith('Aula na Mansão X'))).toBe(false);
+    expect(names).toContain('Teste dos Vingadores 1: A convocação · História');
+    expect(field('Teste dos Vingadores 1: A convocação · História')).toMatch(
+      /🔒 Bloqueada: falta chegar ao nível 3/,
+    );
+    expect(field('Sinal fantasma · Semanal')).toMatch(/🔒 Precisa do nível 2/);
+    expect(t.gateway.lastReply(id)?.embeds?.[0]?.footer?.text).toBe(
+      'Campanhas mostram só o próximo capítulo. Use /campanha para ver todos.',
+    );
     t.gateway.addMember({ userId: '999' });
     const anon = await start(t, 'patrulha-noturna', '999');
     expect(t.gateway.lastReply(anon)?.content).toMatch(/ainda não é um herói registrado/);
@@ -208,6 +217,6 @@ describe('solo missions', () => {
     });
     const calls = t.gateway.callsOf('respondAutocomplete') as [string, { value: string }[]][];
     const res = calls.find((c) => c[0] === id)?.[1] ?? [];
-    expect(res.map((c) => c.value)).toEqual(['patrulha-noturna', 'primeiro-contato-1']);
+    expect(res.map((c) => c.value)).toEqual(['patrulha-noturna', 'primeiro-contato-1', 'visita-ao-baxter-1']);
   });
 });
