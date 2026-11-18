@@ -2,8 +2,9 @@ import type { BotContext, IncomingInteraction, Locale, OutgoingMessage, Responde
 import { customId, readTextAttachment } from '@legion/core';
 import { eq } from 'drizzle-orm';
 import type { JarvisConfig } from './config.js';
-import { hasCombat, loc, type Mission, parseMissionYaml } from './domain/mission.js';
-import { missionHash } from './mission-content.js';
+import { checkCampaignContent } from './domain/campaign.js';
+import { loc, type Mission, parseMissionYaml } from './domain/mission.js';
+import { missionColumns, parseCampaign } from './mission-content.js';
 import type { JarvisServices } from './services.js';
 import { V } from './ui.js';
 
@@ -45,7 +46,7 @@ export class MissionImports {
       return r.reply(
         this.text(this.t(`jarvis.imports.problem.${got.problem}`, { kb: IMPORT_MAX_BYTES / 1024 }, l)),
       );
-    const parsed = parseMissionYaml(got.text);
+    const parsed = await this.check(got.text);
     if ('errors' in parsed) return r.reply(this.text(this.errors(parsed.errors, l)));
     const stageId = this.ctx.newId();
     await this.ctx.kv.set(stageKey(stageId), { text: got.text, staffId: i.userId } satisfies Staged);
@@ -72,6 +73,22 @@ export class MissionImports {
         ],
       ],
     });
+  }
+
+  /** The mission on its own, then against the campaigns and missions in the database. */
+  private async check(text: string): Promise<{ mission: Mission } | { errors: string[] }> {
+    const parsed = parseMissionYaml(text);
+    if ('errors' in parsed) return parsed;
+    const m = parsed.mission;
+    if (!m.campaign && !m.requires && !m.reward) return parsed;
+    const rows = (await this.s.repo.allMissions()).filter((r) => r.active === 1 && r.id !== m.id);
+    const others = rows.map((r) => JSON.parse(r.definition) as Mission);
+    const campaigns = (await this.s.repo.allCampaigns()).filter((c) => c.active === 1).map(parseCampaign);
+    const problems = checkCampaignContent(campaigns, [...others, m], {
+      factions: this.ctx.config.factions.map((f) => f.key),
+      unknownRequires: 'error',
+    }).filter((p) => p.missionId === m.id);
+    return problems.length ? { errors: problems.map((p) => `${p.path}: ${p.message}`) } : parsed;
   }
 
   private errors(errors: string[], l: Locale) {
@@ -122,19 +139,13 @@ export class MissionImports {
         embeds: [],
         components: [],
       });
-    const parsed = parseMissionYaml(staged.text);
+    const parsed = await this.check(staged.text);
     if ('errors' in parsed)
       return r.update({ ...this.text(this.errors(parsed.errors, l)), embeds: [], components: [] });
     const m = parsed.mission;
     const now = this.ctx.clock.now().toISOString();
     const row = {
-      kind: m.kind,
-      minLevel: m.minLevel,
-      party: m.party,
-      difficulty: m.difficulty,
-      hasCombat: hasCombat(m) ? 1 : 0,
-      definition: JSON.stringify(m),
-      contentHash: missionHash(m),
+      ...missionColumns(m),
       active: 1,
       updatedAt: now,
       origin: 'staff',
