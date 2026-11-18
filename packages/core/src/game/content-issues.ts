@@ -12,6 +12,7 @@ const EXPECTED: Record<string, string> = {
 };
 
 const count = (origin: unknown, n: unknown, small: boolean): string => {
+  if (origin === 'string' && small && n === 1) return 'obrigatório';
   if (origin === 'string')
     return small ? `muito curto (mínimo ${n} caracteres)` : `muito longo (máximo ${n} caracteres)`;
   if (origin === 'array' || origin === 'set')

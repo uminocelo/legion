@@ -84,6 +84,15 @@ export const PAGES = [
     script: 'enemy',
   },
   {
+    out: 'editor-missoes.html',
+    src: 'editor-missoes.html',
+    title: 'Editor de missões · Legion',
+    description: 'Monte uma missão com cenas, escolhas e combates e importe com /jarvis missao importar.',
+    nav: 'custom',
+    color: '#00B0F4',
+    script: 'mission',
+  },
+  {
     out: 'personalizar.html',
     src: 'personalizar.html',
     title: 'Personalizar · Legion',
@@ -223,7 +232,7 @@ export function readData() {
  * Editor bundles: `@legion/core` is swapped for the browser stand-in and the canon list is inlined.
  * The validation code (zod, yaml, schemas) goes into one shared chunk the browser caches across editors.
  */
-export const EDITORS = ['trivia', 'enemy'];
+export const EDITORS = ['trivia', 'enemy', 'mission'];
 
 export async function bundleEditors(out) {
   const { build: esbuild } = await import('esbuild');
@@ -239,7 +248,7 @@ export async function bundleEditors(out) {
     minify: true,
     legalComments: 'none',
     alias: { '@legion/core': join(SITE, 'editor/core-shim.ts') },
-    loader: { '.txt': 'text' },
+    loader: { '.txt': 'text', '.yaml': 'text' },
     metafile: true,
     logLevel: 'silent',
   });
