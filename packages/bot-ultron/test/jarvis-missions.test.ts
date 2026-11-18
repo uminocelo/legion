@@ -78,7 +78,9 @@ describe('J.A.R.V.I.S. mission fights through ULTRON and Sentinel', () => {
     const done = await js.repo.run(run?.id ?? '');
     expect(done).toMatchObject({ status: 'failure', sceneId: 'derrota' });
     expect(await missionXp(js, memberId)).toEqual([20]);
-    expect(t.gateway.messages.at(-1)?.msg.embeds?.[0]?.description).toMatch(/A unidade escapa/);
+    // Sentinel's own "fight over" message may land after the story (separate consumers), so look in the thread.
+    const story = t.gateway.messages.filter((m) => m.channelId === run?.threadId);
+    expect(story.some((m) => /A unidade escapa/.test(m.msg.embeds?.[0]?.description ?? ''))).toBe(true);
 
     // A duplicate result changes nothing.
     await emit(t, 'combat.resolved', res as never, 'sentinel');
