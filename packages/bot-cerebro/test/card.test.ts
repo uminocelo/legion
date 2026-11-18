@@ -20,13 +20,14 @@ afterEach(async () => {
 });
 
 const labels: CardData['labels'] = {
-  title: 'CÉREBRO · FICHA DE MUTANTE',
+  title: 'CÉREBRO · FICHA DE HERÓI',
   level: 'Nível',
   powers: 'PODERES',
   stats: { hp: 'VIDA', atk: 'ATQ', def: 'DEF', spd: 'VEL', foc: 'FOCO' },
 };
 const card = (over: Partial<CardData> = {}): CardData => ({
   codename: 'Faísca Rubra',
+  origin: 'Tecnologia',
   faction: '🛡️ X-Men',
   factionColor: '#3498DB',
   archetype: 'Telepata',
@@ -78,6 +79,10 @@ describe('profile card', () => {
     expect(clean('⚡ Raio ✨')).toBe('Raio');
   });
 
+  it('shows the origin before faction and archetype', () => {
+    expect(cardSvg(card())).toContain('Tecnologia · X-Men · Telepata');
+  });
+
   it('shows the description when the mutant has no catalog powers and no level when J.A.R.V.I.S. is off', () => {
     const svg = cardSvg(card({ powers: { main: null, secondary: [] }, level: null, xp: null }));
     expect(svg).toContain('Cria faíscas');
@@ -91,7 +96,7 @@ describe('/perfil with the card', () => {
     await join(t);
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
-    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:faction', values: ['xmen'] });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['mutante'] });
     await t.interact({
       kind: 'component',
       userId: USER,
@@ -110,10 +115,15 @@ describe('/perfil with the card', () => {
     expect(pngSize(msg?.files?.[0]?.content as Uint8Array).sig).toBe('PNG');
     const embed = msg?.embeds?.[0];
     expect(embed?.image).toEqual({ url: 'attachment://ficha.png' });
-    expect(embed?.color).toBe(0x3498db);
+    expect(embed?.color).toBe(0x2ecc71); // new heroes start Independente
     expect({ title: embed?.title, fields: embed?.fields }).toMatchInlineSnapshot(`
       {
         "fields": [
+          {
+            "inline": true,
+            "name": "Origem",
+            "value": "🧬 Mutante",
+          },
           {
             "inline": true,
             "name": "Arquétipo",
@@ -122,7 +132,7 @@ describe('/perfil with the card', () => {
           {
             "inline": true,
             "name": "Facção",
-            "value": "🔵 X-Men",
+            "value": "🟢 Independente",
           },
           {
             "inline": true,
@@ -138,7 +148,7 @@ describe('/perfil with the card', () => {
             "value": "Cria faíscas que cegam",
           },
           {
-            "name": "Origem",
+            "name": "História",
             "value": "Acordou no meio de uma tempestade.",
           },
         ],

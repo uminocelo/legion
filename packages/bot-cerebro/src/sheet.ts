@@ -35,6 +35,7 @@ export class SheetCard {
     const powers = await this.flow.repo.powersOf(mutant.id);
     return {
       codename: mutant.codename,
+      origin: this.flow.ui.originName(mutant.originType, locale),
       faction: this.flow.ui.factionLabel(member.faction, locale),
       factionColor: this.factionColor(member.faction),
       archetype: mutant.archetype,

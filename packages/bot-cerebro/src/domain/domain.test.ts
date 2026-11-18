@@ -2,7 +2,13 @@ import type { GuildChannel } from '@legion/core';
 import { describe, expect, it } from 'vitest';
 import { planChannelVisibility } from './channels.js';
 import { normalizeCodename, validateCodename } from './codename.js';
-import { expectedRoles, type OnboardingAction, type OnboardingStep, transition } from './onboarding.js';
+import {
+  expectedRoles,
+  type OnboardingAction,
+  type OnboardingStep,
+  toStep,
+  transition,
+} from './onboarding.js';
 
 describe('onboarding state machine', () => {
   it('follows the happy path', () => {
@@ -10,7 +16,7 @@ describe('onboarding state machine', () => {
     for (const action of [
       'start',
       'accept_rules',
-      'choose_faction',
+      'choose_origin',
       'choose_archetype',
       'submit_mutant',
     ] as const) {
@@ -22,7 +28,7 @@ describe('onboarding state machine', () => {
   });
 
   it.each<[OnboardingStep, OnboardingAction]>([
-    ['signal', 'choose_faction'],
+    ['signal', 'choose_origin'],
     ['signal', 'submit_mutant'],
     ['rules_accepted', 'submit_mutant'],
     ['rules_accepted', 'choose_archetype'],
@@ -36,21 +42,28 @@ describe('onboarding state machine', () => {
       next: 'rules_accepted',
       changed: false,
     });
-    expect(transition('faction_chosen', 'accept_rules')).toEqual({
+    expect(transition('origin_chosen', 'accept_rules')).toEqual({
       ok: true,
-      next: 'faction_chosen',
+      next: 'origin_chosen',
       changed: false,
     });
-    expect(transition('faction_chosen', 'choose_faction')).toEqual({
+    expect(transition('origin_chosen', 'choose_origin')).toEqual({
       ok: true,
-      next: 'faction_chosen',
+      next: 'origin_chosen',
       changed: false,
     });
-    expect(transition('faction_chosen', 'start')).toMatchObject({ ok: true, changed: false });
+    expect(transition('origin_chosen', 'start')).toMatchObject({ ok: true, changed: false });
+  });
+
+  it('reads the legacy faction_chosen step as rules_accepted', () => {
+    expect(toStep('faction_chosen')).toBe('rules_accepted');
+    expect(toStep('origin_chosen')).toBe('origin_chosen');
+    expect(toStep('registered')).toBe('registered');
+    expect(toStep('???')).toBe('signal');
   });
 
   it('every action on a registered member reports already_registered', () => {
-    for (const a of ['start', 'accept_rules', 'choose_faction', 'choose_archetype', 'submit_mutant'] as const)
+    for (const a of ['start', 'accept_rules', 'choose_origin', 'choose_archetype', 'submit_mutant'] as const)
       expect(transition('registered', a)).toMatchObject({ ok: false, reason: 'already_registered' });
   });
 

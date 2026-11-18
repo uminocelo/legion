@@ -35,7 +35,7 @@ describe('DB rate limiter', () => {
       });
       replies.push(t.gateway.lastReply(id)?.content);
     }
-    expect(replies.at(-1)).toMatch(/^Calma, mutante! Tente de novo em \d+s\.$/);
+    expect(replies.at(-1)).toMatch(/^Calma, herói! Tente de novo em \d+s\.$/);
     expect(replies.slice(0, 20).every((r) => !r?.startsWith('Calma'))).toBe(true);
     t.clock.advance(60_000);
     const next = await t.interact({

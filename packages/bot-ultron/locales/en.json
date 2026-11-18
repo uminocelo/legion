@@ -2,14 +2,14 @@
   "ultron": {
     "errors": {
       "not_staff": "Only staff can use this command.",
-      "not_registered": "{user} has not registered a mutant yet.",
+      "not_registered": "{user} has not registered a hero yet.",
       "generic": "Could not create the encounter. Try again.",
       "bad_when": "I could not read the date. Use YYYY-MM-DD HH:mm (server time) or something like +30m, +2h.",
       "event_not_found": "Event not found.",
       "event_not_started": "The event has not started yet ({at}).",
       "event_over": "The event is already over.",
       "no_events_channel": "Set channels.events in legion.config.yaml before creating events.",
-      "register_first": "Register your mutant before fighting (welcome channel).",
+      "register_first": "Register your hero before fighting (welcome channel).",
       "strike_cooldown": "You are still recovering. Strike again in {time}.",
       "schedule_overlap": "An event of this kind already exists at that time.",
       "schedule_past": "That time has already passed.",

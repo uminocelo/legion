@@ -2,7 +2,7 @@ import type { LocaleResolver } from '../i18n/i18n.js';
 import type { RateLimiter } from '../ratelimit/rate-limiter.js';
 
 export type Rank = 'recruta' | 'agente' | 'veterano';
-export type OnboardingStep = 'signal' | 'rules_accepted' | 'faction_chosen' | 'registered';
+export type OnboardingStep = 'signal' | 'rules_accepted' | 'origin_chosen' | 'registered';
 
 export interface MemberView {
   id: string;
@@ -19,7 +19,10 @@ export interface MutantView {
   codename: string;
   archetype: string;
   power: string;
+  /** Free-text backstory ("História"). */
   origin: string;
+  /** Origin category key (`cerebro.origins`, e.g. `mutante`, `tecnologia`). */
+  originType: string;
 }
 export interface ProgressView {
   xp: number;

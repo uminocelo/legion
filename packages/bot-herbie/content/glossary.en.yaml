@@ -2,36 +2,43 @@
 - id: faccoes
   term: "Factions"
   aliases: [faction, x-men, brotherhood, independent]
-  summary: "Every mutant picks a side when registering — X-Men, Brotherhood or Independent. It becomes a role and shows in /perfil and /ranking."
-  details: "The faction is chosen during registration with Cérebro and, for now, only staff can change it. It adds to the faction total in /ranking. It does not change your powers or who you play with."
-  related: [arquetipos, rank]
+  summary: "Every hero starts Independent. The faction (or team) becomes a role and shows in /perfil and /ranking."
+  details: "New heroes start on the server's start faction (Independent). Members who registered before origins keep the faction they chose. For now only staff can change it. It adds to the faction total in /ranking. It does not change your powers or who you play with."
+  related: [origens, arquetipos, rank]
+  bot: cerebro
+- id: origens
+  term: "Origins"
+  aliases: [origin, mutant, inhuman, science, technology, mystic, cosmic, trained, /heroi origem]
+  summary: "Where your powers come from: Mutant, Inhuman, Science, Technology, Mystic, Cosmic or Trained. You pick it at registration."
+  details: "Your origin decides which catalog powers you can pick; it does not change stats (those come from archetype and level). Heroes registered before origins became Mutant and can change once with /heroi origem."
+  related: [poderes, arquetipos]
   bot: cerebro
 - id: arquetipos
   term: "Archetypes"
   aliases: [archetype, class]
-  summary: "Your mutant's type (by default Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Set by your main power at registration."
+  summary: "Your hero's type (by default Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata). Set by your main power at registration."
   details: "The archetype comes from your main power type (or from the menu if the server turned the power catalog off) and sets your base combat stats. Staff can change the list and which power type leads to which archetype."
   related: [faccoes, codinome]
   bot: cerebro
 - id: poderes
   term: "Powers"
-  aliases: [catalog, main power, secondary powers, /mutant powers]
-  summary: "When you register you pick 1 main power and up to 2 secondary ones from a catalog. The main power type sets your archetype."
-  details: "There are 6 types: offensive, defensive, psionic, elemental, movement and utility. Secondary powers show on your sheet and on the /profile card without changing stats. Members who registered before the catalog use /mutant powers once. You also describe your power in your own words on the sheet."
+  aliases: [catalog, main power, secondary powers, /heroi poderes, /mutante poderes]
+  summary: "When you register you pick 1 main power and up to 2 secondary ones among your origin's powers. The main power type sets your archetype."
+  details: "There are 6 types: offensive, defensive, psionic, elemental, movement and utility. Secondary powers show on your sheet and on the /profile card without changing stats. Members who registered before the catalog use /heroi poderes once. You also describe your power in your own words on the sheet."
   related: [arquetipos, codinome]
   bot: cerebro
 - id: codinome
   term: "Codename"
   aliases: [name, nickname]
-  summary: "Your mutant's name. It must be unique on the server and original — no names of existing heroes or villains."
+  summary: "Your hero's name. It must be unique on the server and original — no names of existing heroes or villains."
   details: "A codename has 2 to 32 characters (configurable). Cérebro refuses known characters' names, with or without accents, digits for letters or spaces. Repeated attempts notify staff."
   related: [mutante-original]
   bot: cerebro
 - id: mutante-original
-  term: "Original mutant"
-  aliases: [original character, oc, canon]
-  summary: "Here you create your own mutant. Existing Marvel characters cannot be used as a codename or sheet."
-  details: "The rule applies to codenames, sheets and bot texts. Be inspired, but invent — name, power and origin must be yours. Staff may ask you to change."
+  term: "Original hero"
+  aliases: [original character, oc, canon, original mutant]
+  summary: "Here you create your own hero. Existing Marvel characters cannot be used as a codename or sheet, but they can appear in mission stories."
+  details: "The rule applies to codenames, sheets and bot texts. Be inspired, but invent — name, power and story must be yours. Staff may ask you to change."
   related: [codinome]
 - id: xp
   term: "XP"
@@ -90,7 +97,7 @@
 - id: combate
   term: "Combat"
   aliases: [fight, battle, duel]
-  summary: "Turn-based fights between mutants, decided by attributes and a bit of luck."
+  summary: "Turn-based fights between heroes, decided by attributes and a bit of luck."
   details: "Turn-based fights with Attack, Power and Defend buttons. Practice with /training; fight missions, invasions and raids use the same system. Every fight has a seed and staff can check it. Full rules in docs/COMBAT.md."
   related: [poder, defesa, velocidade, foco]
   bot: sentinel

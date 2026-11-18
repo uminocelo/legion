@@ -1,8 +1,38 @@
-import { ARCHETYPES } from '@legion/core';
+import { ARCHETYPES, ORIGIN_EMOJI, ORIGINS } from '@legion/core';
 import { z } from 'zod';
+
+const originEntry = z
+  .object({
+    key: z.enum(ORIGINS, { message: `origem desconhecida; use uma de: ${ORIGINS.join(', ')}` }),
+    emoji: z.string().optional(),
+  })
+  .strict()
+  .transform((o) => ({ key: o.key, emoji: o.emoji ?? ORIGIN_EMOJI[o.key] }));
 
 export const cerebroConfigSchema = z
   .object({
+    /** Origins offered at registration, in menu order (names in the locales). */
+    origins: z
+      .array(originEntry)
+      .min(1)
+      .default(ORIGINS.map((key) => ({ key, emoji: ORIGIN_EMOJI[key] })))
+      .superRefine((list, ctx) => {
+        const seen = new Set<string>();
+        list.forEach((o, i) => {
+          if (seen.has(o.key))
+            ctx.addIssue({ code: 'custom', path: [i, 'key'], message: `origem repetida: ${o.key}` });
+          seen.add(o.key);
+        });
+      }),
+    /** Teams (US-26 adds the switch rules). New heroes start on `startFaction`. */
+    teams: z
+      .object({
+        startFaction: z
+          .string()
+          .regex(/^[a-z][a-z0-9_]*$/)
+          .default('independent'),
+      })
+      .prefault({}),
     welcomePing: z.boolean().default(true),
     persistentWelcome: z.boolean().default(true),
     publicRegistryCard: z.boolean().default(true),

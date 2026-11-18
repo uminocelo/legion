@@ -1,6 +1,46 @@
 # Universo Marvel
 
-O Legion é um projeto de fã do universo Marvel. Este guia explica o que pode e o que não pode aparecer no conteúdo do seu servidor. Origens e equipes entram nas próximas versões e serão descritas aqui.
+O Legion é um projeto de fã do universo Marvel. Este guia explica de onde vêm os heróis dos jogadores e o que pode e o que não pode aparecer no conteúdo do seu servidor. As equipes entram na próxima versão e serão descritas aqui.
+
+## Origens
+
+Todo herói tem uma **origem**: de onde vêm os poderes dele. O jogador escolhe no cadastro, logo depois das regras.
+
+| Origem (`key`) | Emoji | Ideia |
+|---|---|---|
+| Mutante (`mutante`) | 🧬 | Nasceu com o gene X; os poderes despertaram sozinhos |
+| Inumano (`inumano`) | 💠 | Poderes latentes despertados pela névoa terrígena |
+| Ciência (`ciencia`) | ⚗️ | Experimento, acidente ou soro |
+| Tecnologia (`tecnologia`) | 🤖 | Armaduras, armas e engenhocas |
+| Místico (`mistico`) | 🔮 | Magia, artefatos, pactos com outras dimensões |
+| Cósmico (`cosmico`) | 🌌 | Poder vindo das estrelas |
+| Treinado (`treinado`) | 🥋 | Sem superpoderes: técnica e disciplina |
+
+**A origem não muda números.** Atributos de combate vêm do arquétipo (o tipo do poder principal) e do nível, como antes. A origem decide **quais poderes** o herói pode escolher:
+
+- cada poder do catálogo pode ter `origins: [...]`; **sem `origins`, vale para todas**;
+- os superpoderes que vêm com o Legion servem para Mutante, Inumano, Ciência, Místico e Cósmico; Treinado tem **habilidades** (artes marciais, pontaria, acrobacia, furtividade) e Tecnologia tem **equipamentos** (armadura, propulsores, drones, canhão de plasma);
+- cada origem precisa de poderes de pelo menos 2 tipos; uma origem sem poderes some do cadastro e aparece com ❌ no `legion doctor`.
+
+Detalhes do formato em [POWERS.md](POWERS.md#origens). A staff escolhe a ordem, os emojis e quais origens aparecem em `cerebro.origins` ([CONFIG.md](CONFIG.md#cerebro)).
+
+Todo herói novo começa **Independente** (`cerebro.teams.startFaction`). Entrar numa equipe (Vingadores, Quarteto, Guardiões...) vai acontecer pelas missões de recrutamento.
+
+### Heróis de antes das origens
+
+Na atualização, todo herói que já existia virou **Mutante** e manteve tudo: codinome, poderes, nível, facção e ficha. Cada um pode trocar de origem **uma única vez** com `/heroi origem`:
+
+- se os poderes atuais servem na nova origem, eles ficam;
+- se algum não serve, o menu de poderes abre para escolher de novo; **Cancelar** não muda nada e a troca continua disponível;
+- terminar (mesmo escolhendo Mutante de novo) encerra a troca.
+
+O H.E.R.B.I.E. avisa o servidor uma vez, num post no canal do tutorial (ou de boas-vindas), sem mandar DM para ninguém. Enquanto a troca estiver aberta, `/perfil` e `/heroi` lembram o próprio herói.
+
+O campo livre da ficha que antes se chamava "Origem" agora aparece como **História**: é o texto do jogador contando como ganhou os poderes.
+
+### "Herói", não "mutante"
+
+Os bots falam em **herói** com os jogadores. "Mutante" fica para a origem Mutante e para personagens e lugares das histórias. O comando `/mutante` virou `/heroi` e continua funcionando como apelido até a v1.0. O nome padrão do cargo **Mutante Registrado** não mudou, porque os cargos são achados pelo nome: se quiser outro nome ("Herói Registrado"), renomeie o cargo no Discord **e** o `name` do cargo `registered` em `roles` ([CONFIG.md](CONFIG.md)) antes de reiniciar; trocar só no arquivo cria um cargo novo.
 
 ## Nomes da Marvel: identidade original, história livre
 

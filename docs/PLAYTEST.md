@@ -114,8 +114,8 @@ Cada jogador tem **1 missão diária por dia e 1 semanal por semana** (`jarvis.m
 
 | # | Passo | Deve acontecer | Resultado | Notas |
 |---|---|---|---|---|
-| 8.1 | J1: `/mutante poderes` e escolha os poderes | Funciona uma vez | | |
-| 8.2 | J1: `/mutante poderes` de novo | Recusado | | |
+| 8.1 | J1: `/heroi poderes` e escolha os poderes | Funciona uma vez | | |
+| 8.2 | J1: `/heroi poderes` de novo | Recusado | | |
 | 8.3 | J1 compartilha a ficha pelo `/perfil` | A imagem mostra codinome, facção, poderes, nível e patente | | |
 | 8.4 | Todos leem o post fixado do guia (`/herbie guia publicar` se não houver) | Ninguém sente falta de nada do site antigo | | |
 

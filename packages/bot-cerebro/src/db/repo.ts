@@ -1,6 +1,7 @@
-import type { Clock, Executor, LegionDb, MemberView, MutantView, OnboardingStep, Rank } from '@legion/core';
+import type { Clock, Executor, LegionDb, MemberView, MutantView, Rank } from '@legion/core';
 import { and, count, eq, gte, isNotNull, isNull } from 'drizzle-orm';
 import { z } from 'zod';
+import { toStep } from '../domain/onboarding.js';
 import { type CerebroTables, cerebroTables } from './tables.js';
 
 export type MemberRow = CerebroTables['members']['$inferSelect'];
@@ -20,7 +21,7 @@ const optInsSchema = z.array(z.string()).catch([]);
 export const toMemberView = (m: MemberRow): MemberView => ({
   id: m.id,
   discordUserId: m.discordUserId,
-  onboardingStep: m.onboardingStep as OnboardingStep,
+  onboardingStep: toStep(m.onboardingStep),
   faction: m.faction,
   rank: m.rank as Rank,
   optIns: optInsSchema.parse(JSON.parse(m.optIns)),
@@ -34,6 +35,7 @@ export const toMutantView = (m: MutantRow): MutantView => ({
   archetype: m.archetype,
   power: m.power,
   origin: m.origin,
+  originType: m.originType,
 });
 
 /** Data access for Cérebro's own tables (the only writer of members/mutants). */
@@ -125,7 +127,8 @@ export class CerebroRepo {
   }
 
   async insertMutant(
-    v: Pick<MutantRow, 'memberId' | 'codename' | 'codenameNormalized' | 'power' | 'archetype' | 'origin'>,
+    v: Pick<MutantRow, 'memberId' | 'codename' | 'codenameNormalized' | 'power' | 'archetype' | 'origin'> &
+      Partial<Pick<MutantRow, 'originType'>>,
     ex: Executor = this.db.orm,
   ): Promise<MutantRow> {
     const now = this.now();
@@ -164,7 +167,18 @@ export class CerebroRepo {
     ]);
   }
 
-  async updateMutant(id: string, patch: Partial<Pick<MutantRow, 'archetype'>>, ex: Executor = this.db.orm) {
+  /** Replaces all catalog powers of a mutant (origin change). */
+  async replacePowers(mutantId: string, picked: { main: string; secondary: string[] }, ex: Executor) {
+    const t = this.t.cerebroMutantPowers;
+    await ex.delete(t).where(eq(t.mutantId, mutantId));
+    await this.insertPowers(mutantId, picked, ex);
+  }
+
+  async updateMutant(
+    id: string,
+    patch: Partial<Pick<MutantRow, 'archetype' | 'originType' | 'originRechoice'>>,
+    ex: Executor = this.db.orm,
+  ) {
     await ex
       .update(this.t.mutants)
       .set({ ...patch, updatedAt: this.now() })

@@ -123,7 +123,7 @@ describe('InteractionRouter', () => {
     let last = '';
     for (let n = 0; n < 21; n++)
       last = await t.interact({ kind: 'command', userId: '7', commandName: 'ping' });
-    expect(t.gateway.lastReply(last)?.content).toMatch(/^Calma, mutante! Tente de novo em \d+s\.$/);
+    expect(t.gateway.lastReply(last)?.content).toMatch(/^Calma, herói! Tente de novo em \d+s\.$/);
   });
 
   it('fails at startup when two bots define the same command', async () => {

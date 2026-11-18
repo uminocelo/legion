@@ -47,7 +47,7 @@ describe('opt-ins', () => {
       commandName: 'cerebro',
       subcommand: 'preferencias',
     });
-    expect(t.gateway.lastReply(id)?.content).toContain('ainda não é um mutante registrado');
+    expect(t.gateway.lastReply(id)?.content).toContain('ainda não é um herói registrado');
   });
 
   it('/cerebro preferencias shows the current state', async () => {
@@ -81,7 +81,7 @@ describe('rank.changed', () => {
       );
     await emit();
     await t.runtime.bus.drain();
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Agente', 'Mutante Registrado', 'X-Men']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Agente', 'Independente', 'Mutante Registrado']);
     expect((await repoOf(t).memberByDiscordId(USER))?.rank).toBe('agente');
     const writes = () =>
       t?.gateway.calls.filter((c) => c.method === 'addMemberRole' || c.method === 'removeMemberRole').length;
@@ -108,7 +108,7 @@ describe('role failures', () => {
     await join(t);
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:start' });
     await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:rules' });
-    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:faction', values: ['xmen'] });
+    await t.interact({ kind: 'component', userId: USER, customId: 'cerebro:v1:origin', values: ['mutante'] });
     await t.interact({
       kind: 'component',
       userId: USER,
@@ -126,7 +126,7 @@ describe('role failures', () => {
     expect((await repoOf(t).memberByDiscordId(USER))?.onboardingStep).toBe('registered');
     t.clock.advance(5_000);
     await t.settle();
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Mutante Registrado', 'Recruta', 'X-Men']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Independente', 'Mutante Registrado', 'Recruta']);
   });
 });
 
@@ -140,11 +140,12 @@ describe('/perfil', () => {
     expect(reply?.ephemeral).toBe(true);
     expect(reply?.embeds?.[0]?.title).toBe('🧬 Faísca Rubra');
     expect(reply?.embeds?.[0]?.fields?.map((f) => f.name)).toEqual([
+      'Origem',
       'Arquétipo',
       'Facção',
       'Rank',
       'Poder',
-      'Origem',
+      'História',
       'Nível',
     ]);
     const share = reply?.components?.[0]?.[0];
@@ -160,7 +161,7 @@ describe('/perfil', () => {
     await join(t);
     const self = await t.interact({ kind: 'command', userId: USER, commandName: 'perfil', options: {} });
     expect(t.gateway.lastReply(self)?.content).toBe(
-      `Você ainda não é um mutante registrado. Comece pelo canal <#${CH.welcome}>.`,
+      `Você ainda não é um herói registrado. Comece pelo canal <#${CH.welcome}>.`,
     );
     const other = await t.interact({
       kind: 'command',
@@ -168,7 +169,7 @@ describe('/perfil', () => {
       commandName: 'perfil',
       options: { membro: '777' },
     });
-    expect(t.gateway.lastReply(other)?.content).toBe('Esse membro ainda não é um mutante registrado.');
+    expect(t.gateway.lastReply(other)?.content).toBe('Esse membro ainda não é um herói registrado.');
   });
 });
 

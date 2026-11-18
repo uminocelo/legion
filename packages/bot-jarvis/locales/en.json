@@ -1,13 +1,13 @@
 {
   "jarvis": {
     "errors": {
-      "not_registered": "You are not a registered mutant yet. Start in {welcome}.",
+      "not_registered": "You are not a registered hero yet. Start in {welcome}.",
       "not_staff": "Only staff can use this command.",
       "cooldown": "Easy, agent. Next question in {seconds}s.",
       "no_questions": "There are no questions available{category} right now. Let the staff know.",
       "not_your_question": "This question belongs to someone else. Use /trivia for yours.",
       "unknown_attempt": "I couldn't find this question. Use /trivia for a new one.",
-      "unknown_member": "That member is not a registered mutant yet.",
+      "unknown_member": "That member is not a registered hero yet.",
       "ranking_cooldown": "The leaderboard was just shown here. Try again in {seconds}s."
     },
     "trivia": {

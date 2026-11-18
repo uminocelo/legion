@@ -1,6 +1,6 @@
 # 0009. Onboarding state stored in the DB as a state machine
 
-**Status:** Accepted
+**Status:** Accepted. Updated by [ADR 0031](0031-hero-origins.md): the faction step became an origin step (`origin_chosen`) in v0.9.
 
 ## Context
 Members click old buttons, double-click, leave mid-flow, and the bot restarts.

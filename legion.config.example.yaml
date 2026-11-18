@@ -36,6 +36,11 @@ cerebro:
   codename:
     min: 2
     max: 32
+  # Origens do cadastro, na ordem do menu (docs/UNIVERSE.md). Tire uma para escondê-la.
+  # origins: [{ key: mutante }, { key: inumano }, { key: ciencia }, { key: tecnologia }, { key: mistico }, { key: cosmico }, { key: treinado }]
+  # Facção de quem acaba de se registrar (as equipes chegam pelas missões de recrutamento)
+  teams:
+    startFaction: independent
   # Arquétipos oferecidos no cadastro
   archetypes: [Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata]
   # Catálogo de poderes no cadastro (docs/POWERS.md). O tipo do poder principal define o arquétipo.
@@ -49,7 +54,7 @@ cerebro:
       elemental: Elemental
       movement: Velocista
       utility: Tecnopata
-    allowArchetypeChange: false # /mutante poderes pode trocar o arquétipo de quem já se registrou
+    allowArchetypeChange: false # /heroi poderes e /heroi origem podem trocar o arquétipo
   # Cargos que o membro pode ligar/desligar sozinho
   optInRoles: [live_ping, rivals_vanguard, rivals_duelist, rivals_strategist]
   # Avisa a staff (report.flagged) após N tentativas de nome canon em X minutos

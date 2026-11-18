@@ -2,18 +2,23 @@
 # Sobrescreva ou acrescente em ./data/content/powers.yaml (mesmo id = substitui). Formato: docs/POWERS.md
 # Tipos: offensive, defensive, psionic, elemental, movement, utility. O tipo do poder principal define o arquétipo
 # (cerebro.powers.typeToArchetype). Poderes não têm efeito numérico além do arquétipo.
+# origins: quais origens podem escolher o poder (sem a chave = todas). Origens: mutante, inumano, ciencia,
+# tecnologia, mistico, cosmico, treinado. Cada origem precisa de poderes de pelo menos 2 tipos.
 - id: rajada-optica
   type: offensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Rajada óptica", en: "Optic blast" }
   description:
     { pt-BR: "Dispara energia concussiva pelos olhos.", en: "Fires concussive energy from the eyes." }
 - id: garras-retrateis
   type: offensive
+  origins: [mutante, inumano, ciencia, tecnologia]
   name: { pt-BR: "Garras retráteis", en: "Retractable claws" }
   description:
     { pt-BR: "Lâminas que saem do corpo quando preciso.", en: "Blades that slide out of the body on demand." }
 - id: carga-cinetica
   type: offensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Carga cinética", en: "Kinetic charge" }
   description:
     {
@@ -22,46 +27,56 @@
     }
 - id: pirocinese
   type: offensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Pirocinese", en: "Pyrokinesis" }
   description: { pt-BR: "Cria e controla fogo.", en: "Creates and controls fire." }
 - id: grito-sonico
   type: offensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Grito sônico", en: "Sonic scream" }
   description: { pt-BR: "Um grito que vira onda de choque.", en: "A scream that becomes a shockwave." }
 - id: projeteis-osseos
   type: offensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Projéteis ósseos", en: "Bone spikes" }
   description:
     { pt-BR: "Lança espinhos feitos do próprio esqueleto.", en: "Launches spikes grown from the skeleton." }
 - id: arco-bioeletrico
   type: offensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Arco bioelétrico", en: "Bio-electric arc" }
   description:
     { pt-BR: "Descarrega eletricidade gerada pelo corpo.", en: "Discharges electricity made by the body." }
 - id: regeneracao
   type: defensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Regeneração celular", en: "Cellular regeneration" }
   description: { pt-BR: "Feridas fecham em minutos.", en: "Wounds close in minutes." }
 - id: blindagem-organica
   type: defensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Blindagem orgânica", en: "Organic armor" }
   description: { pt-BR: "A pele vira uma couraça metálica.", en: "Skin turns into a metal shell." }
 - id: corpo-cristalino
   type: defensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Corpo cristalino", en: "Crystal body" }
   description:
     { pt-BR: "O corpo se torna um cristal duríssimo.", en: "The body becomes a very hard crystal." }
 - id: campo-de-forca
   type: defensive
+  origins: [mutante, inumano, ciencia, tecnologia, mistico, cosmico]
   name: { pt-BR: "Campo de força", en: "Force field" }
   description: { pt-BR: "Ergue barreiras de energia.", en: "Raises energy barriers." }
 - id: absorcao-de-impacto
   type: defensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Absorção de impacto", en: "Impact absorption" }
   description:
     { pt-BR: "Golpes recebidos viram energia guardada.", en: "Blows taken turn into stored energy." }
 - id: controle-de-densidade
   type: defensive
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Controle de densidade", en: "Density control" }
   description:
     {
@@ -70,79 +85,189 @@
     }
 - id: telepatia
   type: psionic
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Telepatia", en: "Telepathy" }
   description: { pt-BR: "Lê e envia pensamentos.", en: "Reads and sends thoughts." }
 - id: telecinese
   type: psionic
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Telecinese", en: "Telekinesis" }
   description: { pt-BR: "Move objetos com a mente.", en: "Moves objects with the mind." }
 - id: projecao-astral
   type: psionic
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Projeção astral", en: "Astral projection" }
   description: { pt-BR: "A mente viaja fora do corpo.", en: "The mind travels outside the body." }
 - id: sugestao-neural
   type: psionic
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Sugestão neural", en: "Neural suggestion" }
   description:
     { pt-BR: "Planta ideias e comandos na mente alheia.", en: "Plants ideas and commands in other minds." }
 - id: ilusoes
   type: psionic
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Ilusões psíquicas", en: "Psychic illusions" }
   description: { pt-BR: "Faz os outros verem o que não existe.", en: "Makes others see what is not there." }
 - id: precognicao
   type: psionic
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Precognição", en: "Precognition" }
   description: { pt-BR: "Pressente o perigo segundos antes.", en: "Senses danger seconds before it comes." }
 - id: atmocinese
   type: elemental
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Atmocinese", en: "Atmokinesis" }
   description: { pt-BR: "Controla vento, chuva e raios.", en: "Controls wind, rain and lightning." }
 - id: eletromagnetismo
   type: elemental
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Eletromagnetismo", en: "Electromagnetism" }
   description: { pt-BR: "Manipula metal e campos magnéticos.", en: "Bends metal and magnetic fields." }
 - id: criocinese
   type: elemental
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Criocinese", en: "Cryokinesis" }
   description: { pt-BR: "Congela o ar e cria gelo.", en: "Freezes the air and makes ice." }
 - id: geocinese
   type: elemental
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Geocinese", en: "Geokinesis" }
   description: { pt-BR: "Move terra e provoca tremores.", en: "Moves earth and causes tremors." }
 - id: teletransporte
   type: movement
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Teletransporte", en: "Teleportation" }
   description: { pt-BR: "Some e reaparece em outro lugar.", en: "Vanishes and reappears elsewhere." }
 - id: voo
   type: movement
+  origins: [mutante, inumano, ciencia, tecnologia, mistico, cosmico]
   name: { pt-BR: "Voo", en: "Flight" }
   description: { pt-BR: "Voa vencendo a gravidade.", en: "Flies against gravity." }
 - id: supervelocidade
   type: movement
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Supervelocidade", en: "Super speed" }
   description: { pt-BR: "Corre mais rápido que o olho vê.", en: "Runs faster than the eye can follow." }
 - id: portais
   type: movement
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Portais", en: "Portals" }
   description: { pt-BR: "Abre passagens entre dois pontos.", en: "Opens passages between two places." }
 - id: drenagem
   type: utility
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Drenagem de energia", en: "Energy siphon" }
   description:
     { pt-BR: "Ao tocar, absorve energia e habilidades.", en: "Absorbs energy and abilities by touch." }
 - id: intangibilidade
   type: utility
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Intangibilidade", en: "Phasing" }
   description: { pt-BR: "Atravessa paredes e golpes.", en: "Passes through walls and blows." }
 - id: metamorfose
   type: utility
+  origins: [mutante, inumano, ciencia, mistico, cosmico]
   name: { pt-BR: "Metamorfose", en: "Shapeshifting" }
   description: { pt-BR: "Muda de aparência à vontade.", en: "Changes appearance at will." }
 - id: tecnopatia
   type: utility
+  origins: [mutante, inumano, ciencia, tecnologia]
   name: { pt-BR: "Tecnopatia", en: "Technopathy" }
   description: { pt-BR: "Conversa com máquinas e redes.", en: "Talks to machines and networks." }
 - id: sorte
   type: utility
+  origins: [mutante, inumano, mistico, cosmico]
   name: { pt-BR: "Manipulação de sorte", en: "Luck aura" }
   description: { pt-BR: "A probabilidade pende a seu favor.", en: "Probability bends in your favor." }
+# --- Habilidades (Treinado) e equipamentos (Tecnologia), v0.9 ---
+- id: artes-marciais
+  type: offensive
+  origins: [treinado, tecnologia, ciencia]
+  name: { pt-BR: "Artes marciais", en: "Martial arts" }
+  description:
+    { pt-BR: "Anos de treino em vários estilos de luta.", en: "Years of training in many fighting styles." }
+- id: pontaria-certeira
+  type: offensive
+  origins: [treinado, tecnologia]
+  name: { pt-BR: "Pontaria certeira", en: "Dead-eye aim" }
+  description:
+    {
+      pt-BR: "Acerta qualquer alvo com arco, faca ou pistola.",
+      en: "Hits any target with bow, knife or pistol.",
+    }
+- id: mestre-das-laminas
+  type: offensive
+  origins: [treinado, mistico]
+  name: { pt-BR: "Mestre das lâminas", en: "Edged-weapon expert" }
+  description:
+    { pt-BR: "Espadas e bastões viram extensão do braço.", en: "Swords and staffs become part of the arm." }
+- id: corpo-calejado
+  type: defensive
+  origins: [treinado]
+  name: { pt-BR: "Corpo calejado", en: "Hardened body" }
+  description:
+    { pt-BR: "Aguenta golpes que derrubariam qualquer um.", en: "Takes hits that would floor anyone." }
+- id: acrobacia
+  type: movement
+  origins: [treinado, mutante, inumano, ciencia]
+  name: { pt-BR: "Acrobacia", en: "Acrobatics" }
+  description:
+    { pt-BR: "Salta, rola e escala como ninguém.", en: "Leaps, rolls and climbs like no one else." }
+- id: furtividade
+  type: utility
+  origins: [treinado, tecnologia, mistico]
+  name: { pt-BR: "Furtividade", en: "Stealth" }
+  description: { pt-BR: "Entra e sai sem ser visto.", en: "Gets in and out unseen." }
+- id: mente-tatica
+  type: utility
+  origins: [treinado, ciencia, tecnologia]
+  name: { pt-BR: "Mente tática", en: "Tactical mind" }
+  description:
+    {
+      pt-BR: "Lê o campo de batalha e prevê o próximo passo.",
+      en: "Reads the battlefield and plans the next move.",
+    }
+- id: armadura-de-combate
+  type: defensive
+  origins: [tecnologia]
+  name: { pt-BR: "Armadura de combate", en: "Combat armor" }
+  description:
+    { pt-BR: "Traje blindado feito na própria oficina.", en: "Armored suit built in a home workshop." }
+- id: gerador-de-escudo
+  type: defensive
+  origins: [tecnologia, ciencia]
+  name: { pt-BR: "Gerador de escudo", en: "Shield generator" }
+  description:
+    { pt-BR: "Um aparelho no pulso projeta uma barreira.", en: "A wrist device projects a barrier." }
+- id: propulsores
+  type: movement
+  origins: [tecnologia]
+  name: { pt-BR: "Propulsores a jato", en: "Jet thrusters" }
+  description:
+    { pt-BR: "Botas e mochila que voam baixo e rápido.", en: "Boots and a pack that fly low and fast." }
+- id: canhao-de-plasma
+  type: offensive
+  origins: [tecnologia, cosmico]
+  name: { pt-BR: "Canhão de plasma", en: "Plasma cannon" }
+  description: { pt-BR: "Arma de braço que dispara plasma.", en: "Arm-mounted weapon that fires plasma." }
+- id: drones-de-apoio
+  type: utility
+  origins: [tecnologia]
+  name: { pt-BR: "Drones de apoio", en: "Support drones" }
+  description:
+    {
+      pt-BR: "Pequenos drones que vigiam, distraem e consertam.",
+      en: "Small drones that scout, distract and repair.",
+    }
+- id: invasao-de-sistemas
+  type: utility
+  origins: [tecnologia, treinado]
+  name: { pt-BR: "Invasão de sistemas", en: "System intrusion" }
+  description:
+    { pt-BR: "Abre portas, câmeras e cofres digitais.", en: "Opens doors, cameras and digital vaults." }
+- id: cinto-de-engenhocas
+  type: utility
+  origins: [tecnologia]
+  name: { pt-BR: "Cinto de engenhocas", en: "Gadget belt" }
+  description: { pt-BR: "Sempre tem a ferramenta certa à mão.", en: "Always has the right tool at hand." }
