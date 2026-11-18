@@ -15,10 +15,12 @@ import type { HerbieRepo, TutorialProgressRow } from './db/repo.js';
 import {
   advance,
   type Chain,
+  chainTextKey,
   currentStep,
   type EffectiveStep,
   effectiveSteps,
   memberIdsOf,
+  type QuestEnv,
   TRIGGER_EVENTS,
 } from './domain/quest.js';
 
@@ -54,18 +56,38 @@ export class HerbieTutorial {
   }
 
   get chainId(): string {
-    return this.chain?.chain ?? 'boas-vindas';
+    return this.chain?.chain ?? 'primeiro-contato';
+  }
+
+  private env(): QuestEnv {
+    const bots = this.ctx.config.bots;
+    const jarvisCfg = (this.ctx.config as Record<string, unknown>).jarvis as
+      | { missions?: { enabled?: boolean } }
+      | undefined;
+    const missions = this.jarvisOn && jarvisCfg?.missions?.enabled === true;
+    const combat = missions && bots.includes('sentinel') && bots.includes('ultron');
+    const features = new Set<string>([
+      ...(missions ? ['missions'] : []),
+      ...(combat ? ['mission-combat'] : []),
+    ]);
+    return { enabledBots: bots, features };
   }
 
   steps(): EffectiveStep[] {
     if (!this.chain) return [];
-    const jarvisCfg = (this.ctx.config as Record<string, unknown>).jarvis as
-      | { missions?: { enabled?: boolean } }
-      | undefined;
-    const features = new Set<string>(
-      this.jarvisOn && jarvisCfg?.missions?.enabled === true ? ['missions'] : [],
-    );
-    return effectiveSteps(this.chain, { enabledBots: this.ctx.config.bots, features });
+    return effectiveSteps(this.chain, this.env());
+  }
+
+  /**
+   * One-time move to a renamed chain (v0.9: `boas-vindas` → `primeiro-contato`). Status and steps
+   * done are kept: completed or skipped members are not invited again; active members continue at
+   * the first step of the new chain they have not done. No message is sent.
+   */
+  async migrateChain(from = 'boas-vindas'): Promise<number> {
+    if (!this.chain || this.chain.chain === from) return 0;
+    const moved = await this.repo.renameChain(from, this.chain.chain);
+    if (moved) this.ctx.log.info({ from, to: this.chain.chain, moved }, 'tutorial chain renamed');
+    return moved;
   }
 
   /** The member's current step while the chain is active (for /ajuda). */
@@ -222,7 +244,11 @@ export class HerbieTutorial {
         {
           title: this.t('herbie.tutorial.intro_title', {}, l),
           description: [
-            this.t('herbie.tutorial.intro', { count: steps.length }, l),
+            this.t(
+              chainTextKey(this.chain?.intro, this.env()) ?? 'herbie.tutorial.intro',
+              { count: steps.length },
+              l,
+            ),
             '',
             first ? this.stepLine(first, l) : '',
           ].join('\n'),
@@ -245,6 +271,8 @@ export class HerbieTutorial {
     else {
       lines.push('', this.t('herbie.tutorial.completed', {}, l));
       if (bonus > 0) lines.push(this.t('herbie.tutorial.bonus', { xp: bonus }, l));
+      const final = chainTextKey(this.chain?.completion, this.env());
+      if (final) lines.push('', this.t(final, {}, l));
     }
     return { persona: 'herbie', embeds: [{ description: lines.join('\n') }] };
   }

@@ -20,6 +20,22 @@
       "preferencias": {
         "title": "Suas preferências",
         "body": "Use /cerebro preferencias para escolher seus cargos opcionais."
+      },
+      "capitulo1": {
+        "title": "Capítulo 1: O chamado",
+        "body": "Use `/missao iniciar primeiro-contato-1` e termine com sucesso. Cada botão é uma escolha, e o fim da cena diz se deu certo."
+      },
+      "capitulo2": {
+        "title": "Capítulo 2: Rastro metálico",
+        "body": "Use `/missao iniciar primeiro-contato-2`. Chame alguém pelo botão Entrar ou comece sozinho; em grupo, todos votam."
+      },
+      "capitulo3": {
+        "title": "Capítulo 3: A unidade de varredura",
+        "body": "Use `/missao iniciar primeiro-contato-3`. É a sua primeira luta: o Sentinel cuida do combate e o ULTRON manda o inimigo."
+      },
+      "poderes": {
+        "title": "Seus poderes",
+        "body": "Use /heroi poderes para ver o que o seu herói sabe fazer."
       }
     },
     "tutorial": {
@@ -39,7 +55,10 @@
       "status_active": "Progresso: {done} de {total}",
       "status_completed": "🎉 Você completou o tutorial.",
       "status_skipped": "Tutorial pulado. Use /tutorial reiniciar para continuar.",
-      "disabled": "O tutorial está desligado neste servidor."
+      "disabled": "O tutorial está desligado neste servidor.",
+      "intro_campaign": "Bem-vindo à Legião! Seu tutorial é a campanha **Primeiro contato**: {count} passos que você aprende jogando (acompanhe em /campanha). O primeiro:",
+      "final_teams": "🛡️ **Equipes:** você começa como Independente. Cada equipe tem um arco de recrutamento em /campanha; os arcos abrem no nível 3, e quem termina o último capítulo entra para a equipe.",
+      "final_teams_staff": "🛡️ **Equipes:** você começa como Independente. Para entrar numa equipe, fale com a staff do servidor."
     },
     "help": {
       "tutorial": "Veja seus passos do tutorial (ou recomece).",

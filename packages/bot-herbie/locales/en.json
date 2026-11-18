@@ -20,6 +20,22 @@
       "preferencias": {
         "title": "Your preferences",
         "body": "Use /cerebro preferencias to pick your optional roles."
+      },
+      "capitulo1": {
+        "title": "Chapter 1: The call",
+        "body": "Use `/missao iniciar primeiro-contato-1` and finish it with success. Each button is a choice, and the end of the scene says whether it worked."
+      },
+      "capitulo2": {
+        "title": "Chapter 2: Metal trail",
+        "body": "Use `/missao iniciar primeiro-contato-2`. Bring someone with the Join button or start alone; in a group, everyone votes."
+      },
+      "capitulo3": {
+        "title": "Chapter 3: The sweep unit",
+        "body": "Use `/missao iniciar primeiro-contato-3`. It is your first fight: Sentinel runs the combat and ULTRON sends the enemy."
+      },
+      "poderes": {
+        "title": "Your powers",
+        "body": "Use /heroi poderes to see what your hero can do."
       }
     },
     "tutorial": {
@@ -39,7 +55,10 @@
       "status_active": "Progress: {done} of {total}",
       "status_completed": "🎉 You completed the tutorial.",
       "status_skipped": "Tutorial skipped. Use /tutorial reiniciar to continue.",
-      "disabled": "The tutorial is turned off on this server."
+      "disabled": "The tutorial is turned off on this server.",
+      "intro_campaign": "Welcome to the Legion! Your tutorial is the **First contact** campaign: {count} steps you learn by playing (follow it in /campanha). The first one:",
+      "final_teams": "🛡️ **Teams:** you start as Independent. Every team has a recruitment arc in /campanha; arcs open at level 3, and whoever finishes the last chapter joins the team.",
+      "final_teams_staff": "🛡️ **Teams:** you start as Independent. To join a team, talk to the server staff."
     },
     "help": {
       "tutorial": "See your tutorial steps (or start over).",

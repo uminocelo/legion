@@ -25,14 +25,47 @@ const buttons = (tc: TestContext) =>
       .components?.[0] ?? []
   ).map((b) => ('customId' in b ? (b.customId ?? '') : ''));
 
-/** Starts "primeiro-contato" and walks into its fight. Returns the run. */
+/** Marks tutorial chapters 1 and 2 as won, so chapter 3 (the fight) is unlocked. */
+async function unlockFight(tc: TestContext, js: ReturnType<typeof jarvisServices>, memberId: string) {
+  const now = tc.clock.now().toISOString();
+  for (const missionId of ['primeiro-contato-1', 'primeiro-contato-2'])
+    await tc.db.orm.transaction((tx) =>
+      js.repo.insertRun(
+        {
+          id: `${missionId}-run`,
+          guildId: tc.gateway.guildId,
+          missionId,
+          kind: 'story',
+          leaderMemberId: memberId,
+          status: 'success',
+          sceneId: 'fim',
+          version: 1,
+          locale: 'pt-BR',
+          channelId: tc.gateway.guildId,
+          threadId: null,
+          postedScene: null,
+          messageId: null,
+          day: now.slice(0, 10),
+          week: now.slice(0, 10),
+          createdAt: now,
+          updatedAt: now,
+          endedAt: now,
+        },
+        [memberId],
+        tx,
+      ),
+    );
+}
+
+/** Starts tutorial chapter 3 ("primeiro-contato-3") and walks into its fight. Returns the run. */
 async function intoFight(tc: TestContext, js: ReturnType<typeof jarvisServices>, memberId: string) {
+  await unlockFight(tc, js, memberId);
   await tc.interact({
     kind: 'command',
     userId: U,
     commandName: 'missao',
     subcommand: 'iniciar',
-    options: { missao: 'primeiro-contato' },
+    options: { missao: 'primeiro-contato-3' },
   });
   await tc.interact({ kind: 'component', userId: U, customId: buttons(tc)[0] ?? '' });
   const [run] = await js.repo.runsOf(memberId);
@@ -85,7 +118,7 @@ describe('J.A.R.V.I.S. mission fights through ULTRON and Sentinel', () => {
     // A duplicate result changes nothing.
     await emit(t, 'combat.resolved', res as never, 'sentinel');
     expect(await missionXp(js, memberId)).toEqual([20]);
-    expect((await events(t, 'mission.completed')).filter((e) => e.missionId === run?.id)).toHaveLength(1);
+    expect((await events(t, 'mission.completed')).filter((e) => e.runId === run?.id)).toHaveLength(1);
   });
 
   it('a players win takes the win branch, once', async () => {
@@ -165,7 +198,7 @@ describe('J.A.R.V.I.S. mission fights through ULTRON and Sentinel', () => {
     const { t } = await setup();
     const id = await t.interact({ kind: 'command', userId: U, commandName: 'missao', subcommand: 'lista' });
     const names = (t.gateway.lastReply(id)?.embeds?.[0]?.fields ?? []).map((f) => f.name);
-    expect(names).toContain('Primeiro contato · História');
+    expect(names).toContain('Primeiro contato 3: A unidade de varredura · História');
     const ok = await jarvisDoctorChecks(t.ctxOf(jarvis))[0]?.run();
     expect(ok?.status).toBe('ok');
   });
@@ -179,6 +212,8 @@ describe('without ULTRON and Sentinel', () => {
     const s = jarvisServices(t.ctxOf(jarvis));
     expect((await s.missions.missions()).map((m) => m.id).sort()).toEqual([
       'patrulha-noturna',
+      'primeiro-contato-1',
+      'primeiro-contato-2',
       'sinal-fantasma',
     ]);
     const res = await jarvisDoctorChecks(t.ctxOf(jarvis))[0]?.run();

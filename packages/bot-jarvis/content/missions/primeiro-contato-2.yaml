@@ -1,0 +1,53 @@
+# Tutorial chapter 2: up to 2 heroes; the leader can start alone. Format: docs/MISSIONS.md
+id: primeiro-contato-2
+kind: story
+campaign: { id: primeiro-contato, chapter: 2 }
+requires: { missions: [primeiro-contato-1] }
+title:
+  pt-BR: "Primeiro contato 2: Rastro metálico"
+  en: "First contact 2: Metal trail"
+summary:
+  pt-BR: O sensor aponta para um galpão na cidade. Chame alguém para ir junto, ou vá sozinho; em grupo, todos votam.
+  en: The sensor points to a shed in town. Bring someone along, or go alone; in a group, everyone votes.
+minLevel: 1
+party: 2
+difficulty: facil
+start: sinal
+scenes:
+  sinal:
+    text:
+      pt-BR: O sensor ainda transmite. O sinal leva a um galpão abandonado perto da ferrovia, com uma antena nova no telhado.
+      en: The sensor is still transmitting. The signal leads to an abandoned shed by the railway, with a new antenna on the roof.
+    choices:
+      - label: { pt-BR: Entrar pela porta dos fundos, en: Go in through the back door }
+        next: galpao
+      - label: { pt-BR: Subir até a antena, en: Climb to the antenna }
+        next: antena
+  antena:
+    text:
+      pt-BR: A antena manda os dados para longe, para o norte. Dá para cortar o cabo, mas quem estiver ouvindo vai perceber.
+      en: The antenna sends the data far away, to the north. You can cut the cable, but whoever is listening will notice.
+    choices:
+      - label: { pt-BR: Cortar o cabo, en: Cut the cable }
+        next: corte
+      - label: { pt-BR: Copiar os dados antes, en: Copy the data first }
+        next: copia
+  galpao:
+    text:
+      pt-BR: Lá dentro, prateleiras de peças e um mapa da escola na parede, com a estufa e o seu quarto marcados em vermelho.
+      en: Inside, shelves of parts and a map of the school on the wall, with the greenhouse and your room marked in red.
+    choices:
+      - label: { pt-BR: Fotografar o mapa, en: Photograph the map }
+        next: copia
+      - label: { pt-BR: Destruir tudo, en: Destroy everything }
+        next: corte
+  copia:
+    text:
+      pt-BR: Os dados mostram o próximo passo do ULTRON. Uma unidade de varredura vai até a escola amanhã. Agora vocês sabem quando.
+      en: The data shows ULTRON's next move. A sweep unit is going to the school tomorrow. Now you know when.
+    end: success
+  corte:
+    text:
+      pt-BR: O sinal morre, e com ele qualquer pista. Do norte, alguém já sabe que vocês estiveram ali.
+      en: The signal dies, and with it every lead. Up north, someone already knows you were there.
+    end: failure

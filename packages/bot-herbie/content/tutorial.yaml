@@ -1,28 +1,56 @@
 # Tutorial do H.E.R.B.I.E. Pode ser sobrescrito por ./data/content/tutorial.yaml.
-# Os textos ficam nos locales (titleKey/bodyKey). Veja docs/CONFIG.md.
-chain: boas-vindas
+# Os textos ficam nos locales (titleKey/bodyKey). Veja docs/TUTORIAL.md.
+# Os capítulos são a campanha "primeiro-contato" do J.A.R.V.I.S. (content/campaigns/).
+chain: primeiro-contato
+intro:
+  bodyKey: herbie.tutorial.intro_campaign
+  requiresBot: jarvis
+  fallbackBodyKey: herbie.tutorial.intro
 steps:
   - id: perfil
     titleKey: herbie.quest.perfil.title
     bodyKey: herbie.quest.perfil.body
     trigger: { event: command.executed, where: { command: perfil } }
     rewardXp: 20
-  - id: primeira-trivia
-    titleKey: herbie.quest.trivia.title
-    bodyKey: herbie.quest.trivia.body
-    requiresBot: jarvis
-    trigger: { event: trivia.answered } # qualquer resposta conta, certa ou errada
-    rewardXp: 30
-  - id: primeira-missao
-    titleKey: herbie.quest.missao.title
-    bodyKey: herbie.quest.missao.body
+  - id: capitulo-1
+    titleKey: herbie.quest.capitulo1.title
+    bodyKey: herbie.quest.capitulo1.body
     requiresBot: jarvis
     requiresFeature: missions
-    trigger: { event: mission.completed }
+    trigger: { event: mission.completed, where: { missionId: primeiro-contato-1, outcome: success } }
     fallback:
       id: preferencias
       titleKey: herbie.quest.preferencias.title
       bodyKey: herbie.quest.preferencias.body
       trigger: { event: command.executed, where: { command: cerebro, subcommand: preferencias } }
-    rewardXp: 50
+    rewardXp: 30
+  - id: primeira-trivia
+    titleKey: herbie.quest.trivia.title
+    bodyKey: herbie.quest.trivia.body
+    requiresBot: jarvis
+    trigger: { event: trivia.answered } # qualquer resposta conta, certa ou errada
+    rewardXp: 20
+  - id: capitulo-2
+    titleKey: herbie.quest.capitulo2.title
+    bodyKey: herbie.quest.capitulo2.body
+    requiresBot: jarvis
+    requiresFeature: missions
+    trigger: { event: mission.completed, where: { missionId: primeiro-contato-2, outcome: success } }
+    fallback:
+      id: poderes
+      titleKey: herbie.quest.poderes.title
+      bodyKey: herbie.quest.poderes.body
+      trigger: { event: command.executed, where: { command: heroi, subcommand: poderes } }
+    rewardXp: 30
+  - id: capitulo-3
+    titleKey: herbie.quest.capitulo3.title
+    bodyKey: herbie.quest.capitulo3.body
+    requiresBot: jarvis
+    requiresFeature: mission-combat # sem ULTRON e Sentinel a luta não existe: o passo some
+    trigger: { event: mission.completed, where: { missionId: primeiro-contato-3, outcome: success } }
+    rewardXp: 40
 completionRewardXp: 50
+completion:
+  bodyKey: herbie.tutorial.final_teams
+  requiresBot: jarvis
+  fallbackBodyKey: herbie.tutorial.final_teams_staff

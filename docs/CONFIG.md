@@ -124,13 +124,13 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 | `streak.bonusPerDay` / `streak.bonusCap` | `5` / `7` | Bônus diário = `bonusPerDay × min(dias, bonusCap)` |
 | `leaderboard.size` | `10` | Linhas do `/ranking` |
 | `leaderboard.channelCooldownSeconds` | `15` | Intervalo mínimo do `/ranking` público por canal |
-| `missions.enabled` | `true` | Liga o `/missao` (e o passo "primeira missão" do tutorial do H.E.R.B.I.E.) |
+| `missions.enabled` | `true` | Liga o `/missao` (e os capítulos do tutorial do H.E.R.B.I.E.; desligado, o tutorial usa os passos de reserva) |
 | `missions.rewards.daily` | `successXp 40, failureXp 10` | XP de uma missão diária; o arquivo da missão pode definir `xp` próprio |
 | `missions.rewards.weekly` | `successXp 120, failureXp 30` | XP de uma missão semanal |
 | `missions.rewards.story` | `successXp 80, failureXp 20` | XP de uma missão de história |
 | `missions.limits.dailyPerMember` | `1` | Missões diárias por membro por dia (fuso do servidor) |
 | `missions.limits.weeklyPerMember` | `1` | Missões semanais por membro por semana (segunda a domingo) |
-| `missions.limits.storyRepeatable` | `false` | `false`: cada história só pode ser jogada uma vez |
+| `missions.limits.storyRepeatable` | `false` | `false`: cada história só pode ser jogada uma vez. Um capítulo de campanha só conta depois de vencido: quem perde pode tentar de novo |
 | `missions.choiceTimeoutMinutes` | `10` | Sem escolha nesse tempo, a missão é abandonada (sem XP) |
 | `missions.combatTimeoutMinutes` | `15` | Sem resultado da luta nesse tempo, a missão fracassa |
 | `missions.lobbyTimeoutMinutes` | `5` | Tempo para um grupo se formar |
@@ -168,7 +168,7 @@ Ao iniciar, e com `/jarvis trivia recarregar`, as perguntas são sincronizadas p
 
 Os arquivos vêm em `packages/bot-herbie/content/`. Para personalizar, copie o arquivo para `./data/content/` com o mesmo nome; o do servidor tem prioridade. Se ele tiver erro, o H.E.R.B.I.E. avisa no log e continua com a versão anterior.
 
-- `tutorial.yaml`: os passos. Cada passo tem `id`, `titleKey`/`bodyKey` (textos nos locales), `trigger` (`event` entre `command.executed`, `trivia.answered`, `mission.completed`, `level.changed`, `streak.updated`, e `where` com campos exatos do evento), `rewardXp`, e opcionalmente `requiresBot`, `requiresFeature: missions` e `fallback` (passo usado quando o bot/recurso não está ligado). `completionRewardXp` é o bônus final.
+- `tutorial.yaml`: os passos. Cada passo tem `id`, `titleKey`/`bodyKey` (textos nos locales), `trigger` (`event` entre `command.executed`, `trivia.answered`, `mission.completed`, `level.changed`, `streak.updated`, e `where` com campos exatos do evento), `rewardXp`, e opcionalmente `requiresBot`, `requiresFeature` (`missions` ou `mission-combat`) e `fallback` (passo usado quando o bot/recurso não está ligado). `completionRewardXp` é o bônus final; `intro` e `completion` trocam os textos do convite e do fim. Detalhes em [TUTORIAL.md](TUTORIAL.md).
 - `glossary.pt-BR.yaml` / `glossary.en.yaml`: termos do `/regras` (`id`, `term`, `aliases`, `summary` até 300 caracteres, `details` até 1500, `related`, `bot` opcional para esconder quando o bot está desligado). Use aspas nos textos com `:`.
 - `tips.pt-BR.yaml` / `tips.en.yaml`: dicas (`id`, `text`, `bot` opcional), postadas em rodízio sem repetir.
 - `guide.pt-BR.yaml` / `guide.en.yaml`: o guia "como jogar" do `/herbie guia publicar`, no idioma do servidor (`id`, `title` até 256 caracteres, `body` até 4000, `bot` opcional). Republique depois de editar.

@@ -1,0 +1,10 @@
+# Tutorial campaign: the H.E.R.B.I.E. tutorial walks new heroes through these chapters.
+# Format: docs/MISSIONS.md (Campanhas). A server file with the same id replaces it.
+id: primeiro-contato
+kind: tutorial
+title:
+  pt-BR: Primeiro contato
+  en: First contact
+summary:
+  pt-BR: Seus primeiros dias na Legião. Uma assinatura metálica ronda a escola, e alguém precisa descobrir o que ela quer.
+  en: Your first days in the Legion. A metallic signature circles the school, and someone has to find out what it wants.

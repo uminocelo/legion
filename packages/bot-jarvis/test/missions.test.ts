@@ -61,7 +61,7 @@ describe('solo missions', () => {
       [40, 'patrulha-noturna', `mission:${run?.id}:${memberId}`],
     ]);
     expect(await events(t, 'mission.completed')).toEqual([
-      { missionId: run?.id, memberIds: [memberId], outcome: 'success' },
+      { missionId: 'patrulha-noturna', runId: run?.id, memberIds: [memberId], outcome: 'success' },
     ]);
     const result = t.gateway.messages.at(-1)?.msg.embeds?.[0]?.description ?? '';
     expect(result).toMatch(/Faísca/);
@@ -141,7 +141,7 @@ describe('solo missions', () => {
     await t.settle();
     expect((await s.repo.run(run?.id ?? ''))?.status).toBe('abandoned');
     expect(await events(t, 'mission.completed')).toEqual([
-      { missionId: run?.id, memberIds: [memberId], outcome: 'abandoned' },
+      { missionId: run?.missionId, runId: run?.id, memberIds: [memberId], outcome: 'abandoned' },
     ]);
     expect(await ledger(t, memberId)).toEqual([]);
     expect(t.gateway.messages.at(-1)?.msg.embeds?.[0]?.description).toMatch(/abandonada/);
@@ -185,8 +185,14 @@ describe('solo missions', () => {
     const { t } = await setup();
     const id = await t.interact({ kind: 'command', userId: U, commandName: 'missao', subcommand: 'lista' });
     const fields = t.gateway.lastReply(id)?.embeds?.[0]?.fields ?? [];
-    expect(fields.map((f) => f.name)).toEqual(['Patrulha noturna · Diária', 'Sinal fantasma · Semanal']);
-    expect(fields[1]?.value).toMatch(/🔒 Precisa do nível 2/);
+    expect(fields.map((f) => f.name)).toEqual([
+      'Patrulha noturna · Diária',
+      'Primeiro contato 1: O chamado · História',
+      'Primeiro contato 2: Rastro metálico · História',
+      'Sinal fantasma · Semanal',
+    ]);
+    expect(fields[2]?.value).toMatch(/🔒 Bloqueada: falta concluir/);
+    expect(fields[3]?.value).toMatch(/🔒 Precisa do nível 2/);
     t.gateway.addMember({ userId: '999' });
     const anon = await start(t, 'patrulha-noturna', '999');
     expect(t.gateway.lastReply(anon)?.content).toMatch(/ainda não é um herói registrado/);
@@ -202,6 +208,6 @@ describe('solo missions', () => {
     });
     const calls = t.gateway.callsOf('respondAutocomplete') as [string, { value: string }[]][];
     const res = calls.find((c) => c[0] === id)?.[1] ?? [];
-    expect(res.map((c) => c.value)).toEqual(['patrulha-noturna']);
+    expect(res.map((c) => c.value)).toEqual(['patrulha-noturna', 'primeiro-contato-1']);
   });
 });

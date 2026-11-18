@@ -114,6 +114,7 @@ export const EXAMPLES = [
   ...readdirSync(join(ROOT, 'packages/bot-jarvis/content/missions'))
     .filter((f) => f.endsWith('.yaml'))
     .map((f) => [`packages/bot-jarvis/content/missions/${f}`, `exemplos/missoes/${f}`]),
+  ['packages/bot-jarvis/content/campaigns/primeiro-contato.yaml', 'exemplos/campanhas/primeiro-contato.yaml'],
   ['packages/bot-jarvis/content/trivia/pt-BR.yaml', 'exemplos/trivia/pt-BR.yaml'],
   ['packages/bot-ultron/content/enemies.yaml', 'exemplos/enemies.yaml'],
   ['packages/bot-cerebro/content/powers.yaml', 'exemplos/powers.yaml'],

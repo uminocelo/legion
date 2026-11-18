@@ -202,7 +202,12 @@ export class JarvisMissions {
       runs.filter((r) => r.kind === 'weekly' && r.week === week).length >= lim.weeklyPerMember
     )
       return { key: 'weekly_limit' };
-    if (m.kind === 'story' && !lim.storyRepeatable && runs.some((r) => r.missionId === m.id))
+    // A campaign chapter is "played" only once won, so a lost chapter can be tried again (ADR 0032, D13).
+    if (
+      m.kind === 'story' &&
+      !lim.storyRepeatable &&
+      runs.some((r) => r.missionId === m.id && (!m.campaign || r.status === 'success'))
+    )
       return { key: 'story_done' };
     return null;
   }
@@ -458,7 +463,12 @@ export class JarvisMissions {
           sourceKey: `mission:${run.id}:${memberId}`,
         });
       }
-    await this.ctx.bus.emit(tx, 'mission.completed', { missionId: run.id, memberIds: who, outcome });
+    await this.ctx.bus.emit(tx, 'mission.completed', {
+      missionId: m.id,
+      runId: run.id,
+      memberIds: who,
+      outcome,
+    });
     await this.requestJoins(tx, run, m, outcome, who);
     return { ...run, status: outcome, version: version + 1, endedAt };
   }

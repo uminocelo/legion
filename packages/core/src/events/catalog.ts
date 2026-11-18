@@ -114,8 +114,10 @@ export const eventCatalog = {
     difficulty: z.enum(['facil', 'normal', 'dificil']),
     channelId: id,
   }),
+  /** `missionId` is the mission's content id (e.g. `primeiro-contato-1`); `runId` the run (v0.9). */
   'mission.completed': z.object({
     missionId: id,
+    runId: id,
     memberIds: z.array(id),
     outcome: z.enum(['success', 'failure', 'abandoned']),
   }),
