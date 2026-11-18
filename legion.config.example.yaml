@@ -8,7 +8,7 @@ locale: pt-BR
 timezone: America/Sao_Paulo
 
 # Bots ligados. O Cérebro é obrigatório quando qualquer outro está ligado.
-# Nesta versão (v0.1.0) só o cerebro está disponível.
+# Disponíveis: cerebro, jarvis, herbie, sentinel e ultron (precisa do sentinel).
 bots:
   - cerebro
 

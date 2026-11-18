@@ -10,15 +10,17 @@ Kit de bots de RPG para Discord, **auto-hospedável**, inspirado nos X-Men. Um �
 | Sentinel | Combate e moderação | v0.4.0 ✅ |
 | ULTRON | Eventos mundiais e raids | v0.4.0 ✅ |
 
-> 📸 _Capturas de tela em breve._
+![Ficha mutante de exemplo gerada pelo /perfil](website/assets/ficha-exemplo.png)
+
+**Primeira vez?** Siga o [TUTORIAL.md](TUTORIAL.md): do zero ao primeiro jogo, com uma conferência no fim de cada passo. Site do projeto: [`website/`](website/).
 
 ## Início rápido (3 passos)
 
-1. **Crie o app no Discord** (detalhes abaixo) e copie o token, o Application ID e o ID do seu servidor.
+1. **Crie o app Cérebro no Discord** (detalhes abaixo) e copie o token, o Application ID e o ID do seu servidor.
 2. **Configure:**
    ```bash
    git clone https://github.com/uminocelo/legion && cd legion
-   cp .env.example .env                              # preencha os 3 IDs/segredos
+   cp .env.example .env                              # CEREBRO_TOKEN, CEREBRO_CLIENT_ID, DISCORD_GUILD_ID
    cp legion.config.example.yaml legion.config.yaml  # preencha os canais
    ```
    Ou responda às perguntas: `docker run --rm -it -v "$PWD:/out" ghcr.io/uminocelo/legion legion init --out /out`
@@ -32,9 +34,9 @@ Guia passo a passo para quem não é desenvolvedor (Windows, macOS, Linux, Raspb
 
 ## Criar o app no Discord
 
-1. Abra o [Developer Portal](https://discord.com/developers/applications) → **New Application**.
+1. Abra o [Developer Portal](https://discord.com/developers/applications) → **New Application** → nome **Cérebro**.
 2. **General Information** → copie o **Application ID** → `CEREBRO_CLIENT_ID`.
-3. **Bot** → **Reset Token** → copie → `CEREBRO_TOKEN` (nunca compartilhe).
+3. **Bot** → **Username** Cérebro (o nome que aparece no chat) → **Reset Token** → copie → `CEREBRO_TOKEN` (nunca compartilhe).
 4. **Bot → Privileged Gateway Intents** → ligue **Server Members Intent** (o Cérebro precisa para ver quem entra) e salve.
 5. No Discord, ative **Configurações → Avançado → Modo desenvolvedor**, clique com o botão direito no servidor → **Copiar ID** → `DISCORD_GUILD_ID`.
 
@@ -43,11 +45,11 @@ Guia passo a passo para quem não é desenvolvedor (Windows, macOS, Linux, Raspb
 ```bash
 docker compose run --rm legion legion invite-url
 ```
-Abra o link. Ele já pede só as permissões que os bots ligados usam (gerenciar cargos e canais, ver canais, enviar mensagens, embeds, comandos de barra).
+Abra o link. Ele já pede só as permissões que os bots ligados usam (gerenciar cargos e canais, ver canais, enviar mensagens, embeds, tópicos, fixar mensagens, comandos de barra e, com o Sentinel, moderar membros).
 
 ### ⚠️ Suba o cargo do bot
 
-O Discord só deixa um bot dar cargos **abaixo** do cargo mais alto dele. Em **Configurações do servidor → Cargos**, arraste o cargo do bot (o nome do seu app) para **acima** de todos os cargos que o Legion gerencia (Sinal Detectado, Mutante Registrado, X-Men, Irmandade, Independente, Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). `legion doctor` e `/cerebro status` listam exatamente quais estão acima dele.
+O Discord só deixa um bot dar cargos **abaixo** do cargo mais alto dele. Em **Configurações do servidor → Cargos**, arraste o cargo do bot (**Cérebro**, o nome do app) para **acima** de todos os cargos que o Legion gerencia (Sinal Detectado, Mutante Registrado, X-Men, Irmandade, Independente, Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). `legion doctor` e `/cerebro status` listam exatamente quais estão acima dele.
 
 O cargo **Assinante TikTok** é da integração do TikTok: o Legion nunca cria, edita, dá ou tira esse cargo.
 
@@ -82,7 +84,7 @@ No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e 
 ```bash
 docker compose pull && docker compose up -d
 ```
-As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.1.0` no `.env` se preferir.
+As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.7.1` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
 
 ## Backup
 
@@ -90,7 +92,7 @@ Tudo fica em `./data`. Pare (`docker compose stop`), copie a pasta `./data` e su
 
 ## Ligar mais bots
 
-Adicione o bot em `bots:` no `legion.config.yaml` (o Cérebro é sempre obrigatório) e reinicie. Disponíveis: `cerebro`, `jarvis`, `herbie` e `sentinel`.
+Adicione o bot em `bots:` no `legion.config.yaml` (o Cérebro é sempre obrigatório) e reinicie. Disponíveis: `cerebro`, `jarvis`, `herbie`, `sentinel` e `ultron`.
 
 ### J.A.R.V.I.S. (trivia, XP e missões)
 
@@ -138,6 +140,10 @@ Com `ultron` em `bots:` (precisa do `sentinel`) e `channels.events` definido:
 - Frases por IA opcionais (Ollama ou API compatível com OpenAI), desligadas por padrão.
 
 Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
+
+## Site
+
+A página do projeto fica em [`website/`](website/): HTML e CSS estáticos, sem build e sem chamadas externas. Para ver localmente, abra `website/index.html` no navegador. Detalhes em [website/README.md](website/README.md).
 
 ## Desenvolvimento
 
