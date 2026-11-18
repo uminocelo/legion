@@ -180,7 +180,8 @@ describe('tutorial steps and XP', () => {
     // J.A.R.V.I.S. consumed every grant once (replaying the consumers changes nothing)
     await t.runtime.bus.replayPending();
     const tutorialXp = (await xpLedger(t, m)).filter(([r]) => r === 'grant');
-    expect(tutorialXp.map(([, a]) => a)).toEqual([20, 30, 20, 30, 50]);
+    // The last step and the bonus land in the same transaction: their ledger order is not fixed.
+    expect(tutorialXp.map(([, a]) => a).sort()).toEqual([20, 20, 30, 30, 50]);
     const last = messagesTo(t, '111').at(-1)?.msg.embeds?.[0]?.description ?? '';
     expect(last).toContain('🎉 Tutorial completo!');
     expect(last).toContain('Bônus de conclusão: +50 XP');
