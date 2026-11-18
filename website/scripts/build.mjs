@@ -66,6 +66,24 @@ export const PAGES = [
     color: '#E74C3C',
   },
   {
+    out: 'editor-trivia.html',
+    src: 'editor-trivia.html',
+    title: 'Editor de trivia · Legion',
+    description: 'Escreva perguntas de trivia e importe no seu servidor com /jarvis trivia importar.',
+    nav: 'custom',
+    color: '#F1C40F',
+    script: 'trivia',
+  },
+  {
+    out: 'editor-inimigos.html',
+    src: 'editor-inimigos.html',
+    title: 'Editor de inimigos · Legion',
+    description: 'Crie inimigos do ULTRON e importe no seu servidor com /ultron inimigo importar.',
+    nav: 'custom',
+    color: '#E74C3C',
+    script: 'enemy',
+  },
+  {
     out: 'personalizar.html',
     src: 'personalizar.html',
     title: 'Personalizar · Legion',
@@ -153,7 +171,7 @@ function layout(page, body) {
   <meta property="og:image" content="assets/ficha-exemplo.png">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">${page.script ? `\n  <script type="module" src="assets/js/${page.script}.js"></script>` : ''}
 </head>
 <body${page.color ? ` style="--accent:${page.color}"` : ''}>
   <header class="top">
@@ -201,8 +219,35 @@ export function readData() {
   };
 }
 
-/** Writes every page, the stylesheet, assets and example files into `out`. Returns the written paths. */
-export function build(out = DIST) {
+/**
+ * Editor bundles: `@legion/core` is swapped for the browser stand-in and the canon list is inlined.
+ * The validation code (zod, yaml, schemas) goes into one shared chunk the browser caches across editors.
+ */
+export const EDITORS = ['trivia', 'enemy'];
+
+export async function bundleEditors(out) {
+  const { build: esbuild } = await import('esbuild');
+  const res = await esbuild({
+    entryPoints: Object.fromEntries(EDITORS.map((e) => [e, join(SITE, 'editor', `${e}.ts`)])),
+    outdir: join(out, 'assets/js'),
+    bundle: true,
+    splitting: true,
+    chunkNames: 'shared-[hash]',
+    format: 'esm',
+    platform: 'browser',
+    target: 'es2022',
+    minify: true,
+    legalComments: 'none',
+    alias: { '@legion/core': join(SITE, 'editor/core-shim.ts') },
+    loader: { '.txt': 'text' },
+    metafile: true,
+    logLevel: 'silent',
+  });
+  return res.metafile;
+}
+
+/** Writes every page, the stylesheet, assets, editor bundles and example files into `out`. */
+export async function build(out = DIST) {
   const data = readData();
   rmSync(out, { recursive: true, force: true });
   mkdirSync(out, { recursive: true });
@@ -221,10 +266,12 @@ export function build(out = DIST) {
     if (!existsSync(join(ROOT, from))) throw new Error(`example missing: ${from}`);
     write(to, readFileSync(join(ROOT, from)));
   }
+  const meta = await bundleEditors(out);
+  written.push(...Object.keys(meta.outputs).map((p) => p.slice(p.indexOf('assets/js/'))));
   return written;
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const files = build();
+  const files = await build();
   console.log(`built ${files.length} files into ${DIST}`);
 }

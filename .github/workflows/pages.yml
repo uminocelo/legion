@@ -6,7 +6,9 @@ on:
     branches: [main]
     paths:
       - "website/**"
-      - "packages/*/content/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
       - "legion.config.example.yaml"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -28,11 +30,15 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      # Pages, command tables (website/data/commands.json, checked by the tests) and example files.
-      - run: node website/scripts/build.mjs
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Pages, command tables (website/data/commands.json, checked by the tests), example files and the
+      # editor bundles (the bots' validation code, bundled for the browser).
+      - run: pnpm site:build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

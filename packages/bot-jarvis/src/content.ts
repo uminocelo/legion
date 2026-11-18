@@ -4,30 +4,10 @@ import { basename, join } from 'node:path';
 import type { Locale } from '@legion/core';
 import { and, eq, notInArray } from 'drizzle-orm';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
-import { z } from 'zod';
-import { DIFFICULTIES } from './config.js';
 import type { JarvisRepo } from './db/repo.js';
+import { checkTriviaItems, type TriviaQuestion } from './domain/trivia.js';
 
-export const questionSchema = z
-  .object({
-    id: z.string().regex(/^[a-z0-9][a-z0-9_-]{1,63}$/, 'use letters, digits, - or _ (2-64 chars)'),
-    category: z.string().min(1),
-    difficulty: z.enum(DIFFICULTIES),
-    question: z.string().min(5).max(300),
-    choices: z.array(z.string().min(1).max(80)).min(2).max(4),
-    answer: z.number().int().min(0),
-    explanation: z.string().min(1).max(300),
-    // A URL or a reference such as "Shang-Chi #4 (2021)".
-    source: z.string().trim().min(3).max(200),
-    locale: z.enum(['pt-BR', 'en']).optional(),
-  })
-  .refine((q) => q.answer < q.choices.length, { path: ['answer'], message: 'answer must index into choices' })
-  .refine((q) => new Set(q.choices).size === q.choices.length, {
-    path: ['choices'],
-    message: 'choices must be different',
-  });
-
-export type TriviaQuestion = z.infer<typeof questionSchema> & { locale: Locale };
+export { checkTriviaItems, parseTriviaYaml, questionSchema, type TriviaQuestion } from './domain/trivia.js';
 
 export interface ContentLoadResult {
   questions: TriviaQuestion[];
@@ -63,29 +43,9 @@ export function readTriviaContent(
         errors.push(`${file}: o arquivo deve ser uma lista de perguntas`);
         continue;
       }
-      raw.forEach((item, i) => {
-        const res = questionSchema.safeParse(item);
-        const label = `${file} → item ${i + 1}${(item as { id?: string })?.id ? ` (${(item as { id: string }).id})` : ''}`;
-        if (!res.success) {
-          for (const issue of res.error.issues)
-            errors.push(`${label} → ${issue.path.join('.') || 'item'}: ${issue.message}`);
-          return;
-        }
-        const q = res.data;
-        if (!categories.includes(q.category)) {
-          errors.push(
-            `${label} → category: "${q.category}" não está em jarvis.trivia.categories (${categories.join(', ')})`,
-          );
-          return;
-        }
-        const dup = seen.get(q.id);
-        if (dup) {
-          errors.push(`${label} → id: "${q.id}" repetido (já existe em ${dup})`);
-          return;
-        }
-        seen.set(q.id, file);
-        questions.push({ ...q, locale: q.locale ?? fileLocale });
-      });
+      const res = checkTriviaItems(raw, file, { categories, locale: fileLocale, seen });
+      questions.push(...res.questions);
+      errors.push(...res.errors);
     }
   }
   return { questions, errors };

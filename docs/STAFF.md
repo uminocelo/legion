@@ -24,6 +24,7 @@ Outros comandos:
 | `/jarvis trivia lista` | Lista com filtros: `status` (ativa, pendente, desativada, todas), `categoria`, `autor`, `pagina` |
 | `/jarvis trivia editar pergunta:…` | Abre o formulário preenchido. Só perguntas criadas no Discord; as de arquivo se editam no arquivo. Toda edição fica no histórico |
 | `/jarvis trivia desativar` / `ativar` | Tira ou volta uma pergunta (inclusive de arquivo) na hora; continua desligada depois de recarregar os arquivos |
+| `/jarvis trivia importar arquivo:` | Importa até 50 perguntas de um `.yaml` (feito no [editor de trivia](https://uminocelo.github.io/legion/editor-trivia.html) ou pelo `exportar`): prévia, depois **Publicar**. Mesmo `id` atualiza; a regra `review` vale aqui também |
 | `/jarvis trivia exportar` | Baixa `trivia-staff.yaml` no mesmo formato dos arquivos de conteúdo (backup ou para compartilhar) |
 
 Quer uma categoria nova, como `marvel`? Acrescente em `jarvis.trivia.categories` no `legion.config.yaml` e reinicie uma vez.

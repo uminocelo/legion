@@ -125,7 +125,9 @@
         "arquivo": "O arquivo .yaml da missão (veja docs/MISSIONS.md)",
         "missao_lista": "Lista as missões e de onde vieram",
         "missao_desativar": "Tira uma missão de jogo",
-        "missao_ativar": "Volta uma missão desativada"
+        "missao_ativar": "Volta uma missão desativada",
+        "trivia_importar": "Importa perguntas de um arquivo .yaml",
+        "trivia_arquivo": "O arquivo .yaml com as perguntas (mesmo formato do exportar)"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
@@ -248,6 +250,12 @@
       "mission_list": "Missões ({total})",
       "disabled": "⛔ Missão `{id}` desativada.",
       "enabled": "✅ Missão `{id}` ativada."
+    },
+    "trivia_imports": {
+      "summary": "🆕 {added} nova(s) · ✏️ {changed} alterada(s) · ＝ {same} igual(is)",
+      "review_note": "ℹ️ Com revisão ligada, novas e alteradas esperam a aprovação de outra pessoa da staff.",
+      "published": "✅ Perguntas publicadas: {added} nova(s), {changed} alterada(s), {same} sem mudança. Já valem no /trivia.",
+      "published_review": "📝 Perguntas enviadas para revisão: {added} nova(s), {changed} alterada(s) ({same} sem mudança). Elas entram no /trivia depois de aprovadas."
     }
   }
 }
