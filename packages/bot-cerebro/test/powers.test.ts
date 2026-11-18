@@ -48,6 +48,12 @@ describe('power catalog', () => {
     expect(res.errors.join('\n')).toMatch(/item 1 \(X\) → id/);
     expect(res.errors.join('\n')).toMatch(/item 1 \(X\) → type/);
     expect(res.errors.join('\n')).toMatch(/name\.pt-BR: nome de personagem existente/);
+    const hero = tmpFile(
+      '- id: escudo\n  type: defensive\n  name: { pt-BR: Capitão América }\n  description: { pt-BR: ok ok }\n',
+    );
+    expect(readPowers([SHIPPED, hero]).errors.join('\n')).toMatch(
+      /\(escudo\) → name\.pt-BR: nome de personagem existente/,
+    );
     const over = tmpFile(
       '- id: voo\n  type: movement\n  name: { pt-BR: Planar }\n  description: { pt-BR: Plana no vento. }\n',
     );

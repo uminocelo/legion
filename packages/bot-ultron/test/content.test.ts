@@ -23,12 +23,14 @@ describe('enemy content', () => {
     writeFileSync(
       join(d, 'enemies.yaml'),
       `- { id: vilao, name: "Magneto", tier: minion, minLevel: 1, base: { hp: 10, atk: 1, def: 1, spd: 1, foc: 1 }, powerCooldownMax: 3 }
+- { id: capitao, name: "Capitão América", tier: minion, minLevel: 1, base: { hp: 10, atk: 1, def: 1, spd: 1, foc: 1 }, powerCooldownMax: 3 }
 - { id: zero, name: "Robô Zero", tier: minion, minLevel: 1, base: { hp: 0, atk: 1, def: 1, spd: 1, foc: 1 }, powerCooldownMax: 3 }
 `,
     );
     const { errors } = readEnemies([shipped, join(d, 'enemies.yaml')]);
     expect(errors).toEqual([
       expect.stringContaining('(vilao) → name: nome de personagem existente'),
+      expect.stringContaining('(capitao) → name: nome de personagem existente'),
       expect.stringContaining('(zero) → base.hp: hp deve ser ≥ 1'),
     ]);
     writeFileSync(join(d, 'enemies.yaml'), 'id: [');

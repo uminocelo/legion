@@ -94,7 +94,7 @@ describe('codename validation', () => {
     expect(validateCodename('<@123>', limits)).toMatchObject({ ok: false, error: 'chars' });
   });
   it('rejects canon names in all their disguises', () => {
-    for (const n of ['W0lverine', 'tempestade', 'Jean  Grey', 'Mística'])
+    for (const n of ['W0lverine', 'tempestade', 'Jean  Grey', 'Mística', 'Capitão América', 'Homem de Ferro'])
       expect(validateCodename(n, limits)).toMatchObject({ ok: false, error: 'canon' });
   });
 });

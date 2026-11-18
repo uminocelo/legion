@@ -106,7 +106,7 @@ function drawMeta() {
       h(
         'div',
         { class: 'grid' },
-        text2('Título', m.title, 80, false, 'Nomes de personagens existentes são recusados'),
+        text2('Título', m.title, 80, false, 'Pode citar heróis e lugares da Marvel; inimigos são originais'),
         text2('Resumo', m.summary, 300, true),
         field('Id', id, 'Mesmo id substitui a missão no servidor'),
         field(

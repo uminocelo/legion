@@ -37,6 +37,6 @@ O catálogo vem em `packages/bot-cerebro/content/powers.yaml` (32 poderes). Para
 ```
 
 - `name` até 60 caracteres, `description` até 100. `en` é opcional.
-- Nomes de personagens existentes são recusados: use nomes genéricos de poderes.
+- Nomes de personagens existentes são recusados: use nomes genéricos de poderes. Veja [UNIVERSE.md](UNIVERSE.md).
 - Se o arquivo tiver erro, o bot mantém o catálogo anterior e o `legion doctor` mostra o erro (check `cerebro.powers`) com item e campo.
 - Tirar um poder do arquivo não apaga a escolha de quem já o tem: a ficha mostra o `id`.

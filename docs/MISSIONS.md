@@ -52,5 +52,5 @@ Regras que o Legion confere:
 
 - Cada cena tem exatamente um de `choices`, `combat` ou `end`.
 - Toda escolha e luta aponta para uma cena que existe, toda cena é alcançável a partir de `start`, não há ciclos (a história sempre termina) e há pelo menos um `end`.
-- Títulos e textos de botões não podem ter nomes de personagens existentes da Marvel. Use personagens originais na história também.
+- A história pode citar personagens, equipes e lugares da Marvel (título, cenas e botões): "O Capitão América convoca você" vale. Os **inimigos** das lutas continuam originais; veja [UNIVERSE.md](UNIVERSE.md).
 - Um arquivo com erro não é carregado e a versão anterior da missão continua valendo. Missões que somem dos arquivos ficam inativas (o histórico continua).
