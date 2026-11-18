@@ -149,6 +149,11 @@ const scenes = (tc: TestContext) =>
 const lastButtons = (tc: TestContext) =>
   (scenes(tc).at(-1)?.msg.components?.[0] ?? []).map((b) => ('customId' in b ? (b.customId ?? '') : ''));
 const reply = (tc: TestContext, id: string) => tc.gateway.lastReply(id);
+/** The Publicar button of an import preview. */
+const publishButton = (tc: TestContext, id: string) => {
+  const btn = reply(tc, id)?.components?.[0]?.[0];
+  return btn && 'customId' in btn ? (btn.customId ?? '') : '';
+};
 
 /** Plays a solo mission to its success ending. */
 async function win(tc: TestContext, missionId: string, userId = A) {
@@ -544,7 +549,7 @@ describe('/jarvis campanha importar', () => {
       ),
     });
     expect(await s.repo.campaign('noite-longa')).toBeNull();
-    const publish = (reply(t, id)?.components?.[0]?.[0] as { customId: string }).customId;
+    const publish = publishButton(t, id);
     const done = await t.interact({
       kind: 'component',
       userId: STAFF,
@@ -642,7 +647,7 @@ describe('/jarvis campanha importar', () => {
     const { c, ms } = imported();
     expect(reply(t, await importCmd(t, fileOf(c, ms), A))?.content).toContain('Apenas a staff');
     const id = await importCmd(t, fileOf(c, ms));
-    const publish = (reply(t, id)?.components?.[0]?.[0] as { customId: string }).customId;
+    const publish = publishButton(t, id);
     expect(publish).toBe(campaignImportIds.decide(publish.split(':')[3] ?? '', 'publish'));
     const notStaff = await t.interact({ kind: 'component', userId: A, customId: publish });
     expect(reply(t, notStaff)?.content).toContain('Apenas a staff');
