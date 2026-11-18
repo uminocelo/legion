@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Legion · RPG mutante para Discord</title>
+  <meta name="description" content="Legion é um kit gratuito e auto-hospedável de bots de RPG para Discord: crie seu mutante, ganhe XP com trivia e missões, lute e enfrente eventos com o servidor inteiro.">
+  <meta property="og:title" content="Legion · RPG mutante para Discord">
+  <meta property="og:description" content="Crie seu mutante e jogue com a comunidade direto no Discord. Gratuito e auto-hospedável.">
+  <meta property="og:image" content="assets/ficha-exemplo.png">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="index.html">LEGION</a>
+    <nav>
+      <a href="#bots">Bots</a>
+      <a href="#jogar">Como jogar</a>
+      <a href="#hospedar">Hospedar</a>
+      <a class="gh" href="https://github.com/uminocelo/legion">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">RPG mutante para Discord</p>
+        <h1>Seu servidor vira uma escola de mutantes.</h1>
+        <p class="lead">Cada membro cria um mutante original, escolhe facção e poderes, e sobe de nível com trivia, missões, lutas e eventos que mexem com o servidor inteiro. Tudo dentro do Discord.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/uminocelo/legion/blob/main/TUTORIAL.md">Colocar no meu servidor</a>
+          <a class="btn" href="https://github.com/uminocelo/legion">Ver o código</a>
+        </div>
+        <p class="note">Gratuito, auto-hospedável, sem nada à venda que afete o jogo.</p>
+      </div>
+      <figure class="card">
+        <img src="assets/ficha-exemplo.png" width="960" height="540" alt="Ficha mutante de exemplo: Estática, X-Men, Elemental, Agente nível 7, com os poderes Controle elétrico, Campo de força e Voo, e barras de HP, ATQ, DEF, VEL e FOC.">
+        <figcaption>A ficha que cada jogador recebe no <code>/perfil</code>.</figcaption>
+      </figure>
+    </section>
+
+    <section id="bots">
+      <h2>Cinco bots, um universo</h2>
+      <p class="section-lead">Um único container roda os cinco. Ligue só os que quiser; o Cérebro é sempre o primeiro.</p>
+      <div class="bots">
+        <article class="bot" style="--c:#5DADE2">
+          <h3>Cérebro</h3>
+          <p class="role">Recepção e cadastro</p>
+          <p>Recebe quem chega, guia o cadastro do mutante (facção, poder principal, secundários, codinome) e cuida dos cargos de facção e rank.</p>
+        </article>
+        <article class="bot" style="--c:#F1C40F">
+          <h3>J.A.R.V.I.S.</h3>
+          <p class="role">XP, trivia e missões</p>
+          <p>Trivia rápida, sequências diárias, ranking e missões com escolhas, sozinho ou em grupo de até 4.</p>
+        </article>
+        <article class="bot" style="--c:#2ECC71">
+          <h3>H.E.R.B.I.E.</h3>
+          <p class="role">Tutorial e ajuda</p>
+          <p>Tutorial por DM com XP a cada passo, <code>/ajuda</code>, glossário, idioma (pt-BR ou inglês) e o guia "como jogar" fixado.</p>
+        </article>
+        <article class="bot" style="--c:#95A5A6">
+          <h3>Sentinel</h3>
+          <p class="role">Combate e moderação</p>
+          <p>Lutas por turnos com dados conferíveis, treino, limites contra abuso e denúncias que chegam só para a staff.</p>
+        </article>
+        <article class="bot" style="--c:#E74C3C">
+          <h3>ULTRON</h3>
+          <p class="role">Inimigos e eventos</p>
+          <p>Invasões semanais em que todas as facções atacam o mesmo alvo, raids com chefe e inimigos escalados para o grupo.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="jogar">
+      <h2>Como um jogador começa</h2>
+      <ol class="steps">
+        <li><strong>Começar.</strong> Clica no botão em <code>#boas-vindas</code> e aceita as regras.</li>
+        <li><strong>Facção.</strong> X-Men, Irmandade ou Independente.</li>
+        <li><strong>Poderes.</strong> Um principal, que define o arquétipo e os atributos, e até dois secundários, de um catálogo de 32.</li>
+        <li><strong>Ficha.</strong> Codinome original, descrição e origem. Personagens que já existem são recusados.</li>
+        <li><strong>Jogar.</strong> <code>/trivia</code>, <code>/missao</code>, <code>/treino</code> e os eventos dão XP, níveis e os ranks Recruta, Agente e Veterano.</li>
+      </ol>
+    </section>
+
+    <section id="hospedar" class="host">
+      <div>
+        <h2>No ar em três passos</h2>
+        <p class="section-lead">Precisa de Docker e de um computador que fique ligado (um Raspberry Pi serve). Seus dados ficam com você, num arquivo SQLite.</p>
+        <ol class="host-steps">
+          <li>Crie o app <strong>Cérebro</strong> no Discord Developer Portal.</li>
+          <li>Rode <code>legion init</code> e responda às perguntas.</li>
+          <li>Suba com Docker e confira com <code>legion doctor</code>.</li>
+        </ol>
+        <a class="btn primary" href="https://github.com/uminocelo/legion/blob/main/TUTORIAL.md">Tutorial completo</a>
+      </div>
+      <pre><code><span class="c"># 1. configurar</span>
+docker run --rm -it -v "$PWD:/out" \
+  ghcr.io/uminocelo/legion legion init --out /out
+
+<span class="c"># 2. subir</span>
+docker compose up -d
+
+<span class="c"># 3. conferir</span>
+docker compose run --rm legion legion doctor</code></pre>
+    </section>
+
+    <section class="principles">
+      <div><h3>Mutantes originais</h3><p>Ninguém joga como um personagem canônico. Cada ficha é uma criação do jogador.</p></div>
+      <div><h3>Sem pagar para ganhar</h3><p>O projeto vive de doações. Benefícios de apoiador são só cosméticos.</p></div>
+      <div><h3>Seu servidor, seus dados</h3><p>Roda na sua máquina. Nada sai do seu servidor além do que o Discord já vê.</p></div>
+      <div><h3>Staff no controle</h3><p>Perguntas, missões e inimigos novos entram pelo próprio Discord. Nenhuma punição é automática.</p></div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Legion</strong> é um projeto de fã gratuito e sem fins lucrativos, sem afiliação com a Marvel ou a Disney. Cérebro, J.A.R.V.I.S., H.E.R.B.I.E., ULTRON, Sentinel, X-Men e os demais nomes pertencem à Marvel/Disney.</p>
+    <p><a href="https://github.com/uminocelo/legion">GitHub</a> · <a href="https://github.com/uminocelo/legion/blob/main/TUTORIAL.md">Tutorial</a> · <a href="https://github.com/uminocelo/legion/blob/main/CHANGELOG.md">Novidades</a></p>
+  </footer>
+</body>
+</html>
