@@ -38,6 +38,15 @@ export const eventCatalog = {
     originType: z.string().min(1),
   }),
   'player.rejoined': z.object({ memberId: id, discordUserId: id }),
+  /** A hero switched team (US-26 staff move; US-28 recruitment arcs). Not emitted at registration. */
+  'player.faction_changed': z.object({
+    memberId: id,
+    discordUserId: id,
+    from: z.string().min(1).nullable(),
+    to: z.string().min(1),
+    reason: z.enum(['onboarding', 'arc', 'staff']),
+    sourceKey: z.string().min(1).max(200),
+  }),
   'player.optins_changed': z.object({ memberId: id, optIns: z.array(z.string()) }),
   'command.executed': z.object({
     discordUserId: id,

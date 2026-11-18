@@ -9,6 +9,7 @@ import {
   type Locale,
   type OutgoingMessage,
   type Responder,
+  shownFaction,
 } from '@legion/core';
 import type { Difficulty, UltronConfig } from './config.js';
 import type { EnemyTemplate } from './content.js';
@@ -606,7 +607,8 @@ export class WorldEventService {
     };
   }
 
-  private factionName(key: string) {
+  private factionName(stored: string) {
+    const key = shownFaction(this.ctx.config.factions, stored) ?? stored;
     const f = this.ctx.config.factions.find((x) => x.key === key);
     return `${f?.emoji ?? ''} ${this.ctx.config.roles.find((r) => r.key === f?.roleKey)?.name ?? key}`.trim();
   }

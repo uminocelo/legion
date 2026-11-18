@@ -25,6 +25,30 @@
       "independent": {
         "name": "Independent",
         "description": "No flag: you walk your own path."
+      },
+      "avengers": {
+        "name": "Avengers",
+        "description": "Earth's mightiest heroes, united against threats no one can face alone."
+      },
+      "shield": {
+        "name": "S.H.I.E.L.D.",
+        "description": "Agents, spies and technology serving world security."
+      },
+      "guardians": {
+        "name": "Guardians",
+        "description": "An unlikely crew protecting the galaxy."
+      },
+      "defenders": {
+        "name": "Defenders",
+        "description": "Street-level heroes who look after the city."
+      },
+      "thunderbolts": {
+        "name": "Thunderbolts",
+        "description": "Second chances: former villains seeking redemption."
+      },
+      "midnight_sons": {
+        "name": "Midnight Sons",
+        "description": "Hunters of the supernatural and the dark."
       }
     },
     "archetype": {
@@ -129,7 +153,8 @@
       "setup": "Syncs roles and, if asked, channel visibility.",
       "status": "Shows how many members are at each registration step.",
       "heroi_poderes": "Picks catalog powers for an already registered hero (once)",
-      "heroi_origem": "Picks your hero's origin (once, for heroes registered before origins)"
+      "heroi_origem": "Picks your hero's origin (once, for heroes registered before origins)",
+      "equipe_mover": "Moves a hero to another team, with a reason (staff)."
     },
     "commands": {
       "perfil": {
@@ -142,7 +167,12 @@
         "setup": "Sync roles and channels (staff)",
         "aplicar": "Apply the changes (default: dry run)",
         "canais": "Also adjust channel visibility",
-        "status": "Registration status (staff)"
+        "status": "Registration status (staff)",
+        "equipe": "Teams (staff)",
+        "mover": "Moves a hero to another team (staff, recorded)",
+        "membro": "Hero to move",
+        "equipe_opt": "Target team",
+        "motivo": "Reason (kept in the record)"
       },
       "mutante": {
         "description": "Deprecated: use /heroi"
@@ -240,6 +270,14 @@
         "name": "Trained",
         "description": "No superpowers: skill, discipline and courage."
       }
+    },
+    "team_move": {
+      "moved": "✅ **{codename}** is now on **{to}** (before: {from}). Reason recorded.",
+      "origin_note": "⚠️ This team does not accept the hero's origin; staff may override the rule.",
+      "same": "**{codename}** is already on **{to}**.",
+      "unknown_team": "That team does not exist or is turned off on this server.",
+      "not_registered": "That member is not a registered hero yet.",
+      "reason_length": "Write the reason in up to 200 characters."
     }
   }
 }

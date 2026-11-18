@@ -1,6 +1,44 @@
 {
   "cerebro": [
     {
+      "path": "/cerebro equipe mover",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Move um herói para outra equipe (staff, fica registrado)",
+        "en": "Moves a hero to another team (staff, recorded)"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "Herói a mover",
+            "en": "Hero to move"
+          }
+        },
+        {
+          "name": "equipe",
+          "nameEn": "team",
+          "required": true,
+          "description": {
+            "pt-BR": "Equipe de destino",
+            "en": "Target team"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo (fica no registro)",
+            "en": "Reason (kept in the record)"
+          }
+        }
+      ]
+    },
+    {
       "path": "/cerebro preferencias",
       "kind": "slash",
       "staff": false,

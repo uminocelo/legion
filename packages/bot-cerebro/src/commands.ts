@@ -111,6 +111,59 @@ export function cerebroCommands(
             ],
           },
           { type: 1, name: 'status', ...desc(i18n, 'cerebro.commands.cerebro.status') },
+          {
+            type: 2,
+            name: 'equipe',
+            name_localizations: { 'en-US': 'team' },
+            ...desc(i18n, 'cerebro.commands.cerebro.equipe'),
+            options: [
+              {
+                type: 1,
+                name: 'mover',
+                name_localizations: { 'en-US': 'move' },
+                ...desc(i18n, 'cerebro.commands.cerebro.mover'),
+                options: [
+                  {
+                    type: 6,
+                    name: 'membro',
+                    name_localizations: { 'en-US': 'member' },
+                    required: true,
+                    ...desc(i18n, 'cerebro.commands.cerebro.membro'),
+                  },
+                  {
+                    type: 3,
+                    name: 'equipe',
+                    name_localizations: { 'en-US': 'team' },
+                    required: true,
+                    ...desc(i18n, 'cerebro.commands.cerebro.equipe_opt'),
+                    // Enabled teams only (Discord allows up to 25 choices).
+                    choices: ctx.config.factions.slice(0, 25).map((f) => ({
+                      name: `${f.emoji ? `${f.emoji} ` : ''}${i18n.t(`cerebro.faction.${f.key}.name`, {}, 'pt-BR')}`.slice(
+                        0,
+                        100,
+                      ),
+                      name_localizations: {
+                        'en-US':
+                          `${f.emoji ? `${f.emoji} ` : ''}${i18n.t(`cerebro.faction.${f.key}.name`, {}, 'en')}`.slice(
+                            0,
+                            100,
+                          ),
+                      },
+                      value: f.key,
+                    })),
+                  },
+                  {
+                    type: 3,
+                    name: 'motivo',
+                    name_localizations: { 'en-US': 'reason' },
+                    required: true,
+                    max_length: 200,
+                    ...desc(i18n, 'cerebro.commands.cerebro.motivo'),
+                  },
+                ],
+              },
+            ],
+          },
         ],
       },
       execute: async (i, r) => {
@@ -131,6 +184,9 @@ export function cerebroCommands(
             await r.defer(true);
             return r.send(await statusMessage(ctx, flow, setup, await i18n.localeFor(i.userId)));
           }
+          case 'equipe mover':
+            if (!(await staffOnly(i, r))) return;
+            return flow.teamMove.command(i, r);
           default:
             return flow.preferences(i, r);
         }

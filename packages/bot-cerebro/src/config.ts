@@ -24,13 +24,15 @@ export const cerebroConfigSchema = z
           seen.add(o.key);
         });
       }),
-    /** Teams (US-26 adds the switch rules). New heroes start on `startFaction`. */
+    /** Teams (factions). New heroes start on `startFaction` (or the first faction when it is missing). */
     teams: z
       .object({
         startFaction: z
           .string()
           .regex(/^[a-z][a-z0-9_]*$/)
           .default('independent'),
+        /** Days between team switches by recruitment arc (US-28); staff moves ignore it. */
+        switchCooldownDays: z.number().int().min(0).max(365).default(30),
       })
       .prefault({}),
     welcomePing: z.boolean().default(true),

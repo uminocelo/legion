@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ConfigError } from './errors.js';
 import { parseConfig, parseConfigText, parseEnv } from './load.js';
+import { DEFAULT_FACTION_KEYS, DEFAULT_ROLES, factionAllowsOrigin, shownFaction } from './roles.js';
 
 const errorsOf = (fn: () => unknown): string[] => {
   try {
@@ -19,9 +20,67 @@ describe('parseConfig', () => {
     expect(cfg.locale).toBe('pt-BR');
     expect(cfg.timezone).toBe('America/Sao_Paulo');
     expect(cfg.roles.find((r) => r.key === 'registered')?.name).toBe('Mutante Registrado');
-    expect(cfg.factions).toHaveLength(3);
+    expect(cfg.factions.map((f) => f.key)).toEqual([...DEFAULT_FACTION_KEYS]);
     expect(cfg.channels.welcome).toBeNull();
     expect(cfg.scheduler.pollIntervalMs).toBe(5000);
+  });
+
+  describe('teams (factions)', () => {
+    it('has the nine default teams, each with its role, and the Irmandade only takes mutants and inhumans', () => {
+      const cfg = parseConfigText('bots: [cerebro]\n');
+      expect(cfg.factions).toHaveLength(9);
+      for (const f of cfg.factions) {
+        expect(f.emoji).not.toBe('');
+        expect(cfg.roles.find((r) => r.key === f.roleKey)?.group).toBe('faction');
+      }
+      // The v0 keys never change, so members keep their teams.
+      expect(cfg.factions.slice(0, 3).map((f) => f.key)).toEqual(['independent', 'xmen', 'brotherhood']);
+      const brotherhood = cfg.factions.find((f) => f.key === 'brotherhood');
+      expect(brotherhood?.origins).toEqual(['mutante', 'inumano']);
+      expect(brotherhood && factionAllowsOrigin(brotherhood, 'inumano')).toBe(true);
+      expect(brotherhood && factionAllowsOrigin(brotherhood, 'tecnologia')).toBe(false);
+      const avengers = cfg.factions.find((f) => f.key === 'avengers');
+      expect(avengers && factionAllowsOrigin(avengers, 'mistico')).toBe(true);
+    });
+
+    it('a server with its own roles list (from v0.8) keeps booting with the teams it has roles for', () => {
+      const roles = DEFAULT_ROLES.filter(
+        (r) =>
+          r.group !== 'faction' ||
+          ['faction_xmen', 'faction_brotherhood', 'faction_independent'].includes(r.key),
+      )
+        .map((r) => `  - { key: ${r.key}, name: "${r.name}", group: ${r.group}, managedBy: ${r.managedBy} }`)
+        .join('\n');
+      const cfg = parseConfigText(`roles:\n${roles}\n`);
+      expect(cfg.factions.map((f) => f.key)).toEqual(['independent', 'xmen', 'brotherhood']);
+    });
+
+    it('keeps a custom factions list as written', () => {
+      const cfg = parseConfigText('factions:\n  - { key: xmen, roleKey: faction_xmen, emoji: 🔵 }\n');
+      expect(cfg.factions).toEqual([{ key: 'xmen', roleKey: 'faction_xmen', emoji: '🔵' }]);
+    });
+
+    it('rejects an unknown origin and a repeated team key', () => {
+      const origin = errorsOf(() =>
+        parseConfigText('factions:\n  - { key: xmen, roleKey: faction_xmen, origins: [alien] }\n'),
+      );
+      expect(origin[0]).toContain('factions[0].origins[0]');
+      expect(origin[0]).toContain('"mutante"');
+      const repeated = errorsOf(() =>
+        parseConfigText(
+          'factions:\n  - { key: xmen, roleKey: faction_xmen }\n  - { key: xmen, roleKey: faction_xmen }\n',
+        ),
+      );
+      expect(repeated[0]).toContain('factions[1].key');
+      expect(repeated[0]).toContain('única');
+    });
+
+    it('shows a team key that is no longer configured as Independente', () => {
+      const factions = [{ key: 'independent' }, { key: 'xmen' }];
+      expect(shownFaction(factions, 'xmen')).toBe('xmen');
+      expect(shownFaction(factions, 'thunderbolts')).toBe('independent');
+      expect(shownFaction(factions, null)).toBeNull();
+    });
   });
 
   it('accepts an empty file', () => {

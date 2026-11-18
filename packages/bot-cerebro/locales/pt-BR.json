@@ -25,6 +25,30 @@
       "independent": {
         "name": "Independente",
         "description": "Sem bandeira: você faz o próprio caminho."
+      },
+      "avengers": {
+        "name": "Vingadores",
+        "description": "Os maiores heróis da Terra, unidos contra ameaças que ninguém enfrenta sozinho."
+      },
+      "shield": {
+        "name": "S.H.I.E.L.D.",
+        "description": "Agentes, espiões e tecnologia a serviço da segurança mundial."
+      },
+      "guardians": {
+        "name": "Guardiões",
+        "description": "Um bando improvável protegendo a galáxia."
+      },
+      "defenders": {
+        "name": "Defensores",
+        "description": "Heróis das ruas que cuidam da cidade."
+      },
+      "thunderbolts": {
+        "name": "Thunderbolts",
+        "description": "Segundas chances: ex-vilões em busca de redenção."
+      },
+      "midnight_sons": {
+        "name": "Filhos da Meia-Noite",
+        "description": "Caçadores do sobrenatural e das trevas."
       }
     },
     "archetype": {
@@ -129,7 +153,8 @@
       "setup": "Sincroniza cargos e, se pedido, a visibilidade dos canais.",
       "status": "Mostra quantos membros estão em cada etapa do registro.",
       "heroi_poderes": "Escolhe poderes do catálogo para um herói já registrado (uma vez)",
-      "heroi_origem": "Escolhe a origem do seu herói (uma vez, para quem se registrou antes das origens)"
+      "heroi_origem": "Escolhe a origem do seu herói (uma vez, para quem se registrou antes das origens)",
+      "equipe_mover": "Move um herói de equipe, com motivo (staff)."
     },
     "commands": {
       "perfil": {
@@ -142,7 +167,12 @@
         "setup": "Sincroniza cargos e canais (staff)",
         "aplicar": "Aplicar as mudanças (padrão: só simular)",
         "canais": "Também ajustar a visibilidade dos canais",
-        "status": "Status do registro (staff)"
+        "status": "Status do registro (staff)",
+        "equipe": "Equipes (staff)",
+        "mover": "Move um herói para outra equipe (staff, fica registrado)",
+        "membro": "Herói a mover",
+        "equipe_opt": "Equipe de destino",
+        "motivo": "Motivo (fica no registro)"
       },
       "mutante": {
         "description": "Obsoleto: use /heroi"
@@ -240,6 +270,14 @@
         "name": "Treinado",
         "description": "Sem superpoderes: técnica, disciplina e coragem."
       }
+    },
+    "team_move": {
+      "moved": "✅ **{codename}** agora está em **{to}** (antes: {from}). Motivo registrado.",
+      "origin_note": "⚠️ A origem do herói não é aceita por essa equipe; a staff pode ignorar a regra.",
+      "same": "**{codename}** já está em **{to}**.",
+      "unknown_team": "Essa equipe não existe ou está desligada neste servidor.",
+      "not_registered": "Esse membro ainda não é um herói registrado.",
+      "reason_length": "Escreva o motivo em até 200 caracteres."
     }
   }
 }

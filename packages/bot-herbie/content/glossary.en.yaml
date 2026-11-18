@@ -1,9 +1,22 @@
 # /regras glossary (en). Override in ./data/content/glossary.en.yaml.
 - id: faccoes
   term: "Factions"
-  aliases: [faction, x-men, brotherhood, independent]
+  aliases:
+    [
+      faction,
+      teams,
+      x-men,
+      brotherhood,
+      independent,
+      avengers,
+      shield,
+      guardians,
+      defenders,
+      thunderbolts,
+      midnight sons,
+    ]
   summary: "Every hero starts Independent. The faction (or team) becomes a role and shows in /perfil and /ranking."
-  details: "New heroes start on the server's start faction (Independent). Members who registered before origins keep the faction they chose. For now only staff can change it. It adds to the faction total in /ranking. It does not change your powers or who you play with."
+  details: "New heroes start on the server's start faction (Independent). Members who registered before origins keep the faction they chose. There are nine teams (X-Men, Brotherhood, Avengers, S.H.I.E.L.D., Guardians, Defenders, Thunderbolts, Midnight Sons and Independent); the Brotherhood only takes Mutants and Inhumans. For now only staff can change it. It adds to the faction total in /ranking. It does not change your powers or who you play with."
   related: [origens, arquetipos, rank]
   bot: cerebro
 - id: origens

@@ -19,7 +19,7 @@ Segredos ficam no `.env` (veja o README; tokens por bot em [SELF_HOSTING](SELF_H
 | `channels.modQueue` | `null` | Sentinel: fila de denúncias, visível só para a staff |
 | `channels.trivia` | `null` | Usado por bots futuros |
 | `roles` | lista abaixo | Cargos gerenciados. Se definida, **substitui** a lista padrão inteira |
-| `factions` | xmen, brotherhood, independent | `{ key, roleKey, emoji }` |
+| `factions` | as 9 equipes (abaixo) | `{ key, roleKey, emoji, origins? }`. Sem a chave, vale a lista padrão com as equipes cujo cargo existe em `roles`. Tirar uma equipe a desliga ([UNIVERSE.md](UNIVERSE.md#equipes)) |
 | `events.replayLookbackDays` | `7` | Quantos dias de eventos reprocessar no boot |
 | `scheduler.pollIntervalMs` | `5000` | Intervalo do scheduler (mín. 500) |
 
@@ -39,6 +39,12 @@ roles:
   - { key: faction_xmen, group: faction, name: X-Men, color: '#3498DB', managedBy: cerebro, hoist: true }
   - { key: faction_brotherhood, group: faction, name: Irmandade, color: '#E74C3C', managedBy: cerebro, hoist: true }
   - { key: faction_independent, group: faction, name: Independente, color: '#2ECC71', managedBy: cerebro, hoist: true }
+  - { key: faction_avengers, group: faction, name: Vingadores, color: '#D4AC0D', managedBy: cerebro, hoist: true }
+  - { key: faction_shield, group: faction, name: S.H.I.E.L.D., color: '#566573', managedBy: cerebro, hoist: true }
+  - { key: faction_guardians, group: faction, name: Guardiões, color: '#8E44AD', managedBy: cerebro, hoist: true }
+  - { key: faction_defenders, group: faction, name: Defensores, color: '#E67E22', managedBy: cerebro, hoist: true }
+  - { key: faction_thunderbolts, group: faction, name: Thunderbolts, color: '#17A589', managedBy: cerebro, hoist: true }
+  - { key: faction_midnight_sons, group: faction, name: Filhos da Meia-Noite, color: '#6C3483', managedBy: cerebro, hoist: true }
   - { key: rank_recruta, group: rank, name: Recruta, color: null, managedBy: cerebro }
   - { key: rank_agente, group: rank, name: Agente, color: null, managedBy: cerebro }
   - { key: rank_veterano, group: rank, name: Veterano, color: null, managedBy: cerebro }
@@ -52,6 +58,24 @@ roles:
 
 Regras: `tiktok_sub` precisa ter `managedBy: integration` (o Legion nunca toca nesse cargo). Cargos `manual` são criados se faltarem, mas nunca dados a ninguém. Os bots nunca apagam cargos nem renomeiam cargos que não gerenciam.
 
+
+### `factions`
+
+As equipes ([UNIVERSE.md](UNIVERSE.md#equipes)). Cada uma aponta para um cargo do grupo `faction` em `roles`. `origins` limita quem pode entrar (sem a chave, todas as origens). Nomes e descrições ficam nos textos (`cerebro.faction.<key>`).
+
+```yaml
+factions:
+  - { key: independent, roleKey: faction_independent, emoji: 🟢 }
+  - { key: xmen, roleKey: faction_xmen, emoji: 🔵 }
+  - { key: brotherhood, roleKey: faction_brotherhood, emoji: 🔴, origins: [mutante, inumano] }
+  - { key: avengers, roleKey: faction_avengers, emoji: 🟡 }
+  - { key: shield, roleKey: faction_shield, emoji: ⚫ }
+  - { key: guardians, roleKey: faction_guardians, emoji: 🟣 }
+  - { key: defenders, roleKey: faction_defenders, emoji: 🟠 }
+  - { key: thunderbolts, roleKey: faction_thunderbolts, emoji: ⚡ }
+  - { key: midnight_sons, roleKey: faction_midnight_sons, emoji: 🌙 }
+```
+
 ## `cerebro`
 
 | Chave | Padrão | Descrição |
@@ -61,7 +85,8 @@ Regras: `tiktok_sub` precisa ter `managedBy: integration` (o Legion nunca toca n
 | `publicRegistryCard` | `true` | Posta um cartão público quando alguém se registra |
 | `codename.min` / `codename.max` | `2` / `32` | Tamanho do codinome |
 | `origins` | as 7, nesta ordem | Origens do cadastro: lista de `{ key, emoji }` com `mutante`, `inumano`, `ciencia`, `tecnologia`, `mistico`, `cosmico`, `treinado`. A ordem é a do menu; tire uma para escondê-la. Chave desconhecida ou repetida é erro. Nomes e descrições ficam nos textos (`cerebro.origin.<key>`). Veja [UNIVERSE.md](UNIVERSE.md#origens) |
-| `teams.startFaction` | `independent` | Facção de quem acaba de se registrar. Se não existir em `factions`, vale a primeira da lista |
+| `teams.startFaction` | `independent` | Equipe de quem acaba de se registrar. Se não existir em `factions`, vale a primeira da lista (e o `legion doctor` mostra ❌) |
+| `teams.switchCooldownDays` | `30` | Dias entre duas trocas de equipe pelas missões de recrutamento (0 a 365). A staff (`/cerebro equipe mover`) não espera |
 | `archetypes` | os 6 | Subconjunto de `Telepata, Elemental, Metamorfo, Velocista, Tanque, Tecnopata` |
 | `powers.enabled` | `true` | Cadastro com o catálogo de poderes ([POWERS.md](POWERS.md)). `false` volta o menu de arquétipos |
 | `powers.maxSecondary` | `2` | Quantos poderes secundários (0 a 2) |
