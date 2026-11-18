@@ -15,6 +15,7 @@ import type { CerebroConfig } from './config.js';
 import { CerebroRepo, type MemberRow, type MutantRow, pendingPowersOf, toMemberView } from './db/repo.js';
 import { validateCodename } from './domain/codename.js';
 import { expectedRoles, transition } from './domain/onboarding.js';
+import { FactionJoin } from './faction-join.js';
 import { OriginChange } from './origin-change.js';
 import { PowerFlow } from './power-flow.js';
 import { CARD_FILE, SheetCard } from './sheet.js';
@@ -34,6 +35,7 @@ export class CerebroFlow {
   readonly sheet: SheetCard;
   readonly originChange: OriginChange;
   readonly teamMove: TeamMove;
+  readonly factionJoin: FactionJoin;
 
   constructor(readonly ctx: BotContext<CerebroConfig>) {
     this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
@@ -45,6 +47,7 @@ export class CerebroFlow {
     this.sheet = new SheetCard(this);
     this.originChange = new OriginChange(this);
     this.teamMove = new TeamMove(this);
+    this.factionJoin = new FactionJoin(this);
   }
 
   /** Origins offered now: configured ones that have at least one power (when the catalog is on). */

@@ -6,12 +6,22 @@ import type { JarvisServices } from './services.js';
 
 export const PROGRESS_INIT = 'jarvis.progress-init';
 export const XP_GRANT = 'jarvis.xp-grant';
+export const FACTION_RESULT = 'jarvis.faction-result';
 
 /** Event consumers. Delivery is at-least-once, so both are idempotent. */
 export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServices): void {
   ctx.bus.on('player.created', PROGRESS_INIT, async (e) => {
     await s.repo.ensureProgress(e.payload.memberId);
   });
+
+  // Results of a team join requested at the end of a recruitment arc (ADR 0032).
+  ctx.bus.on('player.faction_changed', FACTION_RESULT, async (e) => {
+    if (e.payload.reason !== 'arc') return;
+    await s.missions.onFactionResult({ kind: 'changed', ...e.payload });
+  });
+  ctx.bus.on('player.faction_change_refused', FACTION_RESULT, (e) =>
+    s.missions.onFactionResult({ kind: 'refused', ...e.payload }),
+  );
 
   ctx.bus.on('xp.grant_requested', XP_GRANT, async (e) => {
     const { memberId, amount, reason, sourceEventId } = e.payload;

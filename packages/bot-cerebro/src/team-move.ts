@@ -1,4 +1,5 @@
 import { factionAllowsOrigin, type IncomingInteraction, type Responder } from '@legion/core';
+import { recordFactionChange } from './faction-join.js';
 import type { CerebroFlow } from './flow.js';
 
 /**
@@ -26,31 +27,9 @@ export class TeamMove {
     if (row.faction === to) return r.reply(ui.text(t('same', { codename: mutant.codename, to: label(to) })));
 
     const sourceKey = `staff:${i.id}`;
-    const updated = await ctx.bus.transaction(async (tx) => {
-      const fresh = await repo.memberById(row.id, tx);
-      if (!fresh || fresh.faction === to) return null;
-      if (
-        !(await repo.insertFactionChange(
-          { memberId: row.id, from: fresh.faction, to, reason: 'staff', sourceKey, by: i.userId },
-          tx,
-        ))
-      )
-        return null;
-      const member = await repo.updateMember(
-        row.id,
-        { faction: to, factionChangedAt: ctx.clock.now().toISOString() },
-        tx,
-      );
-      await ctx.bus.emit(tx, 'player.faction_changed', {
-        memberId: row.id,
-        discordUserId: row.discordUserId,
-        from: fresh.faction,
-        to,
-        reason: 'staff',
-        sourceKey,
-      });
-      return member;
-    });
+    const updated = await ctx.bus.transaction((tx) =>
+      recordFactionChange(this.flow, tx, { memberId: row.id, to, reason: 'staff', sourceKey, by: i.userId }),
+    );
     if (!updated) return r.reply(ui.text(t('same', { codename: mutant.codename, to: label(to) })));
     ctx.log.info({ staff: i.userId, memberId: row.id, from: row.faction, to, reason }, 'team move by staff');
     const rolesOk = await this.flow.applyExpectedRoles(updated);
