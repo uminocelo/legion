@@ -216,6 +216,16 @@ export class CerebroRepo {
     return rows.length > 0;
   }
 
+  async factionChangeBySource(sourceKey: string) {
+    const t = this.t.cerebroFactionChanges;
+    const [row] = await this.db.orm
+      .select()
+      .from(t)
+      .where(and(eq(t.guildId, this.guildId), eq(t.sourceKey, sourceKey)))
+      .limit(1);
+    return row ?? null;
+  }
+
   async factionChanges(memberId: string) {
     const t = this.t.cerebroFactionChanges;
     return this.db.orm.select().from(t).where(eq(t.memberId, memberId)).orderBy(t.createdAt, t.id);

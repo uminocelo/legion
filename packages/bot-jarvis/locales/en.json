@@ -207,7 +207,16 @@
         "team": "this mission is not available to you"
       },
       "party_locked": "You cannot start yet. Missing:\n{members}",
-      "party_locked_title": "⚠️ Missing to start"
+      "party_locked_title": "⚠️ Missing to start",
+      "join": {
+        "joined": "🎉 **{codename}** joined **{team}**!",
+        "refused": {
+          "cooldown": "**{codename}** finished the arc, but can only switch teams from {date}. The chapter counts as done.",
+          "origin": "**{codename}** finished the arc, but **{team}** does not take that origin.",
+          "disabled": "**{codename}** finished the arc, but **{team}** is turned off on this server.",
+          "same": "**{codename}** is already on **{team}**."
+        }
+      }
     },
     "staff_trivia": {
       "bad_category": "Category \"{category}\" is not in jarvis.trivia.categories.",

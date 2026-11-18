@@ -155,13 +155,14 @@ export interface UnmetResult {
 
 /**
  * Missing requirements of `m` for one member (empty = unlocked). `campaign` is the mission's campaign;
- * `factions` the enabled team keys.
+ * `factions` the enabled team keys; `teamOrigins` the origin rule of the team a recruitment arc joins.
  */
 export function unmet(
   m: Pick<Mission, 'requires'>,
   hero: HeroFacts,
   campaign: Pick<Campaign, 'kind' | 'faction'> | null,
   factions: readonly string[],
+  teamOrigins?: readonly string[],
 ): UnmetResult {
   const team = hero.faction && factions.includes(hero.faction) ? hero.faction : 'independent';
   const hidden =
@@ -172,8 +173,14 @@ export function unmet(
   const notDone = (req.missions ?? []).filter((id) => !hero.done.has(id));
   if (notDone.length) missing.push({ key: 'missions', missions: notDone });
   if (req.level && hero.level < req.level) missing.push({ key: 'level', level: req.level });
-  if (req.origins && !req.origins.includes((hero.originType ?? '') as never))
-    missing.push({ key: 'origin', origins: req.origins });
+  // Both the mission's `requires.origins` and the team's rule apply: the allowed origins are in both.
+  const reqOrigins: readonly string[] | undefined = req.origins;
+  const origins =
+    reqOrigins && teamOrigins
+      ? reqOrigins.filter((o) => teamOrigins.includes(o))
+      : (reqOrigins ?? teamOrigins);
+  if (origins && !origins.includes(hero.originType ?? ''))
+    missing.push({ key: 'origin', origins: [...origins] });
   if (req.factions && !req.factions.includes(team)) missing.push({ key: 'faction', factions: req.factions });
   return { missing, hidden };
 }

@@ -207,7 +207,16 @@
         "team": "esta missão não está disponível para você"
       },
       "party_locked": "Ainda não dá para começar. Falta:\n{members}",
-      "party_locked_title": "⚠️ Falta para começar"
+      "party_locked_title": "⚠️ Falta para começar",
+      "join": {
+        "joined": "🎉 **{codename}** entrou para **{team}**!",
+        "refused": {
+          "cooldown": "**{codename}** cumpriu o arco, mas só pode trocar de equipe a partir de {date}. O capítulo conta como feito.",
+          "origin": "**{codename}** cumpriu o arco, mas **{team}** não aceita essa origem.",
+          "disabled": "**{codename}** cumpriu o arco, mas **{team}** está desligada neste servidor.",
+          "same": "**{codename}** já está em **{team}**."
+        }
+      }
     },
     "staff_trivia": {
       "bad_category": "A categoria \"{category}\" não está em jarvis.trivia.categories.",

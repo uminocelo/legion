@@ -19,7 +19,7 @@ import {
   readContent,
   unmet,
 } from '../src/index.js';
-import { servicesOf, setupJarvis } from './helpers.js';
+import { events, servicesOf, setupJarvis } from './helpers.js';
 
 let t: TestContext | undefined;
 afterEach(async () => {
@@ -683,5 +683,138 @@ describe('/jarvis missao importar with campaign fields', () => {
     // Replacing a chapter with a new version of itself is not a repeat.
     const again = await importMission(t, chapter('sombras-2', 2, { missions: ['sombras-1'] }));
     expect(reply(t, again)?.embeds?.[0]?.title).toBe('Prévia: Capítulo sombras-2');
+  });
+});
+
+// ---------- US-28: recruitment arcs join the team ----------
+
+describe('recruitment arcs: finishing the arc joins the team', () => {
+  const DAY = 86_400_000;
+  const RECRUIT = campaign({
+    id: 'recrutamento-vingadores',
+    kind: 'recruitment',
+    faction: 'avengers',
+    title: { 'pt-BR': 'Teste dos Vingadores', en: 'Avengers trial' },
+  });
+  const rv = (n: number, o: Partial<Mission> = {}) =>
+    chapter(`rv-${n}`, n, n > 1 ? { missions: [`rv-${n - 1}`] } : undefined, {
+      campaign: { id: RECRUIT.id, chapter: n },
+      party: 2,
+      ...o,
+    });
+  const ARC = [rv(1), rv(2, { reward: { joinFaction: 'avengers' } })];
+
+  const thread = (tc: TestContext) =>
+    tc.gateway.messages
+      .filter((m) => m.msg.persona === 'jarvis' && !m.msg.components?.length)
+      .map((m) => m.msg.content ?? '');
+  const memberOf = async (tc: TestContext, userId: string) =>
+    new CerebroRepo(tc.db, tc.gateway.guildId, tc.clock, tc.runtime.newId).memberByDiscordId(userId);
+
+  /** A opens the group, B joins, A starts, both vote for `choice` (0 = success). */
+  async function playParty(tc: TestContext, missionId: string, choice = 0) {
+    await startCmd(tc, missionId, A);
+    const lobby = tc.gateway.messages
+      .filter((m) => m.msg.embeds?.[0]?.title?.startsWith(`Capítulo ${missionId}`))
+      .at(-1);
+    const btn = (action: string) =>
+      (lobby?.msg.components?.[0] ?? [])
+        .map((b) => ('customId' in b ? (b.customId ?? '') : ''))
+        .find((c) => c.endsWith(action)) ?? '';
+    await tc.interact({ kind: 'component', userId: B, customId: btn('join') });
+    await tc.interact({ kind: 'component', userId: A, customId: btn('start') });
+    const vote = lastButtons(tc)[choice] ?? '';
+    await tc.interact({ kind: 'component', userId: A, customId: vote });
+    await tc.interact({ kind: 'component', userId: B, customId: vote });
+    await tc.settle();
+    return vote;
+  }
+
+  it('a party plays a 2-chapter arc; both join, get the role and the thread says so', async () => {
+    const { t } = await setup([RECRUIT], ARC);
+    await t.runtime.ready({ startPolling: false }); // Cérebro creates the team roles
+    const [a, b] = [await hero(t, A), await hero(t, B)];
+    await playParty(t, 'rv-1');
+    expect((await memberOf(t, A))?.faction).toBe('independent'); // only the last chapter joins
+    await playParty(t, 'rv-2');
+    for (const userId of [A, B]) {
+      expect((await memberOf(t, userId))?.faction).toBe('avengers');
+      expect(t.gateway.memberRoleNames(userId)).toContain('Vingadores');
+    }
+    const requests = await events(t, 'faction.join_requested');
+    expect(requests.map((e) => e.memberId).sort()).toEqual([a, b].sort());
+    expect(requests.every((e) => /^arc:[^:]+:[^:]+$/.test(e.sourceKey))).toBe(true);
+    const changed = await events(t, 'player.faction_changed');
+    expect(changed.map((e) => [e.reason, e.from, e.to])).toEqual([
+      ['arc', 'independent', 'avengers'],
+      ['arc', 'independent', 'avengers'],
+    ]);
+    const posts = thread(t).filter((c) => c.includes('entrou para'));
+    expect(posts.sort()).toEqual([
+      `🎉 **Herói ${A}** entrou para **🟡 Vingadores**!`,
+      `🎉 **Herói ${B}** entrou para **🟡 Vingadores**!`,
+    ]);
+  });
+
+  it('a member who switched less than 30 days ago is refused with the date; the other joins', async () => {
+    const { t } = await setup([RECRUIT], ARC);
+    await hero(t, A);
+    const b = await hero(t, B, { faction: 'shield' });
+    const changedAt = new Date(t.clock.now().getTime() - 10 * DAY);
+    await new CerebroRepo(t.db, t.gateway.guildId, t.clock, t.runtime.newId).updateMember(b, {
+      factionChangedAt: changedAt.toISOString(),
+    });
+    await playParty(t, 'rv-1');
+    await playParty(t, 'rv-2');
+    expect((await memberOf(t, A))?.faction).toBe('avengers');
+    expect((await memberOf(t, B))?.faction).toBe('shield');
+    const until = Math.floor((changedAt.getTime() + 30 * DAY) / 1000);
+    expect(thread(t)).toContain(
+      `**Herói ${B}** cumpriu o arco, mas só pode trocar de equipe a partir de <t:${until}:D>. O capítulo conta como feito.`,
+    );
+    // The arc still counts as done for the campaign.
+    const id = await campanha(t, B, RECRUIT.id);
+    expect(JSON.stringify(reply(t, id))).toMatch(/2\/2/);
+  });
+
+  it('a replayed ending asks once', async () => {
+    const { t } = await setup([RECRUIT], ARC);
+    await hero(t, A);
+    await hero(t, B);
+    await playParty(t, 'rv-1');
+    const vote = await playParty(t, 'rv-2');
+    await t.interact({ kind: 'component', userId: A, customId: vote }); // stale click on the last scene
+    await t.settle();
+    expect((await events(t, 'faction.join_requested')).length).toBe(2);
+    expect(thread(t).filter((c) => c.includes('entrou para')).length).toBe(2);
+  });
+
+  it('a failure ending asks nothing', async () => {
+    const { t } = await setup([RECRUIT], ARC);
+    await hero(t, A);
+    await hero(t, B);
+    await playParty(t, 'rv-1');
+    await playParty(t, 'rv-2', 1);
+    expect(await events(t, 'faction.join_requested')).toEqual([]);
+    expect((await memberOf(t, A))?.faction).toBe('independent');
+  });
+
+  it('an arc for a team that does not take my origin stays locked and says why', async () => {
+    const BRO = campaign({ id: 'recrutamento-irmandade', kind: 'recruitment', faction: 'brotherhood' });
+    const { t } = await setup(
+      [BRO],
+      [
+        chapter('ri-1', 1, undefined, {
+          campaign: { id: BRO.id, chapter: 1 },
+          reward: { joinFaction: 'brotherhood' },
+        }),
+      ],
+    );
+    await hero(t, A, { origin: 'tecnologia' });
+    await hero(t, B, { origin: 'mutante' });
+    expect(await autocomplete(t, A)).not.toContain('ri-1');
+    expect(await autocomplete(t, B)).toContain('ri-1');
+    const id = await startCmd(t, 'ri-1', A);
+    expect(reply(t, id)?.content).toMatch(/Bloqueada: falta ser de origem Mutante, Inumano/);
   });
 });

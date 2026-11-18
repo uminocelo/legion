@@ -87,7 +87,7 @@ title: Rastros no porto
 - Todos os campos de `requires` são opcionais; cada um que aparece precisa ser cumprido.
 - **Em grupo**, todo membro precisa cumprir. Quem não cumpre pode entrar no grupo, mas o grupo mostra o que falta para cada um e o líder só começa quando todos cumprem.
 - No `/missao iniciar`, missões bloqueadas não aparecem na lista; digitar o id de uma mostra "Bloqueada: falta …".
-- **Recrutamento** (`kind: recruitment`, com `faction`): a missão final pode ter `reward: { joinFaction: <equipe> }`, que tem de ser a equipe da campanha. O arco some para quem já está nessa equipe e para todos quando a equipe está desligada. Entrar na equipe ao terminar o arco chega na próxima versão; por enquanto a staff move com `/cerebro equipe mover`.
+- **Recrutamento** (`kind: recruitment`, com `faction`): a missão final pode ter `reward: { joinFaction: <equipe> }`, que tem de ser a equipe da campanha. O arco some para quem já está nessa equipe e para todos quando a equipe está desligada. O arco também segue a regra de origens da equipe (`origins`). Quando o grupo termina a missão com `joinFaction` com **sucesso**, o J.A.R.V.I.S. pede a entrada de cada membro (`faction.join_requested`) e o Cérebro decide: confere se a equipe está ligada, a origem, se o herói já está nela e o prazo de `cerebro.teams.switchCooldownDays` desde a última troca. O resultado aparece no tópico da missão, um por membro ("X entrou para Y" ou o motivo, com a data quando é o prazo). Falha ou abandono não pedem nada. A staff ainda pode mover alguém com `/cerebro equipe mover`, sem prazo.
 
 Regras que o Legion confere (no arquivo, no editor e no import):
 
