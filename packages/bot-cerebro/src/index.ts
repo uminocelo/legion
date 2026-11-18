@@ -12,6 +12,7 @@ import { V } from './ui.js';
 
 export * from './config.js';
 export * from './db/repo.js';
+export * from './db/tables.js';
 export * from './domain/channels.js';
 export * from './domain/codename.js';
 export * from './domain/onboarding.js';

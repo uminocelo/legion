@@ -38,6 +38,12 @@ importers:
       '@legion/bot-cerebro':
         specifier: workspace:*
         version: link:../../packages/bot-cerebro
+      '@legion/bot-jarvis':
+        specifier: workspace:*
+        version: link:../../packages/bot-jarvis
+      '@legion/bot-ultron':
+        specifier: workspace:*
+        version: link:../../packages/bot-ultron
       '@legion/core':
         specifier: workspace:*
         version: link:../../packages/core
