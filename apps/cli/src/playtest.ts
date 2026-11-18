@@ -116,7 +116,9 @@ export async function playtestReport(db: LegionDb, o: PlaytestOptions): Promise<
     });
   }
 
-  if (has('jarvis')) await jarvisSection(db, o, r, who);
+  // The bot does not pay members who left the server.
+  const left = new Set(members.filter((m) => m.leftAt).map((m) => m.id));
+  if (has('jarvis')) await jarvisSection(db, o, r, who, left);
   if (has('ultron')) await ultronSection(db, o, r);
   return r;
 }
@@ -126,6 +128,7 @@ async function jarvisSection(
   o: PlaytestOptions,
   r: PlaytestReport,
   who: (id: string) => string,
+  left: ReadonlySet<string> = new Set(),
 ) {
   const j = jarvisTables(db);
   const orm = db.orm;
@@ -163,7 +166,7 @@ async function jarvisSection(
     if (['abandoned', 'cancelled'].includes(run.status) && xp.some((x) => x.row))
       r.problems.push(`${tag}: ${run.status}, mas pagou XP`);
     if (['success', 'failure'].includes(run.status)) {
-      const unpaid = xp.filter((x) => !x.row).map((x) => who(x.id));
+      const unpaid = xp.filter((x) => !x.row && !left.has(x.id)).map((x) => who(x.id));
       if (unpaid.length === xp.length)
         r.warnings.push(`${tag}: ${run.status} sem XP para ninguém (XP 0 na config?)`);
       else if (unpaid.length) r.problems.push(`${tag}: ${run.status}, mas sem XP para ${unpaid.join(', ')}`);
