@@ -649,3 +649,34 @@ describe('/jarvis campanha importar', () => {
     expect(await servicesOf(t).repo.campaign('noite-longa')).toBeNull();
   });
 });
+
+describe('/jarvis missao importar with campaign fields', () => {
+  const importMission = (tc: TestContext, m: Mission) =>
+    tc.interact({
+      kind: 'command',
+      userId: STAFF,
+      isGuildOwner: true,
+      commandName: 'jarvis',
+      subcommand: 'missao importar',
+      attachments: { arquivo: upload(tc, stringify(m), `${m.id}.yaml`) },
+    });
+
+  it('checks the mission against the campaigns and missions on the server', async () => {
+    const { t } = await setup();
+    const unknown = chapter('extra-1', 9, undefined, { campaign: { id: 'nao-existe', chapter: 1 } });
+    expect(reply(t, await importMission(t, unknown))?.content).toContain(
+      'campaign.id: campanha "nao-existe" não existe',
+    );
+    expect(reply(t, await importMission(t, chapter('extra-2', 2)))?.content).toContain(
+      'campaign.chapter: capítulo 2 repetido (já é a missão "sombras-2")',
+    );
+    expect(
+      reply(t, await importMission(t, chapter('extra-3', 4, { missions: ['fantasma'] })))?.content,
+    ).toContain('requires.missions.0: missão "fantasma" não existe');
+    const ok = await importMission(t, chapter('sombras-4', 4, { missions: ['sombras-3'] }));
+    expect(reply(t, ok)?.embeds?.[0]?.title).toBe('Prévia: Capítulo sombras-4');
+    // Replacing a chapter with a new version of itself is not a repeat.
+    const again = await importMission(t, chapter('sombras-2', 2, { missions: ['sombras-1'] }));
+    expect(reply(t, again)?.embeds?.[0]?.title).toBe('Prévia: Capítulo sombras-2');
+  });
+});

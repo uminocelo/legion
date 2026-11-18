@@ -1,13 +1,15 @@
 // Mission drafts ↔ YAML, validated by the bot's own parser (`/jarvis missao importar`).
 import { parse, stringify } from 'yaml';
 import { DIFFICULTIES, MISSION_KINDS } from '../../packages/bot-jarvis/src/config.js';
+import { CAMPAIGN_KINDS, parseCampaignYaml } from '../../packages/bot-jarvis/src/domain/campaign.js';
 import {
   graphErrors,
   type LocalText,
   parseMissionYaml,
 } from '../../packages/bot-jarvis/src/domain/mission.js';
+import { ORIGINS } from '../../packages/core/src/game/origins.js';
 
-export { DIFFICULTIES, MISSION_KINDS };
+export { CAMPAIGN_KINDS, DIFFICULTIES, MISSION_KINDS, ORIGINS };
 
 /** pt-BR is required; en is optional (empty = not written). */
 export interface Text2 {
@@ -41,6 +43,23 @@ export interface MissionDraft {
   xp: { success: number; failure: number };
   start: string;
   scenes: SceneDraft[];
+  /** Chapter of a campaign (empty id = not in a campaign). */
+  campaign: { id: string; chapter: number };
+  /** Lists are written comma-separated in the form; 0 = no level requirement. */
+  requires: { missions: string; level: number; origins: string[]; factions: string };
+  /** Team joined at a success ending of a recruitment campaign (empty = none). */
+  joinFaction: string;
+}
+
+/** A campaign file: the campaign and its chapters (`/jarvis campanha importar`). */
+export interface CampaignDraft {
+  id: string;
+  kind: string;
+  /** Recruitment only. */
+  faction: string;
+  title: Text2;
+  summary: Text2;
+  missions: MissionDraft[];
 }
 
 const t2 = (pt = '', en = ''): Text2 => ({ pt, en });
@@ -70,6 +89,9 @@ export const emptyMission = (): MissionDraft => ({
   customXp: false,
   xp: { success: 50, failure: 10 },
   start: 'inicio',
+  campaign: { id: '', chapter: 1 },
+  requires: { missions: '', level: 0, origins: [], factions: '' },
+  joinFaction: '',
   scenes: [
     {
       ...emptyScene('inicio'),
@@ -119,6 +141,23 @@ const out = (x: Text2): LocalText => {
   return en ? { 'pt-BR': pt, en } : pt;
 };
 
+const list = (v: string) =>
+  v
+    .split(',')
+    .map((x) => x.trim())
+    .filter(Boolean);
+
+/** Drafts saved before campaigns existed get the new fields. */
+export function withDefaults(m: MissionDraft): MissionDraft {
+  const e = emptyMission();
+  return {
+    ...m,
+    campaign: m.campaign ?? e.campaign,
+    requires: { ...e.requires, ...(m.requires ?? {}) },
+    joinFaction: m.joinFaction ?? '',
+  };
+}
+
 /** The mission object exactly as the YAML file holds it. */
 export function toObject(m: MissionDraft) {
   const scenes: Record<string, unknown> = {};
@@ -140,8 +179,24 @@ export function toObject(m: MissionDraft) {
     party: m.party,
     difficulty: m.difficulty,
     ...(m.customXp ? { xp: { ...m.xp } } : {}),
+    ...campaignFields(m),
     start: m.start,
     scenes,
+  };
+}
+
+function campaignFields(m: MissionDraft) {
+  const c = withDefaults(m);
+  const req = {
+    ...(list(c.requires.missions).length ? { missions: list(c.requires.missions) } : {}),
+    ...(c.requires.level > 0 ? { level: c.requires.level } : {}),
+    ...(c.requires.origins.length ? { origins: [...c.requires.origins] } : {}),
+    ...(list(c.requires.factions).length ? { factions: list(c.requires.factions) } : {}),
+  };
+  return {
+    ...(c.campaign.id.trim() ? { campaign: { id: c.campaign.id.trim(), chapter: c.campaign.chapter } } : {}),
+    ...(Object.keys(req).length ? { requires: req } : {}),
+    ...(c.joinFaction.trim() ? { reward: { joinFaction: c.joinFaction.trim() } } : {}),
   };
 }
 
@@ -221,7 +276,18 @@ export function fromYaml(text: string): MissionDraft {
       return { ...base, type: 'end', text: inText(s.text), end: s.end === 'failure' ? 'failure' : 'success' };
     },
   );
+  const campaign = (r.campaign ?? {}) as Record<string, unknown>;
+  const req = (r.requires ?? {}) as Record<string, unknown>;
+  const strs = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
   return {
+    campaign: { id: str(campaign.id), chapter: num(campaign.chapter, 1) },
+    requires: {
+      missions: strs(req.missions).join(', '),
+      level: num(req.level, 0),
+      origins: strs(req.origins),
+      factions: strs(req.factions).join(', '),
+    },
+    joinFaction: str((r.reward as Record<string, unknown> | undefined)?.joinFaction),
     id: str(r.id),
     kind: str(r.kind, 'daily'),
     title: inText(r.title),
@@ -233,5 +299,78 @@ export function fromYaml(text: string): MissionDraft {
     xp: { success: num(xp?.success, 50), failure: num(xp?.failure, 10) },
     start: str(r.start),
     scenes,
+  };
+}
+
+// ---------- campaign file ----------
+
+export const emptyCampaign = (): CampaignDraft => ({
+  id: 'minha-campanha',
+  kind: 'story',
+  faction: '',
+  title: t2(),
+  summary: t2(),
+  missions: [],
+});
+
+export function campaignToObject(c: CampaignDraft) {
+  return {
+    campaign: {
+      id: c.id.trim(),
+      kind: c.kind,
+      ...(c.kind === 'recruitment' && c.faction.trim() ? { faction: c.faction.trim() } : {}),
+      title: out(c.title),
+      summary: out(c.summary),
+    },
+    missions: [...c.missions]
+      .sort((a, b) => a.campaign.chapter - b.campaign.chapter)
+      .map((m) => toObject({ ...m, campaign: { ...m.campaign, id: c.id.trim() } })),
+  };
+}
+
+export const campaignFileName = (c: CampaignDraft) => `campanha-${c.id.trim() || 'nova'}.yaml`;
+
+export function campaignToYaml(c: CampaignDraft): string {
+  return (
+    '# Campanha do J.A.R.V.I.S. Importe com /jarvis campanha importar (anexe este arquivo). Formato: docs/MISSIONS.md#campanhas\n' +
+    stringify(campaignToObject(c))
+  );
+}
+
+/**
+ * The bot's checks for a campaign file. The server's own missions and teams are not known here:
+ * `requires` may only name chapters of this file, and the team in `joinFaction` is checked on import.
+ */
+export function validateCampaign(c: CampaignDraft): string[] {
+  if (!c.missions.length) return ['missions: adicione pelo menos uma missão como capítulo'];
+  const res = parseCampaignYaml(campaignToYaml(c));
+  return 'errors' in res ? res.errors : [];
+}
+
+/** Adds the mission as a chapter (same id replaces); the copy points to this campaign. */
+export function addChapter(c: CampaignDraft, m: MissionDraft): void {
+  const copy = structuredClone(withDefaults(m));
+  copy.campaign.id = c.id.trim();
+  c.missions = [...c.missions.filter((x) => x.id !== copy.id), copy];
+  c.missions.sort((a, b) => a.campaign.chapter - b.campaign.chapter);
+}
+
+export function removeChapter(c: CampaignDraft, missionId: string): void {
+  c.missions = c.missions.filter((x) => x.id !== missionId);
+}
+
+/** Opens a campaign file (`campaign` + `missions`) as a draft; lenient like `fromYaml`. */
+export function campaignFromYaml(text: string): CampaignDraft {
+  const raw = parse(text);
+  if (!raw || typeof raw !== 'object' || !('campaign' in raw))
+    throw new Error('o arquivo deve ter campaign e missions');
+  const r = raw as { campaign: Record<string, unknown>; missions?: unknown[] };
+  return {
+    id: str(r.campaign.id),
+    kind: str(r.campaign.kind, 'story'),
+    faction: str(r.campaign.faction),
+    title: inText(r.campaign.title),
+    summary: inText(r.campaign.summary),
+    missions: (r.missions ?? []).map((m) => fromYaml(stringify(m))),
   };
 }

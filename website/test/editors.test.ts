@@ -227,6 +227,122 @@ describe('mission editor', () => {
   });
 });
 
+/** A filled mission draft: one choice wins, the other loses. */
+function chapterDraft(id: string, chapter: number, campaignId = 'noite-longa') {
+  const m = missions.emptyMission();
+  m.id = id;
+  m.kind = 'story';
+  m.title = { pt: `Capítulo ${chapter}`, en: `Chapter ${chapter}` };
+  m.summary = { pt: 'Um capítulo da noite.', en: '' };
+  const [start, win, lose] = m.scenes;
+  if (!start || !win || !lose) throw new Error('skeleton changed');
+  start.text.pt = 'A cidade apaga.';
+  start.choices[0] = { label: { pt: 'Investigar', en: '' }, next: 'sucesso' };
+  start.choices[1] = { label: { pt: 'Esperar', en: '' }, next: 'falha' };
+  win.text.pt = 'A luz volta.';
+  lose.text.pt = 'A noite vence.';
+  m.campaign = { id: campaignId, chapter };
+  return m;
+}
+
+describe('mission editor: campaigns', () => {
+  it('writes campaign, chapter, requires and joinFaction, and reads them back', () => {
+    const m = chapterDraft('rv-3', 3, 'recrutamento-vingadores');
+    m.requires = {
+      missions: 'rv-1, rv-2',
+      level: 3,
+      origins: ['ciencia', 'tecnologia'],
+      factions: 'independent, xmen',
+    };
+    m.joinFaction = 'avengers';
+    expect(missions.validate(m)).toEqual([]);
+    const parsed = parseMissionYaml(missions.toYaml(m));
+    expect(parsed).toMatchObject({
+      mission: {
+        campaign: { id: 'recrutamento-vingadores', chapter: 3 },
+        requires: {
+          missions: ['rv-1', 'rv-2'],
+          level: 3,
+          origins: ['ciencia', 'tecnologia'],
+          factions: ['independent', 'xmen'],
+        },
+        reward: { joinFaction: 'avengers' },
+      },
+    });
+    expect(missions.fromYaml(missions.toYaml(m))).toEqual(m);
+    // Empty fields are not written.
+    expect(missions.toYaml(missions.emptyMission())).not.toMatch(/campaign|requires|reward/);
+    m.requires.origins = ['alienigena'];
+    expect(missions.validate(m).join('\n')).toMatch(/requires\.origins\.0/);
+  });
+
+  it('a draft saved before campaigns gets the new fields', () => {
+    const old = missions.emptyMission() as Partial<missions.MissionDraft>;
+    delete old.campaign;
+    delete old.requires;
+    delete old.joinFaction;
+    const m = missions.withDefaults(old as missions.MissionDraft);
+    expect(m.requires).toEqual({ missions: '', level: 0, origins: [], factions: '' });
+    expect(missions.validate({ ...m, title: { pt: 'x', en: '' } }).join()).not.toMatch(/campaign/);
+  });
+
+  it('builds a campaign file that /jarvis campanha importar accepts, and opens it again', async () => {
+    const c = missions.emptyCampaign();
+    c.id = 'noite-longa';
+    c.title = { pt: 'Noite longa', en: 'Long night' };
+    c.summary = { pt: 'Dois capítulos numa noite.', en: '' };
+    expect(missions.validateCampaign(c)).toEqual(['missions: adicione pelo menos uma missão como capítulo']);
+    const two = chapterDraft('noite-2', 2);
+    two.requires.missions = 'noite-1';
+    missions.addChapter(c, two);
+    missions.addChapter(c, chapterDraft('noite-1', 1));
+    expect(c.missions.map((m) => m.id)).toEqual(['noite-1', 'noite-2']);
+    expect(missions.validateCampaign(c)).toEqual([]);
+    expect(missions.campaignFileName(c)).toBe('campanha-noite-longa.yaml');
+    const text = missions.campaignToYaml(c);
+    expect(missions.campaignFromYaml(text)).toEqual(c);
+
+    t = await createTestContext({ bots: [cerebro, jarvis] });
+    expect(await importAndPublish(t, 'jarvis', 'campanha importar', text, missions.campaignFileName(c))).toBe(
+      '✅ Campanha `noite-longa` publicada com 2 missão(ões). Já aparece em /campanha e /missao.',
+    );
+    const s = jarvisServices(t.ctxOf(jarvis));
+    expect(await s.repo.mission('noite-2')).toMatchObject({
+      campaignId: 'noite-longa',
+      chapter: 2,
+      origin: 'staff',
+    });
+  });
+
+  it('shows the bot errors for a repeated chapter, a cycle and joinFaction outside recruitment', () => {
+    const c = missions.emptyCampaign();
+    c.id = 'noite-longa';
+    c.title = { pt: 'Noite longa', en: '' };
+    c.summary = { pt: 'Resumo.', en: '' };
+    const a = chapterDraft('noite-1', 1);
+    const b = chapterDraft('noite-2', 1);
+    missions.addChapter(c, a);
+    missions.addChapter(c, b);
+    expect(missions.validateCampaign(c).join('\n')).toMatch(/capítulo 1 repetido/);
+    b.campaign.chapter = 2;
+    a.requires.missions = 'noite-2';
+    b.requires.missions = 'noite-1';
+    missions.addChapter(c, a);
+    missions.addChapter(c, b);
+    expect(missions.validateCampaign(c).join('\n')).toMatch(/ciclo em requires/);
+    a.requires.missions = '';
+    b.joinFaction = 'avengers';
+    missions.addChapter(c, a);
+    missions.addChapter(c, b);
+    expect(missions.validateCampaign(c).join('\n')).toMatch(
+      /joinFaction só vale numa missão de campanha de recrutamento/,
+    );
+    c.kind = 'recruitment';
+    c.faction = 'avengers';
+    expect(missions.validateCampaign(c)).toEqual([]);
+  });
+});
+
 describe('drafts and bundle', () => {
   it('keeps drafts across reloads and survives a browser without storage', () => {
     const mem = new Map<string, string>();
