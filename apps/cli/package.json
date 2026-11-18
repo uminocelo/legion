@@ -6,6 +6,8 @@
   "dependencies": {
     "@clack/prompts": "^1.9.0",
     "@legion/bot-cerebro": "workspace:*",
+    "@legion/bot-jarvis": "workspace:*",
+    "@legion/bot-ultron": "workspace:*",
     "@legion/core": "workspace:*",
     "@legion/runner": "workspace:*",
     "commander": "^15.1.0",

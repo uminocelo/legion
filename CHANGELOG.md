@@ -4,6 +4,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- `legion playtest-report --since <90m|3h|2d|data>`: read-only summary of a session from the database (registrations, missions with their members and XP, XP by reason, fights, staff content) with checks: XP paid once and equally, ledger = progress, daily/weekly limits, fights with the right party. Exits 1 when something does not match; `--json`.
+- `docs/PLAYTEST.md`: script for a live test session with friends.
+
 ## [0.8.0] - 2026-11-18
 
 ### Added
