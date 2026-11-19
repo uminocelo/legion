@@ -1,6 +1,6 @@
 # Economia e equipamento (J.A.R.V.I.S. v2)
 
-> v0.10. Créditos (US-14), equipamento (US-15) e loja (US-16).
+> v0.10. Créditos, equipamento, loja e o editor de itens.
 > Não existe dinheiro real em lugar nenhum do Legion: créditos e itens só se ganham jogando ou pela staff.
 
 ## Créditos
@@ -67,9 +67,21 @@ Por que o teto é no total, e não só por item: [ADR 0029](adr/0029-gear-bonus-
 - Cada item é único: você tem ou não tem. Itens entram no inventário pela staff (`/jarvis item dar`) ou pela `/loja`.
 - O `/perfil` mostra os itens equipados no cartão e os atributos já com o bônus.
 
+## Criar itens
+
+Três jeitos, todos com o mesmo formato e as mesmas regras:
+
+1. **Editor no navegador:** o [editor de itens](https://uminocelo.github.io/legion/editor-itens.html) monta o arquivo com os limites de cada bônus, confere nomes e baixa `itens.yaml`. Dá para abrir um arquivo existente e partir dos itens do Legion.
+2. **Pelo Discord:** `/jarvis item importar` com o arquivo anexado. A prévia mostra o que é novo, o que muda (e quantos jogadores têm cada item alterado) e o que fica igual; **Publicar** aplica. Itens importados são da staff: reiniciar não mexe neles, e `/jarvis item exportar` devolve o arquivo.
+3. **Na pasta:** `data/content/items/*.yaml`, lidos ao iniciar.
+
+Dicas de equilíbrio: a maioria dos itens dá +1 num atributo ou +8 de vida; +2 ou +16 é para níveis altos. Lembre que o total equipado tem teto, então três itens fortes não somam mais que o teto. Preços dos itens do Legion: 60 a 360 créditos, e uma missão diária paga 20.
+
+Um item alterado vale a partir da próxima luta. Para tirar um item de jogo sem apagar de ninguém, use `/jarvis item desativar` ([STAFF.md](STAFF.md#itens)).
+
 ## Arquivos de itens
 
-Os itens que vêm com o Legion estão em `packages/bot-jarvis/content/items/`. Os do servidor ficam em `data/content/items/*.yaml` (mesmo `id` substitui um item enviado) e são lidos ao iniciar. Um arquivo com erro é ignorado inteiro e o `legion doctor` mostra ❌.
+Os itens que vêm com o Legion estão em `packages/bot-jarvis/content/items/`. Os do servidor ficam em `data/content/items/*.yaml` (mesmo `id` substitui um item enviado) e são lidos ao iniciar. Um arquivo com erro é ignorado inteiro e o `legion doctor` mostra ❌. Os itens importados pelo Discord não podem usar o id de um item dos arquivos.
 
 ```yaml
 - id: traje-tatico               # letras minúsculas, números e "-" (3 a 48)

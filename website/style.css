@@ -643,6 +643,10 @@ section:last-child {
   grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
   gap: 10px;
 }
+.stats > .check {
+  grid-column: 1 / -1;
+  margin: 0;
+}
 .mini {
   font: inherit;
   font-size: 0.82rem;

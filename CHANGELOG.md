@@ -4,7 +4,19 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-19
+
+J.A.R.V.I.S. v2: credits, items and gear, the shop and the item editor. No real money anywhere: credits and items are earned by playing or given by staff.
+
+### Upgrade notes
+- **Migrations** `0005_items` and `0006_wallet` run on their own (new empty tables; nothing is paid retroactively, every wallet starts at 0).
+- **New commands** `/inventario`, `/carteira` and `/loja`, and new `/jarvis item` and `/jarvis creditos` subcommands: restart (or `legion register-commands`) so Discord shows them.
+- **Economy on by default.** Missions, trivia and world events pay credits, and the 12 shipped items are in the shop. `jarvis.economy.enabled: false` turns payouts off and closes the shop; `jarvis.economy.gear.statCap: 0` makes gear cosmetic only.
+- **Fights** read gear bonuses: a hero with equipped items starts a fight slightly stronger, capped at +2 per stat and +16 hp by default.
+
 ### Added
+- Item editor (US-17): `editor-itens.html` builds `itens.yaml` with the bot's own validation (slot, level, pt/en name and description, capped bonus, cosmetic, shop price and order), opens existing files and starts from the shipped items.
+- `/jarvis item importar` (preview with new, changed and unchanged items and how many players own each changed one; Publicar; ids of file items refused; every error listed), `/jarvis item exportar` (`itens-staff.yaml`, imports back unchanged), `/jarvis item desativar` (unequips owners and says how many; they keep the item) and `/jarvis item ativar`. Staff items survive restarts.
 - Shop (US-16): `/loja [pagina]` lists the active items with `shop.price` (price, slot, level, bonus, owned/level/cosmetic marks, balance), 25 per page. Buying debits and grants in one transaction (`buy:<member>:<item>`); too few credits, an item already owned, an item no longer for sale, a level too low or a changed price are refused with nothing charged. No selling back. 11 of the 12 shipped items are for sale (60–360 credits). `legion doctor` warns when the economy is on and nothing is for sale.
 - Credits (US-14): missions (by kind, or the mission's `credits`), correct trivia answers and world events (victory or participation) pay credits once each, next to the XP. `/carteira` shows the balance and the last 10 movements. `jarvis.economy` sets the amounts; `enabled: false` turns payouts off. No real money anywhere.
 - `/jarvis creditos dar membro quantidade motivo` (staff): −10000..10000, never below 0, recorded with who and why.

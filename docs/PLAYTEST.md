@@ -15,7 +15,7 @@ Com uma quinta conta dá para testar o "grupo cheio" no passo 4.
 
 ## Antes (só o dono, uns 15 minutos)
 
-1. Atualize para a versão mais nova: `LEGION_VERSION=0.9.1` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
+1. Atualize para a versão mais nova: `LEGION_VERSION=0.10.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
 2. No `legion.config.yaml`, para esta sessão:
    ```yaml
    channels:
@@ -163,7 +163,9 @@ Para não esperar o nível 3, a staff pode dar XP com `/jarvis xp` (com motivo).
 | 11.7 | J1 clica num botão da loja de J2 | "Este menu não é seu"; nada muda | | |
 | 11.8 | J2: `/inventario`, equipa o traje | "Vale a partir da próxima luta"; o rodapé mostra +8 VIDA; `/perfil` mostra o item | | |
 | 11.9 | J2 entra numa luta (missão com luta ou `/treino`) | A vida inicial é 8 maior que antes do item | | |
-| 11.10 | Dono: `/jarvis creditos dar membro:J2 quantidade:-100 motivo:teste` | Recusado: não dá para tirar mais do que o saldo | | |
+| 11.10 | Dono: monta um item no editor de itens, `/jarvis item importar` e **Publicar** | A prévia mostra 🆕 1; o item aparece na `/loja` | | |
+| 11.11 | Dono: `/jarvis item desativar item:traje-de-treino` | Responde quantos foram desequipados; J2 continua com o traje no `/inventario`, marcado "desativado" | | |
+| 11.12 | Dono: `/jarvis creditos dar membro:J2 quantidade:-100 motivo:teste` | Recusado: não dá para tirar mais do que o saldo | | |
 
 ## Depois
 
