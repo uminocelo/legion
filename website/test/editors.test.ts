@@ -5,9 +5,10 @@ import { cerebro } from '@legion/bot-cerebro';
 import { jarvis, jarvisServices, parseMissionYaml } from '@legion/bot-jarvis';
 import { sentinel } from '@legion/bot-sentinel';
 import { ultron, ultronServices } from '@legion/bot-ultron';
-import { createTestContext, type TestContext } from '@legion/core';
+import { createTestContext, isCanonName, parseItemsYaml, type TestContext } from '@legion/core';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as enemies from '../editor/enemy-model.js';
+import * as items from '../editor/item-model.js';
 import * as missions from '../editor/mission-model.js';
 import { store } from '../editor/shared.js';
 import * as trivia from '../editor/trivia-model.js';
@@ -102,6 +103,112 @@ describe('trivia editor', () => {
     expect(trivia.validate(yaml, trivia.DEFAULT_CATEGORIES)).toEqual([]);
     expect(trivia.fromYaml(yaml)).toEqual(drafts);
     expect(() => trivia.fromYaml('id: not-a-list')).toThrow(/lista de perguntas/);
+  });
+});
+
+describe('item editor', () => {
+  const SHIPPED = join(ROOT, 'packages/bot-jarvis/content/items/itens.yaml');
+
+  it('round-trips the shipped items', () => {
+    const text = readFileSync(SHIPPED, 'utf8');
+    const drafts = items.fromYaml(text);
+    expect(drafts).toHaveLength(12);
+    const yaml = items.toYaml(drafts);
+    expect(items.validate(yaml)).toEqual([]);
+    expect(parseItemsYaml(yaml, 'x', isCanonName).items).toEqual(
+      parseItemsYaml(text, 'x', isCanonName).items,
+    );
+    expect(items.fromYaml(yaml)).toEqual(drafts);
+    // The shipped ids are refused, as the bot does on import.
+    expect(
+      items.validate(
+        yaml,
+        drafts.map((d) => d.id),
+      ),
+    ).toHaveLength(12);
+    expect(() => items.fromYaml('id: x')).toThrow(/lista de itens/);
+  });
+
+  it('writes a file /jarvis item importar accepts and publishes', async () => {
+    const a = { ...items.emptyItem([]), id: 'luva-de-brasa', namePt: 'Luva de brasa', nameEn: 'Ember glove' };
+    const b = {
+      ...items.emptyItem([a]),
+      id: 'manto-cinza',
+      slot: 'traje',
+      namePt: 'Manto cinza',
+      descPt: 'Só para as fotos.',
+      cosmetic: true,
+      bonus: { hp: 0, atk: 0, def: 0, spd: 0, foc: 0 },
+      forSale: true,
+      price: 45,
+      order: 3,
+    };
+    const c = {
+      ...items.emptyItem([a, b]),
+      namePt: 'Chip de foco',
+      slot: 'dispositivo',
+      forSale: false,
+      minLevel: 4,
+    };
+    c.bonus = { hp: 8, atk: 0, def: 0, spd: 0, foc: 2 };
+    const yaml = items.toYaml([a, b, c]);
+    expect(items.validate(yaml)).toEqual([]);
+    t = await createTestContext({ bots: [cerebro, jarvis] });
+    expect(await importAndPublish(t, 'jarvis', 'item importar', yaml, items.ITEM_FILE)).toBe(
+      '✅ Itens publicados: 3 novo(s), 0 alterado(s), 0 igual(is). Desequipados: 0.',
+    );
+    const s = jarvisServices(t.ctxOf(jarvis));
+    expect(await s.items.row('manto-cinza')).toMatchObject({
+      origin: 'staff',
+      price: 45,
+      cosmetic: 1,
+      slot: 'traje',
+    });
+    expect(await s.items.row('item-3')).toMatchObject({ price: null, minLevel: 4 });
+  });
+
+  it('reports canon names, a cosmetic with a bonus and out-of-range values with the bot paths', async () => {
+    const bad = {
+      ...items.emptyItem([]),
+      namePt: 'Escudo do Capitão América',
+      cosmetic: true,
+      bonus: { hp: 0, atk: 3, def: 0, spd: 0, foc: 0 },
+      price: 0,
+    };
+    const yaml = items.toYaml([bad]);
+    const errs = items.validate(yaml);
+    expect(errs).toEqual([
+      'itens.yaml → item 1 (item-1) → name.pt-BR: nome de personagem existente; use um nome original',
+      'itens.yaml → item 1 (item-1) → bonus.atk: muito grande (máximo 2)',
+      'itens.yaml → item 1 (item-1) → shop.price: muito pequeno (mínimo 1)',
+      'itens.yaml → item 1 (item-1) → bonus: item cosmético não tem bônus; tire o bonus ou use cosmetic: false',
+    ]);
+    t = await createTestContext({ bots: [cerebro, jarvis] });
+    const bot = await importAndPublish(t, 'jarvis', 'item importar', yaml, items.ITEM_FILE);
+    for (const e of errs) expect(bot).toContain(e);
+    const cosmetic = items.validate(
+      items.toYaml([
+        {
+          ...items.emptyItem([]),
+          namePt: 'Fita',
+          cosmetic: true,
+          bonus: { hp: 0, atk: 0, def: 0, spd: 0, foc: 0 },
+        },
+      ]),
+    );
+    expect(cosmetic).toEqual([]);
+    const withBonus = items.toYaml([
+      {
+        ...items.emptyItem([]),
+        namePt: 'Fita',
+        cosmetic: true,
+        bonus: { hp: 0, atk: 1, def: 0, spd: 0, foc: 0 },
+      },
+    ]);
+    expect(items.validate(withBonus)).toEqual([
+      'itens.yaml → item 1 (item-1) → bonus: item cosmético não tem bônus; tire o bonus ou use cosmetic: false',
+    ]);
+    expect(items.validate(items.toYaml([]))).toEqual(['itens.yaml: nenhum item no arquivo']);
   });
 });
 
@@ -397,7 +504,7 @@ describe('drafts and bundle', () => {
     try {
       await bundleEditors(out);
       const files = readdirSync(join(out, 'assets/js'));
-      expect(files).toEqual(expect.arrayContaining(['trivia.js', 'enemy.js', 'mission.js']));
+      expect(files).toEqual(expect.arrayContaining(['trivia.js', 'enemy.js', 'mission.js', 'item.js']));
       const all = files.map((f) => readFileSync(join(out, 'assets/js', f), 'utf8')).join('\n');
       expect(all).not.toMatch(/from\s*["']node:/);
       expect(all.toLowerCase()).toContain('magneto');
