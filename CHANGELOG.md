@@ -4,6 +4,9 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- `legion content validate <file|folder> [--type] [--categories] [--json]`: checks trivia, mission, campaign (single files and import files), enemy and power files with the bots' own rules, without the database. Missions and campaigns are checked together and next to the shipped content (chapters, `requires`, cycles, `joinFaction`). In a folder, files of another type are skipped with a note. Exit 0 (valid), 1 (errors) or 2 (unknown type).
+
 ## [0.9.0] - 2026-11-18
 
 ### Upgrade notes
