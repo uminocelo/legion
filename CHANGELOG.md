@@ -4,6 +4,13 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-11-18
+
+### Added
+- `legion content validate <file|folder> [--type] [--categories] [--json]`: checks trivia, mission, campaign (single files and import files), enemy and power files with the bots' own rules, without the database. Missions and campaigns are checked together and next to the shipped content (chapters, `requires`, cycles, `joinFaction`). In a folder, files of another type are skipped with a note. Exit 0 (valid), 1 (errors) or 2 (unknown type).
+- AI skills kit in `skills/`: `legion-mission`, `legion-campaign`, `legion-trivia`, `legion-enemy` and `legion-setup`. Each `SKILL.md` has the format, the canon policy, balance numbers, pt-BR style and examples, and tells the agent to run `legion content validate` before handing a file over. `legion-setup` never reads or prints `.env`. Every example is validated in CI.
+- `skills.html` on the site with install steps for Claude Code and other agents, and `legion-skills.zip` built from `skills/` by `site:build`.
+
 ## [0.9.0] - 2026-11-18
 
 ### Upgrade notes
@@ -151,7 +158,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/uminocelo/legion/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/uminocelo/legion/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/uminocelo/legion/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/uminocelo/legion/compare/v0.7.2...v0.8.0

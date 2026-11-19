@@ -1,0 +1,75 @@
+# Example import file for the legion-campaign skill: /jarvis campanha importar.
+campaign:
+  id: noite-longa
+  kind: story
+  title: { pt-BR: "Noite longa", en: "Long night" }
+  summary:
+    pt-BR: "Um apagão toma o bairro. Dois capítulos para devolver a luz."
+    en: "A blackout takes over the neighborhood. Two chapters to bring the lights back."
+missions:
+  - id: noite-longa-1
+    kind: story
+    campaign: { id: noite-longa, chapter: 1 }
+    title: { pt-BR: "Noite longa 1: O apagão", en: "Long night 1: The blackout" }
+    summary: { pt-BR: "Descubra de onde vem o apagão.", en: "Find out where the blackout comes from." }
+    party: 2
+    difficulty: facil
+    start: rua
+    scenes:
+      rua:
+        text:
+          pt-BR: 'As luzes se apagam de uma vez. O Luke Cage aponta para a subestação: "Começou ali."'
+          en: 'The lights go out all at once. Luke Cage points at the substation: "It started there."'
+        choices:
+          - label: { pt-BR: "Ir até a subestação", en: "Go to the substation" }
+            next: pista
+          - label: { pt-BR: "Esperar a luz voltar", en: "Wait for the power to return" }
+            next: espera
+      pista:
+        text:
+          pt-BR: "Na subestação, cabos cortados e marcas de garras metálicas levam ao túnel."
+          en: "At the substation, cut cables and metal claw marks lead into the tunnel."
+        end: success
+      espera:
+        text:
+          pt-BR: "A luz não volta. Amanhã vocês tentam de novo."
+          en: "The power does not come back. You try again tomorrow."
+        end: failure
+  - id: noite-longa-2
+    kind: story
+    campaign: { id: noite-longa, chapter: 2 }
+    requires: { missions: [noite-longa-1] }
+    title: { pt-BR: "Noite longa 2: O túnel", en: "Long night 2: The tunnel" }
+    summary:
+      {
+        pt-BR: "A máquina que corta os cabos está no túnel.",
+        en: "The machine cutting the cables is in the tunnel.",
+      }
+    party: 2
+    difficulty: normal
+    start: tunel
+    scenes:
+      tunel:
+        text:
+          pt-BR: "No fundo do túnel, uma máquina morde um cabo de energia. Ela percebe vocês."
+          en: "At the end of the tunnel, a machine is chewing on a power cable. It notices you."
+        choices:
+          - label: { pt-BR: "Atacar", en: "Attack" }
+            next: luta
+          - label: { pt-BR: "Atrair para longe dos cabos", en: "Lure it away from the cables" }
+            next: luta
+      luta:
+        text:
+          pt-BR: "A máquina larga o cabo e avança."
+          en: "The machine drops the cable and charges."
+        combat: { win: luz, lose: escuro }
+      luz:
+        text:
+          pt-BR: "A máquina cai e as luzes do bairro voltam, uma rua de cada vez."
+          en: "The machine falls and the lights come back, one street at a time."
+        end: success
+      escuro:
+        text:
+          pt-BR: "A máquina foge mais fundo no túnel. Descansem e voltem."
+          en: "The machine escapes deeper into the tunnel. Rest and come back."
+        end: failure

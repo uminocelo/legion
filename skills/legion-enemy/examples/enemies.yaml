@@ -1,0 +1,15 @@
+# Example enemies for the legion-enemy skill: one fast minion and one elite.
+- id: mosca-de-aco
+  name: "Mosca de Aço"
+  tier: minion
+  minLevel: 2
+  base: { hp: 50, atk: 7, def: 3, spd: 12, foc: 7 }
+  powerCooldownMax: 4
+  tauntKeys: [ultron.taunt.generic.1]
+- id: guardiao-de-ferro-velho
+  name: "Guardião de Ferro-Velho"
+  tier: elite
+  minLevel: 6
+  base: { hp: 135, atk: 11, def: 12, spd: 8, foc: 10 }
+  powerCooldownMax: 3
+  tauntKeys: [ultron.taunt.generic.2, ultron.taunt.generic.3]

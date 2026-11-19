@@ -1,0 +1,47 @@
+# Example trivia for the legion-trivia skill. Every fact has a source.
+- id: quad-0101
+  category: quadrinhos
+  difficulty: facil
+  question: "Quem criou o Homem-Aranha?"
+  choices:
+    [
+      "Stan Lee e Steve Ditko",
+      "Stan Lee e Jack Kirby",
+      "John Romita e Gerry Conway",
+      "Todd McFarlane e David Michelinie",
+    ]
+  answer: 0
+  explanation: "Stan Lee e Steve Ditko criaram o Homem-Aranha em 1962."
+  source: https://en.wikipedia.org/wiki/Spider-Man
+- id: quad-0102
+  category: quadrinhos
+  difficulty: normal
+  question: "Em que revista o Homem-Aranha estreou?"
+  choices: ["Amazing Fantasy #15", "The Amazing Spider-Man #1", "Strange Tales #110", "Tales of Suspense #39"]
+  answer: 0
+  explanation: "O Homem-Aranha estreou em Amazing Fantasy #15 (1962)."
+  source: https://en.wikipedia.org/wiki/Amazing_Fantasy
+- id: quad-0103
+  category: quadrinhos
+  difficulty: facil
+  question: "Qual é o nome civil do Homem-Aranha original?"
+  choices: ["Peter Parker", "Miles Morales", "Ben Reilly", "Harry Osborn"]
+  answer: 0
+  explanation: "Peter Parker é o Homem-Aranha original; Miles Morales veio em 2011."
+  source: https://en.wikipedia.org/wiki/Spider-Man
+- id: quad-0104
+  category: quadrinhos
+  difficulty: dificil
+  question: "Em que revista Miles Morales estreou como Homem-Aranha?"
+  choices: ["Ultimate Fallout #4", "Spider-Men #1", "Ultimate Comics Spider-Man #1", "Spider-Verse #1"]
+  answer: 0
+  explanation: "Miles Morales estreou em Ultimate Fallout #4 (2011), criado por Brian Michael Bendis e Sara Pichelli."
+  source: https://en.wikipedia.org/wiki/Miles_Morales
+- id: quad-0105
+  category: quadrinhos
+  difficulty: normal
+  question: "Quem é a tia que criou Peter Parker?"
+  choices: ["May", "Anna", "Martha", "Mary"]
+  answer: 0
+  explanation: "Peter Parker foi criado pelos tios Ben e May Parker."
+  source: https://en.wikipedia.org/wiki/Aunt_May

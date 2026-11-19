@@ -9,6 +9,7 @@ import {
   loadDotEnv,
 } from '@legion/runner';
 import { Command } from 'commander';
+import { CONTENT_TYPES, type ContentType, formatValidate, validateContent } from './content-validate.js';
 import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
 import { isSnowflake, writeInitFiles } from './init.js';
 import { inviteUrl } from './invite.js';
@@ -17,7 +18,7 @@ import { formatPlaytest, parseSince, playtestReport } from './playtest.js';
 import { registerCommands } from './register.js';
 import { createDiscordRest } from './rest.js';
 
-const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('0.9.0');
+const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('0.9.1');
 const configOpt = ['-c, --config <path>', 'legion.config.yaml', DEFAULT_CONFIG_PATH] as const;
 
 program
@@ -192,6 +193,40 @@ program
     } finally {
       await db.close();
     }
+  });
+
+const content = program
+  .command('content')
+  .description('Arquivos de conteúdo: trivia, missões, campanhas, inimigos, poderes');
+content
+  .command('validate')
+  .description('Confere arquivos ou pastas de conteúdo com as mesmas regras dos bots (não usa o banco)')
+  .argument('<caminhos...>', 'arquivos .yaml ou pastas')
+  .option('-t, --type <tipo>', `força o tipo: ${CONTENT_TYPES.join(', ')}`)
+  .option(
+    '--categories <lista>',
+    'categorias de trivia aceitas, separadas por vírgula (padrão: as do J.A.R.V.I.S.)',
+  )
+  .option('--json', 'saída em JSON')
+  .action((paths: string[], o: { type?: string; categories?: string; json?: boolean }) => {
+    if (o.type && !(CONTENT_TYPES as readonly string[]).includes(o.type)) {
+      console.error(`--type: "${o.type}" não é um tipo; use ${CONTENT_TYPES.join(', ')}`);
+      process.exitCode = 2;
+      return;
+    }
+    const report = validateContent(paths, {
+      ...(o.type ? { type: o.type as ContentType } : {}),
+      ...(o.categories
+        ? {
+            categories: o.categories
+              .split(',')
+              .map((c) => c.trim())
+              .filter(Boolean),
+          }
+        : {}),
+    });
+    console.log(o.json ? JSON.stringify(report, null, 2) : formatValidate(report));
+    process.exitCode = report.exitCode;
   });
 
 program.parseAsync().catch((err) => {

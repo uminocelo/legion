@@ -74,6 +74,7 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose run --rm legion legion doctor` — confere tudo e diz como corrigir cada ❌ (`--json` para scripts).
 - `docker compose run --rm legion legion register-commands` — registra os comandos de barra agora.
 - `docker compose exec legion legion playtest-report --since 3h` — resumo do que aconteceu (missões, XP, lutas, conteúdo da staff) e se XP e limites batem. Roteiro de uma sessão de teste com amigos: [docs/PLAYTEST.md](docs/PLAYTEST.md).
+- `docker compose run --rm legion legion content validate data/content` — confere arquivos de conteúdo (trivia, missões, campanhas, inimigos, poderes) com as mesmas regras dos bots, sem usar o banco. Aceita arquivos ou pastas; `--type` força o tipo, `--categories` muda as categorias de trivia aceitas, `--json` para scripts. Sai com 0 (tudo certo), 1 (erros) ou 2 (tipo desconhecido).
 - `docker compose logs -f` — logs.
 
 No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`; `/mutante` ainda funciona), `/cerebro preferencias`.
@@ -85,7 +86,7 @@ No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e 
 ```bash
 docker compose pull && docker compose up -d
 ```
-As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.9.0` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
+As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.9.1` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
 
 ## Backup
 
@@ -142,6 +143,10 @@ Com `ultron` em `bots:` (precisa do `sentinel`) e `channels.events` definido:
 - Frases por IA opcionais (Ollama ou API compatível com OpenAI), desligadas por padrão.
 
 Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
+
+## Skills para IA
+
+A pasta [`skills/`](skills/) tem cinco skills que ensinam um agente de IA (Claude Code ou outro que leia Markdown) a escrever conteúdo do Legion: `legion-mission`, `legion-campaign`, `legion-trivia`, `legion-enemy` e `legion-setup`. O agente segue o formato, a regra dos nomes da Marvel, o equilíbrio e o estilo em pt-BR, e confere com `legion content validate` antes de entregar. A `legion-setup` nunca lê o `.env`. Baixe o pacote e veja como instalar em [uminocelo.github.io/legion/skills.html](https://uminocelo.github.io/legion/skills.html).
 
 ## Site
 
