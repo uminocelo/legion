@@ -2,6 +2,7 @@ import {
   type BotContext,
   type Combatant,
   customId,
+  type Executor,
   type IncomingInteraction,
   isArchetype,
   type LegionEvent,
@@ -47,6 +48,16 @@ export class WorldEventService {
     private readonly content: UltronRepo,
     private readonly flavor: FlavorText,
   ) {}
+
+  /**
+   * Set after both services exist. This file does not import the war service (that import would loop).
+   * Strike scoring runs in the same transaction as the claim. Participation runs when a fight ends,
+   * not when it is cancelled.
+   */
+  warScore: {
+    strike?: (memberId: string, combatId: string, ex: Executor) => Promise<void>;
+    participation?: (eventId: string, memberIds: string[]) => Promise<void>;
+  } = {};
 
   private get cfg() {
     return this.ctx.botConfig;
@@ -315,6 +326,10 @@ export class WorldEventService {
     }
     const done = await this.repo.event(id);
     if (done?.status !== 'ended') return;
+    if (done.outcome === 'victory' || done.outcome === 'defeat') {
+      const ids = (await this.repo.participants(id)).map((p) => p.memberId);
+      await this.warScore.participation?.(id, ids);
+    }
     await this.editEventMessage(done, true);
     if (!done.resultsMessageId && done.channelId) {
       const sent = await this.ctx.gateway.sendMessage(done.channelId, await this.resultsMessage(done));
@@ -461,6 +476,7 @@ export class WorldEventService {
     const res = await this.ctx.db.transaction(async (tx) => {
       const strike = await this.repo.claimStrike(p.combatId, p.damageBySide.players, tx);
       if (!strike) return null;
+      await this.warScore.strike?.(strike.memberId, p.combatId, tx);
       const ev = await this.repo.event(raidId, tx);
       if (ev?.status !== 'active') return { hp: null }; // after the end: recorded, outcome unchanged
       const me = await this.repo.participant(raidId, strike.memberId, tx);

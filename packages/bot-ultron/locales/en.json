@@ -40,16 +40,55 @@
         "lista": "Lists enemies and where they came from",
         "desativar": "Takes an enemy out of play",
         "ativar": "Brings a disabled enemy back",
-        "inimigo_opt": "The enemy"
+        "inimigo_opt": "The enemy",
+        "guerra": "Faction war",
+        "guerra_iniciar": "Start the war now",
+        "guerra_encerrar": "End the active war and post the result",
+        "guerra_pontos": "Add or remove a hero's points in the active war",
+        "guerra_membro": "The hero",
+        "guerra_valor": "Points to add or remove, from -1000 to 1000, except 0",
+        "guerra_motivo": "Why the points change (kept on record)"
       },
-      "ameaca": "Current or next world event: HP, time left and your damage"
+      "ameaca": "Current or next world event: HP, time left and your damage",
+      "guerra": "Faction war scoreboard: points, time left and your faction"
     },
     "spawn": {
       "sent": "🤖 {count} enemy(ies) sent to {channel}: {enemies}"
     },
     "help": {
-      "ultron": "Staff: test encounters, world events and ULTRON status.",
-      "ameaca": "Shows the current (or next) invasion or raid, its HP and your damage."
+      "ultron": "Staff: test encounters, world events, faction war and ULTRON status.",
+      "ameaca": "Shows the current (or next) invasion or raid, its HP and your damage.",
+      "guerra": "Faction war scoreboard, time left and your points."
+    },
+    "war": {
+      "no_active": "No faction war is active.",
+      "no_active_next": "No faction war is active. The next one starts {at}.",
+      "time_left": "Ends {at}.",
+      "board_title": "Scoreboard",
+      "no_points": "Nobody has scored yet.",
+      "mine": "Your points: {points}",
+      "my_faction": "{faction}: {points}",
+      "register_first": "Register your hero to see your points.",
+      "started": "War started. It ends {at}.",
+      "already_active": "A war is already active.",
+      "ended": "War ended.",
+      "no_war": "There is no active war to end.",
+      "disabled": "Faction war is off (ultron.war.enabled).",
+      "points_ok": "Adjustment recorded: {points} for {user} ({faction}).",
+      "points_range": "Points must be an integer from -1000 to 1000, other than 0.",
+      "points_zero": "Zero does not change the scoreboard.",
+      "independent": "Independents do not score in the war.",
+      "left": "Members who left do not score.",
+      "missing": "No registered hero found for that member.",
+      "note_required": "Say why you are adjusting the points.",
+      "duplicate": "That adjustment was already recorded.",
+      "result_title": "Faction war ended",
+      "result_winners": "Winners: {names}",
+      "result_none": "No winner. Nobody scored.",
+      "result_empty_top": "—",
+      "result_credits_title": "Credits",
+      "result_credits": "Heroes who scored for a winning faction receive the war credits.",
+      "result_no_credits": "Nobody receives credits (economy is off)."
     },
     "taunt": {
       "generic": {

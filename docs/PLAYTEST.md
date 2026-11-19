@@ -169,7 +169,7 @@ Para não esperar o nível 3, a staff pode dar XP com `/jarvis xp` (com motivo).
 
 ## Depois
 
-1. **Relatório:** `docker compose exec legion legion playtest-report --since <hora de início>`. A seção **Conferência** deve dizer ✅. Cada ❌ é um problema (XP pago duas vezes ou faltando, limite furado, luta com o grupo errado, carteira diferente do histórico de créditos). A seção **Economia** lista as compras e o que a staff deu ou tirou. Os ⚠️ merecem uma olhada. Use `--json` para guardar o resultado.
+1. **Relatório:** `docker compose exec legion legion playtest-report --since <hora de início>`. A seção **Conferência** deve dizer ✅. Cada ❌ é um problema (XP pago duas vezes ou faltando, limite furado, luta com o grupo errado, carteira diferente do histórico de créditos, pontos de guerra numa facção desconhecida). A seção **Economia** lista as compras e o que a staff deu ou tirou. A seção **Guerra** lista os pontos por facção e por motivo, e os ajustes da staff. Os ⚠️ merecem uma olhada. Use `--json` para guardar o resultado.
 2. **Logs:** `docker compose logs legion --since <hora de início> | grep '"level":50'` deve sair vazio. Para os avisos: `grep '"level":40'`.
 3. **Volte a config:** tire o `choiceTimeoutMinutes: 3` (e a revisão, se não quiser deixar ligada) e rode `docker compose up -d`.
 4. **Bugs:** abra uma issue no GitHub para cada ❌ desta página ou do relatório, com o passo, o que aconteceu e o trecho do log.

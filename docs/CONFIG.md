@@ -138,6 +138,7 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 | `economy.trivia.correct` | `2` | Créditos por resposta certa (o limite diário de XP da trivia não bloqueia) |
 | `economy.missions.daily` / `weekly` / `story` | `success 20, failure 5` / `60, 15` / `40, 10` | Créditos no fim de uma missão, por tipo (o campo `credits` da missão tem prioridade) |
 | `economy.worldEvents.victory` / `participation` | `30` / `10` | Créditos para cada participante de um evento do mundo que termina em vitória / derrota |
+| `economy.war.winner` | `50` | Créditos para cada herói da facção vencedora que pontuou na guerra. Empate paga todas. `0` não paga. Com a economia desligada, a guerra acontece e ninguém recebe |
 | `economy.gear.statCap` | `2` | Quanto o equipamento soma, no total, a cada atributo (vida: `statCap × 8`). `0` = equipamento só visual ([ECONOMY.md](ECONOMY.md)) |
 
 ### Perguntas
@@ -203,7 +204,7 @@ Regras do combate: [COMBAT.md](COMBAT.md).
 
 ## `ultron`
 
-Precisa do `sentinel` em `bots:` e de `channels.events` quando invasões ou raids agendadas estão ligadas.
+Precisa do `sentinel` em `bots:` e de `channels.events` quando invasões, raids agendadas ou a guerra de facções estão ligadas.
 
 | Chave | Padrão | Descrição |
 |---|---|---|
@@ -225,6 +226,11 @@ Precisa do `sentinel` em `bots:` e de `channels.events` quando invasões ou raid
 | `raids.cron` | `null` | Raids automáticas (`null` = só pela staff) |
 | `raids.durationMinutes` / `templateIds` | `45` / `[bastiao-prime]` | Duração / chefes possíveis |
 | `ai.provider` | `none` | `none` ou `openai-compatible` (veja SELF_HOSTING.md) |
+| `war.enabled` | `true` | Liga a guerra de facções. `false` não agenda a próxima e não pontua; uma guerra que já está ativa ainda encerra |
+| `war.length` | `month` | `month` (começa no dia 1, no fuso do servidor) ou um número de dias entre 7 e 90 |
+| `war.points.missionSuccess` / `missionFailure` | `10` / `3` | Pontos de uma missão vencida / perdida. Abandonada não pontua |
+| `war.points.strike` | `2` | Pontos de um ataque em invasão ou raid |
+| `war.points.participation` | `5` | Pontos por participar de um evento do mundo que termina em vitória ou derrota |
 | `ai.timeoutMs` / `maxCallsPerHour` | `4000` / `30` | Limites da IA |
 
 Inimigos e eventos: [WORLD_EVENTS.md](WORLD_EVENTS.md).

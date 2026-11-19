@@ -40,16 +40,55 @@
         "lista": "Lista os inimigos e de onde vieram",
         "desativar": "Tira um inimigo de jogo",
         "ativar": "Volta um inimigo desativado",
-        "inimigo_opt": "O inimigo"
+        "inimigo_opt": "O inimigo",
+        "guerra": "Guerra de facções",
+        "guerra_iniciar": "Começa a guerra agora",
+        "guerra_encerrar": "Encerra a guerra ativa e publica o resultado",
+        "guerra_pontos": "Soma ou tira pontos de um herói na guerra ativa",
+        "guerra_membro": "O herói",
+        "guerra_valor": "Pontos a somar ou tirar, de -1000 a 1000, exceto 0",
+        "guerra_motivo": "Motivo do ajuste (fica registrado)"
       },
-      "ameaca": "Evento mundial atual ou próximo: HP, tempo e seu dano"
+      "ameaca": "Evento mundial atual ou próximo: HP, tempo e seu dano",
+      "guerra": "Placar da guerra de facções: pontos, tempo e a sua facção"
     },
     "spawn": {
       "sent": "🤖 {count} inimigo(s) enviados para {channel}: {enemies}"
     },
     "help": {
-      "ultron": "Staff: encontros de teste, eventos mundiais e status do ULTRON.",
-      "ameaca": "Mostra a invasão ou raid atual (ou a próxima), o HP e o seu dano."
+      "ultron": "Staff: encontros de teste, eventos mundiais, guerra de facções e status do ULTRON.",
+      "ameaca": "Mostra a invasão ou raid atual (ou a próxima), o HP e o seu dano.",
+      "guerra": "Placar da guerra de facções, o tempo que falta e os seus pontos."
+    },
+    "war": {
+      "no_active": "Não há guerra ativa.",
+      "no_active_next": "Não há guerra ativa. A próxima começa em {at}.",
+      "time_left": "Termina {at}.",
+      "board_title": "Placar",
+      "no_points": "Ninguém pontuou ainda.",
+      "mine": "Seus pontos: {points}",
+      "my_faction": "{faction}: {points}",
+      "register_first": "Registre seu herói para ver os seus pontos.",
+      "started": "Guerra iniciada. Termina {at}.",
+      "already_active": "Já existe uma guerra ativa.",
+      "ended": "Guerra encerrada.",
+      "no_war": "Não há guerra ativa para encerrar.",
+      "disabled": "A guerra de facções está desligada (ultron.war.enabled).",
+      "points_ok": "Ajuste registrado: {points} para {user} ({faction}).",
+      "points_range": "Os pontos precisam ser um inteiro de -1000 a 1000, diferente de 0.",
+      "points_zero": "Zero não altera o placar.",
+      "independent": "Independentes não pontuam na guerra.",
+      "left": "Quem saiu do servidor não pontua.",
+      "missing": "Não achei um herói registrado para esse membro.",
+      "note_required": "Diga o motivo do ajuste.",
+      "duplicate": "Esse ajuste já foi registrado.",
+      "result_title": "Guerra de facções encerrada",
+      "result_winners": "Vencedores: {names}",
+      "result_none": "Sem vencedor. Ninguém pontuou.",
+      "result_empty_top": "—",
+      "result_credits_title": "Créditos",
+      "result_credits": "Quem pontuou nas facções vencedoras recebe os créditos da guerra.",
+      "result_no_credits": "Ninguém recebe créditos (economia desligada)."
     },
     "taunt": {
       "generic": {

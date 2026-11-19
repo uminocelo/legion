@@ -64,7 +64,7 @@ export const cerebroConfigSchema = z
             utility: z.enum(ARCHETYPES).default('Tecnopata'),
           })
           .prefault({}),
-        /** `/mutante poderes` may change an existing mutant's archetype. */
+        /** `/heroi poderes` may change an existing hero's archetype. */
         allowArchetypeChange: z.boolean().default(false),
       })
       .prefault({}),

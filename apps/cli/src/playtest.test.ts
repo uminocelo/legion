@@ -1,9 +1,11 @@
 import { CerebroRepo, cerebro, cerebroTables } from '@legion/bot-cerebro';
 import { jarvis, jarvisServices, jarvisTables } from '@legion/bot-jarvis';
+import { sentinel } from '@legion/bot-sentinel';
+import { ultron, ultronTables } from '@legion/bot-ultron';
 import { createTestContext, type TestContext } from '@legion/core';
 import { eq } from 'drizzle-orm';
 import { afterEach, describe, expect, it } from 'vitest';
-import { formatPlaytest, parseSince, playtestReport } from './playtest.js';
+import { formatPlaytest, parseSince, playtestReport, warPointProblems } from './playtest.js';
 
 const MISSIONS_CH = '300000000000000009';
 const LIMITS = { dailyPerMember: 1, weeklyPerMember: 1 };
@@ -181,7 +183,84 @@ describe('legion playtest-report', () => {
       limits: LIMITS,
     });
     expect(r.economy).toBeNull();
+    expect(r.war).toBeNull();
     expect(formatPlaytest(r)).not.toContain('Economia');
+    expect(formatPlaytest(r)).not.toContain('Guerra');
+  });
+
+  it('guerra: points by faction and reason, staff adjustments, and an unknown faction', async () => {
+    const tc = await createTestContext({ bots: [cerebro, sentinel, ultron] });
+    t = tc;
+    const memberId = await addPlayer(tc, '111', 'Pulso');
+    const at = '2026-11-16T15:00:00.000Z';
+    const base = {
+      guildId: tc.gateway.guildId,
+      warId: 'w1',
+      memberId,
+      createdBy: null,
+      note: null,
+      createdAt: at,
+    };
+    await tc.db.orm.insert(ultronTables(tc.db).ultronWarPoints).values([
+      {
+        ...base,
+        id: 'p1',
+        faction: 'xmen',
+        points: 10,
+        reason: 'mission',
+        sourceKey: `war:mission:r1:${memberId}`,
+      },
+      {
+        ...base,
+        id: 'p2',
+        faction: 'xmen',
+        points: -20,
+        reason: 'staff',
+        sourceKey: 'war:staff:i1',
+        createdBy: '1',
+        note: 'recuo',
+      },
+      { ...base, id: 'p3', faction: 'hydra', points: 4, reason: 'strike', sourceKey: 'war:strike:c1' },
+    ]);
+    const r = await playtestReport(t.db, {
+      guildId: t.gateway.guildId,
+      since: new Date(0),
+      now: t.clock.now(),
+      bots: ['cerebro', 'ultron'],
+      factions: ['independent', 'xmen', 'brotherhood'],
+    });
+    expect(r.war).toEqual({
+      byFaction: [
+        { faction: 'hydra', points: 4, members: 1 },
+        { faction: 'xmen', points: -10, members: 1 },
+      ],
+      byReason: [
+        { reason: 'mission', points: 10, rows: 1 },
+        { reason: 'staff', points: -20, rows: 1 },
+        { reason: 'strike', points: 4, rows: 1 },
+      ],
+      staff: [{ who: 'Pulso', faction: 'xmen', points: -20, by: '1', note: 'recuo', at }],
+    });
+    expect(r.problems).toEqual(['guerra: facção desconhecida "hydra" com 4 ponto(s)']);
+    const text = formatPlaytest(r);
+    expect(text).toContain('== Guerra (pontos no período) ==');
+    expect(text).toContain('xmen: -10 (1 herói(s))');
+    expect(text).toContain('staff -20 → Pulso (xmen) · por <@1> · recuo');
+    expect(JSON.stringify(r)).toContain('"war"');
+  });
+
+  it('flags a repeated war source key', () => {
+    const row = {
+      faction: 'xmen',
+      points: 1,
+      reason: 'mission',
+      sourceKey: 'war:mission:r:m',
+      memberId: 'm',
+      createdAt: '2026-11-16T15:00:00.000Z',
+    };
+    expect(warPointProblems([row, { ...row, points: 2 }], ['xmen'])).toEqual([
+      'guerra: chave de origem repetida war:mission:r:m (2 linhas)',
+    ]);
   });
 
   it('does not expect XP for a member who left the server', async () => {

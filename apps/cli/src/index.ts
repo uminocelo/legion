@@ -158,7 +158,9 @@ program
 
 program
   .command('playtest-report')
-  .description('Resumo de uma sessão de teste: missões, XP, limites, lutas e conteúdo, com conferência')
+  .description(
+    'Resumo de uma sessão de teste: missões, XP, créditos, guerra, limites, lutas e conteúdo, com conferência',
+  )
   .option(...configOpt)
   .option('-s, --since <quando>', 'início: 90m, 3h, 2d ou data/hora ISO', '6h')
   .option('--json', 'saída em JSON')
@@ -180,6 +182,7 @@ program
         since,
         now,
         bots: bots.map((b) => b.id),
+        factions: config.factions.map((f) => f.key),
         ...(jarvis?.missions?.limits ? { limits: jarvis.missions.limits } : {}),
       });
       console.log(o.json ? JSON.stringify(report, null, 2) : formatPlaytest(report));

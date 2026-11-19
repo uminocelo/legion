@@ -5,6 +5,7 @@ import { type UltronConfig, ultronConfigSchema } from './config.js';
 import { ultronDoctorChecks } from './doctor.js';
 import { ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 import { ultronServices } from './services.js';
+import { WAR_JOBS } from './war.js';
 import { JOBS, V } from './world-events.js';
 
 export * from './config.js';
@@ -19,6 +20,7 @@ export { ENEMY_IMPORT_MAX_BYTES, EnemyImports, enemyImportIds } from './enemy-im
 export { AI_PROVIDER, type AiEnv, type FlavorKind, FlavorText, filterFlavor } from './flavor.js';
 export { ULTRON_CONTENT_DIR, ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 export * from './services.js';
+export { INDEPENDENT_FACTION, WAR_JOBS, WarService } from './war.js';
 export { JOBS, strikeId, WorldEventService } from './world-events.js';
 
 /** ULTRON: scaled enemies, world events and raids (v3). Never resolves combat itself. */
@@ -56,6 +58,7 @@ export const ultron: LegionBot<UltronConfig> = {
     ctx.bus.on('mission.started', 'ultron.spawner', (e) => s.encounters.onMissionStarted(e));
     ctx.bus.on('combat.resolved', 'ultron.encounter-result', (e) => s.encounters.onCombatResolved(e));
     ctx.bus.on('combat.resolved', 'ultron.raid-result', (e) => s.world.onStrikeResolved(e));
+    ctx.bus.on('mission.completed', 'ultron.war-missions', (e) => s.war.scoreMission(e.payload));
     const w = s.world;
     ctx.scheduler.define<{ id: string }>(JOBS.announce, (p) => w.announce(p.id));
     ctx.scheduler.define<{ id: string }>(JOBS.start, (p) => w.start(p.id));
@@ -63,6 +66,15 @@ export const ultron: LegionBot<UltronConfig> = {
     ctx.scheduler.define<{ id: string }>(JOBS.refresh, (p) => w.refresh(p.id));
     // Hourly safety net; the next invasion is also planned on boot and when one ends.
     ctx.scheduler.every(JOBS.plan, '7 * * * *', () => w.planRecurring());
+    ctx.scheduler.define<{ id: string }>(WAR_JOBS.start, (p) => s.war.startJob(p.id));
+    ctx.scheduler.define<{ id: string }>(WAR_JOBS.end, (p) => s.war.end(p.id));
+    ctx.scheduler.every(WAR_JOBS.plan, '17 * * * *', () => s.war.planNext());
+    ctx.help.add({
+      bot: 'ultron',
+      command: '/guerra',
+      descriptionKey: 'ultron.help.guerra',
+      adminOnly: false,
+    });
     ctx.help.add({
       bot: 'ultron',
       command: '/ameaca',
@@ -78,7 +90,9 @@ export const ultron: LegionBot<UltronConfig> = {
   },
   doctorChecks: (ctx) => [...ultronDoctorChecks(ctx), staffCommandsCheck(ctx, ['ultron'])],
   onReady: async (ctx) => {
-    await ultronServices(ctx).world.planRecurring();
+    const s = ultronServices(ctx);
+    await s.world.planRecurring();
+    await s.war.planNext();
   },
 };
 

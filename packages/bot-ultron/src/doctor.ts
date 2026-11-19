@@ -11,14 +11,14 @@ export function ultronDoctorChecks(ctx: BotContext<UltronConfig>): DoctorCheck[]
       id: 'ultron.events',
       title: 'Canal de eventos do ULTRON',
       run: async (): Promise<DoctorResult> => {
-        const needed = cfg.invasion.enabled || cfg.raids.cron !== null;
+        const needed = cfg.invasion.enabled || cfg.raids.cron !== null || cfg.war.enabled;
         const id = ctx.config.channels.events;
         if (!id)
           return needed
             ? {
                 status: 'fail',
-                message: 'channels.events vazio: invasões e raids precisam de um canal',
-                fix: 'Defina channels.events em legion.config.yaml (ou ultron.invasion.enabled: false)',
+                message: 'channels.events vazio: invasões, raids e a guerra de facções precisam de um canal',
+                fix: 'Defina channels.events em legion.config.yaml (ou desligue ultron.invasion.enabled, ultron.raids.cron e ultron.war.enabled)',
               }
             : { status: 'warn', message: 'channels.events vazio: /ultron evento não vai funcionar' };
         const ch = (await ctx.gateway.fetchChannels()).find((c) => c.id === id);
@@ -80,6 +80,27 @@ export function ultronDoctorChecks(ctx: BotContext<UltronConfig>): DoctorCheck[]
               message: `o modelo não respondeu em ${cfg.ai.timeoutMs} ms (ou respondeu algo filtrado); usando frases fixas`,
               fix: 'Confira se o servidor de IA está no ar (docker compose --profile ai up -d)',
             };
+      },
+    },
+    {
+      id: 'ultron.war',
+      title: 'Guerra de facções',
+      run: async (): Promise<DoctorResult> => {
+        const repo = ultronServices(ctx).war.repo;
+        const active = await repo.findStatus('active');
+        if (!cfg.war.enabled) {
+          return active
+            ? { status: 'ok', message: `desligada para as próximas; a atual termina em ${active.endsAt}` }
+            : { status: 'ok', message: 'desligada (ultron.war.enabled: false)' };
+        }
+        if (active) return { status: 'ok', message: `ativa, termina em ${active.endsAt}` };
+        const scheduled = await repo.findStatus('scheduled');
+        if (scheduled) return { status: 'ok', message: `a próxima começa em ${scheduled.startsAt}` };
+        return {
+          status: 'warn',
+          message: 'nenhuma guerra ativa nem agendada',
+          fix: 'O ULTRON agenda a próxima ao iniciar e de hora em hora. Confira ultron.war.enabled e timezone.',
+        };
       },
     },
   ];

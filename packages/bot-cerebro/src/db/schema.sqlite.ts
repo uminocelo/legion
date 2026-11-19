@@ -12,7 +12,7 @@ export const members = sqliteTable(
     pendingArchetype: text('pending_archetype'),
     /** Origin key picked during registration, until the hero is saved. */
     pendingOrigin: text('pending_origin'),
-    /** JSON { main, secondary[] } while picking powers (registration or /mutante poderes). */
+    /** JSON { main, secondary[] } while picking powers (registration or /heroi poderes). */
     pendingPowers: text('pending_powers'),
     /** Last team switch (arc or staff); null = never switched. Registration is not a switch. */
     factionChangedAt: text('faction_changed_at'),
