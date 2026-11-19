@@ -1,6 +1,6 @@
 # Economia e equipamento (J.A.R.V.I.S. v2)
 
-> v0.10. Créditos (US-14) e equipamento (US-15); a loja vem depois.
+> v0.10. Créditos (US-14), equipamento (US-15) e loja (US-16).
 > Não existe dinheiro real em lugar nenhum do Legion: créditos e itens só se ganham jogando ou pela staff.
 
 ## Créditos
@@ -51,10 +51,20 @@ jarvis:
 
 Por que o teto é no total, e não só por item: [ADR 0029](adr/0029-gear-bonus-read-model-and-cap.md).
 
+## Loja
+
+- `/loja [pagina]` (só você vê) lista os itens à venda: os itens ativos com `shop.price`, 25 por página, na ordem de `shop.order`, depois nível, depois nome. Cada linha mostra preço, espaço, nível e bônus, e marca "você já tem", "precisa do nível N" e "visual". O rodapé mostra seu saldo.
+- Escolha um item no menu e clique em **Comprar**. O botão fica desligado sem créditos suficientes ou sem o nível. Só quem abriu a loja pode usar.
+- A compra é uma coisa só: tira os créditos e põe o item no inventário na mesma transação. Se algo falhar, nada muda. A chave `buy:<membro>:<item>` impede pagar duas vezes, mesmo com dois cliques ao mesmo tempo.
+- Recusas (nada é cobrado): créditos insuficientes, item que você já tem, item que saiu da loja, nível baixo, e preço mudado desde que a loja abriu (mostra o preço novo; clique de novo para comprar).
+- Não há venda de volta nem reembolso. Para corrigir um engano, a staff usa `/jarvis creditos dar`.
+- Com `jarvis.economy.enabled: false` a loja fica fechada. O `legion doctor` avisa ⚠️ quando a economia está ligada e nenhum item está à venda.
+- Os itens que vêm com o Legion custam de 60 a 360 créditos; o broche de recruta não está à venda (é presente da staff).
+
 ## Inventário
 
 - `/inventario` (só você vê): os três espaços, os itens que você tem e um menu por espaço para equipar; **Desequipar** esvazia o espaço. Só quem abriu o menu pode usar. Itens de nível maior que o seu aparecem com "nível N" e ainda não podem ser equipados.
-- Cada item é único: você tem ou não tem. Itens entram no inventário pela staff (`/jarvis item dar`) e, depois, pela loja.
+- Cada item é único: você tem ou não tem. Itens entram no inventário pela staff (`/jarvis item dar`) ou pela `/loja`.
 - O `/perfil` mostra os itens equipados no cartão e os atributos já com o bônus.
 
 ## Arquivos de itens
@@ -69,7 +79,7 @@ Os itens que vêm com o Legion estão em `packages/bot-jarvis/content/items/`. O
   description: { pt-BR: "Placas finas nos ombros.", en: "Thin plates on the shoulders." }  # opcional, até 200
   bonus: { def: 1, hp: 8 }       # atk/def/spd/foc 0 a 2, hp 0 a 16
   cosmetic: false                # true = sem bônus (bonus: {} ou sem bonus)
-  # shop: { price: 120, order: 10 }   # loja (versão seguinte)
+  shop: { price: 140, order: 10 } # opcional: à venda na /loja (price 1 a 100000; order 0 a 10000)
   # active: false                     # tira o item: sai de quem equipou e fica no inventário
 ```
 

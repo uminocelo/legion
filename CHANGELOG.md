@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 ## [Unreleased]
 
 ### Added
+- Shop (US-16): `/loja [pagina]` lists the active items with `shop.price` (price, slot, level, bonus, owned/level/cosmetic marks, balance), 25 per page. Buying debits and grants in one transaction (`buy:<member>:<item>`); too few credits, an item already owned, an item no longer for sale, a level too low or a changed price are refused with nothing charged. No selling back. 11 of the 12 shipped items are for sale (60–360 credits). `legion doctor` warns when the economy is on and nothing is for sale.
 - Credits (US-14): missions (by kind, or the mission's `credits`), correct trivia answers and world events (victory or participation) pay credits once each, next to the XP. `/carteira` shows the balance and the last 10 movements. `jarvis.economy` sets the amounts; `enabled: false` turns payouts off. No real money anywhere.
 - `/jarvis creditos dar membro quantidade motivo` (staff): −10000..10000, never below 0, recorded with who and why.
 - `legion playtest-report` gains an **Economia** section (credits by reason, staff movements) and flags a wallet that does not match its ledger or is negative.

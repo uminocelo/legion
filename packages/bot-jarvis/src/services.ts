@@ -7,6 +7,7 @@ import { InventoryService, ItemCatalog } from './items.js';
 import { JarvisLeaderboard } from './leaderboard.js';
 import { MissionImports } from './mission-imports.js';
 import { JarvisMissions } from './missions.js';
+import { JarvisShop } from './shop-ui.js';
 import { StaffTrivia } from './staff-trivia.js';
 import { JarvisTrivia } from './trivia.js';
 import { TriviaImports } from './trivia-imports.js';
@@ -29,6 +30,7 @@ export interface JarvisServices {
   inventoryUi: JarvisInventory;
   wallet: WalletService;
   walletUi: JarvisWalletUi;
+  shop: JarvisShop;
 }
 
 const cache = new WeakMap<object, JarvisServices>();
@@ -51,9 +53,10 @@ export function jarvisServices(ctx: BotContext<JarvisConfig>): JarvisServices {
     partial.triviaImports = new TriviaImports(ctx, partial);
     partial.campaigns = new JarvisCampaigns(ctx, partial);
     partial.items = new ItemCatalog(repo);
-    partial.inventory = new InventoryService(ctx, repo, partial.items);
+    partial.inventory = new InventoryService(ctx, repo, partial.items, partial.wallet);
     partial.inventoryUi = new JarvisInventory(ctx, partial);
     partial.walletUi = new JarvisWalletUi(ctx, partial);
+    partial.shop = new JarvisShop(ctx, partial);
     s = partial;
     cache.set(ctx, s);
   }

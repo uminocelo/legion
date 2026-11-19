@@ -77,7 +77,7 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose run --rm legion legion content validate data/content` — confere arquivos de conteúdo (trivia, missões, campanhas, inimigos, poderes, itens) com as mesmas regras dos bots, sem usar o banco. Aceita arquivos ou pastas; `--type` força o tipo, `--categories` muda as categorias de trivia aceitas, `--json` para scripts. Sai com 0 (tudo certo), 1 (erros) ou 2 (tipo desconhecido).
 - `docker compose logs -f` — logs.
 
-No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha`, `/carteira`, `/inventario` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`; `/mutante` ainda funciona), `/cerebro preferencias`.
+No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha`, `/carteira`, `/loja`, `/inventario` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`; `/mutante` ainda funciona), `/cerebro preferencias`.
 
 No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e até dois secundários de um catálogo: veja [docs/POWERS.md](docs/POWERS.md).
 
@@ -107,6 +107,7 @@ Com `bots: [cerebro, jarvis]`, rode `legion register-commands` (ou reinicie) e o
 
 - `/missao lista | iniciar | abandonar`: histórias curtas com escolhas, sozinho ou em grupo (até 4), num tópico do `channels.missions`. Missões com luta usam o ULTRON e o Sentinel. Diárias, semanais e de história, com XP e limites configuráveis. Para escrever as suas, veja [docs/MISSIONS.md](docs/MISSIONS.md).
 - `/carteira`: seu saldo de créditos e as últimas movimentações. Missões, respostas certas na trivia e eventos do mundo pagam créditos ([docs/ECONOMY.md](docs/ECONOMY.md#créditos)).
+- `/loja`: compre itens com créditos; a compra tira os créditos e entrega o item de uma vez ([docs/ECONOMY.md](docs/ECONOMY.md#loja)).
 - `/inventario`: seus itens e três espaços (traje, acessório, dispositivo). Um item equipado dá um bônus pequeno nas lutas, com teto no total ([docs/ECONOMY.md](docs/ECONOMY.md)).
 - `/campanha [campanha]`: missões em capítulos que liberam em ordem (missões anteriores, nível, origem, equipe), com o progresso de cada um. Cada equipe tem um arco de recrutamento a partir do nível 3, e há uma campanha com o Quarteto Fantástico ([docs/UNIVERSE.md](docs/UNIVERSE.md#arcos-de-recrutamento)).
 

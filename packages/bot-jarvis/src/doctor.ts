@@ -3,6 +3,7 @@ import type { JarvisConfig } from './config.js';
 import { hasCombat } from './domain/mission.js';
 import { itemDirs, readItems } from './items.js';
 import { campaignDirs, missionDirs, readContent } from './mission-content.js';
+import { jarvisServices } from './services.js';
 
 /** Missions: content, the missions channel and whether fights can run. */
 export function jarvisDoctorChecks(ctx: BotContext<JarvisConfig>): DoctorCheck[] {
@@ -67,7 +68,23 @@ export function jarvisDoctorChecks(ctx: BotContext<JarvisConfig>): DoctorCheck[]
             message: `${errors.length} erro(s) nos arquivos de itens (o arquivo com erro é ignorado): ${errors.slice(0, 3).join(' · ')}`,
             fix: 'Corrija os arquivos em data/content/items (rode legion content validate data/content/items)',
           };
-        return { status: 'ok', message: `${items.length} item(ns) nos arquivos` };
+        // Files and the catalog: the doctor may run before the catalog was loaded.
+        const rows = await jarvisServices(ctx).items.all();
+        const off = new Set(rows.filter((r) => r.disabledBy).map((r) => r.id));
+        const forSale = new Set([
+          ...items.filter((i) => i.shop && i.active !== false && !off.has(i.id)).map((i) => i.id),
+          ...rows.filter((r) => r.active === 1 && r.price !== null).map((r) => r.id),
+        ]);
+        if (ctx.botConfig.economy.enabled && !forSale.size)
+          return {
+            status: 'warn',
+            message: 'a economia está ligada, mas a loja está vazia (nenhum item ativo com shop.price)',
+            fix: 'Dê um shop.price a algum item em data/content/items, ou desligue com jarvis.economy.enabled: false',
+          };
+        return {
+          status: 'ok',
+          message: `${items.length} item(ns) nos arquivos; ${forSale.size} à venda`,
+        };
       },
     },
   ];

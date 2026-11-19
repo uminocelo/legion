@@ -20,6 +20,7 @@ import type { JarvisConfig } from './config.js';
 import type { JarvisRepo } from './db/repo.js';
 import type { JarvisTables } from './db/tables.js';
 import { JARVIS_CONTENT_DIR } from './paths.js';
+import { InsufficientCredits, type WalletService } from './wallet.js';
 
 export type ItemRow = JarvisTables['jarvisItems']['$inferSelect'];
 export type InventoryRow = JarvisTables['jarvisInventory']['$inferSelect'];
@@ -184,6 +185,16 @@ export type EquipRefusal = 'not_owned' | 'unknown' | 'inactive' | 'level' | 'slo
 export type EquipResult =
   | { ok: true; replaced: string | null }
   | { ok: false; reason: EquipRefusal; minLevel?: number };
+export type BuyResult =
+  | { ok: true; price: number; balance: number }
+  | { ok: false; reason: 'insufficient'; price: number; balance: number }
+  | { ok: false; reason: 'owned' | 'not_for_sale' }
+  | { ok: false; reason: 'price_changed'; price: number }
+  | { ok: false; reason: 'level_too_low'; minLevel: number };
+
+/** Thrown inside the purchase transaction to undo the debit when the grant loses a race. */
+class AlreadyOwned extends Error {}
+
 export type GrantResult = { ok: true } | { ok: false; reason: 'unknown' | 'owned' };
 
 /** Ownership and equipment. Every check runs again inside the write transaction. */
@@ -192,6 +203,7 @@ export class InventoryService {
     private readonly ctx: BotContext<JarvisConfig>,
     private readonly repo: JarvisRepo,
     private readonly catalog: ItemCatalog,
+    private readonly wallet?: WalletService,
   ) {}
 
   /** Gives an item (unique per member, D6). */
@@ -220,6 +232,58 @@ export class InventoryService {
         .returning({ m: inv.memberId });
       return rows.length ? ({ ok: true } as const) : ({ ok: false, reason: 'owned' } as const);
     });
+  }
+
+  /**
+   * Buys an item at `expectedPrice` (the price the player saw): re-reads the item, debits
+   * `buy:<memberId>:<itemId>` and grants, all in one transaction (D8). Nothing is written unless it
+   * returns `ok`. Two clicks at once: the unique ledger key and the inventory key let only one through.
+   */
+  async buy(memberId: string, itemId: string, expectedPrice: number): Promise<BuyResult> {
+    const wallet = this.wallet;
+    if (!wallet) throw new Error('InventoryService.buy needs the wallet');
+    const inv = this.repo.t.jarvisInventory;
+    try {
+      return await this.repo.db.transaction(async (tx): Promise<BuyResult> => {
+        const item = await this.catalog.row(itemId, tx);
+        if (!item || item.active !== 1 || item.price === null) return { ok: false, reason: 'not_for_sale' };
+        if (item.price !== expectedPrice) return { ok: false, reason: 'price_changed', price: item.price };
+        const [own] = await tx
+          .select({ m: inv.memberId })
+          .from(inv)
+          .where(and(eq(inv.memberId, memberId), eq(inv.itemId, itemId)))
+          .limit(1);
+        if (own) return { ok: false, reason: 'owned' };
+        const level = (await this.repo.progress(memberId, tx))?.level ?? 1;
+        if (level < item.minLevel) return { ok: false, reason: 'level_too_low', minLevel: item.minLevel };
+        const paid = await wallet.debit(tx, {
+          memberId,
+          amount: item.price,
+          reason: 'purchase',
+          note: itemId,
+          sourceKey: `buy:${memberId}:${itemId}`,
+        });
+        if (paid.duplicate) return { ok: false, reason: 'owned' };
+        const granted = await tx
+          .insert(inv)
+          .values({
+            memberId,
+            itemId,
+            guildId: this.repo.guildId,
+            source: 'purchase',
+            acquiredAt: this.repo.now(),
+          })
+          .onConflictDoNothing()
+          .returning({ m: inv.memberId });
+        if (!granted.length) throw new AlreadyOwned();
+        return { ok: true, price: item.price, balance: paid.balance };
+      });
+    } catch (err) {
+      if (err instanceof AlreadyOwned) return { ok: false, reason: 'owned' };
+      if (err instanceof InsufficientCredits)
+        return { ok: false, reason: 'insufficient', price: err.amount, balance: err.balance };
+      throw err;
+    }
   }
 
   async owned(memberId: string, ex: Executor = this.repo.db.orm): Promise<InventoryRow[]> {
