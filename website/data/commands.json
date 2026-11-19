@@ -190,6 +190,16 @@
       ]
     },
     {
+      "path": "/inventario",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Mostra seus itens e o que está equipado",
+        "en": "Shows your items and what is equipped"
+      },
+      "options": []
+    },
+    {
       "path": "/jarvis campanha importar",
       "kind": "slash",
       "staff": true,
@@ -205,6 +215,44 @@
           "description": {
             "pt-BR": "Arquivo .yaml com campaign e missions",
             "en": "A .yaml file with campaign and missions"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis item dar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Entrega um item a um membro",
+        "en": "Gives an item to a member"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "Membro",
+            "en": "Member"
+          }
+        },
+        {
+          "name": "item",
+          "nameEn": "item",
+          "required": true,
+          "description": {
+            "pt-BR": "Item (id ou nome)",
+            "en": "Item (id or name)"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": false,
+          "description": {
+            "pt-BR": "Motivo (opcional)",
+            "en": "Reason (optional)"
           }
         }
       ]

@@ -88,7 +88,8 @@
       "ranking": "Veja quem mais ganhou XP na semana, no mês ou no total.",
       "sequencia": "Veja sua sequência de dias ativos e o bônus de amanhã.",
       "missao": "Missões com escolhas (e lutas), sozinho ou em grupo",
-      "campanha": "Mostra suas campanhas, o progresso e o próximo capítulo."
+      "campanha": "Mostra suas campanhas, o progresso e o próximo capítulo.",
+      "inventario": "Seus itens: equipe um por espaço (traje, acessório, dispositivo)."
     },
     "commands": {
       "trivia": {
@@ -135,7 +136,11 @@
         "trivia_arquivo": "O arquivo .yaml com as perguntas (mesmo formato do exportar)",
         "campanha": "Campanhas (staff)",
         "campanha_importar": "Importa uma campanha e suas missões de um .yaml",
-        "campanha_arquivo": "Arquivo .yaml com campaign e missions"
+        "campanha_arquivo": "Arquivo .yaml com campaign e missions",
+        "item": "Itens: entregar",
+        "item_dar": "Entrega um item a um membro",
+        "item_item": "Item (id ou nome)",
+        "item_motivo": "Motivo (opcional)"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
@@ -147,6 +152,9 @@
       "campanha": {
         "description": "Suas campanhas: progresso e próximo capítulo",
         "campanha": "Uma campanha (padrão: todas)"
+      },
+      "inventario": {
+        "description": "Mostra seus itens e o que está equipado"
       }
     },
     "missions": {
@@ -307,6 +315,44 @@
       "chapter_locked": "🔒 {n}. {title} · falta {why}",
       "import_meta": "`{id}` · {kind} · {chapters} capítulo(s)",
       "published": "✅ Campanha `{id}` publicada com {n} missão(ões). Já aparece em /campanha e /missao."
+    },
+    "inventory": {
+      "title": "🎒 Inventário",
+      "none": "Você ainda não tem itens. A staff pode entregar itens em eventos.",
+      "empty": "_vazio_",
+      "cosmetic": "visual",
+      "slot": {
+        "traje": "Traje",
+        "acessorio": "Acessório",
+        "dispositivo": "Dispositivo"
+      },
+      "stat": {
+        "hp": "VIDA",
+        "atk": "ATQ",
+        "def": "DEF",
+        "spd": "VEL",
+        "foc": "FOCO"
+      },
+      "tag_disabled": "desativado",
+      "tag_level": "nível {level}",
+      "tag_equipped": "equipado",
+      "total": "Bônus nas lutas: {bonus}",
+      "cap_reached": "limite atingido (+{cap} por atributo, +{hp} de vida)",
+      "no_effect": "Equipamento sem efeito neste servidor: é só visual.",
+      "pick": "Equipar no espaço {slot}",
+      "unequip": "Desequipar {slot}",
+      "not_yours": "Este menu não é seu. Use /inventario para o seu.",
+      "stale": "Este menu está desatualizado. Veja o inventário de novo abaixo.",
+      "equipped": "✅ **{item}** equipado. Vale a partir da próxima luta.",
+      "unequipped": "Espaço {slot} vazio.",
+      "refused_not_owned": "Você não tem **{item}**.",
+      "refused_unknown": "Esse item não existe mais.",
+      "refused_inactive": "**{item}** está desativado e não pode ser equipado.",
+      "refused_slot": "**{item}** não vai nesse espaço.",
+      "refused_level": "**{item}** precisa do nível {level}.",
+      "granted": "🎁 **{item}** entregue a {member}.",
+      "grant_owned": "{member} já tem **{item}**.",
+      "grant_unknown": "Não encontrei o item \"{item}\"."
     }
   }
 }

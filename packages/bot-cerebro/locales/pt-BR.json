@@ -222,7 +222,8 @@
       "atk": "ATQ",
       "def": "DEF",
       "spd": "VEL",
-      "foc": "FOCO"
+      "foc": "FOCO",
+      "gear": "EQUIPAMENTO"
     },
     "origin_step": {
       "title": "🌟 Escolha sua origem",

@@ -156,6 +156,15 @@ export function jarvisCommands(
       autocomplete: (i, r) => s.campaigns.autocomplete(i, r),
     },
     {
+      name: 'inventario',
+      json: {
+        name: 'inventario',
+        name_localizations: { 'en-US': 'inventory' },
+        ...desc(i18n, 'jarvis.commands.inventario.description'),
+      },
+      execute: (i, r) => s.inventoryUi.command(i, r),
+    },
+    {
       name: 'jarvis',
       json: {
         name: 'jarvis',
@@ -393,6 +402,44 @@ export function jarvisCommands(
             ],
           },
           {
+            type: 2,
+            name: 'item',
+            ...desc(i18n, 'jarvis.commands.jarvis.item'),
+            options: [
+              {
+                type: 1,
+                name: 'dar',
+                name_localizations: { 'en-US': 'give' },
+                ...desc(i18n, 'jarvis.commands.jarvis.item_dar'),
+                options: [
+                  {
+                    type: 6,
+                    name: 'membro',
+                    name_localizations: { 'en-US': 'member' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.membro'),
+                  },
+                  {
+                    type: 3,
+                    name: 'item',
+                    required: true,
+                    autocomplete: true,
+                    max_length: 48,
+                    ...desc(i18n, 'jarvis.commands.jarvis.item_item'),
+                  },
+                  {
+                    type: 3,
+                    name: 'motivo',
+                    name_localizations: { 'en-US': 'reason' },
+                    required: false,
+                    max_length: 200,
+                    ...desc(i18n, 'jarvis.commands.jarvis.item_motivo'),
+                  },
+                ],
+              },
+            ],
+          },
+          {
             type: 1,
             name: 'recalcular',
             name_localizations: { 'en-US': 'recalculate' },
@@ -412,6 +459,7 @@ export function jarvisCommands(
       autocomplete: async (i, r) => {
         if (!(await ctx.isStaff(i))) return r.autocomplete([]);
         if (i.focused?.name === 'missao') return s.imports.autocomplete(i, r);
+        if (i.focused?.name === 'item') return s.inventoryUi.autocomplete(i, r);
         return s.staffTrivia.autocomplete(i, r);
       },
       execute: async (i, r) => {
@@ -419,6 +467,7 @@ export function jarvisCommands(
         const l = await i18n.localeFor(i.userId);
         const sub = i.subcommand;
         if (sub === 'xp') return staffXp(ctx, s, i, r, l);
+        if (sub === 'item dar') return s.inventoryUi.staffGrant(i, r, l);
         if (sub === 'trivia recarregar') {
           const res = await trivia.reload();
           const { errors, ...counts } = res;

@@ -22,6 +22,8 @@ export * from './domain/mission.js';
 export * from './domain/periods.js';
 export * from './domain/selection.js';
 export * from './domain/xp.js';
+export { inventoryIds, JarvisInventory } from './inventory-ui.js';
+export * from './items.js';
 export { JarvisLeaderboard } from './leaderboard.js';
 export * from './mission-content.js';
 export { IMPORT_MAX_BYTES, MissionImports, missionImportIds, parseMissionYaml } from './mission-imports.js';
@@ -74,6 +76,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
       { action: 'mission-import', version: V, handle: (i, r, args) => s.imports.decide(i, r, args) },
       { action: 'campaign-import', version: V, handle: (i, r, args) => s.campaigns.decide(i, r, args) },
       { action: 'trivia-import', version: V, handle: (i, r, args) => s.triviaImports.decide(i, r, args) },
+      { action: 'inv', version: V, handle: (i, r, args) => s.inventoryUi.component(i, r, args) },
       {
         action: 'lobby',
         version: V,
@@ -84,11 +87,15 @@ export const jarvis: LegionBot<JarvisConfig> = {
   register: async (ctx) => {
     const s = jarvisServices(ctx);
     ctx.provide('progress', progressReadModel(s));
+    ctx.provide('gear', s.inventory.gearReadModel());
     registerConsumers(ctx, s);
     const res = await s.trivia.reload();
     ctx.log.info({ ...res, errors: res.errors.length }, 'trivia content loaded');
     const ms = await s.missions.reload();
     ctx.log.info({ ...ms, errors: ms.errors.length }, 'mission content loaded');
+    const items = await s.items.reload();
+    if (items.errors.length) ctx.log.warn({ errors: items.errors }, 'item content has errors');
+    ctx.log.info({ ...items, errors: items.errors.length }, 'item content loaded');
     ctx.scheduler.define<{ runId: string; version: number }>(MISSION_TIMEOUT_JOB, (p) =>
       s.missions.onTimeout(p),
     );
@@ -116,6 +123,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.help.add({ bot: 'jarvis', command: '/sequencia', descriptionKey: 'jarvis.help.sequencia' });
     ctx.help.add({ bot: 'jarvis', command: '/missao', descriptionKey: 'jarvis.help.missao' });
     ctx.help.add({ bot: 'jarvis', command: '/campanha', descriptionKey: 'jarvis.help.campanha' });
+    ctx.help.add({ bot: 'jarvis', command: '/inventario', descriptionKey: 'jarvis.help.inventario' });
   },
   doctorChecks: (ctx) => [...jarvisDoctorChecks(ctx), staffCommandsCheck(ctx, ['jarvis'])],
   onReady: async (ctx) => {

@@ -23,7 +23,15 @@ describe('one Discord app per bot', () => {
         .sort();
     const jg = t.appGateways.get('jarvis');
     if (!jg) throw new Error('no jarvis app');
-    expect(names(jg)).toEqual(['campanha', 'jarvis', 'missao', 'ranking', 'sequencia', 'trivia']);
+    expect(names(jg)).toEqual([
+      'campanha',
+      'inventario',
+      'jarvis',
+      'missao',
+      'ranking',
+      'sequencia',
+      'trivia',
+    ]);
     expect(names(t.gateway)).not.toContain('trivia');
     expect(names(t.gateway)).toContain('perfil');
   });

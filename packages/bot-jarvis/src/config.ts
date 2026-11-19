@@ -1,3 +1,4 @@
+import { DEFAULT_STAT_CAP } from '@legion/core';
 import { z } from 'zod';
 
 const posInt = z.number().int().positive();
@@ -72,6 +73,17 @@ export const jarvisConfigSchema = z.object({
       choiceTimeoutMinutes: posInt.max(1440).default(10),
       combatTimeoutMinutes: posInt.max(1440).default(15),
       lobbyTimeoutMinutes: posInt.max(1440).default(5),
+    })
+    .prefault({}),
+  /** Credits, shop and gear (v0.10). US-15 only reads `gear`. */
+  economy: z
+    .object({
+      gear: z
+        .object({
+          // Most gear adds to each stat in total (hp × 8); 0 = gear is cosmetic only (ADR 0029).
+          statCap: z.number().int().min(0).max(10).default(DEFAULT_STAT_CAP),
+        })
+        .prefault({}),
     })
     .prefault({}),
 });

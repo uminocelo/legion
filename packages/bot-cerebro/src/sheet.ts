@@ -47,7 +47,11 @@ export class SheetCard {
         await this.ctx.read.gear.bonusOf(member.id).catch(() => undefined),
         this.ctx.read.gear.statCap(),
       ),
+      gear: (await this.ctx.read.gear.equippedOf(member.id).catch(() => [])).map((g) =>
+        locale === 'en' && g.name.en ? g.name.en : g.name['pt-BR'],
+      ),
       labels: {
+        gear: this.t('card.gear', locale),
         title: this.t('card.title', locale),
         level: this.t('card.level', locale),
         powers: this.t('card.powers', locale),
