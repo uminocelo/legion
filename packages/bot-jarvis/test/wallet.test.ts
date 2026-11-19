@@ -31,6 +31,7 @@ describe('jarvis.economy config', () => {
         story: { success: 40, failure: 10 },
       },
       worldEvents: { victory: 30, participation: 10 },
+      war: { winner: 50 },
       gear: { statCap: 2 },
     });
   });

@@ -95,6 +95,8 @@ export const jarvisConfigSchema = z.object({
       worldEvents: z
         .object({ victory: credits.default(30), participation: credits.default(10) })
         .prefault({}),
+      /** Credits for each scoring member of a winning faction (US-18, D19). */
+      war: z.object({ winner: credits.default(50) }).prefault({}),
       gear: z
         .object({
           // Most gear adds to each stat in total (hp × 8); 0 = gear is cosmetic only (ADR 0029).

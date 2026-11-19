@@ -88,6 +88,10 @@ jarvis:
   leaderboard:
     size: 10
     channelCooldownSeconds: 15
+  economy: # créditos. Sem dinheiro real (docs/ECONOMY.md)
+    enabled: true
+    war:
+      winner: 50 # créditos para cada herói da facção vencedora que pontuou
   missions: # /missao: histórias com escolhas, sozinho ou em grupo (docs/MISSIONS.md)
     enabled: true
     rewards: # XP por tipo de missão (o arquivo da missão pode definir o seu)

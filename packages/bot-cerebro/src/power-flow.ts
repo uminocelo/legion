@@ -215,7 +215,7 @@ export class PowerFlow {
 
   // ---------- handlers ----------
 
-  /** The member and, for `/mutante poderes`, their mutant, or an error screen already sent. */
+  /** The member and, for `/heroi poderes`, their mutant, or an error screen already sent. */
   private async context(i: IncomingInteraction, r: Responder, mode: PickMode) {
     const locale = await this.flow.locale(i.userId);
     const row = await this.flow.repo.memberByDiscordId(i.userId);
@@ -322,7 +322,7 @@ export class PowerFlow {
     await r.update(this.screen(c.locale, pending, mode, undefined, c.archetype, c.origin));
   }
 
-  /** Registration: open the codename form. `/mutante poderes`: save once. */
+  /** Registration: open the codename form. `/heroi poderes`: save once. */
   async next(i: IncomingInteraction, r: Responder, mode: PickMode) {
     const c = await this.context(i, r, mode);
     if (!c) return;
@@ -369,7 +369,7 @@ export class PowerFlow {
     });
   }
 
-  /** `/heroi poderes` (and the old `/mutante poderes`). */
+  /** `/heroi poderes`. */
   async command(i: IncomingInteraction, r: Responder) {
     const locale = await this.flow.locale(i.userId);
     if (!this.enabled) return r.reply(this.flow.ui.text(this.t('disabled', {}, locale)));

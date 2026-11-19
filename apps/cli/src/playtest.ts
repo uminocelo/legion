@@ -4,7 +4,7 @@
 import { cerebroTables } from '@legion/bot-cerebro';
 import { jarvisTables } from '@legion/bot-jarvis';
 import { ultronTables } from '@legion/bot-ultron';
-import type { LegionDb } from '@legion/core';
+import { DEFAULT_FACTION_KEYS, type LegionDb } from '@legion/core';
 import { and, eq, gte, inArray } from 'drizzle-orm';
 
 export interface PlaytestOptions {
@@ -17,6 +17,39 @@ export interface PlaytestOptions {
   limits?: { dailyPerMember: number; weeklyPerMember: number };
   /** An open mission older than this is reported (its timer may not have fired). */
   staleMinutes?: number;
+  /** Faction keys from `factions`. A war point for any other key is a problem. */
+  factions?: readonly string[];
+}
+
+/** One war-points row, enough for the report checks. */
+export interface WarPointView {
+  faction: string;
+  points: number;
+  reason: string;
+  sourceKey: string;
+  memberId: string;
+  createdBy?: string | null;
+  note?: string | null;
+  createdAt: string;
+}
+
+/** Unknown faction and a source key stored more than once. The unique index should make the second impossible. */
+export function warPointProblems(rows: readonly WarPointView[], factions: readonly string[]): string[] {
+  const known = new Set(factions);
+  const problems: string[] = [];
+  const unknown = new Map<string, number>();
+  for (const row of rows) {
+    if (!known.has(row.faction)) unknown.set(row.faction, (unknown.get(row.faction) ?? 0) + row.points);
+  }
+  for (const [faction, points] of [...unknown.entries()].sort((a, b) => a[0].localeCompare(b[0])))
+    problems.push(`guerra: facção desconhecida "${faction}" com ${points} ponto(s)`);
+  const counts = new Map<string, number>();
+  for (const row of rows) counts.set(row.sourceKey, (counts.get(row.sourceKey) ?? 0) + 1);
+  for (const [key, n] of [...counts.entries()]
+    .filter(([, n]) => n > 1)
+    .sort((a, b) => a[0].localeCompare(b[0])))
+    problems.push(`guerra: chave de origem repetida ${key} (${n} linhas)`);
+  return problems;
 }
 
 export interface RunReport {
@@ -65,6 +98,19 @@ export interface PlaytestReport {
     purchases: number;
     staff: { who: string; amount: number; by: string | null; note: string | null; at: string }[];
   } | null;
+  /** Faction war points in the period; null when ULTRON is off. */
+  war: {
+    byFaction: { faction: string; points: number; members: number }[];
+    byReason: { reason: string; points: number; rows: number }[];
+    staff: {
+      who: string;
+      faction: string;
+      points: number;
+      by: string | null;
+      note: string | null;
+      at: string;
+    }[];
+  } | null;
   /** Mismatches that fail the merge gate. */
   problems: string[];
   /** Worth a look, not necessarily wrong. */
@@ -95,6 +141,7 @@ export async function playtestReport(db: LegionDb, o: PlaytestOptions): Promise<
     encounters: [],
     content: [],
     economy: null,
+    war: null,
     problems: [],
     warnings: [],
   };
@@ -128,6 +175,7 @@ export async function playtestReport(db: LegionDb, o: PlaytestOptions): Promise<
   if (has('jarvis')) await jarvisSection(db, o, r, who, left);
   if (has('jarvis')) await economySection(db, o, r, who);
   if (has('ultron')) await ultronSection(db, o, r);
+  if (has('ultron')) await warSection(db, o, r, who);
   return r;
 }
 
@@ -319,6 +367,52 @@ async function ultronSection(db: LegionDb, o: PlaytestOptions, r: PlaytestReport
 
 const hm = (iso: string | null) => (iso ? iso.slice(11, 16) : '—');
 
+/** Points in the period by faction and reason, plus staff adjustments (US-18). */
+async function warSection(
+  db: LegionDb,
+  o: PlaytestOptions,
+  r: PlaytestReport,
+  who: (id: string) => string,
+): Promise<void> {
+  const p = ultronTables(db).ultronWarPoints;
+  const rows = await db.orm
+    .select()
+    .from(p)
+    .where(and(eq(p.guildId, o.guildId), gte(p.createdAt, r.since)));
+  r.problems.push(...warPointProblems(rows, o.factions ?? DEFAULT_FACTION_KEYS));
+  const byFaction = new Map<string, { points: number; members: Set<string> }>();
+  const byReason = new Map<string, { points: number; rows: number }>();
+  for (const row of rows) {
+    const f = byFaction.get(row.faction) ?? { points: 0, members: new Set<string>() };
+    f.points += row.points;
+    f.members.add(row.memberId);
+    byFaction.set(row.faction, f);
+    const reason = byReason.get(row.reason) ?? { points: 0, rows: 0 };
+    reason.points += row.points;
+    reason.rows++;
+    byReason.set(row.reason, reason);
+  }
+  r.war = {
+    byFaction: [...byFaction.entries()]
+      .map(([faction, e]) => ({ faction, points: e.points, members: e.members.size }))
+      .sort((a, b) => a.faction.localeCompare(b.faction)),
+    byReason: [...byReason.entries()]
+      .map(([reason, e]) => ({ reason, ...e }))
+      .sort((a, b) => a.reason.localeCompare(b.reason)),
+    staff: rows
+      .filter((row) => row.reason === 'staff')
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .map((row) => ({
+        who: who(row.memberId),
+        faction: row.faction,
+        points: row.points,
+        by: row.createdBy,
+        note: row.note,
+        at: row.createdAt,
+      })),
+  };
+}
+
 /** Credits in the period by reason, staff movements, and every wallet against its ledger (ADR 0028). */
 async function economySection(
   db: LegionDb,
@@ -415,6 +509,17 @@ export function formatPlaytest(r: PlaytestReport): string {
     for (const x of r.economy.staff)
       out.push(
         `${hm(x.at)}  staff ${x.amount > 0 ? '+' : ''}${x.amount} → ${x.who}${x.by ? ` · por <@${x.by}>` : ''}${x.note ? ` · ${x.note}` : ''}`,
+      );
+  }
+
+  if (r.war) {
+    h('Guerra (pontos no período)');
+    if (!r.war.byFaction.length) out.push('sem pontos');
+    for (const x of r.war.byFaction) out.push(`${x.faction}: ${x.points} (${x.members} herói(s))`);
+    for (const x of r.war.byReason) out.push(`${x.reason}: ${x.points} (${x.rows} linha(s))`);
+    for (const x of r.war.staff)
+      out.push(
+        `${hm(x.at)}  staff ${x.points > 0 ? '+' : ''}${x.points} → ${x.who} (${x.faction})${x.by ? ` · por <@${x.by}>` : ''}${x.note ? ` · ${x.note}` : ''}`,
       );
   }
 

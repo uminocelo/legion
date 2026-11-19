@@ -12,6 +12,7 @@ Créditos são a moeda do jogo. Ficam no J.A.R.V.I.S. como um histórico (cada e
 | Missão no fim (sucesso / fracasso) | diária 20/5, semanal 60/15, história 40/10; ou o campo `credits` da missão | `mission:<partida>:<membro>` |
 | Resposta certa na trivia | 2 (o limite diário de XP não bloqueia) | `trivia:<tentativa>` |
 | Evento do mundo que termina (vitória / derrota) | 30 / 10 para cada participante | `world:<evento>:<membro>` |
+| Guerra de facções (`war.ended`) | 50 para cada herói da facção vencedora que pontuou (`jarvis.economy.war.winner`). Empate paga todas | `war:<guerra>:<membro>` |
 | Staff (`/jarvis creditos dar`) | -10000 a 10000 | `staff:<interação>` |
 
 - Missão abandonada e evento cancelado não pagam. Quem saiu do servidor não recebe.
@@ -30,6 +31,7 @@ jarvis:
       weekly: { success: 60, failure: 15 }
       story: { success: 40, failure: 10 }
     worldEvents: { victory: 30, participation: 10 }
+    war: { winner: 50 }
 ```
 
 ## Equipamento nas lutas

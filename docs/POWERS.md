@@ -33,7 +33,7 @@ Cada poder pode ter `origins`: a lista de origens que podem escolhê-lo. **Sem `
 
 Quem já tinha ficha sem poderes do catálogo usa `/heroi poderes` **uma vez** para escolher os poderes. O arquétipo continua o mesmo, a não ser que a staff ligue `cerebro.powers.allowArchetypeChange`.
 
-Quem se registrou antes das origens virou **Mutante** e pode trocar de origem **uma vez** com `/heroi origem`. Poderes que servem na nova origem ficam; se algum não servir, o menu de poderes abre de novo (Cancelar não muda nada). `/mutante` continua funcionando como apelido de `/heroi` até a v1.0.
+Quem se registrou antes das origens virou **Mutante** e pode trocar de origem **uma vez** com `/heroi origem`. Poderes que servem na nova origem ficam; se algum não servir, o menu de poderes abre de novo (Cancelar não muda nada). O comando é `/heroi`. `/mutante` foi removido.
 
 ## Acrescentar ou trocar poderes
 

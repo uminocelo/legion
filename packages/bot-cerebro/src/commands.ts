@@ -21,7 +21,7 @@ export function cerebroCommands(
     return false;
   };
 
-  /** `/heroi` and, until v1.0, the same command as `/mutante` (deprecated alias). */
+  /** `/heroi` (ficha, poderes, origem). The `/mutante` alias was removed in US-18. */
   const heroCommand = (name: string, en: string, descKey: string): SlashCommandDefinition => ({
     name,
     json: {
@@ -76,7 +76,6 @@ export function cerebroCommands(
       execute: (i, r) => flow.profile(i, r),
     },
     heroCommand('heroi', 'hero', 'cerebro.commands.heroi.description'),
-    heroCommand('mutante', 'mutant', 'cerebro.commands.mutante.description'),
     {
       name: 'cerebro',
       json: {

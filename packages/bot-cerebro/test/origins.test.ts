@@ -300,29 +300,32 @@ describe('registration with an origin', () => {
   });
 });
 
-describe('/heroi and the /mutante alias', () => {
-  it('both have the same subcommands and reach the same handlers', async () => {
+describe('/heroi', () => {
+  it('lists ficha, poderes and origem, and there is no /mutante alias', async () => {
     t = await setupCerebro();
     const defs = cerebro.commands?.(t.ctxOf(cerebro)) ?? [];
     const sub = (name: string) =>
       (defs.find((d) => d.name === name)?.json.options as { name: string }[] | undefined)?.map((o) => o.name);
     expect(sub('heroi')).toEqual(['ficha', 'poderes', 'origem']);
-    expect(sub('mutante')).toEqual(sub('heroi'));
+    expect(defs.map((d) => d.name)).not.toContain('mutante');
     await registerAs(t, 'mutante', ['telecinese']);
-    for (const commandName of ['heroi', 'mutante']) {
-      const p = await t.interact({ kind: 'command', userId: USER, commandName, subcommand: 'poderes' });
-      expect(reply(t, p)?.content).toBe(
-        'Você já escolheu seus poderes: ★ Telecinese. Peça à staff se precisar trocar.',
-      );
-      const o = await t.interact({ kind: 'command', userId: USER, commandName, subcommand: 'origem' });
-      expect(reply(t, o)?.content).toMatch(/^A troca de origem é só para heróis registrados antes/);
-      const f = await t.interact({ kind: 'command', userId: USER, commandName, subcommand: 'ficha' });
-      expect(reply(t, f)?.embeds?.[0]?.fields?.[0]).toEqual({
-        name: 'Origem',
-        value: '🧬 Mutante',
-        inline: true,
-      });
-    }
+    const p = await t.interact({
+      kind: 'command',
+      userId: USER,
+      commandName: 'heroi',
+      subcommand: 'poderes',
+    });
+    expect(reply(t, p)?.content).toBe(
+      'Você já escolheu seus poderes: ★ Telecinese. Peça à staff se precisar trocar.',
+    );
+    const o = await t.interact({ kind: 'command', userId: USER, commandName: 'heroi', subcommand: 'origem' });
+    expect(reply(t, o)?.content).toMatch(/^A troca de origem é só para heróis registrados antes/);
+    const f = await t.interact({ kind: 'command', userId: USER, commandName: 'heroi', subcommand: 'ficha' });
+    expect(reply(t, f)?.embeds?.[0]?.fields?.[0]).toEqual({
+      name: 'Origem',
+      value: '🧬 Mutante',
+      inline: true,
+    });
   });
 });
 
