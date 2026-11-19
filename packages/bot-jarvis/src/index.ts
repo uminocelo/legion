@@ -29,6 +29,7 @@ export * from './mission-content.js';
 export { IMPORT_MAX_BYTES, MissionImports, missionImportIds, parseMissionYaml } from './mission-imports.js';
 export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
 export * from './services.js';
+export { JarvisShop, SHOP_PAGE, shopIds, shopStock } from './shop-ui.js';
 export { StaffTrivia, staffTriviaIds, statusOf } from './staff-trivia.js';
 export { contentDirs, JarvisTrivia } from './trivia.js';
 export { TRIVIA_IMPORT_MAX, TriviaImports, triviaImportIds } from './trivia-imports.js';
@@ -79,6 +80,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
       { action: 'campaign-import', version: V, handle: (i, r, args) => s.campaigns.decide(i, r, args) },
       { action: 'trivia-import', version: V, handle: (i, r, args) => s.triviaImports.decide(i, r, args) },
       { action: 'inv', version: V, handle: (i, r, args) => s.inventoryUi.component(i, r, args) },
+      { action: 'shop', version: V, handle: (i, r, args) => s.shop.component(i, r, args) },
       {
         action: 'lobby',
         version: V,
@@ -127,6 +129,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.help.add({ bot: 'jarvis', command: '/campanha', descriptionKey: 'jarvis.help.campanha' });
     ctx.help.add({ bot: 'jarvis', command: '/inventario', descriptionKey: 'jarvis.help.inventario' });
     ctx.help.add({ bot: 'jarvis', command: '/carteira', descriptionKey: 'jarvis.help.carteira' });
+    ctx.help.add({ bot: 'jarvis', command: '/loja', descriptionKey: 'jarvis.help.loja' });
   },
   doctorChecks: (ctx) => [...jarvisDoctorChecks(ctx), staffCommandsCheck(ctx, ['jarvis'])],
   onReady: async (ctx) => {

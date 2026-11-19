@@ -1,6 +1,6 @@
 # Sessão de teste ao vivo
 
-Roteiro para testar o Legion com amigos no seu servidor, numa sessão de umas 2 horas. Cada passo diz quem faz o quê e o que todo mundo deve ver. Marque ✅ ou ❌ na coluna **Resultado** e anote qualquer coisa estranha. No fim, o `legion playtest-report` confere no banco se XP, limites e lutas batem com o que vocês viram.
+Roteiro para testar o Legion com amigos no seu servidor, numa sessão de umas 2 horas. Cada passo diz quem faz o quê e o que todo mundo deve ver. Marque ✅ ou ❌ na coluna **Resultado** e anote qualquer coisa estranha. No fim, o `legion playtest-report` confere no banco se XP, créditos, limites e lutas batem com o que vocês viram.
 
 ## Quem participa
 
@@ -150,9 +150,24 @@ Para não esperar o nível 3, a staff pode dar XP com `/jarvis xp` (com motivo).
 | 10.9 | J1, J2 e J3 jogam `visita-ao-baxter-2` juntos | Lobby de até 3; a luta acontece | | |
 | 10.10 | Todos: `/trivia categoria:vingadores`, `quarteto`, `cosmico` e `mistico` | Cada uma traz perguntas da categoria | | |
 
+## 11. Novidades da v0.10: créditos, loja e equipamento (J1, J2, Dono, 25 min)
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 11.1 | J1: `/carteira` depois dos passos anteriores | Saldo com os créditos das missões e da trivia; cada linha com o motivo | | |
+| 11.2 | J1 joga uma missão diária até o fim | A mensagem final mostra "+N XP · +20 créditos"; `/carteira` sobe 20 | | |
+| 11.3 | J2: `/loja` sem créditos | Lista com preços, nível e bônus; **Comprar** desligado; saldo 0 no rodapé | | |
+| 11.4 | Dono: `/jarvis creditos dar membro:J2 quantidade:100 motivo:teste` | Confirma +100; `/carteira` de J2 mostra 100 com o motivo | | |
+| 11.5 | J2: `/loja`, escolhe **Traje de treino**, **Comprar** | "Você comprou… Saldo: 40"; o item aparece em `/inventario` | | |
+| 11.6 | J2 clica **Comprar** de novo no mesmo menu | "Você já tem"; o saldo continua 40 | | |
+| 11.7 | J1 clica num botão da loja de J2 | "Este menu não é seu"; nada muda | | |
+| 11.8 | J2: `/inventario`, equipa o traje | "Vale a partir da próxima luta"; o rodapé mostra +8 VIDA; `/perfil` mostra o item | | |
+| 11.9 | J2 entra numa luta (missão com luta ou `/treino`) | A vida inicial é 8 maior que antes do item | | |
+| 11.10 | Dono: `/jarvis creditos dar membro:J2 quantidade:-100 motivo:teste` | Recusado: não dá para tirar mais do que o saldo | | |
+
 ## Depois
 
-1. **Relatório:** `docker compose exec legion legion playtest-report --since <hora de início>`. A seção **Conferência** deve dizer ✅. Cada ❌ é um problema (XP pago duas vezes ou faltando, limite furado, luta com o grupo errado, carteira diferente do histórico de créditos). Os ⚠️ merecem uma olhada. Use `--json` para guardar o resultado.
+1. **Relatório:** `docker compose exec legion legion playtest-report --since <hora de início>`. A seção **Conferência** deve dizer ✅. Cada ❌ é um problema (XP pago duas vezes ou faltando, limite furado, luta com o grupo errado, carteira diferente do histórico de créditos). A seção **Economia** lista as compras e o que a staff deu ou tirou. Os ⚠️ merecem uma olhada. Use `--json` para guardar o resultado.
 2. **Logs:** `docker compose logs legion --since <hora de início> | grep '"level":50'` deve sair vazio. Para os avisos: `grep '"level":40'`.
 3. **Volte a config:** tire o `choiceTimeoutMinutes: 3` (e a revisão, se não quiser deixar ligada) e rode `docker compose up -d`.
 4. **Bugs:** abra uma issue no GitHub para cada ❌ desta página ou do relatório, com o passo, o que aconteceu e o trecho do log.

@@ -329,6 +329,7 @@ describe('several Discord apps', () => {
       'carteira',
       'inventario',
       'jarvis',
+      'loja',
       'missao',
       'ranking',
       'sequencia',

@@ -28,6 +28,7 @@ describe('one Discord app per bot', () => {
       'carteira',
       'inventario',
       'jarvis',
+      'loja',
       'missao',
       'ranking',
       'sequencia',

@@ -165,6 +165,26 @@ export function jarvisCommands(
       execute: (i, r) => s.walletUi.command(i, r),
     },
     {
+      name: 'loja',
+      json: {
+        name: 'loja',
+        name_localizations: { 'en-US': 'shop' },
+        ...desc(i18n, 'jarvis.commands.loja.description'),
+        options: [
+          {
+            type: 4,
+            name: 'pagina',
+            name_localizations: { 'en-US': 'page' },
+            required: false,
+            min_value: 1,
+            max_value: 100,
+            ...desc(i18n, 'jarvis.commands.loja.pagina'),
+          },
+        ],
+      },
+      execute: (i, r) => s.shop.command(i, r),
+    },
+    {
       name: 'inventario',
       json: {
         name: 'inventario',

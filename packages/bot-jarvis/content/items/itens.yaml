@@ -1,6 +1,7 @@
 # Itens enviados com o J.A.R.V.I.S. (v0.10). Um item por espaço: traje, acessorio, dispositivo.
 # Bônus por item: atk/def/spd/foc de 0 a 2, hp de 0 a 16. O total equipado tem teto
 # (jarvis.economy.gear.statCap, padrão +2 por atributo e +16 de vida). Nomes sempre originais.
+# shop.price: preço na /loja (sem shop = não está à venda; o broche é só presente da staff).
 
 # Trajes
 - id: traje-de-treino
@@ -13,18 +14,21 @@
       en: "Light and tough fabric made for the Danger Room.",
     }
   bonus: { hp: 8 }
+  shop: { price: 60 }
 - id: traje-tatico
   slot: traje
   minLevel: 3
   name: { pt-BR: Traje tático, en: Tactical suit }
   description: { pt-BR: "Placas finas nos ombros e no peito.", en: "Thin plates on the shoulders and chest." }
   bonus: { def: 1, hp: 8 }
+  shop: { price: 140 }
 - id: jaqueta-refletiva
   slot: traje
   minLevel: 5
   name: { pt-BR: Jaqueta refletiva, en: Reflective jacket }
   description: { pt-BR: "Desvia parte da energia de um golpe.", en: "Deflects part of a blow's energy." }
   bonus: { def: 2 }
+  shop: { price: 220 }
 - id: capa-de-gala
   slot: traje
   minLevel: 1
@@ -32,6 +36,7 @@
   description:
     { pt-BR: "Não protege nada, mas todo mundo olha.", en: "Protects nothing, but everyone looks." }
   cosmetic: true
+  shop: { price: 150 }
 
 # Acessórios
 - id: luvas-de-impacto
@@ -44,6 +49,7 @@
       en: "They cushion the punch for you, not for the target.",
     }
   bonus: { atk: 1 }
+  shop: { price: 90 }
 - id: botas-de-salto
   slot: acessorio
   minLevel: 4
@@ -51,6 +57,7 @@
   description:
     { pt-BR: Molas no solado para sair do caminho., en: Springs in the soles to get out of the way. }
   bonus: { spd: 2 }
+  shop: { price: 200 }
 - id: tiara-de-foco
   slot: acessorio
   minLevel: 6
@@ -58,6 +65,7 @@
   description:
     { pt-BR: "Um zumbido baixo que ajuda a concentrar.", en: "A low hum that helps you concentrate." }
   bonus: { foc: 2 }
+  shop: { price: 260 }
 - id: broche-de-recruta
   slot: acessorio
   minLevel: 1
@@ -74,12 +82,14 @@
   description:
     { pt-BR: Avisa quando um golpe vem pelo lado cego., en: Warns you when a hit comes from your blind side. }
   bonus: { spd: 1 }
+  shop: { price: 60 }
 - id: visor-de-mira
   slot: dispositivo
   minLevel: 3
   name: { pt-BR: Visor de mira, en: Targeting visor }
   description: { pt-BR: "Marca os pontos fracos das máquinas.", en: "Marks the weak points of machines." }
   bonus: { atk: 1, foc: 1 }
+  shop: { price: 140 }
 - id: gerador-de-escudo
   slot: dispositivo
   minLevel: 7
@@ -90,6 +100,7 @@
       en: An energy bubble that holds the first impact.,
     }
   bonus: { hp: 16, def: 1 }
+  shop: { price: 320 }
 - id: drone-mascote
   slot: dispositivo
   minLevel: 8
@@ -97,3 +108,4 @@
   description:
     { pt-BR: Voa em volta de você e pisca quando você ganha., en: Flies around you and blinks when you win. }
   bonus: { foc: 1, spd: 1 }
+  shop: { price: 360 }
