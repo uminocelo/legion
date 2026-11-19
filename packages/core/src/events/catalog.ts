@@ -154,6 +154,21 @@ export const eventCatalog = {
     outcome: z.enum(['victory', 'defeat']).nullable(),
     participantMemberIds: z.array(id),
   }),
+  /** Faction war closed. J.A.R.V.I.S. pays `winnerMemberIds` once each (US-18, D19, D26). */
+  'war.ended': z.object({
+    warId: id,
+    startsAt: isoDate,
+    endsAt: isoDate,
+    winners: z.array(z.string().min(1)),
+    scores: z.array(
+      z.object({
+        faction: z.string().min(1),
+        points: z.number().int(),
+        members: z.number().int().min(0),
+      }),
+    ),
+    winnerMemberIds: z.array(id),
+  }),
   'report.flagged': z.object({
     reportId: id,
     reporter: z.union([botId, z.literal('member')]),

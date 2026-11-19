@@ -2,10 +2,12 @@ import type { BotContext } from '@legion/core';
 import type { UltronConfig } from './config.js';
 import { EventsRepo } from './db/events-repo.js';
 import { UltronRepo } from './db/repo.js';
+import { WarRepo } from './db/war-repo.js';
 import { EncounterService } from './encounters.js';
 import { EnemyImports } from './enemy-imports.js';
 import { type AiEnv, FlavorText } from './flavor.js';
 import { StatusService } from './status.js';
+import { WarService } from './war.js';
 import { WorldEventService } from './world-events.js';
 
 export interface UltronServices {
@@ -14,6 +16,7 @@ export interface UltronServices {
   flavor: FlavorText;
   encounters: EncounterService;
   world: WorldEventService;
+  war: WarService;
   status: StatusService;
   imports: EnemyImports;
 }
@@ -38,12 +41,19 @@ export function ultronServices(ctx: BotContext<UltronConfig>): UltronServices {
       ...flavorOverrides,
     });
     const encounters = new EncounterService(ctx, repo, flavor);
+    const world = new WorldEventService(ctx, eventsRepo, repo, flavor);
+    const war = new WarService(ctx, new WarRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId));
+    world.warScore = {
+      strike: (memberId, combatId, ex) => war.scoreStrike(memberId, combatId, ex),
+      participation: (eventId, memberIds) => war.scoreParticipation(eventId, memberIds),
+    };
     s = {
       repo,
       eventsRepo,
       flavor,
       encounters,
-      world: new WorldEventService(ctx, eventsRepo, repo, flavor),
+      world,
+      war,
       status: new StatusService(ctx, repo, eventsRepo, encounters, flavor),
       imports: new EnemyImports(ctx, repo),
     };

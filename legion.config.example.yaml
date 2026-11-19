@@ -164,3 +164,11 @@ ultron:
     provider: none # none | openai-compatible (veja docs/SELF_HOSTING.md)
     timeoutMs: 4000
     maxCallsPerHour: 30
+  war:
+    enabled: true
+    length: month # month (começa no dia 1) ou um número de dias entre 7 e 90
+    points:
+      missionSuccess: 10
+      missionFailure: 3
+      strike: 2
+      participation: 5

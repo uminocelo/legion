@@ -28,6 +28,12 @@ describe('commands', () => {
       ['evento', 2],
       ['status', 1],
       ['inimigo', 2],
+      ['guerra', 2],
+    ]);
+    expect(ultron?.options?.find((o) => o.name === 'guerra')?.options?.map((o) => o.name)).toEqual([
+      'iniciar',
+      'encerrar',
+      'pontos',
     ]);
     expect(ultron?.options?.find((o) => o.name === 'inimigo')?.options?.map((o) => o.name)).toEqual([
       'importar',
@@ -41,6 +47,7 @@ describe('commands', () => {
       'cancelar',
     ]);
     expect(json.some((c) => c.name === 'ameaca')).toBe(true);
+    expect(json.some((c) => c.name === 'guerra')).toBe(true);
     const help = t.runtime.help.list?.() ?? [];
     expect(JSON.stringify(help)).toContain('/ameaca');
   });

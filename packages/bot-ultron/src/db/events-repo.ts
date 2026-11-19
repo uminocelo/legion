@@ -41,6 +41,8 @@ export class EventsRepo {
       | 'threadId'
       | 'resultsMessageId'
       | 'embedEditedAt'
+      | 'waves'
+      | 'wave'
     >,
     ex: Executor = this.db.orm,
   ) {
