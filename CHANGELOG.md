@@ -8,10 +8,14 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - **Migration** `0002_world_v1` on ULTRON (wars and war points; nothing is paid retroactively). No J.A.R.V.I.S. migration. Restart so it runs.
 - **New commands** `/guerra` and `/ultron guerra iniciar`, `encerrar` and `pontos`. Restart (or `legion register-commands`) so Discord shows them.
 - **`/mutante` is removed.** Use `/heroi`. Register the commands again so Discord drops the old name.
+- **Migration** none for waves and the threat meter: `0002_world_v1` already holds their columns and tables. Events started before the upgrade read as one wave.
+- **Waves and threat on by default.** Invasions get 1–3 waves from the threat meter (`ultron.invasion.waves: threat`). `ultron.invasion.waves: 1` keeps the old one-wave invasions; `ultron.threat.enabled: false` turns the meter off.
 - **War on by default.** Missions, strikes and world-event participation score for the hero's faction. `ultron.war.enabled: false` stops new wars and scoring. `jarvis.economy.war.winner` (default 50) is what each scoring member of a winning faction receives. Economy off: the war still runs and posts, and nobody is paid.
 
 ### Added
 - Faction war (US-18): one war per server, points stored with the faction at that moment, `/guerra` scoreboard, staff start, end and audited adjustments, a result post, and `war.ended`. A tie pays every tied faction. Independente never scores. ADR 0033.
+- Multi-wave invasions (US-19): an invasion runs 1–5 waves in the same message. Each wave has `invasion.waveHpGrowth` (+25%) more HP and a boss one level higher. The switch happens once even with strikes in flight, and late strikes land on the new wave. A time-out mid-way is a defeat with the cleared waves recorded. The results list each wave (time, top striker). `world.event` carries `wave` and `waves`. Raids stay one wave.
+- Threat meter (US-19): 0–100 per server. Quiet days raise it (`threat.idleRise`, 10) and days with `threat.activeActions` (3) finished missions and strikes lower it (`activeFall`, 5). It ticks once a day at 00:10 and catches up at most 7 missed days. It sets the next invasion: below 34 → 1 wave, normal; 34–66 → 2 waves, normal; 67+ → 3 waves, difícil. `/ameaca` gains the **Ameaça** field (bar, level, what it means), shown even with no event.
 - `jarvis.war-credits` pays the winners once (`war:<warId>:<memberId>`).
 - `legion playtest-report` gains a **Guerra** section (points by faction and reason, staff adjustments; included in `--json`) and flags an unknown faction or a repeated source key.
 - `legion doctor` shows whether a war is active, scheduled or off.

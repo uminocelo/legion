@@ -5,6 +5,7 @@ import { type UltronConfig, ultronConfigSchema } from './config.js';
 import { ultronDoctorChecks } from './doctor.js';
 import { ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 import { ultronServices } from './services.js';
+import { THREAT_CRON, THREAT_JOB } from './threat.js';
 import { WAR_JOBS } from './war.js';
 import { JOBS, V } from './world-events.js';
 
@@ -14,12 +15,14 @@ export * from './db/events-repo.js';
 export * from './db/repo.js';
 export * from './db/tables.js';
 export * from './domain/scaling.js';
+export * from './domain/threat.js';
 export * from './domain/when.js';
 export { EncounterService, playerCombatantId } from './encounters.js';
 export { ENEMY_IMPORT_MAX_BYTES, EnemyImports, enemyImportIds } from './enemy-imports.js';
 export { AI_PROVIDER, type AiEnv, type FlavorKind, FlavorText, filterFlavor } from './flavor.js';
 export { ULTRON_CONTENT_DIR, ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 export * from './services.js';
+export { THREAT_CRON, THREAT_JOB, ThreatService } from './threat.js';
 export { INDEPENDENT_FACTION, WAR_JOBS, WarService } from './war.js';
 export { JOBS, strikeId, WorldEventService } from './world-events.js';
 
@@ -69,6 +72,9 @@ export const ultron: LegionBot<UltronConfig> = {
     ctx.scheduler.define<{ id: string }>(WAR_JOBS.start, (p) => s.war.startJob(p.id));
     ctx.scheduler.define<{ id: string }>(WAR_JOBS.end, (p) => s.war.end(p.id));
     ctx.scheduler.every(WAR_JOBS.plan, '17 * * * *', () => s.war.planNext());
+    ctx.scheduler.every(THREAT_JOB, THREAT_CRON, async () => {
+      await s.threat.tick();
+    });
     ctx.help.add({
       bot: 'ultron',
       command: '/guerra',
@@ -93,6 +99,7 @@ export const ultron: LegionBot<UltronConfig> = {
     const s = ultronServices(ctx);
     await s.world.planRecurring();
     await s.war.planNext();
+    await s.threat.tick(); // catches up days missed while the bot was down
   },
 };
 

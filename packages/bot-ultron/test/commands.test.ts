@@ -81,10 +81,11 @@ describe('commands', () => {
   it('/ultron evento iniciar starts now (still announcing); /ameaca shows HP, damage and cooldown; cancelar stops it', async () => {
     t = await setupUltron();
     await addMember(t, '111');
-    expect(
-      t.gateway.lastReply(await t.interact({ kind: 'command', userId: '111', commandName: 'ameaca' }))
-        ?.content,
-    ).toBe('Nenhuma ameaça no radar. Por enquanto.');
+    const quiet = t.gateway.lastReply(
+      await t.interact({ kind: 'command', userId: '111', commandName: 'ameaca' }),
+    )?.embeds?.[0];
+    expect(quiet?.description).toBe('Nenhuma ameaça no radar. Por enquanto.');
+    expect(quiet?.fields?.map((f) => f.name)).toEqual(['Ameaça']);
     const r = await staff(t, 'evento iniciar', { tipo: 'invasion' });
     expect(t.gateway.lastReply(r)?.content).toBe(`Evento iniciado em <#${CH.events}>.`);
     const [ev] = await servicesOf(t).eventsRepo.openEvents('invasion');

@@ -7,6 +7,7 @@ import { EncounterService } from './encounters.js';
 import { EnemyImports } from './enemy-imports.js';
 import { type AiEnv, FlavorText } from './flavor.js';
 import { StatusService } from './status.js';
+import { ThreatService } from './threat.js';
 import { WarService } from './war.js';
 import { WorldEventService } from './world-events.js';
 
@@ -17,6 +18,7 @@ export interface UltronServices {
   encounters: EncounterService;
   world: WorldEventService;
   war: WarService;
+  threat: ThreatService;
   status: StatusService;
   imports: EnemyImports;
 }
@@ -54,6 +56,7 @@ export function ultronServices(ctx: BotContext<UltronConfig>): UltronServices {
       encounters,
       world,
       war,
+      threat: new ThreatService(ctx, eventsRepo),
       status: new StatusService(ctx, repo, eventsRepo, encounters, flavor),
       imports: new EnemyImports(ctx, repo),
     };

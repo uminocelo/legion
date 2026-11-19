@@ -14,9 +14,16 @@ import {
 } from '@legion/core';
 import type { Difficulty, UltronConfig } from './config.js';
 import type { EnemyTemplate } from './content.js';
-import { type EventKind, type EventsRepo, OPEN_STATUSES, type WorldEventRow } from './db/events-repo.js';
+import {
+  type EventKind,
+  type EventsRepo,
+  OPEN_STATUSES,
+  type WaveRow,
+  type WorldEventRow,
+} from './db/events-repo.js';
 import type { UltronRepo } from './db/repo.js';
 import { scaleStats } from './domain/scaling.js';
+import { invasionSize, nextWaveHp, THREAT_MAX, threatBand } from './domain/threat.js';
 import { hpBar, median } from './domain/when.js';
 import { playerCombatantId } from './encounters.js';
 import type { FlavorText } from './flavor.js';
@@ -236,24 +243,45 @@ export class WorldEventService {
     return { expected, bossLevel };
   }
 
+  /**
+   * Waves and difficulty, fixed when the event starts. Only invasions have waves: `invasion.waves`
+   * is a number, or `threat` (sized from the threat meter; 1 wave when the meter is off).
+   */
+  async waveSize(
+    kind: EventKind,
+    difficulty: Difficulty,
+    level?: number,
+  ): Promise<{ waves: number; difficulty: Difficulty }> {
+    const w = this.cfg.invasion.waves;
+    if (kind !== 'invasion') return { waves: 1, difficulty };
+    if (typeof w === 'number') return { waves: w, difficulty };
+    if (!this.cfg.threat.enabled) return { waves: 1, difficulty };
+    return invasionSize(level ?? (await this.repo.threat())?.level ?? 0);
+  }
+
   async start(id: string): Promise<void> {
     await this.announce(id); // a missed announcement still goes out first
     const before = await this.repo.event(id);
     if (!before) return;
     if (before.status === 'announced') {
       const { expected, bossLevel } = await this.sizing(before.kind as EventKind);
-      const mult = this.cfg.scaling.difficultyMultiplier[before.difficulty as Difficulty] ?? 1;
+      const { waves, difficulty } = await this.waveSize(
+        before.kind as EventKind,
+        before.difficulty as Difficulty,
+      );
+      const mult = this.cfg.scaling.difficultyMultiplier[difficulty] ?? 1;
       const maxHp = Math.max(1, Math.round(this.cfg.events.hpPerParticipant * expected * mult));
       await this.ctx.bus.transaction(async (tx) => {
         const row = await this.repo.transition(
           id,
           ['announced'],
           'active',
-          { maxHp, hp: maxHp, bossLevel },
+          { maxHp, hp: maxHp, bossLevel, waves, wave: 1, difficulty },
           tx,
         );
-        if (row)
-          await this.ctx.bus.emit(tx, 'world.event', await this.worldEventPayload(row, 'started', null, []));
+        if (!row) return;
+        await this.repo.insertWave({ eventId: id, wave: 1, maxHp, bossLevel }, tx);
+        await this.ctx.bus.emit(tx, 'world.event', await this.worldEventPayload(row, 'started', null, []));
       });
     }
     const ev = await this.repo.event(id);
@@ -300,6 +328,7 @@ export class WorldEventService {
       await this.ctx.bus.transaction(async (tx) => {
         const row = await this.repo.transition(id, ['active'], 'ended', { outcome }, tx);
         if (!row) return;
+        await this.repo.closeWave(id, row.wave, outcome === 'victory' ? 'cleared' : 'failed', tx);
         await this.ctx.bus.emit(
           tx,
           'world.event',
@@ -480,7 +509,7 @@ export class WorldEventService {
       const ev = await this.repo.event(raidId, tx);
       if (ev?.status !== 'active') return { hp: null }; // after the end: recorded, outcome unchanged
       const me = await this.repo.participant(raidId, strike.memberId, tx);
-      const hp = await this.repo.addDamage(
+      const hit = await this.repo.addDamage(
         {
           eventId: raidId,
           memberId: strike.memberId,
@@ -491,20 +520,35 @@ export class WorldEventService {
         },
         tx,
       );
-      return { hp };
+      if (!hit) return { hp: null };
+      // The damage lands on whatever wave is current now, even if the fight began on an earlier one.
+      await this.repo.setStrikeWave(p.combatId, hit.wave, tx);
+      const last = hit.wave >= hit.waves;
+      if (hit.hp > 0 || last) return { hp: hit.hp, last, advanced: false };
+      const next = await this.repo.advanceWave(
+        raidId,
+        hit.wave,
+        { maxHp: nextWaveHp(hit.maxHp, this.cfg.invasion.waveHpGrowth), bossLevel: hit.bossLevel + 1 },
+        tx,
+      );
+      return { hp: next?.hp ?? hit.hp, last, advanced: next !== null };
     });
     if (!res || res.hp === null) return;
-    if (res.hp <= 0) return this.end(raidId, 'victory');
+    if (res.hp <= 0 && res.last) return this.end(raidId, 'victory');
+    if (res.advanced) return this.refresh(raidId, true);
     await this.refresh(raidId);
   }
 
-  /** Edits the HP embed at most every 10 s; later strikes schedule one catch-up edit (last write wins). */
-  async refresh(id: string): Promise<void> {
+  /**
+   * Edits the HP embed at most every 10 s; later strikes schedule one catch-up edit (last write wins).
+   * `force` edits now (a new wave began).
+   */
+  async refresh(id: string, force = false): Promise<void> {
     const ev = await this.repo.event(id);
     if (!ev?.messageId || ev.status !== 'active') return;
     const now = this.now().getTime();
     const last = ev.embedEditedAt ? new Date(ev.embedEditedAt).getTime() : 0;
-    if (now - last < EDIT_THROTTLE_MS) {
+    if (!force && now - last < EDIT_THROTTLE_MS) {
       const runAt = new Date(last + EDIT_THROTTLE_MS);
       await this.ctx.scheduler.enqueue(
         JOBS.refresh,
@@ -535,7 +579,13 @@ export class WorldEventService {
     const hp = ev.hp ?? 0;
     const max = ev.maxHp ?? 0;
     const fields = [
-      { name: this.t('ultron.events.hp'), value: `\`${hpBar(hp, max)}\` ${hp} / ${max}` },
+      {
+        name:
+          ev.waves > 1
+            ? this.t('ultron.events.hp_wave', { wave: ev.wave, waves: ev.waves })
+            : this.t('ultron.events.hp'),
+        value: `\`${hpBar(hp, max)}\` ${hp} / ${max}`,
+      },
       final
         ? {
             name: this.t('ultron.events.result'),
@@ -584,6 +634,8 @@ export class WorldEventService {
       unix(ev.endsAt),
     );
     const total = parts.reduce((a, p) => a + p.damage, 0);
+    const waves = ev.waves > 1 ? await this.repo.waves(ev.id) : [];
+    const totalHp = waves.length ? waves.reduce((a, w) => a + w.maxHp, 0) : (ev.maxHp ?? 0);
     const top = await Promise.all(
       parts.slice(0, 5).map(async (p, n) => {
         const discordId = (await this.ctx.read.members.getById(p.memberId))?.discordUserId;
@@ -591,10 +643,12 @@ export class WorldEventService {
       }),
     );
     const fields = [
-      { name: this.t('ultron.events.total_damage'), value: `${total} / ${ev.maxHp ?? 0}`, inline: true },
+      { name: this.t('ultron.events.total_damage'), value: `${total} / ${totalHp}`, inline: true },
       { name: this.t('ultron.events.participants'), value: String(parts.length), inline: true },
       { name: this.t('ultron.events.top'), value: top.length ? top.join('\n') : '—' },
     ];
+    if (waves.length)
+      fields.push({ name: this.t('ultron.events.waves'), value: await this.waveLines(ev, waves) });
     if (ev.kind === 'invasion') {
       const factions = await this.repo.factionDamage(ev.id);
       fields.push({
@@ -628,6 +682,30 @@ export class WorldEventService {
     };
   }
 
+  /** One line per wave: outcome, time and top striker; waves never reached show as such. */
+  private async waveLines(ev: WorldEventRow, rows: WaveRow[]): Promise<string> {
+    const damage = await this.repo.waveDamage(ev.id);
+    const lines: string[] = [];
+    for (let n = 1; n <= ev.waves; n++) {
+      const row = rows.find((w) => w.wave === n);
+      if (!row?.outcome) {
+        lines.push(this.t('ultron.events.wave_not_reached', { n }));
+        continue;
+      }
+      const ms = new Date(row.endedAt ?? ev.endsAt).getTime() - new Date(row.startedAt).getTime();
+      const top = damage.find((d) => d.wave === n);
+      const discordId = top ? (await this.ctx.read.members.getById(top.memberId))?.discordUserId : null;
+      lines.push(
+        this.t(`ultron.events.wave_${row.outcome}`, {
+          n,
+          minutes: Math.max(1, Math.round(ms / 60_000)),
+          top: discordId && top ? `<@${discordId}> · ${top.damage}` : '—',
+        }),
+      );
+    }
+    return lines.join('\n');
+  }
+
   private factionName(stored: string) {
     const key = shownFaction(this.ctx.config.factions, stored) ?? stored;
     const f = this.ctx.config.factions.find((x) => x.key === key);
@@ -649,18 +727,54 @@ export class WorldEventService {
       endsAt: ev.endsAt,
       outcome,
       participantMemberIds,
+      wave: ev.wave,
+      waves: ev.waves,
     };
   }
 
   // ---------- views ----------
+
+  /** The **Ameaça** field: bar, level and what it means for the next invasion. Null when the meter is off. */
+  async threatField(l: Locale): Promise<{ name: string; value: string } | null> {
+    if (!this.cfg.threat.enabled) return null;
+    const level = (await this.repo.threat())?.level ?? 0;
+    const size = await this.waveSize('invasion', this.cfg.events.difficulty, level);
+    return {
+      name: this.t('ultron.threat.field', {}, l),
+      value: [
+        `\`${hpBar(level, THREAT_MAX)}\` ${level} / ${THREAT_MAX} · ${this.t(`ultron.threat.band_${threatBand(level)}`, {}, l)}`,
+        this.t(
+          size.waves > 1 ? 'ultron.threat.next_waves' : 'ultron.threat.next_one',
+          { waves: size.waves, difficulty: this.t(`ultron.difficulty.${size.difficulty}`, {}, l) },
+          l,
+        ),
+        this.t('ultron.threat.how', {}, l),
+      ].join('\n'),
+    };
+  }
 
   /** /ameaca */
   async threat(i: IncomingInteraction, r: Responder): Promise<void> {
     const l = await this.ctx.i18n.localeFor(i.userId);
     const open = await this.repo.openEvents();
     const ev = open.find((e) => e.status === 'active') ?? open[0];
-    if (!ev)
-      return r.reply({ persona: 'ultron', ephemeral: true, content: this.t('ultron.threat.none', {}, l) });
+    const meter = await this.threatField(l);
+    if (!ev) {
+      if (!meter)
+        return r.reply({ persona: 'ultron', ephemeral: true, content: this.t('ultron.threat.none', {}, l) });
+      return r.reply({
+        persona: 'ultron',
+        ephemeral: true,
+        embeds: [
+          {
+            title: `☢️ ${this.t('ultron.threat.field', {}, l)}`,
+            description: this.t('ultron.threat.none', {}, l),
+            color: COLORS.ended,
+            fields: [meter],
+          },
+        ],
+      });
+    }
     const name = await this.nameOf(ev);
     const member = await this.ctx.read.members.getByDiscordId(i.userId);
     const me = member ? await this.repo.participant(ev.id, member.id) : null;
@@ -672,7 +786,10 @@ export class WorldEventService {
         l,
       ),
     ];
-    if (ev.status === 'active') lines.push(`\`${hpBar(ev.hp ?? 0, ev.maxHp ?? 0)}\` ${ev.hp} / ${ev.maxHp}`);
+    if (ev.status === 'active') {
+      if (ev.waves > 1) lines.push(this.t('ultron.events.hp_wave', { wave: ev.wave, waves: ev.waves }, l));
+      lines.push(`\`${hpBar(ev.hp ?? 0, ev.maxHp ?? 0)}\` ${ev.hp} / ${ev.maxHp}`);
+    }
     if (me) {
       lines.push(this.t('ultron.threat.your_damage', { damage: me.damage, strikes: me.strikes }, l));
       const left = new Date(me.nextStrikeAt).getTime() - now;
@@ -690,6 +807,7 @@ export class WorldEventService {
           title: `☢️ ${this.title(ev, name, l)}`,
           description: lines.join('\n'),
           color: COLORS[ev.kind as EventKind],
+          ...(meter ? { fields: [meter] } : {}),
         },
       ],
       ...(ev.status === 'active' && ev.messageId && ev.channelId
