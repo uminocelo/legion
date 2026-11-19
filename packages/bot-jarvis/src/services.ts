@@ -3,6 +3,7 @@ import { JarvisCampaigns } from './campaigns.js';
 import type { JarvisConfig } from './config.js';
 import { JarvisRepo } from './db/repo.js';
 import { JarvisInventory } from './inventory-ui.js';
+import { ItemImports } from './item-imports.js';
 import { InventoryService, ItemCatalog } from './items.js';
 import { JarvisLeaderboard } from './leaderboard.js';
 import { MissionImports } from './mission-imports.js';
@@ -24,6 +25,7 @@ export interface JarvisServices {
   staffTrivia: StaffTrivia;
   imports: MissionImports;
   triviaImports: TriviaImports;
+  itemImports: ItemImports;
   campaigns: JarvisCampaigns;
   items: ItemCatalog;
   inventory: InventoryService;
@@ -51,6 +53,7 @@ export function jarvisServices(ctx: BotContext<JarvisConfig>): JarvisServices {
     partial.staffTrivia = new StaffTrivia(ctx, partial);
     partial.imports = new MissionImports(ctx, partial);
     partial.triviaImports = new TriviaImports(ctx, partial);
+    partial.itemImports = new ItemImports(ctx, partial);
     partial.campaigns = new JarvisCampaigns(ctx, partial);
     partial.items = new ItemCatalog(repo);
     partial.inventory = new InventoryService(ctx, repo, partial.items, partial.wallet);

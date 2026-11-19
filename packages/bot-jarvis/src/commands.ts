@@ -506,6 +506,43 @@ export function jarvisCommands(
                   },
                 ],
               },
+              {
+                type: 1,
+                name: 'importar',
+                name_localizations: { 'en-US': 'import' },
+                ...desc(i18n, 'jarvis.commands.jarvis.item_importar'),
+                options: [
+                  {
+                    type: 11,
+                    name: 'arquivo',
+                    name_localizations: { 'en-US': 'file' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.item_arquivo'),
+                  },
+                ],
+              },
+              {
+                type: 1,
+                name: 'exportar',
+                name_localizations: { 'en-US': 'export' },
+                ...desc(i18n, 'jarvis.commands.jarvis.item_exportar'),
+              },
+              ...(['desativar', 'ativar'] as const).map((name) => ({
+                type: 1,
+                name,
+                name_localizations: { 'en-US': { desativar: 'disable', ativar: 'enable' }[name] },
+                ...desc(i18n, `jarvis.commands.jarvis.item_${name}`),
+                options: [
+                  {
+                    type: 3,
+                    name: 'item',
+                    required: true,
+                    autocomplete: true,
+                    max_length: 48,
+                    ...desc(i18n, 'jarvis.commands.jarvis.item_item'),
+                  },
+                ],
+              })),
             ],
           },
           {
@@ -537,6 +574,10 @@ export function jarvisCommands(
         const sub = i.subcommand;
         if (sub === 'xp') return staffXp(ctx, s, i, r, l);
         if (sub === 'item dar') return s.inventoryUi.staffGrant(i, r, l);
+        if (sub === 'item importar') return s.itemImports.import(i, r);
+        if (sub === 'item exportar') return s.itemImports.export(i, r);
+        if (sub === 'item desativar') return s.itemImports.setActive(i, r, false);
+        if (sub === 'item ativar') return s.itemImports.setActive(i, r, true);
         if (sub === 'creditos dar') return s.walletUi.staffGive(i, r, l);
         if (sub === 'trivia recarregar') {
           const res = await trivia.reload();

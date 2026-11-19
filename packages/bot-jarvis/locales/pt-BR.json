@@ -139,13 +139,18 @@
         "campanha": "Campanhas (staff)",
         "campanha_importar": "Importa uma campanha e suas missões de um .yaml",
         "campanha_arquivo": "Arquivo .yaml com campaign e missions",
-        "item": "Itens: entregar",
+        "item": "Itens da staff",
         "item_dar": "Entrega um item a um membro",
         "item_item": "Item (id ou nome)",
         "item_motivo": "Motivo (opcional)",
         "creditos": "Créditos: dar ou tirar",
         "creditos_dar": "Dá (ou tira, com número negativo) créditos de um membro",
-        "creditos_quantidade": "Quantidade (-10000 a 10000)"
+        "creditos_quantidade": "Quantidade (-10000 a 10000)",
+        "item_importar": "Importa itens de um arquivo .yaml",
+        "item_arquivo": "O arquivo .yaml com os itens (o do editor do site ou do exportar)",
+        "item_exportar": "Baixa os itens da staff em YAML",
+        "item_desativar": "Tira um item de jogo (desequipa de quem usa)",
+        "item_ativar": "Volta um item desativado"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
@@ -408,6 +413,18 @@
       "not_for_sale": "Este item não está mais à venda.",
       "price_changed": "O preço de **{item}** mudou para {price} créditos. Nada foi cobrado: confira e clique em Comprar de novo.",
       "level_too_low": "**{item}** precisa do nível {level}."
+    },
+    "item_imports": {
+      "summary": "🆕 {added} novo(s) · ✏️ {changed} alterado(s) · ＝ {same} igual(is). Itens alterados valem a partir da próxima luta.",
+      "owners": "{count} jogador(es) têm",
+      "published": "✅ Itens publicados: {added} novo(s), {changed} alterado(s), {same} igual(is). Desequipados: {unequipped}.",
+      "export_header": "Itens da staff, exportados em {date}. Reimporte com /jarvis item importar.",
+      "exported": "{count} item(ns) da staff.",
+      "disabled": "⛔ **{item}** desativado. {count} jogador(es) tiveram o item desequipado e continuam com ele no inventário.",
+      "enabled": "✅ **{item}** ativado de novo. Quem tem precisa equipar outra vez.",
+      "already_off": "**{item}** já está desativado.",
+      "already_on": "**{item}** já está ativo.",
+      "off_in_file": "**{item}** está com `active: false` no arquivo. Mude o arquivo para ativar."
     }
   }
 }
