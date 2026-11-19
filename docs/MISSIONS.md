@@ -5,6 +5,7 @@ Missões são histórias curtas com escolhas. Um membro registrado usa `/missao 
 - **Escolhas em grupo:** a maioria decide; empate fica com o voto do líder. Se o tempo (`jarvis.missions.choiceTimeoutMinutes`) acabar com alguns votos, eles decidem; sem nenhum voto, a missão é abandonada (sem XP).
 - **Lutas:** uma cena de luta envia `mission.started` com `missionType: combat`. O ULTRON cria os inimigos (escalados pelo nível do grupo e pela dificuldade da missão) e o Sentinel conduz a luta no próprio tópico. Vitória segue para `win`, derrota (ou empate) para `lose`. Sem resultado em `combatTimeoutMinutes`, a missão fracassa. Missões com luta só aparecem quando `ultron` e `sentinel` estão em `bots`.
 - **XP:** pago a cada membro no fim (sucesso ou fracasso), uma vez só, pelo J.A.R.V.I.S. (`reason: mission`). Quem saiu do servidor não recebe. Os valores vêm de `jarvis.missions.rewards`, por tipo, ou do campo `xp` da missão.
+- **Créditos (v0.10):** pagos junto com o XP, uma vez só, com a mesma regra. Valores de `jarvis.economy.missions`, por tipo, ou do campo `credits` da missão (0 a 10000). Missão abandonada não paga ([ECONOMY.md](ECONOMY.md#créditos)).
 - **Limites:** por padrão, 1 missão diária por dia, 1 semanal por semana (segunda a domingo) e cada história uma vez (`jarvis.missions.limits`). Cada membro do grupo gasta o seu limite. Um grupo que fecha sem começar não conta.
 - **Reinício:** o progresso fica no banco. Ao reiniciar, a cena que faltava postar é postada uma vez e os prazos continuam.
 
@@ -27,6 +28,7 @@ minLevel: 1                     # nível mínimo (padrão 1)
 party: 2                        # até quantos jogadores (1 a 4; padrão 1)
 difficulty: normal              # facil | normal | dificil (escala os inimigos)
 xp: { success: 50, failure: 10 } # opcional; sem ele vale jarvis.missions.rewards
+credits: { success: 25, failure: 5 } # opcional (v0.10); sem ele vale jarvis.economy.missions
 start: plataforma               # cena inicial
 scenes:
   plataforma:

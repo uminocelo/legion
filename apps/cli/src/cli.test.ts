@@ -326,6 +326,7 @@ describe('several Discord apps', () => {
     const byApp = Object.fromEntries(puts.map((p) => [p.app, p.names]));
     expect(byApp[JAPP]).toEqual([
       'campanha',
+      'carteira',
       'inventario',
       'jarvis',
       'missao',

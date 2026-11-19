@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { defaultJarvisConfig } from '../config.js';
 import { missionDirs, readMissions } from '../mission-content.js';
-import { at, graphErrors, type Mission, missionXp, resolveVote, step } from './mission.js';
+import { at, graphErrors, type Mission, missionCredits, missionXp, resolveVote, step } from './mission.js';
 
 const shipped = readMissions(missionDirs('/nonexistent')).missions;
 
@@ -75,6 +75,18 @@ describe('votes', () => {
   it('a tie without the leader goes to the lowest tied choice', () =>
     expect(resolveVote(v(['a', 2], ['b', 1]), 'z')).toBe(1));
   it('no votes → null', () => expect(resolveVote(new Map(), 'a')).toBeNull());
+});
+
+describe('mission credits', () => {
+  const eco = defaultJarvisConfig().economy;
+  it('uses jarvis.economy for the kind, the file overrides it, abandoned and economy off pay nothing', () => {
+    expect(missionCredits({ kind: 'daily' }, 'success', eco)).toBe(20);
+    expect(missionCredits({ kind: 'weekly' }, 'failure', eco)).toBe(15);
+    expect(missionCredits({ kind: 'story' }, 'success', eco)).toBe(40);
+    expect(missionCredits({ kind: 'daily', credits: { success: 9, failure: 1 } }, 'failure', eco)).toBe(1);
+    expect(missionCredits({ kind: 'daily' }, 'abandoned', eco)).toBe(0);
+    expect(missionCredits({ kind: 'daily' }, 'success', { ...eco, enabled: false })).toBe(0);
+  });
 });
 
 describe('mission XP', () => {

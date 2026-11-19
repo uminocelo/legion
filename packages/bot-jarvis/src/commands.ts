@@ -156,6 +156,15 @@ export function jarvisCommands(
       autocomplete: (i, r) => s.campaigns.autocomplete(i, r),
     },
     {
+      name: 'carteira',
+      json: {
+        name: 'carteira',
+        name_localizations: { 'en-US': 'wallet' },
+        ...desc(i18n, 'jarvis.commands.carteira.description'),
+      },
+      execute: (i, r) => s.walletUi.command(i, r),
+    },
+    {
       name: 'inventario',
       json: {
         name: 'inventario',
@@ -403,6 +412,46 @@ export function jarvisCommands(
           },
           {
             type: 2,
+            name: 'creditos',
+            name_localizations: { 'en-US': 'credits' },
+            ...desc(i18n, 'jarvis.commands.jarvis.creditos'),
+            options: [
+              {
+                type: 1,
+                name: 'dar',
+                name_localizations: { 'en-US': 'give' },
+                ...desc(i18n, 'jarvis.commands.jarvis.creditos_dar'),
+                options: [
+                  {
+                    type: 6,
+                    name: 'membro',
+                    name_localizations: { 'en-US': 'member' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.membro'),
+                  },
+                  {
+                    type: 4,
+                    name: 'quantidade',
+                    name_localizations: { 'en-US': 'amount' },
+                    required: true,
+                    min_value: -10000,
+                    max_value: 10000,
+                    ...desc(i18n, 'jarvis.commands.jarvis.creditos_quantidade'),
+                  },
+                  {
+                    type: 3,
+                    name: 'motivo',
+                    name_localizations: { 'en-US': 'reason' },
+                    required: true,
+                    max_length: 200,
+                    ...desc(i18n, 'jarvis.commands.jarvis.motivo'),
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 2,
             name: 'item',
             ...desc(i18n, 'jarvis.commands.jarvis.item'),
             options: [
@@ -468,6 +517,7 @@ export function jarvisCommands(
         const sub = i.subcommand;
         if (sub === 'xp') return staffXp(ctx, s, i, r, l);
         if (sub === 'item dar') return s.inventoryUi.staffGrant(i, r, l);
+        if (sub === 'creditos dar') return s.walletUi.staffGive(i, r, l);
         if (sub === 'trivia recarregar') {
           const res = await trivia.reload();
           const { errors, ...counts } = res;

@@ -93,7 +93,13 @@ describe('legion playtest-report', () => {
     expect(r.problems).toEqual([]);
     const text = formatPlaytest(r);
     expect(text).toContain('patrulha-noturna [daily] success @ aliada');
-    expect(text).toContain('✅ XP, limites e lutas batem');
+    expect(text).toContain('✅ XP, créditos, limites e lutas batem');
+    expect(r.economy).toEqual({
+      byReason: [{ reason: 'mission', total: 20, rows: 1 }],
+      purchases: 0,
+      staff: [],
+    });
+    expect(text).toContain('== Economia (créditos no período) ==\nmission: +20 (1 linha(s))\ncompras: 0');
     expect(text).toContain(`grep '"level":50'`);
     expect(id).toBeTruthy();
   });
@@ -132,6 +138,50 @@ describe('legion playtest-report', () => {
       ]),
     );
     expect(formatPlaytest(r)).toMatch(/❌ 3 problema\(s\)/);
+  });
+
+  it('economy: staff movements are listed; a wrong or negative balance and a ledger without a wallet are problems', async () => {
+    t = await setup();
+    t.gateway.addMember({ userId: '999' });
+    const a = await addPlayer(t, '111', 'Pulso');
+    const b = await addPlayer(t, '222', 'Brasa');
+    await playPatrol(t, '111');
+    await t.interact({
+      kind: 'command',
+      userId: '999',
+      isGuildOwner: true,
+      commandName: 'jarvis',
+      subcommand: 'creditos dar',
+      options: { membro: '222', quantidade: 50, motivo: 'evento' },
+    });
+    const clean = await report(t);
+    expect(clean.problems).toEqual([]);
+    expect(clean.economy?.staff).toEqual([
+      expect.objectContaining({ who: 'Brasa', amount: 50, by: '999', note: 'evento' }),
+    ]);
+    expect(formatPlaytest(clean)).toMatch(/staff \+50 → Brasa · por <@999> · evento/);
+
+    const j = jarvisTables(t.db);
+    await t.db.orm.update(j.jarvisWallets).set({ balance: 999 }).where(eq(j.jarvisWallets.memberId, a));
+    await t.db.orm.delete(j.jarvisWallets).where(eq(j.jarvisWallets.memberId, b));
+    const r = await report(t);
+    expect(r.problems).toEqual([
+      'Pulso: carteira mostra 999 créditos, histórico soma 20',
+      'Brasa: tem créditos no histórico (50), mas nenhuma carteira',
+    ]);
+  });
+
+  it('skips the economy without J.A.R.V.I.S.', async () => {
+    t = await setup();
+    const r = await playtestReport(t.db, {
+      guildId: t.gateway.guildId,
+      since: new Date(0),
+      now: t.clock.now(),
+      bots: ['cerebro'],
+      limits: LIMITS,
+    });
+    expect(r.economy).toBeNull();
+    expect(formatPlaytest(r)).not.toContain('Economia');
   });
 
   it('does not expect XP for a member who left the server', async () => {

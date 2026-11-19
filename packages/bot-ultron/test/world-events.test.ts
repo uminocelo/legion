@@ -91,6 +91,10 @@ describe('world event lifecycle', () => {
     await at(t, ev.endsAt);
     expect(ultronMsgs(t)).toHaveLength(3);
     expect(await events(t, 'xp.grant_requested')).toHaveLength(2);
+    // J.A.R.V.I.S. pays the victory credits from world.event ended, once (v0.10, US-14).
+    const { jarvis, jarvisServices } = await import('@legion/bot-jarvis');
+    const wallet = jarvisServices(t.ctxOf(jarvis)).wallet;
+    expect([await wallet.balanceOf(a), await wallet.balanceOf(b)]).toEqual([30, 30]);
     // A strike after the end
     expect(t.gateway.lastReply(await strike(t, '111', ev.id))?.content).toBe('O evento já terminou.');
   });

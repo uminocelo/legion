@@ -10,6 +10,10 @@ const xp = z.number().int().min(0).max(10_000);
 const reward = (success: number, failure: number) =>
   z.object({ successXp: xp.default(success), failureXp: xp.default(failure) }).prefault({});
 
+const credits = z.number().int().min(0).max(10_000);
+const payout = (success: number, failure: number) =>
+  z.object({ success: credits.default(success), failure: credits.default(failure) }).prefault({});
+
 export const MISSION_KINDS = ['daily', 'weekly', 'story'] as const;
 export type MissionKind = (typeof MISSION_KINDS)[number];
 
@@ -75,9 +79,22 @@ export const jarvisConfigSchema = z.object({
       lobbyTimeoutMinutes: posInt.max(1440).default(5),
     })
     .prefault({}),
-  /** Credits, shop and gear (v0.10). US-15 only reads `gear`. */
+  /** Credits, shop and gear (v0.10, ADR 0028 and 0029). No real money anywhere. */
   economy: z
     .object({
+      // false: no credit payouts and no shop; /inventario and /carteira still work.
+      enabled: z.boolean().default(true),
+      trivia: z.object({ correct: credits.default(2) }).prefault({}),
+      missions: z
+        .object({
+          daily: payout(20, 5),
+          weekly: payout(60, 15),
+          story: payout(40, 10),
+        })
+        .prefault({}),
+      worldEvents: z
+        .object({ victory: credits.default(30), participation: credits.default(10) })
+        .prefault({}),
       gear: z
         .object({
           // Most gear adds to each stat in total (hp × 8); 0 = gear is cosmetic only (ADR 0029).

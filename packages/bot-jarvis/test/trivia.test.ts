@@ -68,6 +68,10 @@ describe('/trivia', () => {
     expect(res?.embeds?.[0]?.description).toContain('✅ Correto!');
     expect(res?.embeds?.[0]?.description).toContain(`+${base + 4} XP`);
     expect(res?.embeds?.[0]?.description).toContain('🔥 Sequência de 1 dia(s): +5 XP de bônus');
+    expect(res?.embeds?.[0]?.description).toContain('+2 créditos');
+    expect(await servicesOf(t).wallet.history(m)).toMatchObject([
+      { amount: 2, reason: 'trivia', note: question?.id, sourceKey: `trivia:${attemptId}` },
+    ]);
     expect(await t.runtime.providers.readModels().progress.get(m)).toMatchObject({ xp: base + 4 + 5 });
     expect(await events(t, 'trivia.answered')).toEqual([
       { memberId: m, attemptId, questionId: question?.id, correct: true, msToAnswer: 4000 },
@@ -85,6 +89,7 @@ describe('/trivia', () => {
       `Resposta certa: **${choices[question?.answerIndex ?? 0]}**`,
     );
     expect(await servicesOf(t).repo.ledgerFor(m)).toEqual([]);
+    expect(await servicesOf(t).wallet.balanceOf(m)).toBe(0);
     expect(await events(t, 'trivia.answered')).toHaveLength(1);
   });
 
@@ -98,7 +103,9 @@ describe('/trivia', () => {
     const other = `jarvis:v1:trivia:${attemptId}:${(display + 1) % 4}`;
     const again = await t.interact({ kind: 'component', userId: U, customId: other });
     expect(t.gateway.lastReply(again)?.embeds?.[0]?.description).toContain('✅ Correto!');
+    expect(t.gateway.lastReply(again)?.embeds?.[0]?.description).toContain('+2 créditos');
     expect((await servicesOf(t).repo.progress(m))?.xp).toBe(xp);
+    expect(await servicesOf(t).wallet.balanceOf(m)).toBe(2);
     expect(await events(t, 'trivia.answered')).toHaveLength(1);
   });
 
@@ -163,7 +170,25 @@ describe('/trivia', () => {
     expect(t.gateway.lastReply(a)?.embeds?.[0]?.description).toContain(
       'Você já ganhou o máximo de XP de trivia hoje (12)',
     );
+    // The XP cap does not block credits: 3 correct answers, 2 credits each.
+    expect(await s.wallet.balanceOf(m)).toBe(6);
     expect((await s.repo.progress(m))?.currentStreak).toBe(2);
+  });
+
+  it('jarvis.economy sets the trivia credits; economy off pays none', async () => {
+    for (const [economy, balance] of [
+      [{ trivia: { correct: 7 } }, 7],
+      [{ enabled: false }, 0],
+    ] as const) {
+      t = await setupJarvis({ jarvis: { economy } });
+      const m = await addMember(t, U);
+      const { customId } = await answerIndex(t, await ask(t), true);
+      const a = await t.interact({ kind: 'component', userId: U, customId });
+      expect(await servicesOf(t).wallet.balanceOf(m)).toBe(balance);
+      expect(t.gateway.lastReply(a)?.embeds?.[0]?.description?.includes('créditos')).toBe(balance > 0);
+      await t.close();
+      t = undefined;
+    }
   });
 
   it('survives a restart mid-question: the answer still works and nothing is duplicated', async () => {

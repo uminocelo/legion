@@ -7,6 +7,7 @@ import type { JarvisServices } from './services.js';
 export const PROGRESS_INIT = 'jarvis.progress-init';
 export const XP_GRANT = 'jarvis.xp-grant';
 export const FACTION_RESULT = 'jarvis.faction-result';
+export const WORLD_CREDITS = 'jarvis.world-credits';
 
 /** Event consumers. Delivery is at-least-once, so both are idempotent. */
 export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServices): void {
@@ -22,6 +23,11 @@ export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServic
   ctx.bus.on('player.faction_change_refused', FACTION_RESULT, (e) =>
     s.missions.onFactionResult({ kind: 'refused', ...e.payload }),
   );
+
+  // Credits for world events (v0.10, US-14, D4): no new event, ULTRON's `world.event` ended is enough.
+  ctx.bus.on('world.event', WORLD_CREDITS, async (e) => {
+    await s.wallet.payWorldEvent(e.payload);
+  });
 
   ctx.bus.on('xp.grant_requested', XP_GRANT, async (e) => {
     const { memberId, amount, reason, sourceEventId } = e.payload;

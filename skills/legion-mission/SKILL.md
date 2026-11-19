@@ -27,6 +27,7 @@ minLevel: 1                     # default 1
 party: 2                        # 1 to 4 players; default 1
 difficulty: normal              # facil | normal | dificil (scales the enemies)
 # xp: { success: 50, failure: 10 }   # optional; default comes from jarvis.missions.rewards
+# credits: { success: 25, failure: 5 }   # optional; default comes from jarvis.economy.missions
 start: plataforma
 scenes:
   plataforma:
@@ -65,6 +66,7 @@ A full example is in `examples/sinal-no-porto.yaml`.
 ## Balance
 
 - Default XP (`jarvis.missions.rewards`): daily 40/10, weekly 120/30, story 80/20 (success/failure). Only set `xp` when the mission is clearly longer or shorter than usual; keep it within about ±50% of the default for its kind.
+- Default credits (`jarvis.economy.missions`): daily 20/5, weekly 60/15, story 40/10. Same rule as XP: set `credits` only for an unusually long or short mission.
 - Default limits: 1 daily per day, 1 weekly per week, each standalone story once.
 - Length: 4 to 8 scenes is a good size. A daily is 1–2 decisions; a weekly or story 2–4.
 - Fights: at most one in a daily, up to two elsewhere. A mission with a fight only appears when ULTRON and Sentinel are on; give a choice path to the fight, not a dead end before it.
