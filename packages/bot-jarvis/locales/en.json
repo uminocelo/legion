@@ -89,7 +89,8 @@
       "sequencia": "See your active-day streak and tomorrow's bonus.",
       "missao": "Missions with choices (and fights), solo or in a party",
       "campanha": "Shows your campaigns, progress and next chapter.",
-      "inventario": "Your items: equip one per slot (suit, accessory, device)."
+      "inventario": "Your items: equip one per slot (suit, accessory, device).",
+      "carteira": "Your credits and latest movements."
     },
     "commands": {
       "trivia": {
@@ -140,7 +141,10 @@
         "item": "Items: give",
         "item_dar": "Gives an item to a member",
         "item_item": "Item (id or name)",
-        "item_motivo": "Reason (optional)"
+        "item_motivo": "Reason (optional)",
+        "creditos": "Credits: give or remove",
+        "creditos_dar": "Gives (or removes, with a negative number) credits",
+        "creditos_quantidade": "Amount (-10000 to 10000)"
       },
       "missao": {
         "description": "Missions: short stories with choices, solo or in a party",
@@ -155,6 +159,9 @@
       },
       "inventario": {
         "description": "Shows your items and what is equipped"
+      },
+      "carteira": {
+        "description": "Shows your credits balance and latest movements"
       }
     },
     "missions": {
@@ -353,6 +360,24 @@
       "granted": "🎁 **{item}** given to {member}.",
       "grant_owned": "{member} already owns **{item}**.",
       "grant_unknown": "Could not find the item \"{item}\"."
+    },
+    "wallet": {
+      "title": "💳 Wallet",
+      "balance": "Balance: **{balance}** credits",
+      "history": "Latest movements",
+      "empty": "No movements yet. Missions, trivia and world events pay credits.",
+      "disabled": "Credit payouts are turned off on this server.",
+      "reason": {
+        "mission": "Mission",
+        "trivia": "Trivia",
+        "world_event": "World event",
+        "purchase": "Purchase",
+        "staff": "Staff"
+      },
+      "staff_invalid": "Use an amount from -{max} to {max}, not 0, and a reason.",
+      "staff_done": "Credits adjusted: {amount} for {member} (reason: {reason}). Balance: {balance}.",
+      "staff_insufficient": "{member} only has {balance} credits: you cannot remove more than the balance.",
+      "earned": "+{credits} credits"
     }
   }
 }

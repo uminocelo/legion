@@ -276,6 +276,30 @@ describe('mission editor: campaigns', () => {
     expect(missions.validate(m).join('\n')).toMatch(/requires\.origins\.0/);
   });
 
+  it('writes optional credits and reads them back; the bot accepts them (v0.10)', () => {
+    const m = missions.fromYaml(missions.toYaml(missions.emptyMission()));
+    expect(missions.toYaml(m)).not.toMatch(/credits/);
+    m.customCredits = true;
+    m.credits = { success: 35, failure: 7 };
+    const text = missions.toYaml(m);
+    expect(text).toMatch(/credits:\n\s+success: 35\n\s+failure: 7/);
+    expect(missions.fromYaml(text)).toMatchObject({
+      customCredits: true,
+      credits: { success: 35, failure: 7 },
+    });
+    const old = missions.emptyMission() as Partial<missions.MissionDraft>;
+    delete old.customCredits;
+    delete old.credits;
+    expect(missions.withDefaults(old as missions.MissionDraft)).toMatchObject({
+      customCredits: false,
+      credits: { success: 20, failure: 5 },
+    });
+    const bot = parseMissionYaml(text.replace('credits:', 'credits:'));
+    expect('errors' in bot ? bot.errors.filter((e) => e.includes('credits')) : []).toEqual([]);
+    const bad = parseMissionYaml(text.replace('success: 35', 'success: 10001'));
+    expect('errors' in bad ? bad.errors.join() : '').toMatch(/credits.success/);
+  });
+
   it('a draft saved before campaigns gets the new fields', () => {
     const old = missions.emptyMission() as Partial<missions.MissionDraft>;
     delete old.campaign;

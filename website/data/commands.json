@@ -190,6 +190,16 @@
       ]
     },
     {
+      "path": "/carteira",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Mostra seu saldo de créditos e as últimas movimentações",
+        "en": "Shows your credits balance and latest movements"
+      },
+      "options": []
+    },
+    {
       "path": "/inventario",
       "kind": "slash",
       "staff": false,
@@ -215,6 +225,44 @@
           "description": {
             "pt-BR": "Arquivo .yaml com campaign e missions",
             "en": "A .yaml file with campaign and missions"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis creditos dar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Dá (ou tira, com número negativo) créditos de um membro",
+        "en": "Gives (or removes, with a negative number) credits"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "Membro",
+            "en": "Member"
+          }
+        },
+        {
+          "name": "quantidade",
+          "nameEn": "amount",
+          "required": true,
+          "description": {
+            "pt-BR": "Quantidade (-10000 a 10000)",
+            "en": "Amount (-10000 to 10000)"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo",
+            "en": "Reason"
           }
         }
       ]

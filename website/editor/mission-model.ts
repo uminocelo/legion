@@ -41,6 +41,9 @@ export interface MissionDraft {
   /** Off = the server's default XP for the kind (jarvis.missions.rewards). */
   customXp: boolean;
   xp: { success: number; failure: number };
+  /** Off = the server's default credits for the kind (jarvis.economy.missions). */
+  customCredits: boolean;
+  credits: { success: number; failure: number };
   start: string;
   scenes: SceneDraft[];
   /** Chapter of a campaign (empty id = not in a campaign). */
@@ -88,6 +91,8 @@ export const emptyMission = (): MissionDraft => ({
   difficulty: 'normal',
   customXp: false,
   xp: { success: 50, failure: 10 },
+  customCredits: false,
+  credits: { success: 20, failure: 5 },
   start: 'inicio',
   campaign: { id: '', chapter: 1 },
   requires: { missions: '', level: 0, origins: [], factions: '' },
@@ -155,6 +160,8 @@ export function withDefaults(m: MissionDraft): MissionDraft {
     campaign: m.campaign ?? e.campaign,
     requires: { ...e.requires, ...(m.requires ?? {}) },
     joinFaction: m.joinFaction ?? '',
+    customCredits: m.customCredits ?? false,
+    credits: m.credits ?? e.credits,
   };
 }
 
@@ -179,6 +186,7 @@ export function toObject(m: MissionDraft) {
     party: m.party,
     difficulty: m.difficulty,
     ...(m.customXp ? { xp: { ...m.xp } } : {}),
+    ...(m.customCredits ? { credits: { ...m.credits } } : {}),
     ...campaignFields(m),
     start: m.start,
     scenes,
@@ -252,6 +260,7 @@ export function fromYaml(text: string): MissionDraft {
     throw new Error('o arquivo deve ser uma missão (id, kind, title, scenes...)');
   const r = raw as Record<string, unknown>;
   const xp = r.xp as { success?: unknown; failure?: unknown } | undefined;
+  const credits = r.credits as { success?: unknown; failure?: unknown } | undefined;
   const scenes = Object.entries((r.scenes ?? {}) as Record<string, Record<string, unknown>>).map(
     ([id, s]): SceneDraft => {
       const base = emptyScene(id);
@@ -297,6 +306,8 @@ export function fromYaml(text: string): MissionDraft {
     difficulty: str(r.difficulty, 'normal'),
     customXp: !!xp,
     xp: { success: num(xp?.success, 50), failure: num(xp?.failure, 10) },
+    customCredits: !!credits,
+    credits: { success: num(credits?.success, 20), failure: num(credits?.failure, 5) },
     start: str(r.start),
     scenes,
   };

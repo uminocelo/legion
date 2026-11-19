@@ -33,6 +33,8 @@ export { StaffTrivia, staffTriviaIds, statusOf } from './staff-trivia.js';
 export { contentDirs, JarvisTrivia } from './trivia.js';
 export { TRIVIA_IMPORT_MAX, TriviaImports, triviaImportIds } from './trivia-imports.js';
 export { ids as jarvisIds } from './ui.js';
+export * from './wallet.js';
+export { JarvisWalletUi, STAFF_CREDITS_MAX } from './wallet-ui.js';
 export * from './xp-service.js';
 
 /** J.A.R.V.I.S.: trivia, XP, levels, ranks, leaderboard and streaks (v1). */
@@ -124,6 +126,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.help.add({ bot: 'jarvis', command: '/missao', descriptionKey: 'jarvis.help.missao' });
     ctx.help.add({ bot: 'jarvis', command: '/campanha', descriptionKey: 'jarvis.help.campanha' });
     ctx.help.add({ bot: 'jarvis', command: '/inventario', descriptionKey: 'jarvis.help.inventario' });
+    ctx.help.add({ bot: 'jarvis', command: '/carteira', descriptionKey: 'jarvis.help.carteira' });
   },
   doctorChecks: (ctx) => [...jarvisDoctorChecks(ctx), staffCommandsCheck(ctx, ['jarvis'])],
   onReady: async (ctx) => {

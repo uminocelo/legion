@@ -28,6 +28,9 @@ const lastButtons = (tc: TestContext) =>
   (scenes(tc).at(-1)?.msg.components?.[0] ?? []).map((b) => ('customId' in b ? (b.customId ?? '') : ''));
 const click = (tc: TestContext, customId: string, userId = U) =>
   tc.interact({ kind: 'component', userId, customId });
+/** Credits ledger rows of missions (v0.10). */
+const credits = async (tc: TestContext, memberId: string) =>
+  (await servicesOf(tc).wallet.history(memberId, 50)).filter((l) => l.reason === 'mission');
 const ledger = async (tc: TestContext, memberId: string) =>
   (await servicesOf(tc).repo.ledgerFor(memberId)).filter((l) => l.reason === 'mission');
 
@@ -65,7 +68,12 @@ describe('solo missions', () => {
     ]);
     const result = t.gateway.messages.at(-1)?.msg.embeds?.[0]?.description ?? '';
     expect(result).toMatch(/Faísca/);
-    expect(result).toMatch(/Missão cumprida! \+40 XP/);
+    expect(result).toMatch(/Missão cumprida! \+40 XP · \+20 créditos/);
+    // Credits next to the XP, same source key, once (daily: 20 on success).
+    expect((await credits(t, memberId)).map((l) => [l.amount, l.note, l.sourceKey])).toEqual([
+      [20, 'patrulha-noturna', `mission:${run?.id}:${memberId}`],
+    ]);
+    expect(await s.wallet.balanceOf(memberId)).toBe(20);
   });
 
   it('a failure ending pays the failure XP', async () => {
@@ -74,6 +82,7 @@ describe('solo missions', () => {
     await click(t, lastButtons(t)[0] ?? ''); // container
     await click(t, lastButtons(t)[0] ?? ''); // switch the tracker off → failure
     expect((await ledger(t, memberId)).map((l) => l.amount)).toEqual([10]);
+    expect((await credits(t, memberId)).map((l) => l.amount)).toEqual([5]);
     expect((await events(t, 'mission.completed'))[0]?.outcome).toBe('failure');
   });
 
@@ -92,6 +101,12 @@ describe('solo missions', () => {
     const [run] = await s.repo.runsOf(memberId);
     expect(run?.sceneId).toBe('armazem');
     expect(scenes(t)).toHaveLength(2);
+    // Finish, then replay the ending click: paid once.
+    const end = lastButtons(t)[0] ?? '';
+    await click(t, end);
+    await click(t, end);
+    expect(await credits(t, memberId)).toHaveLength(1);
+    expect(await s.wallet.balanceOf(memberId)).toBe(20);
   });
 
   it('daily and story limits come from the config; one open run at a time', async () => {
@@ -161,6 +176,25 @@ describe('solo missions', () => {
     expect(t.gateway.lastReply(id)?.content).toBe('Missão abandonada.');
     expect((await s.repo.runsOf(memberId))[0]?.status).toBe('abandoned');
     expect(await ledger(t, memberId)).toEqual([]);
+    expect(await credits(t, memberId)).toEqual([]);
+  });
+
+  it('mission credits come from the YAML or jarvis.economy; economy off pays none', async () => {
+    const own = await setup({ jarvis: { economy: { missions: { daily: { success: 33, failure: 3 } } } } });
+    await start(own.t);
+    await click(own.t, lastButtons(own.t)[1] ?? '');
+    await click(own.t, lastButtons(own.t)[0] ?? '');
+    expect((await credits(own.t, own.memberId)).map((l) => l.amount)).toEqual([33]);
+    await own.t.close();
+    const off = await setup({ jarvis: { economy: { enabled: false } } });
+    await start(off.t);
+    await click(off.t, lastButtons(off.t)[1] ?? '');
+    await click(off.t, lastButtons(off.t)[0] ?? '');
+    expect(await credits(off.t, off.memberId)).toEqual([]);
+    expect((await ledger(off.t, off.memberId)).map((l) => l.amount)).toEqual([40]);
+    const result = off.t.gateway.messages.at(-1)?.msg.embeds?.[0]?.description ?? '';
+    expect(result).toMatch(/\+40 XP$/m);
+    expect(result).not.toMatch(/créditos/);
   });
 
   it('after a restart, a committed but unposted scene is posted once and the timer is re-armed', async () => {

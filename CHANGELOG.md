@@ -5,6 +5,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 ## [Unreleased]
 
 ### Added
+- Credits (US-14): missions (by kind, or the mission's `credits`), correct trivia answers and world events (victory or participation) pay credits once each, next to the XP. `/carteira` shows the balance and the last 10 movements. `jarvis.economy` sets the amounts; `enabled: false` turns payouts off. No real money anywhere.
+- `/jarvis creditos dar membro quantidade motivo` (staff): −10000..10000, never below 0, recorded with who and why.
+- `legion playtest-report` gains an **Economia** section (credits by reason, staff movements) and flags a wallet that does not match its ledger or is negative.
+- The mission editor writes the optional `credits` field. ADR 0028.
 - Items and gear (US-15): `/inventario` with three slots (traje, acessório, dispositivo), one select per slot and Desequipar. Equipped items add a small bonus in training, mission and world-event fights and on the `/perfil` sheet; the total is capped by `jarvis.economy.gear.statCap` (default +2 per stat, +16 hp; `0` = cosmetic only). The `/perfil` card lists equipped items.
 - 12 shipped items in `packages/bot-jarvis/content/items/`; server items in `data/content/items/*.yaml`. A broken file is skipped and `legion doctor` shows it. Removing an item (or `active: false`) unequips it and keeps it in the inventory.
 - `/jarvis item dar membro item [motivo]` (staff): gives an item, once per member, recording who gave it.

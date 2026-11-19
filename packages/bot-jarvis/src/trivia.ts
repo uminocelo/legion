@@ -163,6 +163,7 @@ export class JarvisTrivia {
       let streakBonus = 0;
       let streak = progress?.currentStreak ?? 0;
       let levelUp: number | null = null;
+      let credits = 0;
       // Correct answers write a ledger entry (0 XP when capped: still an active day for streaks).
       if (correct) {
         const res = await this.s.xp.award(tx, {
@@ -177,6 +178,18 @@ export class JarvisTrivia {
         streak = res.progress?.currentStreak ?? streak;
         if (res.progress && res.progress.level > res.levelFrom) levelUp = res.progress.level;
         await tx.update(a).set({ xpAwarded: score.xp }).where(eq(a.id, attempt.id));
+        // Credits are not limited by the daily trivia XP cap (ADR 0028).
+        const pay = this.ctx.botConfig.economy;
+        if (pay.enabled && pay.trivia.correct > 0) {
+          await this.s.wallet.credit(tx, {
+            memberId: attempt.memberId,
+            amount: pay.trivia.correct,
+            reason: 'trivia',
+            note: q.id,
+            sourceKey: `trivia:${attempt.id}`,
+          });
+          credits = pay.trivia.correct;
+        }
       }
       await this.ctx.bus.emit(tx, 'trivia.answered', {
         memberId: attempt.memberId,
@@ -195,6 +208,7 @@ export class JarvisTrivia {
         levelUp,
         capped: score.capped,
         rawXp: score.raw,
+        credits,
       };
     });
     const fresh = (await this.s.repo.attempt(attempt.id)) ?? attempt;
@@ -226,6 +240,7 @@ export class JarvisTrivia {
       levelUp: null,
       capped: attempt.correct === 1 && attempt.xpAwarded < raw,
       rawXp: raw,
+      credits: (await this.s.wallet.entry(`trivia:${attempt.id}`))?.amount ?? 0,
     };
   }
 

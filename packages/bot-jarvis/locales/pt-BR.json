@@ -89,7 +89,8 @@
       "sequencia": "Veja sua sequência de dias ativos e o bônus de amanhã.",
       "missao": "Missões com escolhas (e lutas), sozinho ou em grupo",
       "campanha": "Mostra suas campanhas, o progresso e o próximo capítulo.",
-      "inventario": "Seus itens: equipe um por espaço (traje, acessório, dispositivo)."
+      "inventario": "Seus itens: equipe um por espaço (traje, acessório, dispositivo).",
+      "carteira": "Seus créditos e as últimas movimentações."
     },
     "commands": {
       "trivia": {
@@ -140,7 +141,10 @@
         "item": "Itens: entregar",
         "item_dar": "Entrega um item a um membro",
         "item_item": "Item (id ou nome)",
-        "item_motivo": "Motivo (opcional)"
+        "item_motivo": "Motivo (opcional)",
+        "creditos": "Créditos: dar ou tirar",
+        "creditos_dar": "Dá (ou tira, com número negativo) créditos de um membro",
+        "creditos_quantidade": "Quantidade (-10000 a 10000)"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",
@@ -155,6 +159,9 @@
       },
       "inventario": {
         "description": "Mostra seus itens e o que está equipado"
+      },
+      "carteira": {
+        "description": "Mostra seu saldo de créditos e as últimas movimentações"
       }
     },
     "missions": {
@@ -353,6 +360,24 @@
       "granted": "🎁 **{item}** entregue a {member}.",
       "grant_owned": "{member} já tem **{item}**.",
       "grant_unknown": "Não encontrei o item \"{item}\"."
+    },
+    "wallet": {
+      "title": "💳 Carteira",
+      "balance": "Saldo: **{balance}** créditos",
+      "history": "Últimas movimentações",
+      "empty": "Nenhuma movimentação ainda. Missões, trivia e eventos do mundo pagam créditos.",
+      "disabled": "Os pagamentos de créditos estão desligados neste servidor.",
+      "reason": {
+        "mission": "Missão",
+        "trivia": "Trivia",
+        "world_event": "Evento do mundo",
+        "purchase": "Compra",
+        "staff": "Staff"
+      },
+      "staff_invalid": "Use uma quantidade de -{max} a {max}, diferente de 0, e um motivo.",
+      "staff_done": "Créditos ajustados: {amount} para {member} (motivo: {reason}). Saldo: {balance}.",
+      "staff_insufficient": "{member} tem só {balance} créditos: não dá para tirar mais do que o saldo.",
+      "earned": "+{credits} créditos"
     }
   }
 }

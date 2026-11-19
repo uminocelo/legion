@@ -14,7 +14,15 @@ import { eq } from 'drizzle-orm';
 import type { JarvisConfig } from './config.js';
 import { OPEN_RUN, type RunRow } from './db/repo.js';
 import { type Campaign, type HeroFacts, type Unmet, unmet } from './domain/campaign.js';
-import { loc, type Mission, missionXp, resolveVote, type StepResult, step } from './domain/mission.js';
+import {
+  loc,
+  type Mission,
+  missionCredits,
+  missionXp,
+  resolveVote,
+  type StepResult,
+  step,
+} from './domain/mission.js';
 import { periodStart } from './domain/periods.js';
 import {
   campaignDirs,
@@ -474,17 +482,23 @@ export class JarvisMissions {
       return null;
     const who = members ?? (await this.s.repo.runMembers(run.id, tx));
     const xp = missionXp(m, outcome, this.cfg);
-    if (xp > 0)
+    const credits = missionCredits(m, outcome, this.ctx.botConfig.economy);
+    if (xp > 0 || credits > 0)
       for (const memberId of who) {
         const member = await this.ctx.read.members.getById(memberId);
         if (!member || member.leftAt) continue;
-        await this.s.xp.award(tx, {
-          memberId,
-          amount: xp,
-          reason: 'mission',
-          note: m.id,
-          sourceKey: `mission:${run.id}:${memberId}`,
-        });
+        const sourceKey = `mission:${run.id}:${memberId}`;
+        if (xp > 0)
+          await this.s.xp.award(tx, { memberId, amount: xp, reason: 'mission', note: m.id, sourceKey });
+        // Same key in the credits ledger (its own unique index): paid once, next to the XP (ADR 0028).
+        if (credits > 0)
+          await this.s.wallet.credit(tx, {
+            memberId,
+            amount: credits,
+            reason: 'mission',
+            note: m.id,
+            sourceKey,
+          });
       }
     await this.ctx.bus.emit(tx, 'mission.completed', {
       missionId: m.id,
@@ -890,11 +904,13 @@ export class JarvisMissions {
     const l = run.locale as Locale;
     const where = (await this.s.repo.run(run.id))?.threadId ?? run.threadId ?? run.channelId;
     const xp = missionXp(m, outcome, this.cfg);
+    const credits = missionCredits(m, outcome, this.ctx.botConfig.economy);
     const scene = outcome === 'abandoned' || reasonKey ? null : m.scenes[run.sceneId];
     const lines = [
       scene ? loc(scene.text, l) : this.t(reasonKey ?? 'jarvis.missions.abandoned_text', {}, l),
       '',
-      this.t(`jarvis.missions.result.${outcome}`, { xp }, l),
+      this.t(`jarvis.missions.result.${outcome}`, { xp }, l) +
+        (credits > 0 ? ` · ${this.t('jarvis.wallet.earned', { credits }, l)}` : ''),
     ];
     try {
       await this.ctx.gateway.sendMessage(where, {

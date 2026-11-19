@@ -67,6 +67,12 @@ Mesmo formato do `enemies.yaml` ([WORLD_EVENTS.md](WORLD_EVENTS.md)): uma lista 
 | `/ultron inimigo lista` | Todos os inimigos e de onde vieram |
 | `/ultron inimigo desativar` / `ativar` | Tira ou volta um inimigo. Precisa sobrar pelo menos um minion de nível 1 |
 
+## Créditos
+
+| Comando | O que faz |
+|---|---|
+| `/jarvis creditos dar membro quantidade motivo` | Dá (ou tira, com número negativo) de -10000 a 10000 créditos. Não deixa o saldo ficar negativo. Fica registrado quem fez e o motivo, e aparece no `legion playtest-report` |
+
 ## Itens
 
 Itens ficam em arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)); importar pelo Discord vem numa versão seguinte.
