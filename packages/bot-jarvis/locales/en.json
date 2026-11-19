@@ -139,13 +139,18 @@
         "campanha": "Campaigns (staff)",
         "campanha_importar": "Imports a campaign and its missions from a .yaml",
         "campanha_arquivo": "A .yaml file with campaign and missions",
-        "item": "Items: give",
+        "item": "Staff items",
         "item_dar": "Gives an item to a member",
         "item_item": "Item (id or name)",
         "item_motivo": "Reason (optional)",
         "creditos": "Credits: give or remove",
         "creditos_dar": "Gives (or removes, with a negative number) credits",
-        "creditos_quantidade": "Amount (-10000 to 10000)"
+        "creditos_quantidade": "Amount (-10000 to 10000)",
+        "item_importar": "Import items from a .yaml file",
+        "item_arquivo": "The .yaml file with the items (from the website editor or the export)",
+        "item_exportar": "Download the staff items as YAML",
+        "item_desativar": "Take an item out of play (unequips it from everyone)",
+        "item_ativar": "Bring back a disabled item"
       },
       "missao": {
         "description": "Missions: short stories with choices, solo or in a party",
@@ -408,6 +413,18 @@
       "not_for_sale": "This item is no longer for sale.",
       "price_changed": "The price of **{item}** changed to {price} credits. Nothing was charged: check it and click Buy again.",
       "level_too_low": "**{item}** needs level {level}."
+    },
+    "item_imports": {
+      "summary": "🆕 {added} new · ✏️ {changed} changed · ＝ {same} unchanged. Changed items apply from the next fight.",
+      "owners": "{count} player(s) own it",
+      "published": "✅ Items published: {added} new, {changed} changed, {same} unchanged. Unequipped: {unequipped}.",
+      "export_header": "Staff items, exported on {date}. Import again with /jarvis item importar.",
+      "exported": "{count} staff item(s).",
+      "disabled": "⛔ **{item}** disabled. {count} player(s) had it unequipped and keep it in their inventory.",
+      "enabled": "✅ **{item}** enabled again. Owners need to equip it again.",
+      "already_off": "**{item}** is already disabled.",
+      "already_on": "**{item}** is already active.",
+      "off_in_file": "**{item}** has `active: false` in its file. Change the file to enable it."
     }
   }
 }
