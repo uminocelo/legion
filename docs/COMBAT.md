@@ -9,7 +9,7 @@ O combate é uma **função pura** da semente (`seed`), dos combatentes no iníc
 
 ## Combatentes
 
-Cada combatente tem `hp` (atual), `maxHp`, `atk`, `def`, `spd`, `foc`, `powerCooldownMax` (padrão 3) e `powerCooldown` (atual). Atributos de jogador: `computePlayerStats(arquétipo, nível)`. Atributos ≤ 0 ou HP acima de 5000 são recusados.
+Cada combatente tem `hp` (atual), `maxHp`, `atk`, `def`, `spd`, `foc`, `powerCooldownMax` (padrão 3) e `powerCooldown` (atual). Atributos de jogador: `playerStats(arquétipo, nível, bônus, statCap)`, isto é, `computePlayerStats(arquétipo, nível)` mais o bônus do equipamento com teto no total (v0.10, [ECONOMY.md](ECONOMY.md#equipamento-nas-lutas)). Atributos ≤ 0 ou HP acima de 5000 são recusados.
 
 Ações: **Atacar**, **Poder** (só com `powerCooldown = 0`) e **Defender**.
 

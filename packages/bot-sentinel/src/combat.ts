@@ -8,7 +8,7 @@ import type {
   OutgoingMessage,
   Responder,
 } from '@legion/core';
-import { computePlayerStats, customId, isArchetype } from '@legion/core';
+import { computePlayerStats, customId, isArchetype, playerStats } from '@legion/core';
 import type { SentinelConfig } from './config.js';
 import { type CombatantRow, type CombatRow, roundInput, type SentinelRepo, startFighter } from './db/repo.js';
 import { damageSummary, replayCombat } from './domain/combat/engine.js';
@@ -603,7 +603,12 @@ export class CombatService {
     const mutant = await this.ctx.read.mutants.getByMemberId(member.id);
     const level = (await this.ctx.read.progress.get(member.id))?.level ?? 1;
     const archetype = mutant && isArchetype(mutant.archetype) ? mutant.archetype : 'Elemental';
-    const me = computePlayerStats(archetype, level);
+    const me = playerStats(
+      archetype,
+      level,
+      await this.ctx.read.gear.bonusOf(member.id),
+      this.ctx.read.gear.statCap(),
+    );
     const tank = computePlayerStats('Tanque', level);
     const dummy = {
       ...tank,
