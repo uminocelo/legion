@@ -88,7 +88,8 @@
       "ranking": "See who earned the most XP this week, this month or all time.",
       "sequencia": "See your active-day streak and tomorrow's bonus.",
       "missao": "Missions with choices (and fights), solo or in a party",
-      "campanha": "Shows your campaigns, progress and next chapter."
+      "campanha": "Shows your campaigns, progress and next chapter.",
+      "inventario": "Your items: equip one per slot (suit, accessory, device)."
     },
     "commands": {
       "trivia": {
@@ -135,7 +136,11 @@
         "trivia_arquivo": "The .yaml file with the questions (same format as export)",
         "campanha": "Campaigns (staff)",
         "campanha_importar": "Imports a campaign and its missions from a .yaml",
-        "campanha_arquivo": "A .yaml file with campaign and missions"
+        "campanha_arquivo": "A .yaml file with campaign and missions",
+        "item": "Items: give",
+        "item_dar": "Gives an item to a member",
+        "item_item": "Item (id or name)",
+        "item_motivo": "Reason (optional)"
       },
       "missao": {
         "description": "Missions: short stories with choices, solo or in a party",
@@ -147,6 +152,9 @@
       "campanha": {
         "description": "Your campaigns: progress and next chapter",
         "campanha": "One campaign (default: all)"
+      },
+      "inventario": {
+        "description": "Shows your items and what is equipped"
       }
     },
     "missions": {
@@ -307,6 +315,44 @@
       "chapter_locked": "🔒 {n}. {title} · you still need to {why}",
       "import_meta": "`{id}` · {kind} · {chapters} chapter(s)",
       "published": "✅ Campaign `{id}` published with {n} mission(s). It already shows in /campanha and /missao."
+    },
+    "inventory": {
+      "title": "🎒 Inventory",
+      "none": "You have no items yet. Staff can hand out items at events.",
+      "empty": "_empty_",
+      "cosmetic": "cosmetic",
+      "slot": {
+        "traje": "Suit",
+        "acessorio": "Accessory",
+        "dispositivo": "Device"
+      },
+      "stat": {
+        "hp": "HP",
+        "atk": "ATK",
+        "def": "DEF",
+        "spd": "SPD",
+        "foc": "FOC"
+      },
+      "tag_disabled": "disabled",
+      "tag_level": "level {level}",
+      "tag_equipped": "equipped",
+      "total": "Bonus in fights: {bonus}",
+      "cap_reached": "cap reached (+{cap} per stat, +{hp} HP)",
+      "no_effect": "Gear has no effect on this server: it is cosmetic only.",
+      "pick": "Equip in the {slot} slot",
+      "unequip": "Unequip {slot}",
+      "not_yours": "This menu is not yours. Use /inventario for your own.",
+      "stale": "This menu is out of date. Here is your inventory again.",
+      "equipped": "✅ **{item}** equipped. It applies from your next fight.",
+      "unequipped": "{slot} slot is empty.",
+      "refused_not_owned": "You do not own **{item}**.",
+      "refused_unknown": "That item no longer exists.",
+      "refused_inactive": "**{item}** is disabled and cannot be equipped.",
+      "refused_slot": "**{item}** does not go in that slot.",
+      "refused_level": "**{item}** needs level {level}.",
+      "granted": "🎁 **{item}** given to {member}.",
+      "grant_owned": "{member} already owns **{item}**.",
+      "grant_unknown": "Could not find the item \"{item}\"."
     }
   }
 }

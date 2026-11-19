@@ -1,10 +1,10 @@
 import {
   type BotContext,
   type Combatant,
-  computePlayerStats,
   type IncomingInteraction,
   isArchetype,
   type LegionEvent,
+  playerStats,
   type Responder,
 } from '@legion/core';
 import type { Difficulty, UltronConfig } from './config.js';
@@ -63,7 +63,12 @@ export class EncounterService {
         name: mutant?.codename ?? 'Mutante',
         archetype,
         level,
-        stats: computePlayerStats(archetype, level),
+        stats: playerStats(
+          archetype,
+          level,
+          await this.ctx.read.gear.bonusOf(memberId),
+          this.ctx.read.gear.statCap(),
+        ),
         powerCooldown: 0,
       });
     }

@@ -1,13 +1,13 @@
 import {
   type BotContext,
   type Combatant,
-  computePlayerStats,
   customId,
   type IncomingInteraction,
   isArchetype,
   type LegionEvent,
   type Locale,
   type OutgoingMessage,
+  playerStats,
   type Responder,
   shownFaction,
 } from '@legion/core';
@@ -423,7 +423,12 @@ export class WorldEventService {
         name: mutant?.codename ?? 'Mutante',
         archetype,
         level,
-        stats: computePlayerStats(archetype, level),
+        stats: playerStats(
+          archetype,
+          level,
+          await this.ctx.read.gear.bonusOf(memberId),
+          this.ctx.read.gear.statCap(),
+        ),
         powerCooldown: 0,
       },
     ];

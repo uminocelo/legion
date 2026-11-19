@@ -1,10 +1,4 @@
-import {
-  type Archetype,
-  computePlayerStats,
-  isArchetype,
-  type Locale,
-  type OutgoingFile,
-} from '@legion/core';
+import { type Archetype, isArchetype, type Locale, type OutgoingFile, playerStats } from '@legion/core';
 import { type CardData, renderCard } from './card.js';
 import type { MemberRow, MutantRow } from './db/repo.js';
 import type { CerebroFlow } from './flow.js';
@@ -47,8 +41,17 @@ export class SheetCard {
         secondary: powers.secondary.map((id) => this.flow.powers.label(id, locale)),
       },
       description: mutant.power,
-      stats: computePlayerStats(archetype, Math.max(1, progress?.level ?? 1)),
+      stats: playerStats(
+        archetype,
+        Math.max(1, progress?.level ?? 1),
+        await this.ctx.read.gear.bonusOf(member.id).catch(() => undefined),
+        this.ctx.read.gear.statCap(),
+      ),
+      gear: (await this.ctx.read.gear.equippedOf(member.id).catch(() => [])).map((g) =>
+        locale === 'en' && g.name.en ? g.name.en : g.name['pt-BR'],
+      ),
       labels: {
+        gear: this.t('card.gear', locale),
         title: this.t('card.title', locale),
         level: this.t('card.level', locale),
         powers: this.t('card.powers', locale),

@@ -222,7 +222,8 @@
       "atk": "ATK",
       "def": "DEF",
       "spd": "SPD",
-      "foc": "FOC"
+      "foc": "FOC",
+      "gear": "GEAR"
     },
     "origin_step": {
       "title": "🌟 Choose your origin",

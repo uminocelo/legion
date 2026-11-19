@@ -67,6 +67,14 @@ Mesmo formato do `enemies.yaml` ([WORLD_EVENTS.md](WORLD_EVENTS.md)): uma lista 
 | `/ultron inimigo lista` | Todos os inimigos e de onde vieram |
 | `/ultron inimigo desativar` / `ativar` | Tira ou volta um inimigo. Precisa sobrar pelo menos um minion de nível 1 |
 
+## Itens
+
+Itens ficam em arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)); importar pelo Discord vem numa versão seguinte.
+
+| Comando | O que faz |
+|---|---|
+| `/jarvis item dar membro item [motivo]` | Entrega um item a um membro (uma vez por membro). Fica registrado quem deu e o motivo |
+
 ## Segurança
 
 - Só arquivos enviados ao próprio Discord são baixados (`cdn.discordapp.com`), com limite de tamanho.

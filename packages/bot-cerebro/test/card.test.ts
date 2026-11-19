@@ -90,6 +90,19 @@ describe('profile card', () => {
   });
 });
 
+describe('gear line on the card (v0.10)', () => {
+  it('draws equipped items; without gear the SVG is the same as v0.8.1', () => {
+    const plain = cardSvg(card());
+    expect(cardSvg(card({ gear: [] }))).toBe(plain);
+    expect(plain).not.toContain('EQUIPAMENTO');
+    const geared = cardSvg(
+      card({ gear: ['Traje tático', 'Visor de mira'], labels: { ...labels, gear: 'EQUIPAMENTO' } }),
+    );
+    expect(geared).toContain('>EQUIPAMENTO</text>');
+    expect(geared).toContain('Traje tático · Visor de mira');
+  });
+});
+
 describe('/perfil with the card', () => {
   async function registered(config: Record<string, unknown> = {}) {
     t = await setupCerebro(config);

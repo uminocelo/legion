@@ -17,10 +17,18 @@ import {
   readContent,
 } from '@legion/bot-jarvis';
 import { parseEnemiesYaml } from '@legion/bot-ultron';
-import { contentIssue, type Locale } from '@legion/core';
+import { contentIssue, isCanonName, type Locale, parseItemsYaml } from '@legion/core';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 
-export const CONTENT_TYPES = ['trivia', 'mission', 'campaign', 'campaign-file', 'enemy', 'power'] as const;
+export const CONTENT_TYPES = [
+  'trivia',
+  'mission',
+  'campaign',
+  'campaign-file',
+  'enemy',
+  'power',
+  'item',
+] as const;
 export type ContentType = (typeof CONTENT_TYPES)[number];
 
 export interface FileResult {
@@ -56,6 +64,7 @@ export function detectType(raw: unknown): ContentType | null {
     if (!first) return null;
     if ('question' in first || 'choices' in first) return 'trivia';
     if ('tier' in first || 'base' in first || 'tauntKeys' in first) return 'enemy';
+    if ('slot' in first || 'bonus' in first || 'cosmetic' in first) return 'item';
     if ('type' in first && 'description' in first) return 'power';
     return null;
   }
@@ -105,6 +114,7 @@ export function validateContent(paths: string[], o: ValidateOptions = {}): Valid
   const missions = new Map<string, { m: Mission; r: FileResult }>();
   const campaigns = new Map<string, { c: Campaign; r: FileResult }>();
   const triviaSeen = new Map<string, string>();
+  const itemSeen = new Map<string, string>();
   const single = paths.length === 1 && existsSync(paths[0] ?? '') && !statSync(paths[0] ?? '').isDirectory();
 
   for (const root of paths) {
@@ -189,9 +199,19 @@ export function validateContent(paths: string[], o: ValidateOptions = {}): Valid
           });
           break;
         }
+        case 'item': {
+          const res = parseItemsYaml(readFileSync(path, 'utf8'), name, isCanonName);
+          r.errors.push(...res.errors);
+          for (const item of res.items) {
+            const prev = itemSeen.get(item.id);
+            if (prev) r.errors.push(`${name} → id: "${item.id}" repetido (já existe em ${prev})`);
+            else itemSeen.set(item.id, r.path);
+          }
+          break;
+        }
         default:
           if (single || !isDir) r.errors.push(`tipo desconhecido; use --type (${CONTENT_TYPES.join(', ')})`);
-          else r.warnings.push('ignorado: não parece trivia, missão, campanha, inimigo nem poder');
+          else r.warnings.push('ignorado: não parece trivia, missão, campanha, inimigo, poder nem item');
       }
     }
   }

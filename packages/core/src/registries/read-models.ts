@@ -1,3 +1,4 @@
+import { DEFAULT_STAT_CAP, type ItemSlot, type StatBonus, ZERO_BONUS } from '../game/stats.js';
 import type { LocaleResolver } from '../i18n/i18n.js';
 import type { RateLimiter } from '../ratelimit/rate-limiter.js';
 
@@ -46,11 +47,26 @@ export interface ProgressReadModel {
   get(memberId: string): Promise<ProgressView | null>;
 }
 
+export interface EquippedItemView {
+  slot: ItemSlot;
+  itemId: string;
+  name: { 'pt-BR': string; en?: string };
+}
+/** Gear (v0.10, ADR 0029), provided by J.A.R.V.I.S.; without it every hero has no gear. */
+export interface GearReadModel {
+  /** Raw sum of the member's active equipped items, not capped (`playerStats` caps it). */
+  bonusOf(memberId: string): Promise<StatBonus>;
+  equippedOf(memberId: string): Promise<EquippedItemView[]>;
+  /** `jarvis.economy.gear.statCap`: the most gear adds to each stat (hp × 8). */
+  statCap(): number;
+}
+
 /** Read-only views into other bots' data. A disabled owner means every query returns null/[]. */
 export interface ReadModels {
   members: MembersReadModel;
   mutants: MutantsReadModel;
   progress: ProgressReadModel;
+  gear: GearReadModel;
 }
 
 /** Implementations a bot can provide to core or to other bots (`ctx.provide`). */
@@ -58,6 +74,7 @@ export interface Providers {
   members: MembersReadModel;
   mutants: MutantsReadModel;
   progress: ProgressReadModel;
+  gear: GearReadModel;
   rateLimiter: RateLimiter;
   localeResolver: LocaleResolver;
 }
@@ -87,6 +104,11 @@ export class ProviderRegistry {
       },
       mutants: { getByMemberId: async (id) => (await this.get('mutants')?.getByMemberId(id)) ?? null },
       progress: { get: async (id) => (await this.get('progress')?.get(id)) ?? null },
+      gear: {
+        bonusOf: async (id) => (await this.get('gear')?.bonusOf(id)) ?? { ...ZERO_BONUS },
+        equippedOf: async (id) => (await this.get('gear')?.equippedOf(id)) ?? [],
+        statCap: () => this.get('gear')?.statCap() ?? DEFAULT_STAT_CAP,
+      },
     };
   }
 }
