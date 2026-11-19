@@ -1,0 +1,8 @@
+# Example campaign file for the legion-campaign skill (data/content/campaigns/).
+id: vigia-do-bairro
+kind: recruitment
+faction: defenders
+title: { pt-BR: "Vigia do bairro", en: "Neighborhood watch" }
+summary:
+  pt-BR: "Os Defensores precisam de alguém de olho nas ruas. Três noites para provar o seu valor."
+  en: "The Defenders need someone watching the streets. Three nights to prove yourself."

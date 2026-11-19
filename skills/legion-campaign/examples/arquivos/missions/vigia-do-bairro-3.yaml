@@ -1,0 +1,36 @@
+# Example chapter 3: the fight and the team join.
+id: vigia-do-bairro-3
+kind: story
+campaign: { id: vigia-do-bairro, chapter: 3 }
+requires: { missions: [vigia-do-bairro-2] }
+reward: { joinFaction: defenders }
+title: { pt-BR: "Vigia do bairro 3: O depósito", en: "Neighborhood watch 3: The warehouse" }
+summary:
+  { pt-BR: "Uma máquina guarda o depósito do porto.", en: "A machine guards the warehouse at the docks." }
+difficulty: normal
+start: portao
+scenes:
+  portao:
+    text:
+      pt-BR: "O Luke Cage segura o portão aberto. Lá dentro, uma máquina de guarda liga os olhos."
+      en: "Luke Cage holds the gate open. Inside, a guard machine lights up its eyes."
+    choices:
+      - label: { pt-BR: "Entrar e enfrentar", en: "Go in and face it" }
+        next: luta
+      - label: { pt-BR: "Cortar a energia antes", en: "Cut the power first" }
+        next: luta
+  luta:
+    text:
+      pt-BR: '"INVASÃO DETECTADA." A máquina avança.'
+      en: '"INTRUSION DETECTED." The machine charges.'
+    combat: { win: vitoria, lose: derrota }
+  vitoria:
+    text:
+      pt-BR: 'A máquina cai. A Jessica, o Luke, o Matt e o Danny esperam na saída: "Bem-vindo aos Defensores."'
+      en: 'The machine falls. Jessica, Luke, Matt and Danny wait at the exit: "Welcome to the Defenders."'
+    end: success
+  derrota:
+    text:
+      pt-BR: 'A máquina tranca o depósito. O Luke põe a mão no seu ombro: "Amanhã a gente volta."'
+      en: 'The machine locks the warehouse. Luke puts a hand on your shoulder: "We come back tomorrow."'
+    end: failure
