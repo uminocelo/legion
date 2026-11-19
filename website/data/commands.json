@@ -629,6 +629,26 @@
       ]
     },
     {
+      "path": "/loja",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Itens à venda por créditos",
+        "en": "Items for sale for credits"
+      },
+      "options": [
+        {
+          "name": "pagina",
+          "nameEn": "page",
+          "required": false,
+          "description": {
+            "pt-BR": "Página da loja",
+            "en": "Shop page"
+          }
+        }
+      ]
+    },
+    {
       "path": "/missao abandonar",
       "kind": "slash",
       "staff": false,

@@ -90,7 +90,8 @@
       "missao": "Missões com escolhas (e lutas), sozinho ou em grupo",
       "campanha": "Mostra suas campanhas, o progresso e o próximo capítulo.",
       "inventario": "Seus itens: equipe um por espaço (traje, acessório, dispositivo).",
-      "carteira": "Seus créditos e as últimas movimentações."
+      "carteira": "Seus créditos e as últimas movimentações.",
+      "loja": "Compre itens com seus créditos e equipe no /inventario."
     },
     "commands": {
       "trivia": {
@@ -162,6 +163,10 @@
       },
       "carteira": {
         "description": "Mostra seu saldo de créditos e as últimas movimentações"
+      },
+      "loja": {
+        "description": "Itens à venda por créditos",
+        "pagina": "Página da loja"
       }
     },
     "missions": {
@@ -378,6 +383,31 @@
       "staff_done": "Créditos ajustados: {amount} para {member} (motivo: {reason}). Saldo: {balance}.",
       "staff_insufficient": "{member} tem só {balance} créditos: não dá para tirar mais do que o saldo.",
       "earned": "+{credits} créditos"
+    },
+    "shop": {
+      "title": "🛒 Loja",
+      "empty": "A loja está vazia por enquanto.",
+      "closed": "A loja está fechada neste servidor.",
+      "price": "{price} créditos",
+      "level": "nível {level}",
+      "balance": "Seu saldo: {balance} créditos",
+      "page": "página {page} de {pages}",
+      "slot_traje": "traje",
+      "slot_acessorio": "acessório",
+      "slot_dispositivo": "dispositivo",
+      "tag_owned": "você já tem",
+      "tag_level": "precisa do nível {level}",
+      "tag_cosmetic": "visual",
+      "pick": "Escolha um item",
+      "buy": "Comprar {item} ({price})",
+      "not_yours": "Este menu não é seu. Use /loja para o seu.",
+      "stale": "Este menu está desatualizado. Use /loja de novo.",
+      "bought": "✅ Você comprou **{item}** por {price} créditos. Saldo: {balance}. Equipe com /inventario.",
+      "insufficient": "Créditos insuficientes: **{item}** custa {price} e você tem {balance}.",
+      "owned": "Você já tem **{item}**.",
+      "not_for_sale": "Este item não está mais à venda.",
+      "price_changed": "O preço de **{item}** mudou para {price} créditos. Nada foi cobrado: confira e clique em Comprar de novo.",
+      "level_too_low": "**{item}** precisa do nível {level}."
     }
   }
 }
