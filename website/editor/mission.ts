@@ -232,6 +232,39 @@ function drawMeta() {
     drawMeta();
     refresh();
   });
+  const cr = h('input', { type: 'checkbox', checked: m.customCredits });
+  cr.addEventListener('change', () => {
+    m.customCredits = cr.checked;
+    drawMeta();
+    refresh();
+  });
+  const pair = (label: string, v: { success: number; failure: number }) =>
+    h(
+      'div',
+      { class: 'grid' },
+      field(
+        `${label} no sucesso`,
+        number(
+          () => v.success,
+          (n) => {
+            v.success = n;
+          },
+          0,
+          10000,
+        ),
+      ),
+      field(
+        `${label} na falha`,
+        number(
+          () => v.failure,
+          (n) => {
+            v.failure = n;
+          },
+          0,
+          10000,
+        ),
+      ),
+    );
   meta.replaceChildren(
     h(
       'article',
@@ -298,34 +331,9 @@ function drawMeta() {
       ),
       missionCampaignFields(),
       h('label', { class: 'check' }, xp, ' XP próprio (senão vale o padrão do servidor para o tipo)'),
-      m.customXp
-        ? h(
-            'div',
-            { class: 'grid' },
-            field(
-              'XP no sucesso',
-              number(
-                () => m.xp.success,
-                (n) => {
-                  m.xp.success = n;
-                },
-                0,
-                10000,
-              ),
-            ),
-            field(
-              'XP na falha',
-              number(
-                () => m.xp.failure,
-                (n) => {
-                  m.xp.failure = n;
-                },
-                0,
-                10000,
-              ),
-            ),
-          )
-        : null,
+      m.customXp ? pair('XP', m.xp) : null,
+      h('label', { class: 'check' }, cr, ' Créditos próprios (senão vale o padrão do servidor para o tipo)'),
+      m.customCredits ? pair('Créditos', m.credits) : null,
     ),
   );
 }

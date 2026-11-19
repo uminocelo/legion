@@ -69,6 +69,14 @@ export const missionSchema = z
       })
       .strict()
       .optional(),
+    /** Credits paid at the end (v0.10); default `jarvis.economy.missions.<kind>`. */
+    credits: z
+      .object({
+        success: z.number().int().min(0).max(10_000),
+        failure: z.number().int().min(0).max(10_000),
+      })
+      .strict()
+      .optional(),
     /** The campaign this mission is a chapter of (`content/campaigns/<id>.yaml`). */
     campaign: z
       .object({ id: contentId, chapter: z.number().int().min(1).max(50) })
@@ -164,6 +172,17 @@ export function resolveVote(votes: ReadonlyMap<string, number>, leaderId: string
 }
 
 /** XP for an outcome: the mission's own amounts, else the config default for its kind. */
+/** Credits for an outcome: the mission's own, or `jarvis.economy.missions.<kind>`; 0 when abandoned. */
+export function missionCredits(
+  m: Pick<Mission, 'kind' | 'credits'>,
+  outcome: 'success' | 'failure' | 'abandoned',
+  cfg: JarvisConfig['economy'],
+): number {
+  if (outcome === 'abandoned' || !cfg.enabled) return 0;
+  const c = m.credits ?? cfg.missions[m.kind];
+  return outcome === 'success' ? c.success : c.failure;
+}
+
 export function missionXp(
   m: Pick<Mission, 'kind' | 'xp'>,
   outcome: 'success' | 'failure' | 'abandoned',

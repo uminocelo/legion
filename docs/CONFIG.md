@@ -134,6 +134,10 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 | `missions.choiceTimeoutMinutes` | `10` | Sem escolha nesse tempo, a missão é abandonada (sem XP) |
 | `missions.combatTimeoutMinutes` | `15` | Sem resultado da luta nesse tempo, a missão fracassa |
 | `missions.lobbyTimeoutMinutes` | `5` | Tempo para um grupo se formar |
+| `economy.enabled` | `true` | `false`: nenhum pagamento de créditos; `/carteira` e `/inventario` continuam funcionando |
+| `economy.trivia.correct` | `2` | Créditos por resposta certa (o limite diário de XP da trivia não bloqueia) |
+| `economy.missions.daily` / `weekly` / `story` | `success 20, failure 5` / `60, 15` / `40, 10` | Créditos no fim de uma missão, por tipo (o campo `credits` da missão tem prioridade) |
+| `economy.worldEvents.victory` / `participation` | `30` / `10` | Créditos para cada participante de um evento do mundo que termina em vitória / derrota |
 | `economy.gear.statCap` | `2` | Quanto o equipamento soma, no total, a cada atributo (vida: `statCap × 8`). `0` = equipamento só visual ([ECONOMY.md](ECONOMY.md)) |
 
 ### Perguntas

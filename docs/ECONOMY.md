@@ -1,7 +1,36 @@
 # Economia e equipamento (J.A.R.V.I.S. v2)
 
-> v0.10. Este documento cresce a cada parte: equipamento (US-15) primeiro; créditos e loja vêm depois.
+> v0.10. Créditos (US-14) e equipamento (US-15); a loja vem depois.
 > Não existe dinheiro real em lugar nenhum do Legion: créditos e itens só se ganham jogando ou pela staff.
+
+## Créditos
+
+Créditos são a moeda do jogo. Ficam no J.A.R.V.I.S. como um histórico (cada entrada ou saída é uma linha) e um saldo guardado ([ADR 0028](adr/0028-credits-ledger.md)). Cada pagamento tem uma chave única, então nada é pago duas vezes, mesmo quando um evento chega repetido ou o bot reinicia.
+
+| De onde vem | Quanto (padrão) | Chave |
+|---|---|---|
+| Missão no fim (sucesso / fracasso) | diária 20/5, semanal 60/15, história 40/10; ou o campo `credits` da missão | `mission:<partida>:<membro>` |
+| Resposta certa na trivia | 2 (o limite diário de XP não bloqueia) | `trivia:<tentativa>` |
+| Evento do mundo que termina (vitória / derrota) | 30 / 10 para cada participante | `world:<evento>:<membro>` |
+| Staff (`/jarvis creditos dar`) | -10000 a 10000 | `staff:<interação>` |
+
+- Missão abandonada e evento cancelado não pagam. Quem saiu do servidor não recebe.
+- O saldo nunca fica negativo: uma saída maior que o saldo é recusada e nada muda.
+- `/carteira` (só você vê) mostra o saldo e as últimas 10 movimentações.
+- `jarvis.economy.enabled: false` desliga os pagamentos; o que já foi pago continua lá.
+- `legion playtest-report` mostra os créditos do período por motivo, o que a staff deu ou tirou, e acusa ❌ quando um saldo não bate com o histórico ou fica negativo.
+
+```yaml
+jarvis:
+  economy:
+    enabled: true
+    trivia: { correct: 2 }
+    missions:
+      daily: { success: 20, failure: 5 }
+      weekly: { success: 60, failure: 15 }
+      story: { success: 40, failure: 10 }
+    worldEvents: { victory: 30, participation: 10 }
+```
 
 ## Equipamento nas lutas
 

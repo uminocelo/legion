@@ -1,6 +1,6 @@
 // Credits (v0.10, US-14, ADR 0028): an append-only ledger plus a cached balance, like XP. Every
 // movement has a unique source key, so a repeated payout is a no-op. No real money anywhere.
-import { type BotContext, type Executor, localDay } from '@legion/core';
+import { type BotContext, type EventPayloads, type Executor, localDay } from '@legion/core';
 import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import type { JarvisConfig } from './config.js';
 import type { JarvisRepo } from './db/repo.js';
@@ -102,6 +102,13 @@ export class WalletService {
     return row?.b ?? 0;
   }
 
+  /** The ledger row of a source key, if any. */
+  async entry(sourceKey: string, ex: Executor = this.repo.db.orm): Promise<WalletLedgerRow | null> {
+    const l = this.t.jarvisWalletLedger;
+    const [row] = await ex.select().from(l).where(eq(l.sourceKey, sourceKey)).limit(1);
+    return row ?? null;
+  }
+
   /** Newest first. */
   async history(memberId: string, limit = 10, ex: Executor = this.repo.db.orm): Promise<WalletLedgerRow[]> {
     const l = this.t.jarvisWalletLedger;
@@ -111,6 +118,37 @@ export class WalletService {
       .where(eq(l.memberId, memberId))
       .orderBy(desc(l.createdAt), desc(l.id))
       .limit(limit);
+  }
+
+  /**
+   * `world.event` (consumer `jarvis.world-credits`, D4): when an event ends with an outcome, pays each
+   * participant still in the server the victory or participation credits, once per event and member.
+   * A cancelled event (`outcome: null`) pays nothing. Returns how many members were paid.
+   */
+  async payWorldEvent(e: EventPayloads['world.event']): Promise<number> {
+    const eco = this.ctx.botConfig.economy;
+    if (e.phase !== 'ended' || e.outcome === null || !eco.enabled) return 0;
+    const amount = e.outcome === 'victory' ? eco.worldEvents.victory : eco.worldEvents.participation;
+    if (amount <= 0) return 0;
+    const paid: string[] = [];
+    for (const memberId of new Set(e.participantMemberIds)) {
+      const member = await this.ctx.read.members.getById(memberId);
+      if (member && !member.leftAt) paid.push(memberId);
+    }
+    let n = 0;
+    await this.ctx.db.transaction(async (tx) => {
+      for (const memberId of paid) {
+        const res = await this.credit(tx, {
+          memberId,
+          amount,
+          reason: 'world_event',
+          note: e.title.slice(0, 120),
+          sourceKey: `world:${e.worldEventId}:${memberId}`,
+        });
+        if (!res.duplicate) n++;
+      }
+    });
+    return n;
   }
 
   /** Whether payouts are on (`jarvis.economy.enabled`). */

@@ -20,6 +20,8 @@ export interface AnswerView {
   levelUp: number | null;
   capped: boolean;
   rawXp: number;
+  /** Credits paid for this answer (v0.10). */
+  credits?: number;
 }
 
 const LETTERS = ['🇦', '🇧', '🇨', '🇩'];
@@ -91,6 +93,7 @@ export class JarvisUi {
         lines.push(this.t('jarvis.trivia.xp_capped', { cap: this.ctx.botConfig.trivia.dailyXpCap }, l));
       else if (v.capped) lines.push(this.t('jarvis.trivia.xp_partial', { xp: a.xpAwarded }, l));
       else lines.push(this.t('jarvis.trivia.xp_gained', { xp: a.xpAwarded }, l));
+      if (v.credits) lines.push(this.t('jarvis.wallet.earned', { credits: v.credits }, l));
     }
     if (v.streakBonus > 0)
       lines.push(this.t('jarvis.trivia.streak_bonus', { streak: v.streak, bonus: v.streakBonus }, l));

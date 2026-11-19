@@ -25,6 +25,7 @@ describe('one Discord app per bot', () => {
     if (!jg) throw new Error('no jarvis app');
     expect(names(jg)).toEqual([
       'campanha',
+      'carteira',
       'inventario',
       'jarvis',
       'missao',

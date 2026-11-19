@@ -59,6 +59,12 @@ export interface PlaytestReport {
     state: string;
     at: string;
   }[];
+  /** Credits (v0.10); null when J.A.R.V.I.S. is off. */
+  economy: {
+    byReason: { reason: string; total: number; rows: number }[];
+    purchases: number;
+    staff: { who: string; amount: number; by: string | null; note: string | null; at: string }[];
+  } | null;
   /** Mismatches that fail the merge gate. */
   problems: string[];
   /** Worth a look, not necessarily wrong. */
@@ -88,6 +94,7 @@ export async function playtestReport(db: LegionDb, o: PlaytestOptions): Promise<
     xp: [],
     encounters: [],
     content: [],
+    economy: null,
     problems: [],
     warnings: [],
   };
@@ -119,6 +126,7 @@ export async function playtestReport(db: LegionDb, o: PlaytestOptions): Promise<
   // The bot does not pay members who left the server.
   const left = new Set(members.filter((m) => m.leftAt).map((m) => m.id));
   if (has('jarvis')) await jarvisSection(db, o, r, who, left);
+  if (has('jarvis')) await economySection(db, o, r, who);
   if (has('ultron')) await ultronSection(db, o, r);
   return r;
 }
@@ -311,6 +319,59 @@ async function ultronSection(db: LegionDb, o: PlaytestOptions, r: PlaytestReport
 
 const hm = (iso: string | null) => (iso ? iso.slice(11, 16) : '—');
 
+/** Credits in the period by reason, staff movements, and every wallet against its ledger (ADR 0028). */
+async function economySection(
+  db: LegionDb,
+  o: PlaytestOptions,
+  r: PlaytestReport,
+  who: (id: string) => string,
+): Promise<void> {
+  const j = jarvisTables(db);
+  const l = j.jarvisWalletLedger;
+  const since = o.since.toISOString();
+  const rows = await db.orm
+    .select()
+    .from(l)
+    .where(and(eq(l.guildId, o.guildId), gte(l.createdAt, since)));
+  const by = new Map<string, { total: number; rows: number }>();
+  for (const x of rows) {
+    const e = by.get(x.reason) ?? { total: 0, rows: 0 };
+    e.total += x.amount;
+    e.rows++;
+    by.set(x.reason, e);
+  }
+  r.economy = {
+    byReason: [...by.entries()]
+      .map(([reason, e]) => ({ reason, ...e }))
+      .sort((a, b) => a.reason.localeCompare(b.reason)),
+    purchases: rows.filter((x) => x.reason === 'purchase').length,
+    staff: rows
+      .filter((x) => x.reason === 'staff')
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      .map((x) => ({
+        who: who(x.memberId),
+        amount: x.amount,
+        by: x.createdBy,
+        note: x.note,
+        at: x.createdAt,
+      })),
+  };
+  // Every wallet, whatever the period: the cached balance must equal its ledger and never be negative.
+  const wallets = await db.orm.select().from(j.jarvisWallets).where(eq(j.jarvisWallets.guildId, o.guildId));
+  const sums = new Map<string, number>();
+  for (const x of await db.orm.select().from(l).where(eq(l.guildId, o.guildId)))
+    sums.set(x.memberId, (sums.get(x.memberId) ?? 0) + x.amount);
+  for (const w of wallets) {
+    const total = sums.get(w.memberId) ?? 0;
+    if (w.balance !== total)
+      r.problems.push(`${who(w.memberId)}: carteira mostra ${w.balance} créditos, histórico soma ${total}`);
+    if (w.balance < 0) r.problems.push(`${who(w.memberId)}: saldo negativo (${w.balance} créditos)`);
+    sums.delete(w.memberId);
+  }
+  for (const [id, total] of sums)
+    r.problems.push(`${who(id)}: tem créditos no histórico (${total}), mas nenhuma carteira`);
+}
+
 export function formatPlaytest(r: PlaytestReport): string {
   const out: string[] = [];
   const h = (t: string) => out.push('', `== ${t} ==`);
@@ -346,8 +407,19 @@ export function formatPlaytest(r: PlaytestReport): string {
   for (const x of r.content)
     out.push(`${hm(x.at)}  ${x.kind} ${x.id}  ${x.state}${x.by ? ` · por ${x.by}` : ''}`);
 
+  if (r.economy) {
+    h('Economia (créditos no período)');
+    for (const x of r.economy.byReason)
+      out.push(`${x.reason}: ${x.total > 0 ? '+' : ''}${x.total} (${x.rows} linha(s))`);
+    out.push(`compras: ${r.economy.purchases}`);
+    for (const x of r.economy.staff)
+      out.push(
+        `${hm(x.at)}  staff ${x.amount > 0 ? '+' : ''}${x.amount} → ${x.who}${x.by ? ` · por <@${x.by}>` : ''}${x.note ? ` · ${x.note}` : ''}`,
+      );
+  }
+
   h(
-    `Conferência: ${r.problems.length ? `❌ ${r.problems.length} problema(s)` : '✅ XP, limites e lutas batem'}`,
+    `Conferência: ${r.problems.length ? `❌ ${r.problems.length} problema(s)` : '✅ XP, créditos, limites e lutas batem'}`,
   );
   for (const p of r.problems) out.push(`❌ ${p}`);
   for (const w of r.warnings) out.push(`⚠️ ${w}`);

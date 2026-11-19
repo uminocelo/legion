@@ -90,6 +90,7 @@ describe('party missions', () => {
         .filter((l) => l.reason === 'mission')
         .map((l) => l.amount);
       expect(xp).toEqual([120]);
+      expect(await s.wallet.balanceOf(ids[u] ?? '')).toBe(60); // weekly success
     }
     expect((await events(t, 'mission.completed'))[0]).toMatchObject({
       missionId: run?.missionId,
@@ -163,5 +164,7 @@ describe('party missions', () => {
     const paid = async (u: string) =>
       (await s.repo.ledgerFor(ids[u] ?? '')).filter((l) => l.reason === 'mission').length;
     expect([await paid(A), await paid(B), await paid(C)]).toEqual([1, 0, 0]);
+    const bal = (u: string) => s.wallet.balanceOf(ids[u] ?? '');
+    expect([await bal(A), await bal(B), await bal(C)]).toEqual([60, 0, 0]);
   });
 });
