@@ -86,7 +86,7 @@ A v0.9 traz quatro categorias novas, com 22 perguntas cada, todas com fonte: **V
 
 ### "Herói", não "mutante"
 
-Os bots falam em **herói** com os jogadores. "Mutante" fica para a origem Mutante e para personagens e lugares das histórias. O comando `/mutante` virou `/heroi` e continua funcionando como apelido até a v1.0. O nome padrão do cargo **Mutante Registrado** não mudou, porque os cargos são achados pelo nome: se quiser outro nome ("Herói Registrado"), renomeie o cargo no Discord **e** o `name` do cargo `registered` em `roles` ([CONFIG.md](CONFIG.md)) antes de reiniciar; trocar só no arquivo cria um cargo novo.
+Os bots falam em **herói** com os jogadores. "Mutante" fica para a origem Mutante e para personagens e lugares das histórias. O comando é `/heroi`. `/mutante` foi removido. O nome padrão do cargo **Mutante Registrado** não mudou, porque os cargos são achados pelo nome: se quiser outro nome ("Herói Registrado"), renomeie o cargo no Discord **e** o `name` do cargo `registered` em `roles` ([CONFIG.md](CONFIG.md)) antes de reiniciar; trocar só no arquivo cria um cargo novo.
 
 ## Nomes da Marvel: identidade original, história livre
 

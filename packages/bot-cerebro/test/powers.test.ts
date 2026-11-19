@@ -201,16 +201,16 @@ describe('registration with powers', () => {
     const p = await t.interact({
       kind: 'command',
       userId: USER,
-      commandName: 'mutante',
+      commandName: 'heroi',
       subcommand: 'poderes',
     });
     expect(reply(t, p)?.content).toMatch(/desligado/);
   });
 });
 
-describe('/mutante poderes', () => {
+describe('/heroi poderes', () => {
   const cmd = (tc: TestContext) =>
-    tc.interact({ kind: 'command', userId: USER, commandName: 'mutante', subcommand: 'poderes' });
+    tc.interact({ kind: 'command', userId: USER, commandName: 'heroi', subcommand: 'poderes' });
 
   it('adds powers once without changing the archetype by default', async () => {
     t = await setupCerebro();

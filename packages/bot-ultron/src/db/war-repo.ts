@@ -149,10 +149,10 @@ export class WarRepo {
     if (!factions.length) return [];
     const p = this.t.ultronWarPoints;
     const rows = await ex
-      .selectDistinct({ memberId: p.memberId })
+      .select({ memberId: p.memberId })
       .from(p)
       .where(and(eq(p.warId, warId), inArray(p.faction, factions)));
-    return rows.map((r) => r.memberId);
+    return [...new Set(rows.map((r) => r.memberId))];
   }
 
   async pointsOf(warId: string, memberId: string, faction: string | null, ex: Executor = this.db.orm) {

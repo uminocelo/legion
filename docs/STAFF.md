@@ -67,6 +67,18 @@ Mesmo formato do `enemies.yaml` ([WORLD_EVENTS.md](WORLD_EVENTS.md)): uma lista 
 | `/ultron inimigo lista` | Todos os inimigos e de onde vieram |
 | `/ultron inimigo desativar` / `ativar` | Tira ou volta um inimigo. Precisa sobrar pelo menos um minion de nível 1 |
 
+## Guerra de facções
+
+A guerra soma pontos da facção no momento do lance (missão, ataque, participação). O resultado sai em `channels.events`. Os créditos dos vencedores vêm do J.A.R.V.I.S. (`jarvis.economy.war.winner`).
+
+| Comando | O que faz |
+|---|---|
+| `/ultron guerra iniciar` | Começa agora. Se já houver uma agendada, ela é antecipada |
+| `/ultron guerra encerrar` | Encerra a guerra ativa, posta o resultado e agenda a próxima |
+| `/ultron guerra pontos membro pontos motivo` | Ajuste de -1000 a 1000, nunca 0. Fica registrado quem fez e o motivo, e aparece no `legion playtest-report` |
+
+`/guerra` (jogadores) mostra o placar, o tempo, os pontos da pessoa e os da facção dela.
+
 ## Créditos
 
 | Comando | O que faz |

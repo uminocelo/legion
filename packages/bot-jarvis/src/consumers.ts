@@ -8,6 +8,7 @@ export const PROGRESS_INIT = 'jarvis.progress-init';
 export const XP_GRANT = 'jarvis.xp-grant';
 export const FACTION_RESULT = 'jarvis.faction-result';
 export const WORLD_CREDITS = 'jarvis.world-credits';
+export const WAR_CREDITS = 'jarvis.war-credits';
 
 /** Event consumers. Delivery is at-least-once, so both are idempotent. */
 export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServices): void {
@@ -27,6 +28,11 @@ export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServic
   // Credits for world events (v0.10, US-14, D4): no new event, ULTRON's `world.event` ended is enough.
   ctx.bus.on('world.event', WORLD_CREDITS, async (e) => {
     await s.wallet.payWorldEvent(e.payload);
+  });
+
+  // War winners (US-18, D19). ULTRON emits; J.A.R.V.I.S. is the only writer of the wallet.
+  ctx.bus.on('war.ended', WAR_CREDITS, async (e) => {
+    await s.wallet.payWar(e.payload);
   });
 
   ctx.bus.on('xp.grant_requested', XP_GRANT, async (e) => {

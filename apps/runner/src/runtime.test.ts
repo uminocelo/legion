@@ -96,7 +96,6 @@ describe('buildRuntime', () => {
     expect(gateway.registeredCommands?.map((c) => (c as { name: string }).name)).toEqual([
       'cerebro',
       'heroi',
-      'mutante',
       'perfil',
     ]);
     expect(gateway.roleByName('Mutante Registrado')).toBeDefined();

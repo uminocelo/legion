@@ -8,7 +8,7 @@ Kit de bots de RPG para Discord, **auto-hospedável**, inspirado nos X-Men. Um �
 | J.A.R.V.I.S. | XP, níveis, ranks, trivia, missões | v0.2.0 ✅ |
 | H.E.R.B.I.E. | Tutorial, ajuda e dicas | v0.3.0 ✅ |
 | Sentinel | Combate e moderação | v0.4.0 ✅ |
-| ULTRON | Eventos mundiais e raids | v0.4.0 ✅ |
+| ULTRON | Eventos mundiais, raids e guerra de facções | v0.4.0 ✅ |
 
 ![Ficha de herói de exemplo gerada pelo /perfil](website/assets/ficha-exemplo.png)
 
@@ -73,11 +73,11 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose up -d` — inicia (e reinicia sozinho se cair).
 - `docker compose run --rm legion legion doctor` — confere tudo e diz como corrigir cada ❌ (`--json` para scripts).
 - `docker compose run --rm legion legion register-commands` — registra os comandos de barra agora.
-- `docker compose exec legion legion playtest-report --since 3h` — resumo do que aconteceu (missões, XP, lutas, conteúdo da staff) e se XP e limites batem. Roteiro de uma sessão de teste com amigos: [docs/PLAYTEST.md](docs/PLAYTEST.md).
+- `docker compose exec legion legion playtest-report --since 3h` — resumo do que aconteceu (missões, XP, créditos, guerra, lutas, conteúdo da staff) e se XP, limites e pontos batem. Roteiro de uma sessão de teste com amigos: [docs/PLAYTEST.md](docs/PLAYTEST.md).
 - `docker compose run --rm legion legion content validate data/content` — confere arquivos de conteúdo (trivia, missões, campanhas, inimigos, poderes, itens) com as mesmas regras dos bots, sem usar o banco. Aceita arquivos ou pastas; `--type` força o tipo, `--categories` muda as categorias de trivia aceitas, `--json` para scripts. Sai com 0 (tudo certo), 1 (erros) ou 2 (tipo desconhecido).
 - `docker compose logs -f` — logs.
 
-No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha`, `/carteira`, `/loja`, `/inventario` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`; `/mutante` ainda funciona), `/cerebro preferencias`.
+No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha`, `/carteira`, `/loja`, `/inventario` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`), `/guerra` (placar da guerra, com o ULTRON), `/cerebro preferencias`.
 
 No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e até dois secundários de um catálogo: veja [docs/POWERS.md](docs/POWERS.md).
 

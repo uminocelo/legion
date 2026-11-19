@@ -4,6 +4,21 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Upgrade notes
+- **Migration** `0002_world_v1` on ULTRON (wars and war points; nothing is paid retroactively). No J.A.R.V.I.S. migration. Restart so it runs.
+- **New commands** `/guerra` and `/ultron guerra iniciar`, `encerrar` and `pontos`. Restart (or `legion register-commands`) so Discord shows them.
+- **`/mutante` is removed.** Use `/heroi`. Register the commands again so Discord drops the old name.
+- **War on by default.** Missions, strikes and world-event participation score for the hero's faction. `ultron.war.enabled: false` stops new wars and scoring. `jarvis.economy.war.winner` (default 50) is what each scoring member of a winning faction receives. Economy off: the war still runs and posts, and nobody is paid.
+
+### Added
+- Faction war (US-18): one war per server, points stored with the faction at that moment, `/guerra` scoreboard, staff start, end and audited adjustments, a result post, and `war.ended`. A tie pays every tied faction. Independente never scores. ADR 0033.
+- `jarvis.war-credits` pays the winners once (`war:<warId>:<memberId>`).
+- `legion playtest-report` gains a **Guerra** section (points by faction and reason, staff adjustments; included in `--json`) and flags an unknown faction or a repeated source key.
+- `legion doctor` shows whether a war is active, scheduled or off.
+
+### Changed
+- `/mutante` no longer exists. `/heroi` is the only command for the sheet, powers and origin.
+
 ## [0.10.0] - 2026-11-19
 
 J.A.R.V.I.S. v2: credits, items and gear, the shop and the item editor. No real money anywhere: credits and items are earned by playing or given by staff.

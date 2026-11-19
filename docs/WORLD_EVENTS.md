@@ -56,6 +56,30 @@ Tudo roda por tarefas agendadas no banco: se o bot reinicia, as tarefas atrasada
 
 Dois eventos do mesmo tipo não podem se sobrepor; uma raid durante uma invasão pode.
 
+## Guerra de facções
+
+Uma guerra por vez. Com `ultron.war.length: month` (padrão) ela começa no dia 1 e termina no dia 1 seguinte, no fuso do servidor. Um número de 7 a 90 é a duração em dias: a primeira começa na hora e a seguinte começa quando a anterior termina.
+
+Pontos ficam na facção do herói **na hora do lance**. Trocar de equipe no meio não move o que já foi marcado. Independente não pontua. Quem saiu do servidor para de pontuar e conserva o que já ganhou.
+
+| De onde vem | Padrão |
+|---|---|
+| Missão vencida / perdida | 10 / 3 (`war.points.missionSuccess` / `missionFailure`). Abandonada não conta |
+| Ataque em invasão ou raid | 2 (`war.points.strike`) |
+| Participar de um evento que termina em vitória ou derrota | 5 (`war.points.participation`) |
+| Staff | -1000 a 1000, nunca 0, com motivo |
+
+O vencedor é a facção com mais pontos, entre as que têm mais de zero. Empate: todas empatadas ganham. Ninguém pontuou: sem vencedor.
+
+No fim, o ULTRON posta o resultado em `channels.events` e emite `war.ended`. O J.A.R.V.I.S. paga `jarvis.economy.war.winner` (padrão 50) uma vez a cada herói da facção vencedora que pontuou (`war:<guerra>:<membro>`). Economia desligada ou J.A.R.V.I.S. desligado: a guerra acontece e ninguém recebe créditos. A próxima guerra é agendada em seguida.
+
+- `/guerra`: placar, tempo restante, seus pontos e os da sua facção. Sem guerra ativa, diz quando a próxima começa.
+- Staff: `/ultron guerra iniciar`, `/ultron guerra encerrar`, `/ultron guerra pontos`.
+- `ultron.war.enabled: false` não agenda nem pontua. Uma guerra já marcada ainda encerra.
+- `legion doctor` mostra se há guerra ativa ou agendada. `legion playtest-report` tem a seção **Guerra** (pontos por facção e motivo, ajustes da staff) e acusa facção desconhecida ou chave de origem repetida. Também sai no `--json`.
+
+Decisão: [ADR 0033](adr/0033-faction-war.md).
+
 ## Frases por IA (opcional)
 
 Desligado por padrão (`ultron.ai.provider: none`): as frases vêm de `locales/` e **nenhuma chamada de rede** é feita. Para gerar provocações e anúncios com um modelo local (Ollama) ou qualquer API compatível com OpenAI, veja [SELF_HOSTING.md](SELF_HOSTING.md#ia-opcional-ollama). A IA recebe só fatos já decididos, a resposta passa por um filtro (menções, links e nomes de personagens existentes são removidos ou recusados) e qualquer erro, demora ou limite por hora volta para a frase fixa.

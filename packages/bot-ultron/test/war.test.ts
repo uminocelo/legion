@@ -4,11 +4,16 @@ import { CerebroRepo } from '@legion/bot-cerebro';
 import { formatIssues, type TestContext } from '@legion/core';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ultronConfigSchema } from '../src/config.js';
+import { ultronDoctorChecks } from '../src/doctor.js';
 import { ULTRON_LOCALES_DIR, ultron, ultronTables } from '../src/index.js';
 import { addMember, CH, emit, events, servicesOf, setupUltron } from './helpers.js';
 
-let t: TestContext;
-afterEach(async () => t?.close());
+let t: TestContext | undefined;
+afterEach(async () => {
+  const current = t;
+  t = undefined;
+  await current?.close();
+});
 
 const DAY = 86_400_000;
 const quiet = (war: Record<string, unknown> = {}) => ({
@@ -436,5 +441,25 @@ describe('locale files', () => {
     const pt = flat(JSON.parse(readFileSync(join(ULTRON_LOCALES_DIR, 'pt-BR.json'), 'utf8'))).sort();
     const en = flat(JSON.parse(readFileSync(join(ULTRON_LOCALES_DIR, 'en.json'), 'utf8'))).sort();
     expect(en).toEqual(pt);
+  });
+});
+
+describe('legion doctor war state', () => {
+  it('reports the next war, an active one, and a disabled war', async () => {
+    const s = await boot();
+    const message = async () =>
+      (
+        await ultronDoctorChecks(t.ctxOf(ultron))
+          .find((c) => c.id === 'ultron.war')
+          ?.run()
+      )?.message ?? '';
+    const scheduled = await s.war.repo.findStatus('scheduled');
+    expect(await message()).toBe(`a próxima começa em ${scheduled?.startsAt}`);
+    await s.war.staffStart();
+    const active = await s.war.repo.findStatus('active');
+    expect(await message()).toBe(`ativa, termina em ${active?.endsAt}`);
+    await t.close();
+    await boot({ war: { enabled: false } });
+    expect(await message()).toBe('desligada (ultron.war.enabled: false)');
   });
 });

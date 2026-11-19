@@ -152,7 +152,7 @@
     },
     "announce": {
       "origins_title": "🌟 Novidade na Legião: origens!",
-      "origins_body": "Bip! Agora todo herói tem uma **origem**: Mutante, Inumano, Ciência, Tecnologia, Místico, Cósmico ou Treinado. Ela define quais poderes cada um pode escolher.\n\nQuem se registrou antes virou **Mutante**, com tudo igual: codinome, poderes, nível e ficha. Se quiser outra origem, use **/heroi origem** — vale **uma única vez**.\n\n`/mutante` agora é **/heroi** (o nome antigo ainda funciona por um tempo)."
+      "origins_body": "Bip! Agora todo herói tem uma **origem**: Mutante, Inumano, Ciência, Tecnologia, Místico, Cósmico ou Treinado. Ela define quais poderes cada um pode escolher.\n\nQuem se registrou antes virou **Mutante**, com tudo igual: codinome, poderes, nível e ficha. Se quiser outra origem, use **/heroi origem** — vale **uma única vez**.\n\nO comando da ficha é **/heroi**. `/mutante` não existe mais."
     }
   }
 }

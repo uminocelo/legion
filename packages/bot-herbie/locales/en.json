@@ -152,7 +152,7 @@
     },
     "announce": {
       "origins_title": "🌟 New in the Legion: origins!",
-      "origins_body": "Beep! Every hero now has an **origin**: Mutant, Inhuman, Science, Technology, Mystic, Cosmic or Trained. It decides which powers each one can pick.\n\nIf you registered before, you are now a **Mutant**, with everything kept: codename, powers, level and sheet. Want another origin? Use **/heroi origem** — it works **only once**.\n\n`/mutante` is now **/heroi** (the old name still works for a while)."
+      "origins_body": "Beep! Every hero now has an **origin**: Mutant, Inhuman, Science, Technology, Mystic, Cosmic or Trained. It decides which powers each one can pick.\n\nIf you registered before, you are now a **Mutant**, with everything kept: codename, powers, level and sheet. Want another origin? Use **/heroi origem** — it works **only once**.\n\nThe sheet command is **/heroi**. `/mutante` is gone."
     }
   }
 }

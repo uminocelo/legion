@@ -8,7 +8,7 @@ import type { JarvisTables } from './db/tables.js';
 
 export type WalletRow = JarvisTables['jarvisWallets']['$inferSelect'];
 export type WalletLedgerRow = JarvisTables['jarvisWalletLedger']['$inferSelect'];
-export const CREDIT_REASONS = ['mission', 'trivia', 'world_event', 'purchase', 'staff'] as const;
+export const CREDIT_REASONS = ['mission', 'trivia', 'world_event', 'war', 'purchase', 'staff'] as const;
 export type CreditReason = (typeof CREDIT_REASONS)[number];
 
 export interface MoveInput {
@@ -144,6 +144,39 @@ export class WalletService {
           reason: 'world_event',
           note: e.title.slice(0, 120),
           sourceKey: `world:${e.worldEventId}:${memberId}`,
+        });
+        if (!res.duplicate) n++;
+      }
+    });
+    return n;
+  }
+
+  /**
+   * `war.ended` (consumer `jarvis.war-credits`, D19): pays `jarvis.economy.war.winner` once to each
+   * scoring member of a winning faction (`war:<warId>:<memberId>`). A tie lists every winner.
+   * Economy off, a member who left, or nobody to pay: nothing is written.
+   */
+  async payWar(e: EventPayloads['war.ended']): Promise<number> {
+    const eco = this.ctx.botConfig.economy;
+    if (!eco.enabled) return 0;
+    const amount = eco.war.winner;
+    if (amount <= 0) return 0;
+    const paid: string[] = [];
+    for (const memberId of new Set(e.winnerMemberIds)) {
+      const member = await this.ctx.read.members.getById(memberId);
+      if (member && !member.leftAt) paid.push(memberId);
+    }
+    if (!paid.length) return 0;
+    let n = 0;
+    const note = e.winners.join(', ').slice(0, 120) || null;
+    await this.ctx.db.transaction(async (tx) => {
+      for (const memberId of paid) {
+        const res = await this.credit(tx, {
+          memberId,
+          amount,
+          reason: 'war',
+          note,
+          sourceKey: `war:${e.warId}:${memberId}`,
         });
         if (!res.duplicate) n++;
       }

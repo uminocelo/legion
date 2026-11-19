@@ -275,7 +275,7 @@ export const jarvisWalletLedger = table(
     memberId: text('member_id').notNull(),
     // + credit, − debit, never 0
     amount: integer('amount').notNull(),
-    // mission | trivia | world_event | purchase | staff
+    // mission | trivia | world_event | war | purchase | staff
     reason: text('reason').notNull(),
     note: text('note'),
     sourceKey: text('source_key').notNull(),
