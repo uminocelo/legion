@@ -249,3 +249,40 @@ export const jarvisEquipment = table(
   },
   (t) => [primaryKey({ columns: [t.memberId, t.slot] }), index(`jarvis_equipment_item_idx`).on(t.itemId)],
 );
+
+/** Credits balance per member (v0.10, US-14): a cache, rebuildable from `jarvis_wallet_ledger` (ADR 0028). */
+export const jarvisWallets = table(
+  'jarvis_wallets',
+  {
+    memberId: text('member_id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    balance: integer('balance').notNull().default(0),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [index('jarvis_wallets_guild_idx').on(t.guildId)],
+);
+
+/** Append-only credits ledger; `source_key` makes every payout idempotent. */
+export const jarvisWalletLedger = table(
+  'jarvis_wallet_ledger',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    memberId: text('member_id').notNull(),
+    // + credit, − debit, never 0
+    amount: integer('amount').notNull(),
+    // mission | trivia | world_event | purchase | staff
+    reason: text('reason').notNull(),
+    note: text('note'),
+    sourceKey: text('source_key').notNull(),
+    // staff Discord id for `staff`
+    createdBy: text('created_by'),
+    day: text('day').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('jarvis_wallet_ledger_source_unique').on(t.sourceKey),
+    index('jarvis_wallet_ledger_guild_created_idx').on(t.guildId, t.createdAt),
+    index('jarvis_wallet_ledger_member_idx').on(t.memberId),
+  ],
+);
