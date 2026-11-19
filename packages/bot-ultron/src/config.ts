@@ -68,6 +68,21 @@ export const ultronConfigSchema = z.object({
       maxCallsPerHour: z.number().int().min(0).default(30),
     })
     .prefault({}),
+  /** Faction war (US-18). `length` is `month` (starts on the 1st) or a number of days. */
+  war: z
+    .object({
+      enabled: z.boolean().default(true),
+      length: z.union([z.literal('month'), z.number().int().min(7).max(90)]).default('month'),
+      points: z
+        .object({
+          missionSuccess: z.number().int().min(0).default(10),
+          missionFailure: z.number().int().min(0).default(3),
+          strike: z.number().int().min(0).default(2),
+          participation: z.number().int().min(0).default(5),
+        })
+        .prefault({}),
+    })
+    .prefault({}),
 });
 
 export type UltronConfig = z.infer<typeof ultronConfigSchema>;

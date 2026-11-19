@@ -15,6 +15,13 @@
       "when": 1794956174650,
       "tag": "0001_enemy_imports",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795101195026,
+      "tag": "0002_world_v1",
+      "breakpoints": true
     }
   ]
 }

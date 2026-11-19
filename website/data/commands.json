@@ -1102,6 +1102,16 @@
       "options": []
     },
     {
+      "path": "/guerra",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Placar da guerra de facções: pontos, tempo e a sua facção",
+        "en": "Faction war scoreboard: points, time left and your faction"
+      },
+      "options": []
+    },
+    {
       "path": "/ultron evento agendar",
       "kind": "slash",
       "staff": true,
@@ -1166,6 +1176,64 @@
           "description": {
             "pt-BR": "Tipo de evento",
             "en": "Event kind"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/ultron guerra encerrar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Encerra a guerra ativa e publica o resultado",
+        "en": "End the active war and post the result"
+      },
+      "options": []
+    },
+    {
+      "path": "/ultron guerra iniciar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Começa a guerra agora",
+        "en": "Start the war now"
+      },
+      "options": []
+    },
+    {
+      "path": "/ultron guerra pontos",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Soma ou tira pontos de um herói na guerra ativa",
+        "en": "Add or remove a hero's points in the active war"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": true,
+          "description": {
+            "pt-BR": "O herói",
+            "en": "The hero"
+          }
+        },
+        {
+          "name": "pontos",
+          "nameEn": "points",
+          "required": true,
+          "description": {
+            "pt-BR": "Pontos a somar ou tirar, de -1000 a 1000, exceto 0",
+            "en": "Points to add or remove, from -1000 to 1000, except 0"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo do ajuste (fica registrado)",
+            "en": "Why the points change (kept on record)"
           }
         }
       ]

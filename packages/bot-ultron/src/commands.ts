@@ -67,6 +67,50 @@ export function ultronCommands(ctx: BotContext<UltronConfig>, s: UltronServices)
       announce: `<t:${unix(res.event.announceAt)}:R>`,
     });
   };
+  const guerra = async (i: IncomingInteraction, r: Responder) => {
+    if (i.subcommand === 'guerra iniciar') {
+      const res = await s.war.staffStart();
+      if (res === 'active') return say(i, r, 'ultron.war.already_active');
+      if (res === 'disabled') return say(i, r, 'ultron.war.disabled');
+      const active = await s.war.repo.findStatus('active');
+      return say(i, r, 'ultron.war.started', { at: `<t:${unix(active?.endsAt ?? '')}:F>` });
+    }
+    if (i.subcommand === 'guerra encerrar') {
+      const res = await s.war.staffEnd();
+      if (res === 'none') return say(i, r, 'ultron.war.no_war');
+      if (res === 'disabled') return say(i, r, 'ultron.war.disabled');
+      return say(i, r, 'ultron.war.ended');
+    }
+    const raw = i.options?.pontos;
+    const points = typeof raw === 'number' ? raw : Number(raw);
+    const target = String(i.options?.membro ?? '');
+    const res = await s.war.staffPoints({
+      discordUserId: target,
+      points,
+      note: String(i.options?.motivo ?? ''),
+      actorId: i.userId,
+      sourceKey: `war:staff:${i.id}`,
+    });
+    if (!res.ok) {
+      const key = {
+        range: 'ultron.war.points_range',
+        zero: 'ultron.war.points_zero',
+        note: 'ultron.war.note_required',
+        missing: 'ultron.war.missing',
+        left: 'ultron.war.left',
+        independent: 'ultron.war.independent',
+        no_war: 'ultron.war.no_war',
+        disabled: 'ultron.war.disabled',
+        duplicate: 'ultron.war.duplicate',
+      }[res.error];
+      return say(i, r, key);
+    }
+    return say(i, r, 'ultron.war.points_ok', {
+      points: res.points,
+      user: `<@${target}>`,
+      faction: s.war.factionLabel(res.faction),
+    });
+  };
   return [
     {
       name: 'ameaca',
@@ -76,6 +120,20 @@ export function ultronCommands(ctx: BotContext<UltronConfig>, s: UltronServices)
         ...desc(i18n, 'ultron.commands.ameaca'),
       },
       execute: (i, r) => s.world.threat(i, r),
+    },
+    {
+      name: 'guerra',
+      json: {
+        name: 'guerra',
+        name_localizations: { 'en-US': 'war' },
+        ...desc(i18n, 'ultron.commands.guerra'),
+      },
+      execute: async (i, r) =>
+        r.reply({
+          persona: 'ultron',
+          ephemeral: true,
+          content: await s.war.playerView(i.userId, await i18n.localeFor(i.userId)),
+        }),
     },
     {
       name: 'ultron',
@@ -191,6 +249,58 @@ export function ultronCommands(ctx: BotContext<UltronConfig>, s: UltronServices)
               })),
             ],
           },
+          {
+            type: 2,
+            name: 'guerra',
+            name_localizations: { 'en-US': 'war' },
+            ...desc(i18n, 'ultron.commands.ultron.guerra'),
+            options: [
+              {
+                type: 1,
+                name: 'iniciar',
+                name_localizations: { 'en-US': 'start' },
+                ...desc(i18n, 'ultron.commands.ultron.guerra_iniciar'),
+              },
+              {
+                type: 1,
+                name: 'encerrar',
+                name_localizations: { 'en-US': 'end' },
+                ...desc(i18n, 'ultron.commands.ultron.guerra_encerrar'),
+              },
+              {
+                type: 1,
+                name: 'pontos',
+                name_localizations: { 'en-US': 'points' },
+                ...desc(i18n, 'ultron.commands.ultron.guerra_pontos'),
+                options: [
+                  {
+                    type: 6,
+                    name: 'membro',
+                    name_localizations: { 'en-US': 'member' },
+                    required: true,
+                    ...desc(i18n, 'ultron.commands.ultron.guerra_membro'),
+                  },
+                  {
+                    type: 4,
+                    name: 'pontos',
+                    name_localizations: { 'en-US': 'points' },
+                    required: true,
+                    min_value: -1000,
+                    max_value: 1000,
+                    ...desc(i18n, 'ultron.commands.ultron.guerra_valor'),
+                  },
+                  {
+                    type: 3,
+                    name: 'motivo',
+                    name_localizations: { 'en-US': 'reason' },
+                    required: true,
+                    max_length: 200,
+                    ...desc(i18n, 'ultron.commands.ultron.guerra_motivo'),
+                  },
+                ],
+              },
+            ],
+          },
         ],
       },
       autocomplete: async (i, r) => {
@@ -205,6 +315,7 @@ export function ultronCommands(ctx: BotContext<UltronConfig>, s: UltronServices)
             content: i18n.t('ultron.errors.not_staff', {}, await i18n.localeFor(i.userId)),
           });
         if (i.subcommand?.startsWith('evento ')) return evento(i, r);
+        if (i.subcommand?.startsWith('guerra ')) return guerra(i, r);
         if (i.subcommand === 'status') return s.status.reply(i, r);
         if (i.subcommand === 'inimigo importar') return s.imports.import(i, r);
         if (i.subcommand === 'inimigo lista') return s.imports.list(i, r);
