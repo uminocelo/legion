@@ -223,6 +223,11 @@ Precisa do `sentinel` em `bots:` e de `channels.events` quando invasões, raids 
 | `events.rewards` | `{ victoryXp: 50, bonusXpMax: 50, participationXp: 15 }` | XP dos participantes |
 | `invasion.enabled` / `cron` | `true` / `"0 20 * * 6"` | Invasão semanal, no fuso do servidor |
 | `invasion.durationMinutes` / `templateId` | `60` / `enxame-de-nanites` | Duração / inimigo |
+| `invasion.waves` | `threat` | Ondas por invasão: `threat` (pelo medidor: 1, 2 ou 3) ou um número de 1 a 5 |
+| `invasion.waveHpGrowth` | `0.25` | HP extra de cada onda em relação à anterior (0,25 = +25%) |
+| `threat.enabled` | `true` | Liga o medidor de ameaça (tique diário às 00:10) e o campo **Ameaça** do `/ameaca` |
+| `threat.idleRise` / `activeFall` | `10` / `5` | Quanto a ameaça sobe num dia quieto / cai num dia ativo |
+| `threat.activeActions` | `3` | Missões terminadas + ataques num dia para ele contar como ativo |
 | `raids.cron` | `null` | Raids automáticas (`null` = só pela staff) |
 | `raids.durationMinutes` / `templateIds` | `45` / `[bastiao-prime]` | Duração / chefes possíveis |
 | `ai.provider` | `none` | `none` ou `openai-compatible` (veja SELF_HOSTING.md) |

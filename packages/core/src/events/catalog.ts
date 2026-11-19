@@ -153,6 +153,9 @@ export const eventCatalog = {
     endsAt: isoDate.nullable(),
     outcome: z.enum(['victory', 'defeat']).nullable(),
     participantMemberIds: z.array(id),
+    /** Current wave and total waves (US-19); clearing a wave emits nothing new. */
+    wave: z.number().int().min(1).optional(),
+    waves: z.number().int().min(1).optional(),
   }),
   /** Faction war closed. J.A.R.V.I.S. pays `winnerMemberIds` once each (US-18, D19, D26). */
   'war.ended': z.object({

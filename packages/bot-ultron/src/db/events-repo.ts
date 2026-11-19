@@ -1,10 +1,12 @@
-import type { Clock, Executor, LegionDb } from '@legion/core';
-import { and, asc, desc, eq, gt, inArray, isNull, lt, sql } from 'drizzle-orm';
+import { type Clock, coreTables, type Executor, type LegionDb } from '@legion/core';
+import { and, asc, desc, eq, gt, gte, inArray, isNotNull, isNull, lt, lte, sql } from 'drizzle-orm';
 import { type UltronTables, ultronTables } from './tables.js';
 
 export type WorldEventRow = UltronTables['ultronWorldEvents']['$inferSelect'];
 export type ParticipantRow = UltronTables['ultronEventParticipants']['$inferSelect'];
 export type StrikeRow = UltronTables['ultronStrikes']['$inferSelect'];
+export type WaveRow = UltronTables['ultronEventWaves']['$inferSelect'];
+export type ThreatRow = UltronTables['ultronThreat']['$inferSelect'];
 export type EventKind = 'invasion' | 'raid';
 export type EventStatus = 'scheduled' | 'announced' | 'active' | 'ended' | 'cancelled';
 export const OPEN_STATUSES: EventStatus[] = ['scheduled', 'announced', 'active'];
@@ -232,8 +234,169 @@ export class EventsRepo {
         updatedAt: this.now(),
       })
       .where(and(eq(w.id, o.eventId), eq(w.status, 'active')))
-      .returning({ hp: w.hp });
-    return row?.hp ?? null;
+      .returning({ hp: w.hp, wave: w.wave, waves: w.waves, maxHp: w.maxHp, bossLevel: w.bossLevel });
+    return row
+      ? {
+          hp: row.hp ?? 0,
+          wave: row.wave,
+          waves: row.waves,
+          maxHp: row.maxHp ?? 0,
+          bossLevel: row.bossLevel ?? 5,
+        }
+      : null;
+  }
+
+  // ---------- waves (US-19) ----------
+
+  async insertWave(
+    o: { eventId: string; wave: number; maxHp: number; bossLevel: number },
+    ex: Executor = this.db.orm,
+  ) {
+    await ex
+      .insert(this.t.ultronEventWaves)
+      .values({
+        worldEventId: o.eventId,
+        wave: o.wave,
+        maxHp: o.maxHp,
+        bossLevel: o.bossLevel,
+        startedAt: this.now(),
+      })
+      .onConflictDoNothing();
+  }
+
+  /** Sets the outcome of a wave that has none yet. */
+  async closeWave(eventId: string, wave: number, outcome: 'cleared' | 'failed', ex: Executor) {
+    const v = this.t.ultronEventWaves;
+    await ex
+      .update(v)
+      .set({ outcome, endedAt: this.now() })
+      .where(and(eq(v.worldEventId, eventId), eq(v.wave, wave), isNull(v.outcome)));
+  }
+
+  /**
+   * Moves an active event from wave `from` (HP 0) to the next wave with fresh HP.
+   * Guarded by `wave`: of two concurrent final strikes only one moves it. Null when someone else did.
+   */
+  async advanceWave(
+    eventId: string,
+    from: number,
+    next: { maxHp: number; bossLevel: number },
+    ex: Executor,
+  ): Promise<WorldEventRow | null> {
+    const w = this.t.ultronWorldEvents;
+    const [row] = await ex
+      .update(w)
+      .set({
+        wave: from + 1,
+        maxHp: next.maxHp,
+        hp: next.maxHp,
+        bossLevel: next.bossLevel,
+        updatedAt: this.now(),
+      })
+      .where(
+        and(
+          eq(w.id, eventId),
+          eq(w.status, 'active'),
+          eq(w.wave, from),
+          sql`${w.waves} > ${from}`,
+          lte(w.hp, 0),
+        ),
+      )
+      .returning();
+    if (!row) return null;
+    await this.closeWave(eventId, from, 'cleared', ex);
+    await this.insertWave({ eventId, wave: from + 1, ...next }, ex);
+    return row;
+  }
+
+  async setStrikeWave(combatId: string, wave: number, ex: Executor) {
+    const s = this.t.ultronStrikes;
+    await ex.update(s).set({ wave }).where(eq(s.combatId, combatId));
+  }
+
+  async waves(eventId: string): Promise<WaveRow[]> {
+    const v = this.t.ultronEventWaves;
+    return this.db.orm.select().from(v).where(eq(v.worldEventId, eventId)).orderBy(asc(v.wave));
+  }
+
+  /** Damage per wave and member, from applied strikes (highest first within a wave). */
+  async waveDamage(eventId: string): Promise<{ wave: number; memberId: string; damage: number }[]> {
+    const s = this.t.ultronStrikes;
+    const rows = await this.db.orm
+      .select({ wave: s.wave, memberId: s.memberId, damage: sql<number>`sum(${s.damage})` })
+      .from(s)
+      .where(and(eq(s.worldEventId, eventId), isNotNull(s.appliedAt)))
+      .groupBy(s.wave, s.memberId);
+    return rows
+      .map((r) => ({ ...r, damage: Number(r.damage) }))
+      .sort((a, b) => a.wave - b.wave || b.damage - a.damage || a.memberId.localeCompare(b.memberId));
+  }
+
+  // ---------- threat (US-19) ----------
+
+  async threat(ex: Executor = this.db.orm): Promise<ThreatRow | null> {
+    const t = this.t.ultronThreat;
+    const [row] = await ex.select().from(t).where(eq(t.guildId, this.guildId)).limit(1);
+    return row ?? null;
+  }
+
+  /**
+   * Saves the threat only if nobody ticked since `seen` was read (`seen` null = no row yet).
+   * False when another run got there first.
+   */
+  async saveThreat(
+    o: { level: number; lastTickDay: string; seen: string | null | undefined },
+    ex: Executor = this.db.orm,
+  ): Promise<boolean> {
+    const t = this.t.ultronThreat;
+    const now = this.now();
+    if (o.seen === undefined) {
+      const rows = await ex
+        .insert(t)
+        .values({ guildId: this.guildId, level: o.level, lastTickDay: o.lastTickDay, updatedAt: now })
+        .onConflictDoNothing()
+        .returning({ id: t.guildId });
+      return rows.length > 0;
+    }
+    const rows = await ex
+      .update(t)
+      .set({ level: o.level, lastTickDay: o.lastTickDay, updatedAt: now })
+      .where(
+        and(eq(t.guildId, this.guildId), o.seen === null ? isNull(t.lastTickDay) : eq(t.lastTickDay, o.seen)),
+      )
+      .returning({ id: t.guildId });
+    return rows.length > 0;
+  }
+
+  /** Times of finished missions (success or failure) and strikes in [from, to). */
+  async activityTimes(from: string, to: string): Promise<string[]> {
+    const log = coreTables(this.db).coreEventLog;
+    const missions = await this.db.orm
+      .select({ at: log.occurredAt, payload: log.payload })
+      .from(log)
+      .where(
+        and(
+          eq(log.guildId, this.guildId),
+          eq(log.type, 'mission.completed'),
+          gte(log.occurredAt, from),
+          lt(log.occurredAt, to),
+        ),
+      );
+    const s = this.t.ultronStrikes;
+    const w = this.t.ultronWorldEvents;
+    const strikes = await this.db.orm
+      .select({ at: s.createdAt })
+      .from(s)
+      .innerJoin(w, eq(w.id, s.worldEventId))
+      .where(and(eq(w.guildId, this.guildId), gte(s.createdAt, from), lt(s.createdAt, to)));
+    const finished = missions.filter((m) => {
+      try {
+        return (JSON.parse(m.payload) as { outcome?: string }).outcome !== 'abandoned';
+      } catch {
+        return false;
+      }
+    });
+    return [...finished.map((m) => m.at), ...strikes.map((x) => x.at)];
   }
 
   async factionDamage(eventId: string) {

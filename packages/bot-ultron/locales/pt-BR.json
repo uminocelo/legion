@@ -171,7 +171,12 @@
       "cancelled": "Evento cancelado: {title}.",
       "nothing_to_cancel": "Não há evento agendado ou em andamento.",
       "scheduled": "Agendado para {at}. O anúncio sai {announce}.",
-      "started_now": "Evento iniciado em {channel}."
+      "started_now": "Evento iniciado em {channel}.",
+      "hp_wave": "HP · Onda {wave}/{waves}",
+      "waves": "Ondas",
+      "wave_cleared": "✅ Onda {n} · limpa em {minutes} min · {top}",
+      "wave_failed": "❌ Onda {n} · falhou após {minutes} min · {top}",
+      "wave_not_reached": "▫️ Onda {n} · não alcançada"
     },
     "threat": {
       "none": "Nenhuma ameaça no radar. Por enquanto.",
@@ -181,7 +186,14 @@
       "your_damage": "Seu dano: {damage} em {strikes} ataque(s).",
       "cooldown": "Próximo ataque {at}.",
       "ready": "Você pode atacar agora.",
-      "go": "Ir para o evento"
+      "go": "Ir para o evento",
+      "field": "Ameaça",
+      "band_low": "baixa",
+      "band_medium": "média",
+      "band_high": "alta",
+      "next_one": "Próxima invasão: 1 onda, dificuldade {difficulty}.",
+      "next_waves": "Próxima invasão: {waves} ondas, dificuldade {difficulty}.",
+      "how": "Dias quietos aumentam a ameaça; missões e ataques a reduzem."
     },
     "status": {
       "title": "🤖 ULTRON · status",

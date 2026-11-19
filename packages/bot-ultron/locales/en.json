@@ -171,7 +171,12 @@
       "cancelled": "Event cancelled: {title}.",
       "nothing_to_cancel": "There is no scheduled or running event.",
       "scheduled": "Scheduled for {at}. The announcement goes out {announce}.",
-      "started_now": "Event started in {channel}."
+      "started_now": "Event started in {channel}.",
+      "hp_wave": "HP · Wave {wave}/{waves}",
+      "waves": "Waves",
+      "wave_cleared": "✅ Wave {n} · cleared in {minutes} min · {top}",
+      "wave_failed": "❌ Wave {n} · failed after {minutes} min · {top}",
+      "wave_not_reached": "▫️ Wave {n} · not reached"
     },
     "threat": {
       "none": "No threat on the radar. For now.",
@@ -181,7 +186,14 @@
       "your_damage": "Your damage: {damage} in {strikes} strike(s).",
       "cooldown": "Next strike {at}.",
       "ready": "You can strike now.",
-      "go": "Go to the event"
+      "go": "Go to the event",
+      "field": "Threat",
+      "band_low": "low",
+      "band_medium": "medium",
+      "band_high": "high",
+      "next_one": "Next invasion: 1 wave, {difficulty} difficulty.",
+      "next_waves": "Next invasion: {waves} waves, {difficulty} difficulty.",
+      "how": "Quiet days raise the threat; missions and strikes lower it."
     },
     "status": {
       "title": "🤖 ULTRON · status",
