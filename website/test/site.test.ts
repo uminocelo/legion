@@ -1,6 +1,7 @@
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
+import { inflateRawSync } from 'node:zlib';
 import { cerebro } from '@legion/bot-cerebro';
 import { herbie } from '@legion/bot-herbie';
 import { jarvis } from '@legion/bot-jarvis';
@@ -9,7 +10,15 @@ import { ultron } from '@legion/bot-ultron';
 import { createTestContext } from '@legion/core';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 // @ts-expect-error plain ESM script without types
-import { BOT_LINKS, build, configBlock, PAGES } from '../scripts/build.mjs';
+import {
+  BOT_LINKS,
+  build,
+  configBlock,
+  PAGES,
+  SKILLS_DIR,
+  skillFiles,
+  skillsZip,
+} from '../scripts/build.mjs';
 // @ts-expect-error plain ESM script without types
 import { COMMANDS_FILE, collectCommands, serialize } from '../scripts/commands.mjs';
 
@@ -107,6 +116,52 @@ describe('site build', () => {
           expect(files.has(h.split('#')[0] ?? ''), `${p.out} → ${h}`).toBe(true);
         }
       }
+    }
+  });
+});
+
+/** Reads a zip's entries through its central directory. */
+function unzip(buf: Buffer): Map<string, Buffer> {
+  const end = buf.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]));
+  const count = buf.readUInt16LE(end + 10);
+  let at = buf.readUInt32LE(end + 16);
+  const out = new Map<string, Buffer>();
+  for (let i = 0; i < count; i++) {
+    const method = buf.readUInt16LE(at + 10);
+    const size = buf.readUInt32LE(at + 20);
+    const nameLen = buf.readUInt16LE(at + 28);
+    const extra = buf.readUInt16LE(at + 30) + buf.readUInt16LE(at + 32);
+    const offset = buf.readUInt32LE(at + 42);
+    const name = buf.subarray(at + 46, at + 46 + nameLen).toString('utf8');
+    const data = buf.subarray(
+      offset + 30 + buf.readUInt16LE(offset + 26) + buf.readUInt16LE(offset + 28),
+      offset + 30 + buf.readUInt16LE(offset + 26) + buf.readUInt16LE(offset + 28) + size,
+    );
+    out.set(name, method === 8 ? inflateRawSync(data) : Buffer.from(data));
+    at += 46 + nameLen + extra;
+  }
+  return out;
+}
+
+describe('skills kit download', () => {
+  it('legion-skills.zip has every file of every skill, unchanged, with SKILL.md at <skill>/SKILL.md', async () => {
+    const out = mkdtempSync(join(tmpdir(), 'legion-skills-'));
+    try {
+      await build(out);
+      const entries = unzip(readFileSync(join(out, 'legion-skills.zip')));
+      const files = (skillFiles() as string[]).map((p) => relative(SKILLS_DIR, p).split('\\').join('/'));
+      expect([...entries.keys()].sort()).toEqual(files);
+      for (const f of files) expect(entries.get(f)?.equals(readFileSync(join(SKILLS_DIR, f))), f).toBe(true);
+      for (const s of ['legion-campaign', 'legion-mission', 'legion-trivia', 'legion-enemy', 'legion-setup'])
+        expect(entries.has(`${s}/SKILL.md`), s).toBe(true);
+      // Same files, same bytes: the published zip only changes when a skill does.
+      expect((skillsZip() as Buffer).equals(readFileSync(join(out, 'legion-skills.zip')))).toBe(true);
+      const html = readFileSync(join(out, 'skills.html'), 'utf8');
+      expect(html).toContain('href="legion-skills.zip"');
+      expect(html).toContain('~/.claude/skills/');
+      expect(html).toMatch(/Outros agentes/);
+    } finally {
+      rmSync(out, { recursive: true, force: true });
     }
   });
 });

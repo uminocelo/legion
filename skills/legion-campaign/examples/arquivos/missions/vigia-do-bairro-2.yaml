@@ -1,0 +1,28 @@
+# Example chapter 2.
+id: vigia-do-bairro-2
+kind: story
+campaign: { id: vigia-do-bairro, chapter: 2 }
+requires: { missions: [vigia-do-bairro-1] }
+title: { pt-BR: "Vigia do bairro 2: A van", en: "Neighborhood watch 2: The van" }
+summary: { pt-BR: "Siga a van até o destino dela.", en: "Follow the van to where it goes." }
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A van sai do bairro. O Punho de Ferro pergunta: "Seguimos de perto ou de longe?"'
+      en: 'The van leaves the neighborhood. Iron Fist asks: "Do we follow close or from afar?"'
+    choices:
+      - label: { pt-BR: "De longe, sem ser visto", en: "From afar, unseen" }
+        next: sucesso
+      - label: { pt-BR: "Bem de perto", en: "Right behind it" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: "A van para num depósito no porto. Vocês viram tudo."
+      en: "The van stops at a warehouse at the docks. You saw everything."
+    end: success
+  falha:
+    text:
+      pt-BR: "O motorista percebe e some. Tentem outra noite."
+      en: "The driver notices and vanishes. Try another night."
+    end: failure

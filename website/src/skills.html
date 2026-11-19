@@ -1,0 +1,81 @@
+<section class="page-hero">
+  <p class="eyebrow">Para quem hospeda</p>
+  <h1>Skills para IA</h1>
+  <p class="lead">Cinco skills que ensinam um agente de IA (Claude Code ou outro que leia instruções em Markdown) a escrever conteúdo do Legion e a configurar o servidor. O agente segue o formato, a regra dos nomes da Marvel, o equilíbrio e o estilo em português, e confere tudo com <code>legion content validate</code> antes de entregar.</p>
+  <div class="cta"><a class="btn primary" href="legion-skills.zip" download>Baixar legion-skills.zip</a><a class="btn" href="https://github.com/uminocelo/legion/tree/main/skills">Ver no GitHub</a></div>
+</section>
+
+<section>
+  <h2>O que vem no pacote</h2>
+  <div class="bots">
+    <article class="bot" style="--c:#00B0F4">
+      <h3><code>legion-mission</code></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Uma missão: cenas, escolhas, lutas e finais, em pt-BR e en.</p>
+    </article>
+    <article class="bot" style="--c:#00B0F4">
+      <h3><code>legion-campaign</code></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Campanhas em capítulos e arcos de recrutamento de equipe, como arquivos ou para o <code>/jarvis campanha importar</code>.</p>
+    </article>
+    <article class="bot" style="--c:#F1C40F">
+      <h3><code>legion-trivia</code></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Perguntas com fonte, dificuldade justa e alternativas plausíveis.</p>
+    </article>
+    <article class="bot" style="--c:#E74C3C">
+      <h3><code>legion-enemy</code></h3>
+      <p class="role">ULTRON</p>
+      <p>Inimigos originais com atributos dentro da faixa de cada tier.</p>
+    </article>
+    <article class="bot" style="--c:#95A5A6">
+      <h3><code>legion-setup</code></h3>
+      <p class="role">Instalação</p>
+      <p>Docker, app do Discord, <code>legion.config.yaml</code> e <code>legion doctor</code>. Nunca lê nem mostra o <code>.env</code>.</p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>Instalar no Claude Code</h2>
+  <ol>
+    <li>Baixe o <a href="legion-skills.zip" download>legion-skills.zip</a>.</li>
+    <li>Descompacte numa destas pastas:
+      <ul>
+        <li><code>~/.claude/skills/</code>: valem em todos os seus projetos;</li>
+        <li><code>.claude/skills/</code> dentro da pasta do seu servidor (onde fica o <code>legion.config.yaml</code>): valem só ali.</li>
+      </ul>
+      Cada skill fica na própria pasta, por exemplo <code>~/.claude/skills/legion-mission/SKILL.md</code>.
+    </li>
+    <li>Abra o Claude Code e peça: "escreva uma missão diária com uma luta no metrô". A skill certa é usada sozinha; você também pode chamar pelo nome, como <code>/legion-mission</code>.</li>
+  </ol>
+  <pre><code>mkdir -p ~/.claude/skills
+unzip legion-skills.zip -d ~/.claude/skills</code></pre>
+</section>
+
+<section>
+  <h2>Outros agentes</h2>
+  <p>Cada <code>SKILL.md</code> é texto simples: o formato, as regras e os exemplos. Para um agente que não conhece skills:</p>
+  <ol>
+    <li>Descompacte o pacote numa pasta do projeto, por exemplo <code>skills/</code>.</li>
+    <li>No arquivo de instruções do agente (como <code>AGENTS.md</code> ou as regras do editor), acrescente: "Antes de escrever conteúdo do Legion, leia <code>skills/legion-&lt;tipo&gt;/SKILL.md</code> e siga as instruções, inclusive rodar <code>legion content validate</code>."</li>
+    <li>Ou cole o conteúdo do <code>SKILL.md</code> no começo da conversa.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Conferir o que o agente escreveu</h2>
+  <p>Toda skill termina com o agente rodando o validador, que usa as mesmas regras dos bots e dos editores deste site. Você também pode rodar:</p>
+  <pre><code>docker compose run --rm legion legion content validate data/content</code></pre>
+  <p>Sai com 0 quando está tudo certo, 1 com a lista de erros (arquivo, item e campo) e 2 quando o arquivo não parece conteúdo do Legion. Ele não usa o banco nem o Discord. Os fatos das perguntas de trivia não são conferidos: leia antes de publicar.</p>
+</section>
+
+<section>
+  <h2>Segurança</h2>
+  <ul>
+    <li>As skills são texto: não guardam tokens, não chamam servidor nenhum e rodam só na sua máquina.</li>
+    <li>A <code>legion-setup</code> diz ao agente para nunca abrir, ler ou mostrar o <code>.env</code>, nem pedir tokens na conversa. Os tokens você digita.</li>
+    <li>O que o agente escreve passa pelo mesmo validador de tudo o mais. Nomes de personagens da Marvel como identidade (inimigos, poderes, ids) são recusados (<a href="{{doc:docs/UNIVERSE.md}}">UNIVERSE.md</a>).</li>
+  </ul>
+  <p>O código das skills fica em <a href="https://github.com/uminocelo/legion/tree/main/skills">skills/</a> no GitHub.</p>
+</section>

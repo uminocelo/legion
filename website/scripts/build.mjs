@@ -2,8 +2,9 @@
 // tables from data/commands.json, config blocks from legion.config.example.yaml and example content
 // files copied from the bots. No dependencies beyond Node.
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { deflateRawSync } from 'node:zlib';
 
 const SITE = fileURLToPath(new URL('..', import.meta.url));
 const ROOT = join(SITE, '..');
@@ -93,6 +94,15 @@ export const PAGES = [
     script: 'mission',
   },
   {
+    out: 'skills.html',
+    src: 'skills.html',
+    title: 'Skills para IA · Legion',
+    description:
+      'Skills que ensinam um agente de IA a escrever missões, campanhas, trivia e inimigos do Legion, conferidos com legion content validate.',
+    nav: 'custom',
+    color: '#9B59B6',
+  },
+  {
     out: 'personalizar.html',
     src: 'personalizar.html',
     title: 'Personalizar · Legion',
@@ -123,6 +133,88 @@ export const EXAMPLES = [
   ['packages/bot-herbie/content/tips.pt-BR.yaml', 'exemplos/tips.pt-BR.yaml'],
   ['packages/bot-herbie/content/tutorial.yaml', 'exemplos/tutorial.yaml'],
 ];
+
+/** The AI skills kit: every file under skills/, zipped as legion-skills.zip. */
+export const SKILLS_DIR = join(ROOT, 'skills');
+export const SKILLS_ZIP = 'legion-skills.zip';
+
+export function skillFiles(dir = SKILLS_DIR) {
+  const out = [];
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (e.name.startsWith('.')) continue;
+    const p = join(dir, e.name);
+    if (e.isDirectory()) out.push(...skillFiles(p));
+    else out.push(p);
+  }
+  return out.sort();
+}
+
+const CRC = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+const crc32 = (buf) => {
+  let c = 0xffffffff;
+  for (const b of buf) c = CRC[(c ^ b) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+};
+
+/**
+ * A zip archive (deflate) of `[name, Buffer]` entries. Dates are fixed, so the same files always give
+ * the same bytes.
+ */
+export function zip(entries) {
+  const DATE = ((2026 - 1980) << 9) | (1 << 5) | 1; // 2026-01-01
+  const local = [];
+  const central = [];
+  let offset = 0;
+  for (const [name, data] of entries) {
+    const nameBuf = Buffer.from(name, 'utf8');
+    const packed = deflateRawSync(data, { level: 9 });
+    const crc = crc32(data);
+    const head = Buffer.alloc(30);
+    head.writeUInt32LE(0x04034b50, 0);
+    head.writeUInt16LE(20, 4);
+    head.writeUInt16LE(0x0800, 6); // UTF-8 names
+    head.writeUInt16LE(8, 8); // deflate
+    head.writeUInt16LE(0, 10);
+    head.writeUInt16LE(DATE, 12);
+    head.writeUInt32LE(crc, 14);
+    head.writeUInt32LE(packed.length, 18);
+    head.writeUInt32LE(data.length, 22);
+    head.writeUInt16LE(nameBuf.length, 26);
+    head.writeUInt16LE(0, 28);
+    local.push(head, nameBuf, packed);
+    const dir = Buffer.alloc(46);
+    dir.writeUInt32LE(0x02014b50, 0);
+    dir.writeUInt16LE(20, 4);
+    dir.writeUInt16LE(20, 6);
+    dir.writeUInt16LE(0x0800, 8);
+    dir.writeUInt16LE(8, 10);
+    dir.writeUInt16LE(0, 12);
+    dir.writeUInt16LE(DATE, 14);
+    dir.writeUInt32LE(crc, 16);
+    dir.writeUInt32LE(packed.length, 20);
+    dir.writeUInt32LE(data.length, 24);
+    dir.writeUInt16LE(nameBuf.length, 28);
+    dir.writeUInt32LE(offset, 42);
+    central.push(dir, nameBuf);
+    offset += head.length + nameBuf.length + packed.length;
+  }
+  const centralBuf = Buffer.concat(central);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(entries.length, 8);
+  end.writeUInt16LE(entries.length, 10);
+  end.writeUInt32LE(centralBuf.length, 12);
+  end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...local, centralBuf, end]);
+}
+
+/** legion-skills.zip: the skill folders at the root, ready to drop into ~/.claude/skills/. */
+export const skillsZip = () =>
+  zip(skillFiles().map((p) => [relative(SKILLS_DIR, p).split('\\').join('/'), readFileSync(p)]));
 
 export const esc = (s) =>
   String(s).replace(
@@ -276,6 +368,7 @@ export async function build(out = DIST) {
     if (!existsSync(join(ROOT, from))) throw new Error(`example missing: ${from}`);
     write(to, readFileSync(join(ROOT, from)));
   }
+  write(SKILLS_ZIP, skillsZip());
   const meta = await bundleEditors(out);
   written.push(...Object.keys(meta.outputs).map((p) => p.slice(p.indexOf('assets/js/'))));
   return written;

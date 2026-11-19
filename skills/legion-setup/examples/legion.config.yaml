@@ -1,0 +1,26 @@
+# Example legion.config.yaml for the legion-setup skill: every bot on, with fights and missions.
+# No secrets here: tokens live in .env, which the agent never reads.
+locale: pt-BR
+timezone: America/Sao_Paulo
+
+bots: [cerebro, jarvis, herbie, sentinel, ultron]
+
+channels:
+  welcome: "100000000000000001"
+  rules: "100000000000000002"
+  events: "100000000000000003"
+  combat: "100000000000000004"
+  missions: "100000000000000005"
+  modQueue: "100000000000000006"
+
+cerebro:
+  teams:
+    startFaction: independent
+    switchCooldownDays: 30
+
+jarvis:
+  trivia:
+    # The defaults plus a server category.
+    categories: [quadrinhos, rivals, geral, vingadores, quarteto, cosmico, mistico, marvel-filmes]
+  missions:
+    choiceTimeoutMinutes: 10

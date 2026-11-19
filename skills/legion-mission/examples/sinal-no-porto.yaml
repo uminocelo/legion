@@ -1,0 +1,52 @@
+# Example mission for the legion-mission skill: a daily with one fight.
+id: sinal-no-porto
+kind: daily
+title:
+  pt-BR: "Sinal no porto"
+  en: "Signal at the docks"
+summary:
+  pt-BR: "Um contêiner no porto emite um sinal estranho. A S.H.I.E.L.D. quer saber por quê."
+  en: "A container at the docks is sending a strange signal. S.H.I.E.L.D. wants to know why."
+minLevel: 1
+party: 2
+difficulty: normal
+start: cais
+scenes:
+  cais:
+    text:
+      pt-BR: 'A agente Maria Hill fala pelo rádio: "O sinal vem do contêiner azul. Entre com cuidado." Há uma porta lateral e uma escotilha no teto.'
+      en: 'Agent Maria Hill speaks over the radio: "The signal comes from the blue container. Go in carefully." There is a side door and a hatch on the roof.'
+    choices:
+      - label: { pt-BR: "Abrir a porta lateral", en: "Open the side door" }
+        next: porta
+      - label: { pt-BR: "Descer pela escotilha", en: "Drop through the hatch" }
+        next: escotilha
+  porta:
+    text:
+      pt-BR: "A porta range. Lá dentro, um drone acorda e vira os sensores para vocês."
+      en: "The door creaks. Inside, a drone wakes up and turns its sensors on you."
+    combat: { win: transmissor, lose: recuo }
+  escotilha:
+    text:
+      pt-BR: "Vocês caem em silêncio atrás do transmissor. Ninguém viu."
+      en: "You land quietly behind the transmitter. Nobody saw you."
+    choices:
+      - label: { pt-BR: "Desligar o transmissor", en: "Switch off the transmitter" }
+        next: transmissor
+      - label: { pt-BR: "Arrancar os cabos", en: "Rip out the cables" }
+        next: alarme
+  transmissor:
+    text:
+      pt-BR: 'O sinal some. Maria Hill agradece: "Bom trabalho. A equipe técnica assume daqui."'
+      en: 'The signal stops. Maria Hill thanks you: "Good work. The tech team takes it from here."'
+    end: success
+  alarme:
+    text:
+      pt-BR: "Um alarme dispara e o contêiner se tranca. Vocês saem a tempo, mas sem respostas."
+      en: "An alarm goes off and the container locks itself. You get out in time, but with no answers."
+    end: failure
+  recuo:
+    text:
+      pt-BR: "O drone leva o transmissor embora. Amanhã tem outra chance."
+      en: "The drone flies off with the transmitter. There is another chance tomorrow."
+    end: failure

@@ -1,0 +1,32 @@
+# Example chapter 1 (data/content/missions/).
+id: vigia-do-bairro-1
+kind: story
+campaign: { id: vigia-do-bairro, chapter: 1 }
+requires: { level: 3 }
+title: { pt-BR: "Vigia do bairro 1: A primeira ronda", en: "Neighborhood watch 1: The first patrol" }
+summary:
+  {
+    pt-BR: "A Jessica Jones quer ver como você faz uma ronda.",
+    en: "Jessica Jones wants to see how you patrol.",
+  }
+start: inicio
+scenes:
+  inicio:
+    text:
+      pt-BR: 'A Jessica Jones entrega uma lanterna. "Ronda de uma hora. Me conta o que viu."'
+      en: 'Jessica Jones hands you a flashlight. "One-hour patrol. Tell me what you saw."'
+    choices:
+      - label: { pt-BR: "Anotar tudo com calma", en: "Write everything down calmly" }
+        next: sucesso
+      - label: { pt-BR: "Correr atrás do primeiro barulho", en: "Chase the first noise" }
+        next: falha
+  sucesso:
+    text:
+      pt-BR: 'Suas anotações mostram uma van que passa toda noite. A Jessica sorri: "Útil."'
+      en: 'Your notes show a van that drives by every night. Jessica smiles: "Useful."'
+    end: success
+  falha:
+    text:
+      pt-BR: 'O barulho era um gato. A Jessica suspira: "De novo amanhã."'
+      en: 'The noise was a cat. Jessica sighs: "Again tomorrow."'
+    end: failure
