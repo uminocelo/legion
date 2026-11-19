@@ -23,6 +23,7 @@ export * from './domain/periods.js';
 export * from './domain/selection.js';
 export * from './domain/xp.js';
 export { inventoryIds, JarvisInventory } from './inventory-ui.js';
+export { ItemImports, itemImportIds } from './item-imports.js';
 export * from './items.js';
 export { JarvisLeaderboard } from './leaderboard.js';
 export * from './mission-content.js';
@@ -79,6 +80,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
       { action: 'mission-import', version: V, handle: (i, r, args) => s.imports.decide(i, r, args) },
       { action: 'campaign-import', version: V, handle: (i, r, args) => s.campaigns.decide(i, r, args) },
       { action: 'trivia-import', version: V, handle: (i, r, args) => s.triviaImports.decide(i, r, args) },
+      { action: 'item-import', version: V, handle: (i, r, args) => s.itemImports.decide(i, r, args) },
       { action: 'inv', version: V, handle: (i, r, args) => s.inventoryUi.component(i, r, args) },
       { action: 'shop', version: V, handle: (i, r, args) => s.shop.component(i, r, args) },
       {

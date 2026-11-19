@@ -268,6 +268,26 @@
       ]
     },
     {
+      "path": "/jarvis item ativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Volta um item desativado",
+        "en": "Bring back a disabled item"
+      },
+      "options": [
+        {
+          "name": "item",
+          "nameEn": "item",
+          "required": true,
+          "description": {
+            "pt-BR": "Item (id ou nome)",
+            "en": "Item (id or name)"
+          }
+        }
+      ]
+    },
+    {
       "path": "/jarvis item dar",
       "kind": "slash",
       "staff": true,
@@ -301,6 +321,56 @@
           "description": {
             "pt-BR": "Motivo (opcional)",
             "en": "Reason (optional)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis item desativar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Tira um item de jogo (desequipa de quem usa)",
+        "en": "Take an item out of play (unequips it from everyone)"
+      },
+      "options": [
+        {
+          "name": "item",
+          "nameEn": "item",
+          "required": true,
+          "description": {
+            "pt-BR": "Item (id ou nome)",
+            "en": "Item (id or name)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis item exportar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Baixa os itens da staff em YAML",
+        "en": "Download the staff items as YAML"
+      },
+      "options": []
+    },
+    {
+      "path": "/jarvis item importar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Importa itens de um arquivo .yaml",
+        "en": "Import items from a .yaml file"
+      },
+      "options": [
+        {
+          "name": "arquivo",
+          "nameEn": "file",
+          "required": true,
+          "description": {
+            "pt-BR": "O arquivo .yaml com os itens (o do editor do site ou do exportar)",
+            "en": "The .yaml file with the items (from the website editor or the export)"
           }
         }
       ]

@@ -60,7 +60,7 @@ docker compose run --rm legion legion content validate data/content
 
 ## Update, backup
 
-- Update: `docker compose pull && docker compose up -d`; migrations run on their own. Pin a version with `LEGION_VERSION=0.9.1` in `.env` (the user edits it). Read `CHANGELOG.md` "Upgrade notes" first.
+- Update: `docker compose pull && docker compose up -d`; migrations run on their own. Pin a version with `LEGION_VERSION=0.10.0` in `.env` (the user edits it). Read `CHANGELOG.md` "Upgrade notes" first.
 - Back up the `data/` folder before every update (it holds the SQLite database and server content). Never open `data/legion.db` from the host while the container runs; stop it first or copy the file.
 
 ## pt-BR style

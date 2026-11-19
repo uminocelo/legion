@@ -23,6 +23,11 @@
       <p class="role">ULTRON</p>
       <p>Lacaios, elites e chefes com atributos base. Recusa nomes de personagens existentes na hora.</p>
     </article>
+    <article class="bot" style="--c:#00B0F4">
+      <h3><a href="editor-itens.html">Itens</a></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Trajes, acessórios e dispositivos com bônus pequenos ou só visuais, e o preço na loja. Confere os limites e os nomes na hora.</p>
+    </article>
     <article class="bot" style="--c:#9B59B6">
       <h3><a href="skills.html">Skills para IA</a></h3>
       <p class="role">Claude Code e outros agentes</p>
@@ -34,7 +39,7 @@
 <section>
   <h2>Como funciona</h2>
   <div class="facts">
-    <div><h3>Pelo Discord</h3><p>Missões e inimigos entram anexando o arquivo num comando da staff. O bot confere o arquivo e responde com cada erro, item por item.</p></div>
+    <div><h3>Pelo Discord</h3><p>Missões, perguntas, itens e inimigos entram anexando o arquivo num comando da staff. O bot confere o arquivo e responde com cada erro, item por item.</p></div>
     <div><h3>Pela pasta do servidor</h3><p>Todo conteúdo também pode ficar em <code>data/content/</code>, ao lado do banco. Um item com o mesmo <code>id</code> de um que vem com o Legion o substitui; <code>id</code> novo acrescenta.</p></div>
     <div><h3>Erro não derruba nada</h3><p>Um arquivo com erro não é carregado e a versão anterior continua valendo. O <code>legion doctor</code> mostra o item e o campo com problema.</p></div>
     <div><h3>Personagens originais</h3><p>Nomes de personagens que já existem são recusados em codinomes, poderes, inimigos e missões. Invente os seus.</p></div>
@@ -85,6 +90,18 @@
   </table>
   <p class="downloads">Exemplo: <a href="{{example:exemplos/enemies.yaml}}" download>enemies.yaml</a></p>
   <p class="more">Formato completo: <a href="{{doc:docs/WORLD_EVENTS.md}}">docs/WORLD_EVENTS.md</a></p>
+</section>
+
+<section id="itens">
+  <h2>Itens do J.A.R.V.I.S.</h2>
+  <p class="section-lead">Trajes, acessórios e dispositivos. Um item equipado dá um bônus pequeno nas lutas, com teto no total; um item visual não dá bônus. Com <code>shop.price</code> ele aparece na <code>/loja</code>.</p>
+  <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-itens.html">Editor de itens</a>: monte o arquivo e importe</td></tr>
+    <tr><th>Importar</th><td><code>/jarvis item importar arquivo:</code> e anexe o <code>.yaml</code></td></tr>
+    <tr><th>Ou na pasta</th><td><code>data/content/items/*.yaml</code> e reinicie</td></tr>
+    <tr><th>Tirar de jogo</th><td><code>/jarvis item desativar</code>: desequipa de quem usa, e cada um continua com o item</td></tr>
+  </table>
+  <p class="more">Formato completo: <a href="{{doc:docs/ECONOMY.md}}">docs/ECONOMY.md</a></p>
 </section>
 
 <section id="poderes">
