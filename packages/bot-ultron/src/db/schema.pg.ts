@@ -84,6 +84,9 @@ export const ultronWorldEvents = table(
     resultsMessageId: text('results_message_id'),
     /** Last time the HP embed was edited (throttle). */
     embedEditedAt: text('embed_edited_at'),
+    /** v1.0 waves (US-19 uses them; default 1 so existing events stay one wave). */
+    waves: integer('waves').notNull().default(1),
+    wave: integer('wave').notNull().default(1),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },
@@ -116,10 +119,82 @@ export const ultronStrikes = table(
     memberId: text('member_id').notNull(),
     damage: integer('damage'),
     appliedAt: text('applied_at'),
+    /** Wave the strike landed on (US-19). */
+    wave: integer('wave').notNull().default(1),
     createdAt: text('created_at').notNull(),
   },
   (t) => [index('ultron_strikes_event_idx').on(t.worldEventId)],
 );
+
+/** One row per wave of a world event (US-19). */
+export const ultronEventWaves = table(
+  'ultron_event_waves',
+  {
+    worldEventId: text('world_event_id').notNull(),
+    wave: integer('wave').notNull(),
+    maxHp: integer('max_hp').notNull(),
+    bossLevel: integer('boss_level').notNull(),
+    startedAt: text('started_at').notNull(),
+    endedAt: text('ended_at'),
+    /** cleared | failed */
+    outcome: text('outcome'),
+  },
+  (t) => [primaryKey({ columns: [t.worldEventId, t.wave] })],
+);
+
+/** Faction war (US-18). Points stay with the faction stored on each row. */
+export const ultronWars = table(
+  'ultron_wars',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    /** scheduled | active | ended | cancelled */
+    status: text('status').notNull(),
+    startsAt: text('starts_at').notNull(),
+    endsAt: text('ends_at').notNull(),
+    /** JSON string[] of winning faction keys; null until the war ends. */
+    winners: text('winners'),
+    resultMessageId: text('result_message_id'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('ultron_wars_start_uq').on(t.guildId, t.startsAt),
+    index('ultron_wars_status_idx').on(t.status),
+  ],
+);
+
+export const ultronWarPoints = table(
+  'ultron_war_points',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    warId: text('war_id').notNull(),
+    memberId: text('member_id').notNull(),
+    /** Faction at the moment the points were scored. */
+    faction: text('faction').notNull(),
+    points: integer('points').notNull(),
+    /** mission | strike | participation | staff */
+    reason: text('reason').notNull(),
+    sourceKey: text('source_key').notNull(),
+    createdBy: text('created_by'),
+    note: text('note'),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('ultron_war_points_source_uq').on(t.sourceKey),
+    index('ultron_war_points_faction_idx').on(t.warId, t.faction),
+    index('ultron_war_points_member_idx').on(t.warId, t.memberId),
+  ],
+);
+
+/** Guild threat meter (US-19). */
+export const ultronThreat = table('ultron_threat', {
+  guildId: text('guild_id').primaryKey(),
+  level: integer('level').notNull().default(0),
+  lastTickDay: text('last_tick_day'),
+  updatedAt: text('updated_at').notNull(),
+});
 
 export const ultronFactionDamage = table(
   'ultron_faction_damage',
