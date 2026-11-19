@@ -1,6 +1,7 @@
 import type { BotContext, DoctorCheck, DoctorResult } from '@legion/core';
 import type { JarvisConfig } from './config.js';
 import { hasCombat } from './domain/mission.js';
+import { itemDirs, readItems } from './items.js';
 import { campaignDirs, missionDirs, readContent } from './mission-content.js';
 
 /** Missions: content, the missions channel and whether fights can run. */
@@ -53,6 +54,20 @@ export function jarvisDoctorChecks(ctx: BotContext<JarvisConfig>): DoctorCheck[]
             message: 'channels.missions não é um canal de texto: os tópicos podem falhar',
           };
         return { status: 'ok', message: `${missions.length} missões; tópicos em #${ch.name}` };
+      },
+    },
+    {
+      id: 'jarvis.items',
+      title: 'Itens do J.A.R.V.I.S.',
+      run: async (): Promise<DoctorResult> => {
+        const { items, errors } = readItems(itemDirs());
+        if (errors.length)
+          return {
+            status: 'fail',
+            message: `${errors.length} erro(s) nos arquivos de itens (o arquivo com erro é ignorado): ${errors.slice(0, 3).join(' · ')}`,
+            fix: 'Corrija os arquivos em data/content/items (rode legion content validate data/content/items)',
+          };
+        return { status: 'ok', message: `${items.length} item(ns) nos arquivos` };
       },
     },
   ];

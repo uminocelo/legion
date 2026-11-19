@@ -4,6 +4,13 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- Items and gear (US-15): `/inventario` with three slots (traje, acessório, dispositivo), one select per slot and Desequipar. Equipped items add a small bonus in training, mission and world-event fights and on the `/perfil` sheet; the total is capped by `jarvis.economy.gear.statCap` (default +2 per stat, +16 hp; `0` = cosmetic only). The `/perfil` card lists equipped items.
+- 12 shipped items in `packages/bot-jarvis/content/items/`; server items in `data/content/items/*.yaml`. A broken file is skipped and `legion doctor` shows it. Removing an item (or `active: false`) unequips it and keeps it in the inventory.
+- `/jarvis item dar membro item [motivo]` (staff): gives an item, once per member, recording who gave it.
+- `legion content validate` checks item files.
+- Core `gear` read model and `playerStats` (ADR 0029); docs/ECONOMY.md.
+
 ## [0.9.1] - 2026-11-18
 
 ### Added

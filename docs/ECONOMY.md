@@ -21,3 +21,29 @@ jarvis:
 ```
 
 Por que o teto é no total, e não só por item: [ADR 0029](adr/0029-gear-bonus-read-model-and-cap.md).
+
+## Inventário
+
+- `/inventario` (só você vê): os três espaços, os itens que você tem e um menu por espaço para equipar; **Desequipar** esvazia o espaço. Só quem abriu o menu pode usar. Itens de nível maior que o seu aparecem com "nível N" e ainda não podem ser equipados.
+- Cada item é único: você tem ou não tem. Itens entram no inventário pela staff (`/jarvis item dar`) e, depois, pela loja.
+- O `/perfil` mostra os itens equipados no cartão e os atributos já com o bônus.
+
+## Arquivos de itens
+
+Os itens que vêm com o Legion estão em `packages/bot-jarvis/content/items/`. Os do servidor ficam em `data/content/items/*.yaml` (mesmo `id` substitui um item enviado) e são lidos ao iniciar. Um arquivo com erro é ignorado inteiro e o `legion doctor` mostra ❌.
+
+```yaml
+- id: traje-tatico               # letras minúsculas, números e "-" (3 a 48)
+  slot: traje                    # traje | acessorio | dispositivo
+  minLevel: 3                    # 1 a 50
+  name: { pt-BR: Traje tático, en: Tactical suit }      # nome original, até 60 caracteres
+  description: { pt-BR: "Placas finas nos ombros.", en: "Thin plates on the shoulders." }  # opcional, até 200
+  bonus: { def: 1, hp: 8 }       # atk/def/spd/foc 0 a 2, hp 0 a 16
+  cosmetic: false                # true = sem bônus (bonus: {} ou sem bonus)
+  # shop: { price: 120, order: 10 }   # loja (versão seguinte)
+  # active: false                     # tira o item: sai de quem equipou e fica no inventário
+```
+
+- No máximo 50 itens por arquivo. Nomes de personagens da Marvel são recusados ([UNIVERSE.md](UNIVERSE.md)).
+- Remover um item do arquivo (ou `active: false`) desequipa de todo mundo e o deixa "desativado" no inventário.
+- Confira antes de reiniciar: `docker compose run --rm legion legion content validate data/content/items`.

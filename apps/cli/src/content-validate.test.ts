@@ -47,7 +47,7 @@ describe('legion content validate', () => {
     expect(r.files.filter((f) => f.errors.length)).toEqual([]);
     expect(r.exitCode).toBe(0);
     const types = new Set(r.files.map((f) => f.type));
-    for (const t of ['trivia', 'mission', 'campaign', 'enemy', 'power'])
+    for (const t of ['trivia', 'mission', 'campaign', 'enemy', 'power', 'item'])
       expect(types.has(t as never), t).toBe(true);
     expect(formatValidate(r)).toMatch(/Tudo certo: \d+ arquivo\(s\) de conteúdo válidos\./);
   });
@@ -56,6 +56,7 @@ describe('legion content validate', () => {
     expect(detectType([{ id: 'q', question: 'x?' }])).toBe('trivia');
     expect(detectType([{ id: 'e', tier: 'minion' }])).toBe('enemy');
     expect(detectType([{ id: 'p', type: 'ataque', description: {} }])).toBe('power');
+    expect(detectType([{ id: 'i', slot: 'traje', description: {} }])).toBe('item');
     expect(detectType({ id: 'm', scenes: {} })).toBe('mission');
     expect(detectType({ id: 'c', kind: 'story', title: {} })).toBe('campaign');
     expect(detectType({ campaign: {}, missions: [] })).toBe('campaign-file');
@@ -131,6 +132,25 @@ describe('legion content validate', () => {
       join(dir({ 'x.yaml': file.replace('chapter: 1', 'chapter: 1 }\n#') }), 'x.yaml'),
     ]);
     expect(r.files[0]?.type).toBe('campaign-file');
+  });
+
+  it('validates item files like J.A.R.V.I.S. (and the skill example)', () => {
+    const ok = `- { id: capuz-leve, slot: traje, name: { pt-BR: Capuz leve, en: Light hood }, bonus: { def: 1 } }\n`;
+    const d = dir({
+      'items/a.yaml': ok,
+      'items/b.yaml': `${ok}- { id: anel, slot: acessorio, name: { pt-BR: Wolverine }, bonus: { atk: 3 }, cosmetic: true }\n`,
+    });
+    const r = validateContent([d]);
+    expect(r.exitCode).toBe(1);
+    const b = r.files.find((f) => f.path.endsWith('b.yaml'));
+    expect(b?.type).toBe('item');
+    expect(b?.errors).toEqual([
+      'b.yaml → item 2 (anel) → name.pt-BR: nome de personagem existente; use um nome original',
+      'b.yaml → item 2 (anel) → bonus.atk: muito grande (máximo 2)',
+      'b.yaml → item 2 (anel) → bonus: item cosmético não tem bônus; tire o bonus ou use cosmetic: false',
+      expect.stringMatching(/^b.yaml → id: "capuz-leve" repetido/),
+    ]);
+    expect(r.files.find((f) => f.path.endsWith('a.yaml'))?.errors).toEqual([]);
   });
 
   it('exits 2 for a file of unknown type, and --type forces one', () => {

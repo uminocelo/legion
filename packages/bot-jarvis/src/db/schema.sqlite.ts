@@ -200,3 +200,52 @@ export const jarvisTriviaEdits = table(
   },
   (t) => [index('jarvis_trivia_edits_question_idx').on(t.questionId, t.createdAt)],
 );
+
+/** Item catalog (v0.10, US-15). Mirrors `jarvis_missions`: shipped/server files or staff imports. */
+export const jarvisItems = table('jarvis_items', {
+  id: text('id').primaryKey(),
+  // traje | acessorio | dispositivo
+  slot: text('slot').notNull(),
+  minLevel: integer('min_level').notNull(),
+  cosmetic: integer('cosmetic').notNull(),
+  // null = not for sale (US-16)
+  price: integer('price'),
+  definition: text('definition').notNull(),
+  contentHash: text('content_hash').notNull(),
+  active: integer('active').notNull().default(1),
+  // file | staff
+  origin: text('origin').notNull().default('file'),
+  importedBy: text('imported_by'),
+  disabledBy: text('disabled_by'),
+  updatedAt: text('updated_at').notNull(),
+});
+
+/** Items a member owns, once each (D6). Inactive items stay owned. */
+export const jarvisInventory = table(
+  'jarvis_inventory',
+  {
+    memberId: text('member_id').notNull(),
+    itemId: text('item_id').notNull(),
+    guildId: text('guild_id').notNull(),
+    // purchase | staff
+    source: text('source').notNull(),
+    // staff Discord id for `staff`, and the reason given
+    grantedBy: text('granted_by'),
+    note: text('note'),
+    acquiredAt: text('acquired_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.memberId, t.itemId] })],
+);
+
+/** One equipped item per member and slot; rows go away when the item becomes inactive (D9). */
+export const jarvisEquipment = table(
+  'jarvis_equipment',
+  {
+    memberId: text('member_id').notNull(),
+    slot: text('slot').notNull(),
+    itemId: text('item_id').notNull(),
+    guildId: text('guild_id').notNull(),
+    equippedAt: text('equipped_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.memberId, t.slot] }), index(`jarvis_equipment_item_idx`).on(t.itemId)],
+);

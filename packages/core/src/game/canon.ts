@@ -16,3 +16,8 @@ export function getCanonFilter(): CanonNameFilter {
 export function isCanonName(text: string): boolean {
   return getCanonFilter().isCanon(text);
 }
+
+/** The item schema with the bots' canon list (the website editor binds its own copy of the list). */
+import { createItemSchema } from './item.js';
+
+export const itemSchema = createItemSchema(isCanonName);

@@ -134,6 +134,7 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 | `missions.choiceTimeoutMinutes` | `10` | Sem escolha nesse tempo, a missão é abandonada (sem XP) |
 | `missions.combatTimeoutMinutes` | `15` | Sem resultado da luta nesse tempo, a missão fracassa |
 | `missions.lobbyTimeoutMinutes` | `5` | Tempo para um grupo se formar |
+| `economy.gear.statCap` | `2` | Quanto o equipamento soma, no total, a cada atributo (vida: `statCap × 8`). `0` = equipamento só visual ([ECONOMY.md](ECONOMY.md)) |
 
 ### Perguntas
 

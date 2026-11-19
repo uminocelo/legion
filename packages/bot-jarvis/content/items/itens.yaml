@@ -1,0 +1,99 @@
+# Itens enviados com o J.A.R.V.I.S. (v0.10). Um item por espaço: traje, acessorio, dispositivo.
+# Bônus por item: atk/def/spd/foc de 0 a 2, hp de 0 a 16. O total equipado tem teto
+# (jarvis.economy.gear.statCap, padrão +2 por atributo e +16 de vida). Nomes sempre originais.
+
+# Trajes
+- id: traje-de-treino
+  slot: traje
+  minLevel: 1
+  name: { pt-BR: Traje de treino, en: Training suit }
+  description:
+    {
+      pt-BR: "Tecido leve e resistente, feito para a Sala de Perigo.",
+      en: "Light and tough fabric made for the Danger Room.",
+    }
+  bonus: { hp: 8 }
+- id: traje-tatico
+  slot: traje
+  minLevel: 3
+  name: { pt-BR: Traje tático, en: Tactical suit }
+  description: { pt-BR: "Placas finas nos ombros e no peito.", en: "Thin plates on the shoulders and chest." }
+  bonus: { def: 1, hp: 8 }
+- id: jaqueta-refletiva
+  slot: traje
+  minLevel: 5
+  name: { pt-BR: Jaqueta refletiva, en: Reflective jacket }
+  description: { pt-BR: "Desvia parte da energia de um golpe.", en: "Deflects part of a blow's energy." }
+  bonus: { def: 2 }
+- id: capa-de-gala
+  slot: traje
+  minLevel: 1
+  name: { pt-BR: Capa de gala, en: Gala cape }
+  description:
+    { pt-BR: "Não protege nada, mas todo mundo olha.", en: "Protects nothing, but everyone looks." }
+  cosmetic: true
+
+# Acessórios
+- id: luvas-de-impacto
+  slot: acessorio
+  minLevel: 2
+  name: { pt-BR: Luvas de impacto, en: Impact gloves }
+  description:
+    {
+      pt-BR: "Amortecem o soco, para você e não para o alvo.",
+      en: "They cushion the punch for you, not for the target.",
+    }
+  bonus: { atk: 1 }
+- id: botas-de-salto
+  slot: acessorio
+  minLevel: 4
+  name: { pt-BR: Botas de salto, en: Jump boots }
+  description:
+    { pt-BR: Molas no solado para sair do caminho., en: Springs in the soles to get out of the way. }
+  bonus: { spd: 2 }
+- id: tiara-de-foco
+  slot: acessorio
+  minLevel: 6
+  name: { pt-BR: Tiara de foco, en: Focus band }
+  description:
+    { pt-BR: "Um zumbido baixo que ajuda a concentrar.", en: "A low hum that helps you concentrate." }
+  bonus: { foc: 2 }
+- id: broche-de-recruta
+  slot: acessorio
+  minLevel: 1
+  name: { pt-BR: Broche de recruta, en: Recruit pin }
+  description:
+    { pt-BR: "Para quem estava aqui desde o começo.", en: "For those who were here from the start." }
+  cosmetic: true
+
+# Dispositivos
+- id: comunicador-de-pulso
+  slot: dispositivo
+  minLevel: 1
+  name: { pt-BR: Comunicador de pulso, en: Wrist communicator }
+  description:
+    { pt-BR: Avisa quando um golpe vem pelo lado cego., en: Warns you when a hit comes from your blind side. }
+  bonus: { spd: 1 }
+- id: visor-de-mira
+  slot: dispositivo
+  minLevel: 3
+  name: { pt-BR: Visor de mira, en: Targeting visor }
+  description: { pt-BR: "Marca os pontos fracos das máquinas.", en: "Marks the weak points of machines." }
+  bonus: { atk: 1, foc: 1 }
+- id: gerador-de-escudo
+  slot: dispositivo
+  minLevel: 7
+  name: { pt-BR: Gerador de escudo, en: Shield generator }
+  description:
+    {
+      pt-BR: Uma bolha de energia que segura o primeiro impacto.,
+      en: An energy bubble that holds the first impact.,
+    }
+  bonus: { hp: 16, def: 1 }
+- id: drone-mascote
+  slot: dispositivo
+  minLevel: 8
+  name: { pt-BR: Drone mascote, en: Pet drone }
+  description:
+    { pt-BR: Voa em volta de você e pisca quando você ganha., en: Flies around you and blinks when you win. }
+  bonus: { foc: 1, spd: 1 }

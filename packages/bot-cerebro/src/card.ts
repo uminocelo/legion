@@ -18,10 +18,13 @@ export interface CardData {
   powers: { main: string | null; secondary: string[] };
   description: string;
   stats: Stats;
+  /** Equipped item names (v0.10); empty or missing = no gear line, as in v0.8.1. */
+  gear?: string[];
   labels: {
     title: string;
     level: string;
     powers: string;
+    gear?: string;
     stats: Record<keyof Stats, string>;
   };
 }
@@ -120,7 +123,13 @@ export function cardSvg(d: CardData): string {
   <text x="48" y="290" class="section">${esc(d.labels.powers)}</text>
   ${powers}
   <line x1="630" y1="270" x2="630" y2="500" stroke="#1f2937" stroke-width="2"/>
-  ${stats}
+  ${stats}${
+    d.gear?.length
+      ? `
+  <text x="48" y="472" class="section">${esc(d.labels.gear ?? '')}</text>
+  <text x="48" y="504" class="power">${esc(clipText(clean(d.gear.join(' · ')), 22, 560))}</text>`
+      : ''
+  }
   <text x="932" y="524" class="brand" text-anchor="end">LEGION</text>
 </svg>`;
 }
