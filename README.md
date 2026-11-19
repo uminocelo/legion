@@ -86,7 +86,7 @@ No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e 
 ```bash
 docker compose pull && docker compose up -d
 ```
-As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.9.1` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
+As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.10.0` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
 
 ## Backup
 
@@ -153,7 +153,7 @@ A pasta [`skills/`](skills/) tem cinco skills que ensinam um agente de IA (Claud
 
 ## Site
 
-A página do projeto fica em [`website/`](website/): uma página por bot (com os comandos gerados do próprio código) um guia para [personalizar](https://uminocelo.github.io/legion/personalizar.html) missões, trivia, inimigos e textos, e editores no navegador para montar [missões](https://uminocelo.github.io/legion/editor-missoes.html), [perguntas](https://uminocelo.github.io/legion/editor-trivia.html) e [inimigos](https://uminocelo.github.io/legion/editor-inimigos.html) com as mesmas regras dos bots. Estático, sem chamadas externas: nada sai do navegador. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente: `pnpm site:build` e abra `website/dist/index.html`. Detalhes em [website/README.md](website/README.md).
+A página do projeto fica em [`website/`](website/): uma página por bot (com os comandos gerados do próprio código) um guia para [personalizar](https://uminocelo.github.io/legion/personalizar.html) missões, trivia, inimigos, itens e textos, e editores no navegador para montar [missões](https://uminocelo.github.io/legion/editor-missoes.html), [perguntas](https://uminocelo.github.io/legion/editor-trivia.html), [inimigos](https://uminocelo.github.io/legion/editor-inimigos.html) e [itens](https://uminocelo.github.io/legion/editor-itens.html) com as mesmas regras dos bots. Estático, sem chamadas externas: nada sai do navegador. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente: `pnpm site:build` e abra `website/dist/index.html`. Detalhes em [website/README.md](website/README.md).
 
 ## Desenvolvimento
 

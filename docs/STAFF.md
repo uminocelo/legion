@@ -75,11 +75,15 @@ Mesmo formato do `enemies.yaml` ([WORLD_EVENTS.md](WORLD_EVENTS.md)): uma lista 
 
 ## Itens
 
-Itens ficam em arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)); importar pelo Discord vem numa versão seguinte.
+Itens vêm de arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)) ou do Discord. Monte o arquivo no [editor de itens](https://uminocelo.github.io/legion/editor-itens.html).
 
 | Comando | O que faz |
 |---|---|
 | `/jarvis item dar membro item [motivo]` | Entrega um item a um membro (uma vez por membro). Fica registrado quem deu e o motivo |
+| `/jarvis item importar arquivo` | Anexe o `.yaml` (até 50 itens). A prévia mostra 🆕 novos, ✏️ alterados (com quantos jogadores têm cada um) e ＝ iguais; **Publicar** aplica tudo de uma vez. Ids de itens dos arquivos são recusados; qualquer erro é listado e nada muda |
+| `/jarvis item exportar` | Baixa `itens-staff.yaml` com os itens importados. Reimportar o mesmo arquivo não muda nada |
+| `/jarvis item desativar item` | Tira o item de jogo e da loja na hora. Desequipa de quem usa (responde quantos) e cada um continua com o item. Vale mesmo depois de reiniciar |
+| `/jarvis item ativar item` | Volta um item desativado. Quem tem precisa equipar de novo |
 
 ## Segurança
 
