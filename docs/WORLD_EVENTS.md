@@ -38,20 +38,38 @@ Uma missão de combate do J.A.R.V.I.S. (`mission.started`) gera um encontro uma 
 | Quando | Toda semana (`ultron.invasion.cron`, padrão sábado 20:00 no fuso do servidor) | Pela staff, ou `ultron.raids.cron` |
 | Quem | Todas as facções juntas | Quem quiser, num tópico |
 | Inimigo | Enxame (`invasion.templateId`) | Chefe (`raids.templateIds`) |
-| Resultado | Total, maiores danos e **dano por facção** | Total e maiores danos |
+| Ondas | 1 a 5, pelo medidor de **ameaça** (`invasion.waves`) | Sempre 1 |
+| Resultado | Total, maiores danos, **dano por facção** e cada onda | Total e maiores danos |
 
 Ciclo: **agendado → anunciado** (`announceMinutesBefore`, 60 min) **→ em andamento → encerrado** (ou cancelado).
 
 1. No início o HP é fixado: `hpPerParticipant × expectedParticipants × dificuldade` (padrão 300 × 8). Com a adaptativa ligada, os participantes esperados vêm da média dos 3 últimos eventos do mesmo tipo (mínimo 3).
 2. Cada clique em **Atacar** é uma luta de uma rodada contra uma cópia do chefe, resolvida pelo Sentinel. O dano sai do HP compartilhado. Depois, espere `strikeCooldownMinutes` (10). Quem cai na luta espera o dobro.
-3. HP em 0 → **vitória**. Tempo esgotado com HP sobrando → **derrota**.
+3. HP em 0 → **vitória**. Tempo esgotado com HP sobrando → **derrota**. Numa invasão com várias ondas, HP em 0 com ondas sobrando começa a próxima na mesma mensagem (veja abaixo).
 4. XP (pelo J.A.R.V.I.S., uma vez por participante): vitória 50 + até 50 de bônus proporcional ao dano; derrota 15. Sem o J.A.R.V.I.S., o evento funciona sem XP.
 
 Tudo roda por tarefas agendadas no banco: se o bot reinicia, as tarefas atrasadas rodam uma vez na volta, e nada é postado duas vezes. Um evento cujo fim passou com o bot desligado termina na volta com o HP que tinha.
 
+### Ondas
+
+Uma invasão pode ter de 1 a 5 ondas. O número e a dificuldade são fixados quando ela começa:
+
+- `ultron.invasion.waves: threat` (padrão): vêm do medidor de ameaça. Abaixo de 34: 1 onda, normal. De 34 a 66: 2 ondas, normal. 67 ou mais: 3 ondas, difícil. Com `threat.enabled: false`, 1 onda na dificuldade de `events.difficulty`.
+- Um número de 1 a 5: sempre essa quantidade, na dificuldade de `events.difficulty`.
+
+A onda 1 tem o HP de sempre. Cada onda seguinte tem `waveHpGrowth` (0,25 = +25%) a mais de HP que a anterior, e o chefe sobe 1 nível. A troca acontece uma vez só, mesmo com vários ataques chegando juntos. Um ataque que começou na onda anterior e termina depois da troca acerta a onda nova. A mensagem do evento mostra "HP · Onda 2/3" na hora.
+
+Tempo esgotado no meio é **derrota**: as ondas vencidas ficam como limpas e a atual como falha. O resultado lista cada onda com o tempo e quem mais causou dano nela. As ondas não alcançadas aparecem como tal. Se o bot reinicia entre ondas, ele volta na onda e no HP salvos. Raids têm sempre 1 onda.
+
+### Ameaça
+
+Um medidor de 0 a 100 por servidor, que começa em 0. Todo dia, às 00:10 no fuso do servidor, o ULTRON olha o dia anterior. Missões terminadas (vitória ou derrota; abandonadas não contam) mais ataques em eventos são a atividade do dia. Com pelo menos `threat.activeActions` (3), a ameaça cai `activeFall` (5). Com menos, sobe `idleRise` (10).
+
+Cada dia conta uma vez só (`last_tick_day`). Se o bot ficou desligado, os dias perdidos são aplicados na volta, até 7. Os mais antigos são ignorados. `/ameaca` mostra a barra, o nível (baixa, média ou alta) e o que ele significa para a próxima invasão, mesmo sem evento marcado. `ultron.threat.enabled: false` desliga o medidor e o campo.
+
 ### Comandos
 
-- `/ameaca`: evento atual ou próximo, HP, tempo, seu dano e quando você pode atacar.
+- `/ameaca`: o medidor de **ameaça**, o evento atual ou próximo, a onda, o HP, o tempo, seu dano e quando você pode atacar.
 - Staff: `/ultron evento agendar <tipo> <quando>` (`AAAA-MM-DD HH:mm` no fuso do servidor, ou `+30m`, `+2h`), `/ultron evento iniciar <tipo>`, `/ultron evento cancelar [tipo]`, `/ultron spawn`, `/ultron status`.
 
 Dois eventos do mesmo tipo não podem se sobrepor; uma raid durante uma invasão pode.

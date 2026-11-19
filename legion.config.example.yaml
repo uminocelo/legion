@@ -160,6 +160,13 @@ ultron:
     cron: "0 20 * * 6" # sábado 20:00 no timezone acima
     durationMinutes: 60
     templateId: enxame-de-nanites
+    waves: threat # threat (pelo medidor de ameaça: 1, 2 ou 3 ondas) ou um número de 1 a 5
+    waveHpGrowth: 0.25 # cada onda tem 25% mais HP que a anterior
+  threat:
+    enabled: true
+    idleRise: 10 # dia quieto: a ameaça sobe
+    activeFall: 5 # dia ativo: a ameaça cai
+    activeActions: 3 # missões terminadas + ataques para o dia contar como ativo
   raids:
     cron: null # ex.: "0 21 * * 3"; null = só pela staff
     durationMinutes: 45

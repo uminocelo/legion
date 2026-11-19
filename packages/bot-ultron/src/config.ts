@@ -52,6 +52,10 @@ export const ultronConfigSchema = z.object({
       cron: cron.default('0 20 * * 6'),
       durationMinutes: z.number().int().min(5).max(1440).default(60),
       templateId: templateId.default('enxame-de-nanites'),
+      /** `threat` sizes each invasion from the threat meter; a number fixes the waves (US-19). */
+      waves: z.union([z.literal('threat'), z.number().int().min(1).max(5)]).default('threat'),
+      /** Each wave has this much more HP than the one before (0.25 = +25%). */
+      waveHpGrowth: z.number().min(0).max(2).default(0.25),
     })
     .prefault({}),
   raids: z
@@ -66,6 +70,16 @@ export const ultronConfigSchema = z.object({
       provider: z.enum(['none', 'openai-compatible']).default('none'),
       timeoutMs: z.number().int().min(500).max(30_000).default(4000),
       maxCallsPerHour: z.number().int().min(0).default(30),
+    })
+    .prefault({}),
+  /** Threat meter (US-19): quiet days raise it, activity lowers it, one tick per day. */
+  threat: z
+    .object({
+      enabled: z.boolean().default(true),
+      idleRise: z.number().int().min(0).max(100).default(10),
+      activeFall: z.number().int().min(0).max(100).default(5),
+      /** Missions finished + strikes in a day needed to count as an active day. */
+      activeActions: z.number().int().min(1).default(3),
     })
     .prefault({}),
   /** Faction war (US-18). `length` is `month` (starts on the 1st) or a number of days. */
