@@ -97,6 +97,10 @@ Itens vêm de arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)) ou do Discor
 | `/jarvis item desativar item` | Tira o item de jogo e da loja na hora. Desequipa de quem usa (responde quantos) e cada um continua com o item. Vale mesmo depois de reiniciar |
 | `/jarvis item ativar item` | Volta um item desativado. Quem tem precisa equipar de novo |
 
+## Painel da staff
+
+Com o painel ligado ([DASHBOARD.md](DASHBOARD.md)), as mesmas tarefas têm formulários na web: dar e tirar créditos, dar item, mudar o preço de um item (sobrevive a importações), agendar, iniciar ou cancelar eventos, iniciar e encerrar a guerra e definir a ameaça. As regras e as mensagens são as dos comandos, e tudo fica na auditoria (`/audit`).
+
 ## Segurança
 
 - Só arquivos enviados ao próprio Discord são baixados (`cdn.discordapp.com`), com limite de tamanho.

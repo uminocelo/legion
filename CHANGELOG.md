@@ -4,6 +4,10 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-21
+
+The world: faction war, multi-wave invasions, the threat meter, and an optional staff dashboard with audited actions.
+
 ### Upgrade notes
 - **Migration** `0002_world_v1` on ULTRON (wars and war points; nothing is paid retroactively). No J.A.R.V.I.S. migration. Restart so it runs.
 - **New commands** `/guerra` and `/ultron guerra iniciar`, `encerrar` and `pontos`. Restart (or `legion register-commands`) so Discord shows them.
@@ -12,18 +16,21 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 - **Waves and threat on by default.** Invasions get 1–3 waves from the threat meter (`ultron.invasion.waves: threat`). `ultron.invasion.waves: 1` keeps the old one-wave invasions; `ultron.threat.enabled: false` turns the meter off.
 - **Migration** `0001_dashboard` on core (dashboard sessions and the audit log; empty tables). Runs on restart.
 - **Staff dashboard, off by default.** To use it: set `dashboard.enabled: true`, put Cérebro's OAuth2 client secret in `DASHBOARD_CLIENT_SECRET`, add `<publicUrl>/callback` as a redirect in the Developer Portal and uncomment `127.0.0.1:8081:8081` in `docker-compose.yml` ([docs/DASHBOARD.md](docs/DASHBOARD.md)).
+- **Migration** `0007_price_override` on J.A.R.V.I.S. (one nullable column; every price stays as it was).
 - **War on by default.** Missions, strikes and world-event participation score for the hero's faction. `ultron.war.enabled: false` stops new wars and scoring. `jarvis.economy.war.winner` (default 50) is what each scoring member of a winning faction receives. Economy off: the war still runs and posts, and nobody is paid.
 
 ### Added
 - Faction war (US-18): one war per server, points stored with the faction at that moment, `/guerra` scoreboard, staff start, end and audited adjustments, a result post, and `war.ended`. A tie pays every tied faction. Independente never scores. ADR 0033.
 - Multi-wave invasions (US-19): an invasion runs 1–5 waves in the same message. Each wave has `invasion.waveHpGrowth` (+25%) more HP and a boss one level higher. The switch happens once even with strikes in flight, and late strikes land on the new wave. A time-out mid-way is a defeat with the cleared waves recorded. The results list each wave (time, top striker). `world.event` carries `wave` and `waves`. Raids stay one wave.
 - Threat meter (US-19): 0–100 per server. Quiet days raise it (`threat.idleRise`, 10) and days with `threat.activeActions` (3) finished missions and strikes lower it (`activeFall`, 5). It ticks once a day at 00:10 and catches up at most 7 missed days. It sets the next invasion: below 34 → 1 wave, normal; 34–66 → 2 waves, normal; 67+ → 3 waves, difícil. `/ameaca` gains the **Ameaça** field (bar, level, what it means), shown even with no event.
-- Staff dashboard (US-20): a read-only web page in the same container (port 8081). Discord login (`scope=identify`), so only the owner, Administrators and the staff roles get in, re-checked within 60 s. Panels: members per faction and level band; J.A.R.V.I.S. economy, top balances and purchases; ULTRON events, war and history, threat; the audit log. Bots add panels with `ctx.dashboard.panel`. `legion doctor` checks the secret, the port and `publicUrl`. ADR 0034.
+- Staff dashboard (US-20): a web page in the same container (port 8081). Discord login (`scope=identify`), so only the owner, Administrators and the staff roles get in, re-checked within 60 s. Panels: members per faction and level band; J.A.R.V.I.S. economy, top balances and purchases; ULTRON events, war and history, threat; the audit log. Bots add panels with `ctx.dashboard.panel`. `legion doctor` checks the secret, the port and `publicUrl`. ADR 0034.
+- Dashboard actions (US-21): give and remove credits, give an item, change an item price, schedule, start or cancel an event, start or end the war, set the threat. Each one uses the same rules and messages as its slash command. Forms are CSRF-protected and run once (a resend changes nothing). Every run is in `/audit` with who, what and the result (`ok: false` for refusals). A price change is stored as `price_override`: it survives item imports and is used by `/loja`, buying and the panels; an empty price goes back to the file price. Bots add actions with `ctx.dashboard.action`.
 - `jarvis.war-credits` pays the winners once (`war:<warId>:<memberId>`).
 - `legion playtest-report` gains a **Guerra** section (points by faction and reason, staff adjustments; included in `--json`) and flags an unknown faction or a repeated source key.
 - `legion doctor` shows whether a war is active, scheduled or off.
 
 ### Changed
+- The dashboard answers 502 when Discord cannot be reached during the login or the staff check.
 - `/mutante` no longer exists. `/heroi` is the only command for the sheet, powers and origin.
 
 ## [0.10.0] - 2026-11-19
@@ -204,7 +211,9 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/uminocelo/legion/compare/v0.10.0...v1.0.0
+[0.10.0]: https://github.com/uminocelo/legion/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/uminocelo/legion/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/uminocelo/legion/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/uminocelo/legion/compare/v0.8.0...v0.8.1

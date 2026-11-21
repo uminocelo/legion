@@ -87,7 +87,7 @@ No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e 
 ```bash
 docker compose pull && docker compose up -d
 ```
-As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=0.10.0` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
+As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=1.0.0` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
 
 ## Backup
 
@@ -150,7 +150,7 @@ Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
 
 ## Painel da staff (opcional)
 
-Uma página web com membros, economia, eventos, guerra e ameaça. Login pelo Discord; só a staff entra. Desligado por padrão: veja [docs/DASHBOARD.md](docs/DASHBOARD.md).
+Uma página web com membros, economia, eventos, guerra e ameaça, e ações (créditos, itens, preços, eventos, guerra, ameaça) com auditoria. Login pelo Discord; só a staff entra. Desligado por padrão: veja [docs/DASHBOARD.md](docs/DASHBOARD.md).
 
 ## Skills para IA
 
