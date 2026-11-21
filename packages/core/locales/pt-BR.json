@@ -13,6 +13,25 @@
       "sentinel": "Sentinel",
       "ultron": "ULTRON",
       "footer": "Legion · projeto de fã sem fins lucrativos"
+    },
+    "dashboard": {
+      "title": "Painel da Legion",
+      "overview": "Visão geral",
+      "signed_in_as": "Conectado como {name}",
+      "logout": "Sair",
+      "logged_out": "Você saiu do painel.",
+      "login_again": "Entrar com o Discord",
+      "errors": {
+        "not_found": "Página não encontrada.",
+        "method_not_allowed": "Esta página não aceita esse pedido.",
+        "error": "Algo deu errado. Tente de novo.",
+        "bad_state": "Este link de login é inválido ou expirou. Comece o login de novo.",
+        "login_failed": "O Discord não aceitou o login (o código pode ter expirado). Tente de novo.",
+        "forbidden": "Só a staff pode abrir o painel.",
+        "unavailable": "Não consegui falar com o Discord para conferir seu acesso. Tente de novo daqui a pouco.",
+        "rate_limited": "Tentativas de login demais. Tente de novo em {seconds}s.",
+        "csrf": "Este formulário expirou. Recarregue a página e tente de novo."
+      }
     }
   }
 }

@@ -23,6 +23,13 @@ export const REDACT_PATHS = [
   'main.token',
   'env.main.token',
   'env.AI_API_KEY',
+  'DASHBOARD_CLIENT_SECRET',
+  '*.DASHBOARD_CLIENT_SECRET',
+  'env.DASHBOARD_CLIENT_SECRET',
+  'clientSecret',
+  '*.clientSecret',
+  'client_secret',
+  '*.client_secret',
 ];
 
 /** Hides the password in a connection URL: postgres://u:secret@h → postgres://u:***@h. */

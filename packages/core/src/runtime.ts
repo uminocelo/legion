@@ -1,5 +1,9 @@
 import type { AnyLegionBot, BotContext, GuildEvents, LegionBot } from './bot.js';
 import type { BotId, LegionConfig } from './config/schema.js';
+import { type DashboardOAuth, DiscordOAuth } from './dashboard/oauth.js';
+import { DashboardServer } from './dashboard/server.js';
+import { DashboardSessionStore } from './dashboard/sessions.js';
+import { GuildStaffChecker } from './dashboard/staff.js';
 import type { LegionDb } from './db/db.js';
 import { KvStore } from './db/kv.js';
 import { syncCommands } from './discord/command-sync.js';
@@ -95,6 +99,7 @@ export class CoreRuntime {
   private readonly botApps = new Map<BotId, string>();
   readonly newId: () => string;
   readonly bots: { bot: AnyLegionBot; ctx: BotContext<unknown> }[] = [];
+  readonly dashboardSessions: DashboardSessionStore;
 
   constructor(private readonly o: CoreRuntimeOptions) {
     const { config, db, clock, log } = o;
@@ -134,6 +139,12 @@ export class CoreRuntime {
       o.roleGuard ?? 'skip',
     );
     this.guildEvents = new GuildEventHub(log.child({ component: 'guild-events' }));
+    this.dashboardSessions = new DashboardSessionStore(db, clock, config.dashboard.sessionHours);
+    if (config.dashboard.enabled)
+      this.scheduler.every('core.dashboard-sessions-purge', '23 4 * * *', async () => {
+        const purged = await this.dashboardSessions.purgeExpired();
+        if (purged) log.info({ purged }, 'expired dashboard sessions deleted');
+      });
     const read = this.providers.readModels();
     this.router = new InteractionRouter({
       gateway: this.gateway,
@@ -177,6 +188,36 @@ export class CoreRuntime {
     if (i.isGuildOwner) return true;
     const ids = await this.roles.idsFor(STAFF_ROLE_KEYS);
     return [...ids.values()].some((id) => i.memberRoleIds.includes(id));
+  }
+
+  /**
+   * The staff dashboard server (not started). `clientId`/`clientSecret` are Cérebro's app OAuth2
+   * credentials; tests pass a fake `oauth`.
+   */
+  dashboardServer(o: {
+    clientId: string;
+    clientSecret: string;
+    oauth?: DashboardOAuth;
+    host?: string;
+    port?: number;
+  }): DashboardServer {
+    const { config, clock, log } = this.o;
+    return new DashboardServer({
+      config: config.dashboard,
+      oauth: o.oauth ?? new DiscordOAuth({ clientId: o.clientId, clientSecret: o.clientSecret }),
+      sessions: this.dashboardSessions,
+      staff: new GuildStaffChecker({
+        gateway: this.gateway,
+        guildId: this.o.guildId,
+        clock,
+        isStaff: (i) => this.isStaff(i),
+      }),
+      i18n: this.i18n,
+      clock,
+      log: log.child({ component: 'dashboard' }),
+      ...(o.host ? { host: o.host } : {}),
+      ...(o.port !== undefined ? { port: o.port } : {}),
+    });
   }
 
   contextFor<C>(bot: LegionBot<C>): BotContext<C> {

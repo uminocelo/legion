@@ -5,6 +5,7 @@ import {
   type CoreRuntime,
   createLogger,
   cryptoRandomSource,
+  type DashboardServer,
   DiscordJsGateway,
   parseEnv,
   planApps,
@@ -19,6 +20,7 @@ import {
   describeBootError,
   loadConfigAndBots,
   loadDotEnv,
+  startDashboard,
 } from './runtime.js';
 
 async function main(): Promise<void> {
@@ -29,6 +31,7 @@ async function main(): Promise<void> {
   });
   let runtime: CoreRuntime | null = null;
   let server: Server | null = null;
+  let dashboard: DashboardServer | null = null;
   let ready = false;
 
   const fatal = (err: unknown): never => {
@@ -112,6 +115,8 @@ async function main(): Promise<void> {
     return null;
   });
 
+  dashboard = await startDashboard(runtime, env, config, log);
+
   let stopping = false;
   const shutdown = async (signal: string) => {
     if (stopping) return;
@@ -120,6 +125,7 @@ async function main(): Promise<void> {
     await runtime?.stop(10_000);
     await Promise.all(apps.map((a) => a.client.destroy()));
     server?.close();
+    await dashboard?.stop();
     await runtime?.close();
     process.exit(0);
   };

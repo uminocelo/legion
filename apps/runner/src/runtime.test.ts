@@ -16,7 +16,13 @@ import { GatewayIntentBits } from 'discord.js';
 import { describe, expect, it } from 'vitest';
 import { UnavailableBotError } from './bots.js';
 import { intentsFor } from './discord.js';
-import { buildRuntime, describeBootError, enabledBotIds, loadConfigAndBots } from './runtime.js';
+import {
+  buildRuntime,
+  describeBootError,
+  enabledBotIds,
+  loadConfigAndBots,
+  startDashboard,
+} from './runtime.js';
 
 const write = (text: string) => {
   const file = join(mkdtempSync(join(tmpdir(), 'legion-cfg-')), 'legion.config.yaml');
@@ -108,5 +114,56 @@ describe('buildRuntime', () => {
     expect(intentsFor(bots).sort()).toEqual(
       [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers].sort(),
     );
+  });
+});
+
+describe('dashboard startup', () => {
+  const boot = async (yaml: string, extraEnv: Record<string, string> = {}) => {
+    const { config, bots } = await loadConfigAndBots(write(yaml));
+    const e = parseEnv({
+      CEREBRO_TOKEN: 't',
+      CEREBRO_CLIENT_ID: '123456789',
+      DISCORD_GUILD_ID: '100000000000000001',
+      ...extraEnv,
+    });
+    const runtime = await buildRuntime({
+      env: e,
+      config,
+      bots,
+      gateway: new FakeDiscordGateway(),
+      log: silentLogger(),
+      clock: new FakeClock(),
+      random: new FakeRandomSource(1),
+      db: await createTestDb(),
+    });
+    return { runtime, config, env: e };
+  };
+
+  it('listens on nothing when off, or on without the secret', async () => {
+    for (const [yaml, extra] of [
+      ['bots: [cerebro]\n', { DASHBOARD_CLIENT_SECRET: 's' }],
+      ['bots: [cerebro]\ndashboard:\n  enabled: true\n', {}],
+    ] as const) {
+      const b = await boot(yaml, extra);
+      try {
+        expect(await startDashboard(b.runtime, b.env, b.config, silentLogger(), { port: 0 })).toBeNull();
+      } finally {
+        await b.runtime.close();
+      }
+    }
+  });
+
+  it('starts when on with the secret', async () => {
+    const b = await boot('bots: [cerebro]\ndashboard:\n  enabled: true\n', { DASHBOARD_CLIENT_SECRET: 's' });
+    const d = await startDashboard(b.runtime, b.env, b.config, silentLogger(), {
+      host: '127.0.0.1',
+      port: 0,
+    });
+    try {
+      expect(d).not.toBeNull();
+    } finally {
+      await d?.stop();
+      await b.runtime.close();
+    }
   });
 });
