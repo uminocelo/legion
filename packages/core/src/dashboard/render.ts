@@ -48,4 +48,27 @@ th{color:var(--muted);font-weight:600;font-size:.85rem}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .muted{color:var(--muted)}
 .pager{display:flex;gap:16px;margin-top:12px}
+form.action{display:grid;gap:12px;max-width:480px}
+.field{display:grid;gap:4px}
+.field label{font-weight:600}
+input,select{font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);width:100%}
+input[aria-invalid=true],select[aria-invalid=true]{border-color:#c92a2a}
+.field-error{margin:0;color:#c92a2a;font-size:.9rem}
+.result{padding:8px 12px;border-radius:6px;margin:0 0 12px}
+.result.ok{background:#2b8a3e22;border:1px solid #2b8a3e}
+.result.fail{background:#c92a2a22;border:1px solid #c92a2a}
+button[type=submit]{justify-self:start}
 `;
+
+/**
+ * Discord markup in shared command messages, made readable on the web: `<t:unix:…>` → local date,
+ * `<@id>` → `@id`, `<#id>` → `#id`, `**bold**` → text. The result is still escaped by the caller.
+ */
+export function discordToPlain(text: string, locale: string, timeZone: string): string {
+  const fmt = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short', timeZone });
+  return text
+    .replace(/<t:(\d+)(?::[a-zA-Z])?>/g, (_m, s: string) => fmt.format(new Date(Number(s) * 1000)))
+    .replace(/<@[!&]?(\d+)>/g, '@$1')
+    .replace(/<#(\d+)>/g, '#$1')
+    .replace(/\*\*(.+?)\*\*/g, '$1');
+}

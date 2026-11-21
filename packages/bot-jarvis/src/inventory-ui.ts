@@ -180,25 +180,39 @@ export class JarvisInventory {
 
   /** `/jarvis item dar membro item [motivo]` (staff). */
   async staffGrant(i: IncomingInteraction, r: Responder, l: Locale): Promise<void> {
-    const member = await this.ctx.read.members.getByDiscordId(String(i.options?.membro ?? ''));
-    if (!member) return r.reply(this.text(this.ctx.i18n.t('jarvis.errors.unknown_member', {}, l)));
-    const itemId = String(i.options?.item ?? '').trim();
-    const reason =
-      String(i.options?.motivo ?? '')
-        .trim()
-        .slice(0, 200) || null;
+    const res = await this.staffGrantTo(
+      {
+        discordUserId: String(i.options?.membro ?? ''),
+        itemId: String(i.options?.item ?? ''),
+        reason: String(i.options?.motivo ?? ''),
+        actorId: i.userId,
+      },
+      l,
+    );
+    return r.reply(this.text(res.message));
+  }
+
+  /** `/jarvis item dar` rules and messages, shared with the dashboard action (US-21). */
+  async staffGrantTo(
+    o: { discordUserId: string; itemId: string; reason: string; actorId: string },
+    l: Locale,
+  ): Promise<{ ok: boolean; message: string }> {
+    const member = await this.ctx.read.members.getByDiscordId(o.discordUserId);
+    if (!member) return { ok: false, message: this.ctx.i18n.t('jarvis.errors.unknown_member', {}, l) };
+    const itemId = o.itemId.trim();
+    const reason = o.reason.trim().slice(0, 200) || null;
     const res = await this.s.inventory.grant({
       memberId: member.id,
       itemId,
       source: 'staff',
-      grantedBy: i.userId,
+      grantedBy: o.actorId,
       note: reason,
     });
     const row = await this.s.items.row(itemId);
     const vars = { item: row ? this.name(parseItem(row), l) : itemId, member: `<@${member.discordUserId}>` };
-    if (!res.ok) return r.reply(this.text(this.t(`grant_${res.reason}`, vars, l)));
-    this.ctx.log.info({ staff: i.userId, memberId: member.id, itemId, reason }, 'staff item grant');
-    return r.reply(this.text(this.t('granted', vars, l)));
+    if (!res.ok) return { ok: false, message: this.t(`grant_${res.reason}`, vars, l) };
+    this.ctx.log.info({ staff: o.actorId, memberId: member.id, itemId, reason }, 'staff item grant');
+    return { ok: true, message: this.t('granted', vars, l) };
   }
 
   /** Autocomplete for the `item` option: every item in the catalog. */

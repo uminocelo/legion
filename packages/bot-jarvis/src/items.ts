@@ -103,19 +103,37 @@ export async function unequipItems(
   return rows.length;
 }
 
+/** `price` as the shop sees it: the staff override when set, else the file's `shop.price`. */
+const effectivePrice = (r: ItemRow): ItemRow =>
+  r.priceOverride == null ? r : { ...r, price: r.priceOverride };
+
 /** The item catalog: files (shipped, then the server's) and staff rows, which win and are never touched by reloads. */
 export class ItemCatalog {
   constructor(private readonly repo: JarvisRepo) {}
 
   async all(ex: Executor = this.repo.db.orm): Promise<ItemRow[]> {
     const t = this.repo.t.jarvisItems;
-    return ex.select().from(t).orderBy(t.id);
+    return (await ex.select().from(t).orderBy(t.id)).map(effectivePrice);
   }
 
   async row(id: string, ex: Executor = this.repo.db.orm): Promise<ItemRow | null> {
     const t = this.repo.t.jarvisItems;
     const [row] = await ex.select().from(t).where(eq(t.id, id)).limit(1);
-    return row ?? null;
+    return row ? effectivePrice(row) : null;
+  }
+
+  /**
+   * Sets (or, with null, clears) the staff price override (D24). Reloads never touch it.
+   * Returns the item's effective price after the change, or null when the item does not exist.
+   */
+  async setPriceOverride(id: string, price: number | null): Promise<ItemRow | null> {
+    const t = this.repo.t.jarvisItems;
+    const rows = await this.repo.db.orm
+      .update(t)
+      .set({ priceOverride: price })
+      .where(eq(t.id, id))
+      .returning();
+    return rows[0] ? effectivePrice(rows[0]) : null;
   }
 
   async rows(ids: readonly string[], ex: Executor = this.repo.db.orm): Promise<Map<string, ItemRow>> {
@@ -125,7 +143,7 @@ export class ItemCatalog {
       .select()
       .from(t)
       .where(inArray(t.id, [...ids]));
-    return new Map(rows.map((r) => [r.id, r]));
+    return new Map(rows.map((r) => [r.id, effectivePrice(r)]));
   }
 
   /** Upserts file items by id. Items gone from the files become inactive, but only when every file was valid. */

@@ -1,6 +1,8 @@
 import type { AnyLegionBot, BotContext, GuildEvents, LegionBot } from './bot.js';
 import type { BotId, LegionConfig } from './config/schema.js';
+import { AuditLog } from './dashboard/audit.js';
 import { membersPanel } from './dashboard/core-panels.js';
+import { IdempotencyKeys } from './dashboard/idempotency.js';
 import { type DashboardOAuth, DiscordOAuth } from './dashboard/oauth.js';
 import { DashboardRegistry } from './dashboard/registry.js';
 import { DashboardServer } from './dashboard/server.js';
@@ -103,6 +105,8 @@ export class CoreRuntime {
   readonly bots: { bot: AnyLegionBot; ctx: BotContext<unknown> }[] = [];
   readonly dashboardSessions: DashboardSessionStore;
   readonly dashboard = new DashboardRegistry();
+  readonly audit: AuditLog;
+  private readonly idempotency: IdempotencyKeys;
 
   constructor(private readonly o: CoreRuntimeOptions) {
     const { config, db, clock, log } = o;
@@ -143,11 +147,15 @@ export class CoreRuntime {
     );
     this.guildEvents = new GuildEventHub(log.child({ component: 'guild-events' }));
     this.dashboard.panel('core', membersPanel(this.providers.readModels(), config, this.i18n));
+    this.audit = new AuditLog(db, o.guildId, () => clock.now(), this.newId);
+    this.idempotency = new IdempotencyKeys(db, () => clock.now());
     this.dashboardSessions = new DashboardSessionStore(db, clock, config.dashboard.sessionHours);
     if (config.dashboard.enabled)
       this.scheduler.every('core.dashboard-sessions-purge', '23 4 * * *', async () => {
         const purged = await this.dashboardSessions.purgeExpired();
-        if (purged) log.info({ purged }, 'expired dashboard sessions deleted');
+        const keys = await this.idempotency.purge();
+        const audit = await this.audit.purgeOlderThan(config.dashboard.auditDays);
+        if (purged || keys || audit) log.info({ purged, keys, audit }, 'dashboard housekeeping');
       });
     const read = this.providers.readModels();
     this.router = new InteractionRouter({
@@ -219,6 +227,9 @@ export class CoreRuntime {
       i18n: this.i18n,
       registry: this.dashboard,
       db: this.o.db,
+      audit: this.audit,
+      idempotency: this.idempotency,
+      timezone: config.timezone,
       clock,
       log: log.child({ component: 'dashboard' }),
       ...(o.host ? { host: o.host } : {}),

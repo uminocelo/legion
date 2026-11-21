@@ -60,40 +60,58 @@ export class JarvisWalletUi {
 
   /** `/jarvis creditos dar membro quantidade motivo` (staff): −10000..10000, not 0 (D7). */
   async staffGive(i: IncomingInteraction, r: Responder, l: Locale): Promise<void> {
-    const amount = Number(i.options?.quantidade);
-    const reason = String(i.options?.motivo ?? '')
-      .trim()
-      .slice(0, 200);
+    const res = await this.staffAdjust(
+      {
+        discordUserId: String(i.options?.membro ?? ''),
+        amount: Number(i.options?.quantidade),
+        reason: String(i.options?.motivo ?? ''),
+        actorId: i.userId,
+        sourceKey: `staff:${i.id}`,
+      },
+      l,
+    );
+    return r.reply(this.text(res.message));
+  }
+
+  /** `/jarvis creditos dar` rules and messages, shared with the dashboard action (US-21). */
+  async staffAdjust(
+    o: { discordUserId: string; amount: number; reason: string; actorId: string; sourceKey: string },
+    l: Locale,
+  ): Promise<{ ok: boolean; message: string }> {
+    const amount = o.amount;
+    const reason = o.reason.trim().slice(0, 200);
     if (!Number.isInteger(amount) || amount === 0 || Math.abs(amount) > STAFF_CREDITS_MAX || !reason)
-      return r.reply(this.text(this.t('staff_invalid', { max: STAFF_CREDITS_MAX }, l)));
-    const member = await this.ctx.read.members.getByDiscordId(String(i.options?.membro ?? ''));
-    if (!member) return r.reply(this.text(this.ctx.i18n.t('jarvis.errors.unknown_member', {}, l)));
+      return { ok: false, message: this.t('staff_invalid', { max: STAFF_CREDITS_MAX }, l) };
+    const member = await this.ctx.read.members.getByDiscordId(o.discordUserId);
+    if (!member) return { ok: false, message: this.ctx.i18n.t('jarvis.errors.unknown_member', {}, l) };
     const move = {
       memberId: member.id,
       amount: Math.abs(amount),
       reason: 'staff' as const,
-      sourceKey: `staff:${i.id}`,
+      sourceKey: o.sourceKey,
       note: reason,
-      createdBy: i.userId,
+      createdBy: o.actorId,
     };
     const who = `<@${member.discordUserId}>`;
     try {
       const res = await this.ctx.db.transaction((tx) =>
         amount > 0 ? this.s.wallet.credit(tx, move) : this.s.wallet.debit(tx, move),
       );
-      this.ctx.log.info({ staff: i.userId, memberId: member.id, amount, reason }, 'staff credits adjustment');
-      return r.reply(
-        this.text(
-          this.t(
-            'staff_done',
-            { amount: amount > 0 ? `+${amount}` : String(amount), member: who, reason, balance: res.balance },
-            l,
-          ),
-        ),
+      this.ctx.log.info(
+        { staff: o.actorId, memberId: member.id, amount, reason },
+        'staff credits adjustment',
       );
+      return {
+        ok: true,
+        message: this.t(
+          'staff_done',
+          { amount: amount > 0 ? `+${amount}` : String(amount), member: who, reason, balance: res.balance },
+          l,
+        ),
+      };
     } catch (err) {
       if (err instanceof InsufficientCredits)
-        return r.reply(this.text(this.t('staff_insufficient', { member: who, balance: err.balance }, l)));
+        return { ok: false, message: this.t('staff_insufficient', { member: who, balance: err.balance }, l) };
       throw err;
     }
   }

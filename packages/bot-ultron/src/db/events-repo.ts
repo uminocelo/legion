@@ -368,6 +368,16 @@ export class EventsRepo {
     return rows.length > 0;
   }
 
+  /** Staff sets the meter (US-21); the daily tick keeps its own `last_tick_day`. */
+  async setThreatLevel(level: number, ex: Executor = this.db.orm): Promise<void> {
+    const t = this.t.ultronThreat;
+    const now = this.now();
+    await ex
+      .insert(t)
+      .values({ guildId: this.guildId, level, lastTickDay: null, updatedAt: now })
+      .onConflictDoUpdate({ target: t.guildId, set: { level, updatedAt: now } });
+  }
+
   /** Times of finished missions (success or failure) and strikes in [from, to). */
   async activityTimes(from: string, to: string): Promise<string[]> {
     const log = coreTables(this.db).coreEventLog;

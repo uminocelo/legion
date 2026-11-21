@@ -31,7 +31,8 @@
         "unavailable": "Could not reach Discord to check your access. Try again in a moment.",
         "rate_limited": "Too many login attempts. Try again in {seconds}s.",
         "csrf": "This form expired. Reload the page and try again.",
-        "panel_failed": "This panel could not be loaded."
+        "panel_failed": "This panel could not be loaded.",
+        "already_submitted": "This form was already sent. Open the action again to repeat it."
       },
       "no_panels": "No panels yet.",
       "members": {
@@ -53,6 +54,18 @@
         "empty": "No staff actions recorded yet.",
         "newer": "← Newer",
         "older": "Older →"
+      },
+      "run": "Run",
+      "member_hint": "Discord ID or mention (<@…>)",
+      "form_has_errors": "Fix the marked fields.",
+      "field_errors": {
+        "required": "Required.",
+        "int": "Use a whole number.",
+        "range": "Out of range ({min} to {max}).",
+        "member": "Use the Discord ID (digits only) or a mention.",
+        "select": "Pick one of the options.",
+        "datetime": "Invalid date and time.",
+        "length": "Length out of range."
       }
     }
   }
