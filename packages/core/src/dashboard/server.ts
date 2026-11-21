@@ -9,6 +9,8 @@ import type { I18n, Vars } from '../i18n/i18n.js';
 import type { Logger } from '../log/logger.js';
 import { InMemoryRateLimiter } from '../ratelimit/rate-limiter.js';
 import type { Clock } from '../time/clock.js';
+import type { AuditLog } from './audit.js';
+import { type FieldErrors, parseActionInput, renderActionForm } from './forms.js';
 import {
   cookie,
   escapeHtml,
@@ -20,6 +22,7 @@ import {
   STATE_COOKIE,
   send,
 } from './http.js';
+import type { IdempotencyKeys } from './idempotency.js';
 import { type DashboardOAuth, OAuthError } from './oauth.js';
 import type { DashboardRegistry, RegisteredPanel } from './registry.js';
 import { DASHBOARD_CSS, renderPanelView } from './render.js';
@@ -31,6 +34,7 @@ const CALLBACK_LIMIT = 10;
 const CALLBACK_WINDOW_MS = 60_000;
 const AUDIT_PAGE = 50;
 const PANEL_PATH = /^\/p\/([a-z0-9-]+)\/([a-z0-9-]+)$/;
+const ACTION_PATH = /^\/a\/([a-z0-9-]+)\/([a-z0-9-]+)$/;
 
 export interface DashboardServerOptions {
   config: DashboardConfig;
@@ -40,6 +44,10 @@ export interface DashboardServerOptions {
   i18n: I18n;
   registry: DashboardRegistry;
   db: LegionDb;
+  audit: AuditLog;
+  idempotency: IdempotencyKeys;
+  /** Server timezone (`datetime` fields are read in it). */
+  timezone: string;
   clock: Clock;
   log: Logger;
   /** Listen address (default all interfaces; compose publishes it on 127.0.0.1 only). */
@@ -113,9 +121,15 @@ export class DashboardServer {
     try {
       const url = new URL(req.url ?? '/', this.origin);
       const panel = PANEL_PATH.exec(url.pathname);
-      const route = panel
+      const action = ACTION_PATH.exec(url.pathname);
+      const route: Partial<Record<string, Handler>> | undefined = panel
         ? { GET: () => this.panel(req, res, panel[1] ?? '', panel[2] ?? '') }
-        : this.routes[url.pathname];
+        : action
+          ? {
+              GET: () => this.actionForm(req, res, action[1] ?? '', action[2] ?? ''),
+              POST: () => this.actionRun(req, res, action[1] ?? '', action[2] ?? ''),
+            }
+          : this.routes[url.pathname];
       if (!route) return this.page(res, 404, 'not_found');
       const handler = route[req.method ?? 'GET'];
       if (!handler) {
@@ -281,6 +295,95 @@ export class DashboardServer {
     send(res, 200, this.layout(this.t('audit.title'), body, r, '/audit'));
   }
 
+  private async actionForm(
+    req: IncomingMessage,
+    res: ServerResponse,
+    bot: string,
+    id: string,
+  ): Promise<void> {
+    const r = await this.authenticate(req, res);
+    if (!r) return;
+    const a = this.o.registry.getAction(bot, id);
+    if (!a) return this.page(res, 404, 'not_found', {}, {}, r);
+    this.sendForm(res, 200, r, bot, id, new URLSearchParams(), {});
+  }
+
+  /**
+   * POST pipeline (US-21): session → CSRF → Origin → one-use key → input → handler → audit.
+   * Every refusal before the handler changes nothing and is not audited.
+   */
+  private async actionRun(req: IncomingMessage, res: ServerResponse, bot: string, id: string): Promise<void> {
+    const r = await this.authenticate(req, res);
+    if (!r) return;
+    const a = this.o.registry.getAction(bot, id);
+    if (!a) return this.page(res, 404, 'not_found', {}, {}, r);
+    const form = await readForm(req, 16_384);
+    if (!form || !safeEqual(form.get('csrf') ?? '', r.session.csrfToken))
+      return this.page(res, 403, 'csrf', {}, {}, r);
+    if (!this.sameOrigin(req)) return this.page(res, 403, 'csrf', {}, {}, r);
+    if (!(await this.o.idempotency.claim(r.session.tokenHash, form.get('idem') ?? '')))
+      return this.page(res, 409, 'already_submitted', {}, {}, r);
+    const { input, errors } = parseActionInput(a.fields, form, this.o.timezone);
+    if (Object.keys(errors).length) return this.sendForm(res, 400, r, bot, id, form, errors);
+
+    const actor = { discordUserId: r.session.discordUserId, name: r.staff.name };
+    let result: { ok: boolean; message: string };
+    try {
+      result = await a.run(input, actor);
+    } catch (err) {
+      this.o.log.error({ err, action: `${bot}/${id}` }, 'dashboard action failed');
+      result = { ok: false, message: this.t('errors.error') };
+    }
+    const target = a.fields.find((f) => f.type === 'member' && typeof input[f.name] === 'string');
+    await this.o.audit.record({
+      actorDiscordId: actor.discordUserId,
+      source: 'dashboard',
+      action: `${bot}/${id}`,
+      target: target ? String(input[target.name]) : null,
+      details: { ok: result.ok, message: result.message, input },
+    });
+    this.o.log.info(
+      { action: `${bot}/${id}`, ok: result.ok, discordUserId: actor.discordUserId },
+      'dashboard action',
+    );
+    this.sendForm(res, 200, r, bot, id, result.ok ? new URLSearchParams() : form, {}, result);
+  }
+
+  private sendForm(
+    res: ServerResponse,
+    status: number,
+    r: DashboardRequest,
+    bot: string,
+    id: string,
+    values: URLSearchParams,
+    errors: FieldErrors,
+    result?: { ok: boolean; message: string },
+  ): void {
+    const a = this.o.registry.getAction(bot, id);
+    if (!a) {
+      this.page(res, 404, 'not_found', {}, {}, r);
+      return;
+    }
+    const banner = result
+      ? `<p class="result ${result.ok ? 'ok' : 'fail'}" role="status">${escapeHtml(result.message)}</p>`
+      : Object.keys(errors).length
+        ? `<p class="result fail" role="alert">${escapeHtml(this.t('form_has_errors'))}</p>`
+        : '';
+    const form = renderActionForm({
+      action: a,
+      csrf: r.session.csrfToken,
+      idem: randomToken(16),
+      values,
+      errors,
+      t: (k, v) => this.o.i18n.t(k, v),
+    });
+    send(
+      res,
+      status,
+      this.layout(this.o.i18n.t(a.titleKey), `<section>${banner}${form}</section>`, r, `/a/${bot}/${id}`),
+    );
+  }
+
   /** One panel as a card; a failing panel shows an error instead of breaking the page. */
   private async section(p: RegisteredPanel, linkTitle: boolean): Promise<string> {
     const title = escapeHtml(this.o.i18n.t(p.titleKey));
@@ -361,6 +464,7 @@ export class DashboardServer {
     const links = [
       ['/', this.t('overview')],
       ...this.o.registry.list().map((p) => [`/p/${p.bot}/${p.id}`, this.o.i18n.t(p.titleKey)]),
+      ...this.o.registry.listActions().map((a) => [`/a/${a.bot}/${a.id}`, this.o.i18n.t(a.titleKey)]),
       ['/audit', this.t('audit.title')],
     ];
     const nav = r
