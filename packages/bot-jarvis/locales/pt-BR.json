@@ -425,6 +425,20 @@
       "already_off": "**{item}** já está desativado.",
       "already_on": "**{item}** já está ativo.",
       "off_in_file": "**{item}** está com `active: false` no arquivo. Mude o arquivo para ativar."
+    },
+    "dashboard": {
+      "economy": "Economia",
+      "in_circulation": "Créditos em circulação",
+      "wallets": "Carteiras",
+      "earned_7d": "Ganhos (7 dias)",
+      "spent_7d": "Gastos (7 dias)",
+      "top_balances": "Maiores saldos",
+      "purchases": "Últimas compras",
+      "hero": "Herói",
+      "balance": "Saldo",
+      "when": "Quando",
+      "item": "Item",
+      "price": "Preço"
     }
   }
 }

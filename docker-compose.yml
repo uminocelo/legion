@@ -10,7 +10,8 @@ services:
       - ./locales:/app/locales:ro
     ports:
       - "127.0.0.1:8080:8080"
-
+      # Staff dashboard (docs/DASHBOARD.md): uncomment after setting dashboard.enabled and DASHBOARD_CLIENT_SECRET.
+      # - "127.0.0.1:8081:8081"
   # Optional local AI for ULTRON's flavor text (see docs/SELF_HOSTING.md):
   #   docker compose --profile ai up -d && docker compose exec ollama ollama pull llama3.2
   ollama:

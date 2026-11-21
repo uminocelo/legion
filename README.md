@@ -65,6 +65,7 @@ O cargo **Assinante TikTok** é da integração do TikTok: o Legion nunca cria, 
 | `DATABASE_URL` | não | `file:./data/legion.db` | SQLite (padrão) ou `postgres://…` |
 | `LOG_LEVEL` | não | `info` | `debug`, `info`, `warn`, `error` |
 | `HEALTH_PORT` | não | `8080` | `GET /healthz` |
+| `DASHBOARD_CLIENT_SECRET` | só com o painel | — | Client Secret do app do Cérebro (OAuth2), para o login do [painel da staff](docs/DASHBOARD.md) |
 
 Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.md).
 
@@ -146,6 +147,10 @@ Com `ultron` em `bots:` (precisa do `sentinel`) e `channels.events` definido:
 - Frases por IA opcionais (Ollama ou API compatível com OpenAI), desligadas por padrão.
 
 Detalhes em [docs/WORLD_EVENTS.md](docs/WORLD_EVENTS.md).
+
+## Painel da staff (opcional)
+
+Uma página web com membros, economia, eventos, guerra e ameaça. Login pelo Discord; só a staff entra. Desligado por padrão: veja [docs/DASHBOARD.md](docs/DASHBOARD.md).
 
 ## Skills para IA
 
