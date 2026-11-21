@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { join } from 'node:path';
 import {
   type AnyLegionBot,
@@ -168,6 +169,61 @@ async function checkApp(
 }
 
 /** Runs every check and returns the results (✅ ok, ℹ️ info, ⚠️ warn, ❌ fail). Never throws. */
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
+
+/** True when the port can be bound, or is already served by a Legion dashboard (it serves its CSS). */
+async function portUsable(port: number): Promise<boolean> {
+  const free = await new Promise<boolean>((resolve) => {
+    const srv = createServer();
+    srv.once('error', () => resolve(false));
+    srv.listen(port, '0.0.0.0', () => srv.close(() => resolve(true)));
+  });
+  if (free) return true;
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/assets/dashboard.css`, {
+      signal: AbortSignal.timeout(2000),
+    });
+    return res.ok && (res.headers.get('content-type') ?? '').includes('text/css');
+  } catch {
+    return false;
+  }
+}
+
+/** ❌ on without the secret or the port taken; ⚠️ publicUrl neither localhost nor https. Never shows the secret. */
+export async function dashboardCheck(
+  config: LegionConfig,
+  env: Env | null,
+  t: (k: MessageKey, v?: Record<string, string | number>) => string,
+  usable: (port: number) => Promise<boolean> = portUsable,
+): Promise<CheckResult> {
+  const d = config.dashboard;
+  const base = { id: 'dashboard', title: t('check.dashboard') };
+  if (!d.enabled) return { ...base, status: 'info', message: t('check.dashboard.off') };
+  if (!env?.DASHBOARD_CLIENT_SECRET)
+    return {
+      ...base,
+      status: 'fail',
+      message: t('check.dashboard.no_secret'),
+      fix: t('check.dashboard.no_secret_fix'),
+    };
+  if (!(await usable(d.port)))
+    return {
+      ...base,
+      status: 'fail',
+      message: t('check.dashboard.port', { port: d.port }),
+      fix: t('check.dashboard.port_fix'),
+    };
+  const url = new URL(d.publicUrl);
+  if (url.protocol !== 'https:' && !LOCAL_HOSTS.has(url.hostname))
+    return {
+      ...base,
+      status: 'warn',
+      message: t('check.dashboard.insecure', { url: d.publicUrl }),
+      fix: t('check.dashboard.insecure_fix'),
+    };
+  return { ...base, status: 'ok', message: t('check.dashboard.ok', { url: d.publicUrl, port: d.port }) };
+}
+
 export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
   const L = o.locale;
   const t = (k: MessageKey, v: Record<string, string | number> = {}) => msg(L, k, v);
@@ -208,6 +264,8 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
     const message = err instanceof ConfigError ? err.lines.join('\n') : (err as Error).message;
     add({ id: 'config', title: t('check.config'), status: 'fail', message, fix: t('check.config.fix') });
   }
+
+  if (config) add(await dashboardCheck(config, env, t));
 
   // 3. Discord, per app: token, application, intents, guild. `main` (Cérebro's app) is used afterwards.
   let botUserId: string | null = null;

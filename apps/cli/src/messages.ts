@@ -40,6 +40,19 @@ const pt = {
   'check.guild.fail': 'O bot não está no servidor {guild}',
   'check.guild.fix': 'Rode "legion invite-url", abra o link e adicione o bot ao servidor',
   'check.config': 'legion.config.yaml',
+  'check.dashboard': 'Painel da staff',
+  'check.dashboard.off': 'Desligado (dashboard.enabled: false)',
+  'check.dashboard.ok': 'Ligado em {url} (porta {port}); segredo definido',
+  'check.dashboard.no_secret':
+    'dashboard.enabled está ligado, mas DASHBOARD_CLIENT_SECRET não está definido; o painel não vai abrir',
+  'check.dashboard.no_secret_fix':
+    'Developer Portal → app do Cérebro → OAuth2 → Reset Secret; coloque em DASHBOARD_CLIENT_SECRET no .env (veja docs/DASHBOARD.md)',
+  'check.dashboard.port': 'A porta {port} está ocupada por outro programa',
+  'check.dashboard.port_fix': 'Feche o programa que usa a porta ou mude dashboard.port',
+  'check.dashboard.insecure':
+    '{url} não é localhost nem https: o login e o cookie passariam sem criptografia',
+  'check.dashboard.insecure_fix':
+    'Use https (proxy reverso, veja docs/DASHBOARD.md) ou deixe em http://localhost',
   'check.config.ok': 'Configuração válida (bots: {bots})',
   'check.config.fix': 'Corrija as linhas acima no legion.config.yaml',
   'check.perms': 'Permissões no servidor',
@@ -117,6 +130,18 @@ const en: Record<keyof typeof pt, string> = {
   'check.guild.fail': 'The bot is not in server {guild}',
   'check.guild.fix': 'Run "legion invite-url", open the link and add the bot to the server',
   'check.config': 'legion.config.yaml',
+  'check.dashboard': 'Staff dashboard',
+  'check.dashboard.off': 'Off (dashboard.enabled: false)',
+  'check.dashboard.ok': 'On at {url} (port {port}); secret set',
+  'check.dashboard.no_secret':
+    'dashboard.enabled is on but DASHBOARD_CLIENT_SECRET is not set; the dashboard will not open',
+  'check.dashboard.no_secret_fix':
+    "Developer Portal → Cérebro's app → OAuth2 → Reset Secret; put it in DASHBOARD_CLIENT_SECRET in .env (see docs/DASHBOARD.md)",
+  'check.dashboard.port': 'Port {port} is taken by another program',
+  'check.dashboard.port_fix': 'Close the program using the port or change dashboard.port',
+  'check.dashboard.insecure':
+    '{url} is neither localhost nor https: the login and the cookie would travel unencrypted',
+  'check.dashboard.insecure_fix': 'Use https (reverse proxy, see docs/DASHBOARD.md) or keep http://localhost',
   'check.config.ok': 'Valid configuration (bots: {bots})',
   'check.config.fix': 'Fix the lines above in legion.config.yaml',
   'check.perms': 'Server permissions',

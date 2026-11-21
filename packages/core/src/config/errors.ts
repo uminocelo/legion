@@ -10,6 +10,7 @@ const MESSAGES: Record<Locale, Messages> = {
     'config.role_key': 'use só letras minúsculas, números e "_", como "rank_agente"',
     'config.snowflake': 'use o ID numérico do Discord entre aspas, como "123456789012345678"',
     'config.timezone': 'use um fuso horário IANA, como "America/Sao_Paulo"',
+    'config.dashboard_url': 'use o endereço do painel com http:// ou https://, como "http://localhost:8081"',
     'config.cerebro_required':
       'o Cérebro é obrigatório quando qualquer outro bot está ligado; use por exemplo bots: [cerebro, jarvis]',
     'config.sentinel_required':
@@ -35,6 +36,8 @@ const MESSAGES: Record<Locale, Messages> = {
     'config.role_key': 'use only lowercase letters, digits and "_", like "rank_agente"',
     'config.snowflake': 'use the numeric Discord ID in quotes, like "123456789012345678"',
     'config.timezone': 'use an IANA timezone like "America/Sao_Paulo"',
+    'config.dashboard_url':
+      'use the dashboard address with http:// or https://, like "http://localhost:8081"',
     'config.cerebro_required':
       'Cérebro is required when any other bot is enabled; for example bots: [cerebro, jarvis]',
     'config.sentinel_required':

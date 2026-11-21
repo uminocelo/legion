@@ -30,6 +30,8 @@ const baseEnvSchema = z.object({
   AI_BASE_URL: optional,
   AI_API_KEY: optional,
   AI_MODEL: optional,
+  /** OAuth2 client secret of Cérebro's app, for the staff dashboard login (only when it is on). */
+  DASHBOARD_CLIENT_SECRET: optional,
 });
 
 type AppVars = { token: string; clientId: string; tokenVar: string; clientIdVar: string };

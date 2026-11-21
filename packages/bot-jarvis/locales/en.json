@@ -425,6 +425,20 @@
       "already_off": "**{item}** is already disabled.",
       "already_on": "**{item}** is already active.",
       "off_in_file": "**{item}** has `active: false` in its file. Change the file to enable it."
+    },
+    "dashboard": {
+      "economy": "Economy",
+      "in_circulation": "Credits in circulation",
+      "wallets": "Wallets",
+      "earned_7d": "Earned (7 days)",
+      "spent_7d": "Spent (7 days)",
+      "top_balances": "Top balances",
+      "purchases": "Latest purchases",
+      "hero": "Hero",
+      "balance": "Balance",
+      "when": "When",
+      "item": "Item",
+      "price": "Price"
     }
   }
 }

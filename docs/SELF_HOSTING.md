@@ -94,6 +94,10 @@ Os comandos da staff (`/jarvis`, `/herbie`, `/sentinel`, `/ultron`) vêm marcado
 
 Mesmo vendo o comando, só quem tem esses cargos (ou é dono) consegue usá-lo.
 
+## Painel da staff (opcional)
+
+Para ver membros, economia, eventos e guerra numa página web, ligue `dashboard.enabled`, coloque o `DASHBOARD_CLIENT_SECRET` no `.env`, adicione o redirect no Developer Portal e tire o `#` da linha `127.0.0.1:8081:8081` do `docker-compose.yml`. Passo a passo em [DASHBOARD.md](DASHBOARD.md).
+
 ## Atualizar, backup, parar
 
 - Atualizar: `docker compose pull && docker compose up -d`

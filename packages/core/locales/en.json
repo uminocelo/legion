@@ -13,6 +13,47 @@
       "sentinel": "Sentinel",
       "ultron": "ULTRON",
       "footer": "Legion · non-commercial fan project"
+    },
+    "dashboard": {
+      "title": "Legion dashboard",
+      "overview": "Overview",
+      "signed_in_as": "Logged in as {name}",
+      "logout": "Log out",
+      "logged_out": "You are logged out.",
+      "login_again": "Log in with Discord",
+      "errors": {
+        "not_found": "Page not found.",
+        "method_not_allowed": "This page does not accept that request.",
+        "error": "Something went wrong. Try again.",
+        "bad_state": "This login link is invalid or expired. Start the login again.",
+        "login_failed": "Discord did not accept the login (the code may have expired). Try again.",
+        "forbidden": "Only staff can open the dashboard.",
+        "unavailable": "Could not reach Discord to check your access. Try again in a moment.",
+        "rate_limited": "Too many login attempts. Try again in {seconds}s.",
+        "csrf": "This form expired. Reload the page and try again.",
+        "panel_failed": "This panel could not be loaded."
+      },
+      "no_panels": "No panels yet.",
+      "members": {
+        "title": "Members",
+        "faction": "Faction",
+        "registered": "Registered",
+        "level": "Level",
+        "total": "Total",
+        "no_faction": "No faction"
+      },
+      "audit": {
+        "title": "Audit log",
+        "when": "When",
+        "actor": "Who",
+        "source": "Source",
+        "action": "Action",
+        "target": "Target",
+        "details": "Details",
+        "empty": "No staff actions recorded yet.",
+        "newer": "← Newer",
+        "older": "Older →"
+      }
     }
   }
 }
