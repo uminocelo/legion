@@ -161,7 +161,15 @@ export class DashboardServer {
     } catch (err) {
       if (!(err instanceof OAuthError)) throw err;
       this.o.log.warn({ reason: err.message }, 'dashboard login failed');
-      return this.page(res, 400, 'login_failed', {}, { 'set-cookie': clearState });
+      // Discord refused the code (expired, reused) → 400; Discord unreachable or erroring → 502.
+      const down = err.status === null || err.status >= 500;
+      return this.page(
+        res,
+        down ? 502 : 400,
+        down ? 'unavailable' : 'login_failed',
+        {},
+        { 'set-cookie': clearState },
+      );
     }
 
     let staff: StaffStatus;
@@ -169,7 +177,7 @@ export class DashboardServer {
       staff = await this.o.staff.check(user.id, { fresh: true });
     } catch (err) {
       this.o.log.warn({ err }, 'dashboard staff check failed');
-      return this.page(res, 503, 'unavailable', {}, { 'set-cookie': clearState });
+      return this.page(res, 502, 'unavailable', {}, { 'set-cookie': clearState });
     }
     if (!staff.staff) {
       this.o.log.info({ discordUserId: user.id }, 'dashboard login refused: not staff');
@@ -291,7 +299,7 @@ export class DashboardServer {
 
   /**
    * The staff session behind a request, or null after answering: no or expired session → 302 /login;
-   * no longer staff → 403 and the session is deleted; Discord down → 503.
+   * no longer staff → 403 and the session is deleted; Discord down → 502.
    */
   async authenticate(req: IncomingMessage, res: ServerResponse): Promise<DashboardRequest | null> {
     const token = parseCookies(req.headers.cookie).get(SESSION_COOKIE);
@@ -305,7 +313,7 @@ export class DashboardServer {
       staff = await this.o.staff.check(session.discordUserId);
     } catch (err) {
       this.o.log.warn({ err }, 'dashboard staff check failed');
-      this.page(res, 503, 'unavailable');
+      this.page(res, 502, 'unavailable');
       return null;
     }
     if (!staff.staff) {

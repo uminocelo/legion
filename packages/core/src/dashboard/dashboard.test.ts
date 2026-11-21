@@ -240,13 +240,23 @@ describe('dashboard login and sessions', () => {
     expect(await sessionRows()).toHaveLength(0);
   });
 
-  it('answers 503 without dropping the session when Discord cannot be reached', async () => {
+  it('answers 502 without dropping the session when Discord cannot be reached', async () => {
     const token = await sessionOf(OWNER);
     t.clock.advance(60_000);
     t.gateway.failNext('fetchMember');
-    expect((await get('/', { [SESSION_COOKIE]: token })).status).toBe(503);
+    expect((await get('/', { [SESSION_COOKIE]: token })).status).toBe(502);
     expect(await sessionRows()).toHaveLength(1);
     expect((await get('/', { [SESSION_COOKIE]: token })).status).toBe(200);
+  });
+
+  it('answers 502 when Discord is unreachable during the login', async () => {
+    const login = await get('/login');
+    const state = setCookies(login).get(STATE_COOKIE) ?? '';
+    await discord.close();
+    const res = await get(`/callback?code=c&state=${state}`, { [STATE_COOKIE]: state });
+    expect(res.status).toBe(502);
+    expect(await sessionRows()).toHaveLength(0);
+    discord = await fakeDiscord(); // afterEach closes it
   });
 
   it('expires a session after sessionHours and purges it', async () => {
