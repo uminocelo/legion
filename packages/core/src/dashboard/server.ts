@@ -1,7 +1,10 @@
 import { timingSafeEqual } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
+import { desc } from 'drizzle-orm';
 import type { DashboardConfig } from '../config/schema.js';
+import { coreTables } from '../db/core-tables.js';
+import type { LegionDb } from '../db/db.js';
 import type { I18n, Vars } from '../i18n/i18n.js';
 import type { Logger } from '../log/logger.js';
 import { InMemoryRateLimiter } from '../ratelimit/rate-limiter.js';
@@ -12,17 +15,22 @@ import {
   parseCookies,
   readForm,
   redirect,
+  SECURITY_HEADERS,
   SESSION_COOKIE,
   STATE_COOKIE,
   send,
 } from './http.js';
 import { type DashboardOAuth, OAuthError } from './oauth.js';
+import type { DashboardRegistry, RegisteredPanel } from './registry.js';
+import { DASHBOARD_CSS, renderPanelView } from './render.js';
 import { type DashboardSession, type DashboardSessionStore, randomToken } from './sessions.js';
 import type { DashboardStaffChecker, StaffStatus } from './staff.js';
 
 const STATE_MAX_AGE_S = 600;
 const CALLBACK_LIMIT = 10;
 const CALLBACK_WINDOW_MS = 60_000;
+const AUDIT_PAGE = 50;
+const PANEL_PATH = /^\/p\/([a-z0-9-]+)\/([a-z0-9-]+)$/;
 
 export interface DashboardServerOptions {
   config: DashboardConfig;
@@ -30,6 +38,8 @@ export interface DashboardServerOptions {
   sessions: DashboardSessionStore;
   staff: DashboardStaffChecker;
   i18n: I18n;
+  registry: DashboardRegistry;
+  db: LegionDb;
   clock: Clock;
   log: Logger;
   /** Listen address (default all interfaces; compose publishes it on 127.0.0.1 only). */
@@ -66,6 +76,17 @@ export class DashboardServer {
       '/login': { GET: (_req, res) => this.login(res) },
       '/callback': { GET: (req, res, url) => this.callback(req, res, url) },
       '/logout': { POST: (req, res) => this.logout(req, res) },
+      '/audit': { GET: (req, res, url) => this.audit(req, res, url) },
+      '/assets/dashboard.css': {
+        GET: (_req, res) => {
+          res.writeHead(200, {
+            ...SECURITY_HEADERS,
+            'content-type': 'text/css; charset=utf-8',
+            'cache-control': 'public, max-age=3600',
+          });
+          res.end(DASHBOARD_CSS);
+        },
+      },
     };
   }
 
@@ -91,7 +112,10 @@ export class DashboardServer {
   async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     try {
       const url = new URL(req.url ?? '/', this.origin);
-      const route = this.routes[url.pathname];
+      const panel = PANEL_PATH.exec(url.pathname);
+      const route = panel
+        ? { GET: () => this.panel(req, res, panel[1] ?? '', panel[2] ?? '') }
+        : this.routes[url.pathname];
       if (!route) return this.page(res, 404, 'not_found');
       const handler = route[req.method ?? 'GET'];
       if (!handler) {
@@ -191,7 +215,76 @@ export class DashboardServer {
   private async overview(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const r = await this.authenticate(req, res);
     if (!r) return;
-    send(res, 200, this.layout(this.t('overview'), '', r));
+    const panels = this.o.registry.list();
+    const body = panels.length
+      ? (await Promise.all(panels.map((p) => this.section(p, true)))).join('')
+      : `<p class="muted">${escapeHtml(this.t('no_panels'))}</p>`;
+    send(res, 200, this.layout(this.t('overview'), body, r, '/'));
+  }
+
+  private async panel(req: IncomingMessage, res: ServerResponse, bot: string, id: string): Promise<void> {
+    const r = await this.authenticate(req, res);
+    if (!r) return;
+    const p = this.o.registry.get(bot, id);
+    if (!p) return this.page(res, 404, 'not_found', {}, {}, r);
+    send(
+      res,
+      200,
+      this.layout(this.o.i18n.t(p.titleKey), await this.section(p, false), r, `/p/${bot}/${id}`),
+    );
+  }
+
+  private async audit(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
+    const r = await this.authenticate(req, res);
+    if (!r) return;
+    const page = Math.max(1, Math.min(10_000, Number.parseInt(url.searchParams.get('page') ?? '1', 10) || 1));
+    const a = coreTables(this.o.db).coreAuditLog;
+    const rows = await this.o.db.orm
+      .select()
+      .from(a)
+      .orderBy(desc(a.createdAt), desc(a.id))
+      .limit(AUDIT_PAGE + 1)
+      .offset((page - 1) * AUDIT_PAGE);
+    const locale = this.o.i18n.defaultLocale;
+    const when = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' });
+    const view = {
+      kind: 'table' as const,
+      columns: ['when', 'actor', 'source', 'action', 'target', 'details'].map((c) => this.t(`audit.${c}`)),
+      rows: rows
+        .slice(0, AUDIT_PAGE)
+        .map((x) => [
+          when.format(new Date(x.createdAt)),
+          x.actorDiscordId,
+          x.source,
+          x.action,
+          x.target ?? '',
+          x.details,
+        ]),
+    };
+    const pager = [
+      page > 1 ? `<a href="/audit?page=${page - 1}">${escapeHtml(this.t('audit.newer'))}</a>` : '',
+      rows.length > AUDIT_PAGE
+        ? `<a href="/audit?page=${page + 1}">${escapeHtml(this.t('audit.older'))}</a>`
+        : '',
+    ].join('');
+    const body = rows.length
+      ? `<section>${renderPanelView(view, (k) => k, locale)}<div class="pager">${pager}</div></section>`
+      : `<p class="muted">${escapeHtml(this.t('audit.empty'))}</p>`;
+    send(res, 200, this.layout(this.t('audit.title'), body, r, '/audit'));
+  }
+
+  /** One panel as a card; a failing panel shows an error instead of breaking the page. */
+  private async section(p: RegisteredPanel, linkTitle: boolean): Promise<string> {
+    const title = escapeHtml(this.o.i18n.t(p.titleKey));
+    const heading = linkTitle ? `<h2><a href="/p/${p.bot}/${p.id}">${title}</a></h2>` : '';
+    try {
+      const view = await p.render();
+      const locale = this.o.i18n.defaultLocale;
+      return `<section>${heading}${renderPanelView(view, (k) => this.o.i18n.t(k), locale)}</section>`;
+    } catch (err) {
+      this.o.log.error({ err, panel: `${p.bot}/${p.id}` }, 'dashboard panel failed');
+      return `<section>${heading}<p class="muted">${escapeHtml(this.t('errors.panel_failed'))}</p></section>`;
+    }
   }
 
   // ── auth ────────────────────────────────────────────────────────────────
@@ -246,23 +339,37 @@ export class DashboardServer {
     key: string,
     vars: Vars = {},
     headers: Record<string, string | string[]> = {},
+    r?: DashboardRequest,
   ): void {
     const body = `<p>${escapeHtml(this.t(`errors.${key}`, vars))}</p>${
       status === 400 || status === 403
         ? `<p><a href="/login">${escapeHtml(this.t('login_again'))}</a></p>`
         : ''
     }`;
-    send(res, status, this.layout(this.t('title'), body), headers);
+    send(res, status, this.layout(this.t('title'), body, r), headers);
   }
 
-  private layout(heading: string, body: string, r?: DashboardRequest): string {
+  private layout(heading: string, body: string, r?: DashboardRequest, current?: string): string {
+    const links = [
+      ['/', this.t('overview')],
+      ...this.o.registry.list().map((p) => [`/p/${p.bot}/${p.id}`, this.o.i18n.t(p.titleKey)]),
+      ['/audit', this.t('audit.title')],
+    ];
+    const nav = r
+      ? `<nav><ul>${links
+          .map(
+            ([href, label]) =>
+              `<li><a href="${href}"${href === current ? ' aria-current="page"' : ''}>${escapeHtml(label)}</a></li>`,
+          )
+          .join('')}</ul></nav>`
+      : '';
     const header = r
       ? `<header><p>${escapeHtml(this.t('signed_in_as', { name: r.staff.name }))}</p>` +
         `<form method="post" action="/logout"><input type="hidden" name="csrf" value="${escapeHtml(r.session.csrfToken)}">` +
         `<button type="submit">${escapeHtml(this.t('logout'))}</button></form></header>`
       : '';
     const lang = escapeHtml(this.o.i18n.defaultLocale);
-    return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(this.t('title'))}</title></head><body>${header}<main><h1>${escapeHtml(heading)}</h1>${body}</main></body></html>`;
+    return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(this.t('title'))}</title><link rel="stylesheet" href="/assets/dashboard.css"></head><body>${header}${nav}<main><h1>${escapeHtml(heading)}</h1>${body}</main></body></html>`;
   }
 }
 

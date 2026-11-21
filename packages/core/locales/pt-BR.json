@@ -30,7 +30,29 @@
         "forbidden": "Só a staff pode abrir o painel.",
         "unavailable": "Não consegui falar com o Discord para conferir seu acesso. Tente de novo daqui a pouco.",
         "rate_limited": "Tentativas de login demais. Tente de novo em {seconds}s.",
-        "csrf": "Este formulário expirou. Recarregue a página e tente de novo."
+        "csrf": "Este formulário expirou. Recarregue a página e tente de novo.",
+        "panel_failed": "Não consegui carregar este painel."
+      },
+      "no_panels": "Nenhum painel ainda.",
+      "members": {
+        "title": "Membros",
+        "faction": "Facção",
+        "registered": "Registrados",
+        "level": "Nível",
+        "total": "Total",
+        "no_faction": "Sem facção"
+      },
+      "audit": {
+        "title": "Auditoria",
+        "when": "Quando",
+        "actor": "Quem",
+        "source": "Origem",
+        "action": "Ação",
+        "target": "Alvo",
+        "details": "Detalhes",
+        "empty": "Nenhuma ação da staff registrada ainda.",
+        "newer": "← Mais recentes",
+        "older": "Mais antigas →"
       }
     }
   }

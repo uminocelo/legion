@@ -1,6 +1,8 @@
 import type { AnyLegionBot, BotContext, GuildEvents, LegionBot } from './bot.js';
 import type { BotId, LegionConfig } from './config/schema.js';
+import { membersPanel } from './dashboard/core-panels.js';
 import { type DashboardOAuth, DiscordOAuth } from './dashboard/oauth.js';
+import { DashboardRegistry } from './dashboard/registry.js';
 import { DashboardServer } from './dashboard/server.js';
 import { DashboardSessionStore } from './dashboard/sessions.js';
 import { GuildStaffChecker } from './dashboard/staff.js';
@@ -100,6 +102,7 @@ export class CoreRuntime {
   readonly newId: () => string;
   readonly bots: { bot: AnyLegionBot; ctx: BotContext<unknown> }[] = [];
   readonly dashboardSessions: DashboardSessionStore;
+  readonly dashboard = new DashboardRegistry();
 
   constructor(private readonly o: CoreRuntimeOptions) {
     const { config, db, clock, log } = o;
@@ -139,6 +142,7 @@ export class CoreRuntime {
       o.roleGuard ?? 'skip',
     );
     this.guildEvents = new GuildEventHub(log.child({ component: 'guild-events' }));
+    this.dashboard.panel('core', membersPanel(this.providers.readModels(), config, this.i18n));
     this.dashboardSessions = new DashboardSessionStore(db, clock, config.dashboard.sessionHours);
     if (config.dashboard.enabled)
       this.scheduler.every('core.dashboard-sessions-purge', '23 4 * * *', async () => {
@@ -213,6 +217,8 @@ export class CoreRuntime {
         isStaff: (i) => this.isStaff(i),
       }),
       i18n: this.i18n,
+      registry: this.dashboard,
+      db: this.o.db,
       clock,
       log: log.child({ component: 'dashboard' }),
       ...(o.host ? { host: o.host } : {}),
@@ -236,6 +242,7 @@ export class CoreRuntime {
       gateway: this.gateways.get(this.appOf(bot.id)) ?? this.gateway,
       roles: this.roles,
       help: this.help,
+      dashboard: this.dashboard.forBot(bot.id),
       profile: this.profile,
       get rateLimiter() {
         return providers.get('rateLimiter') ?? new InMemoryRateLimiter(clock);
