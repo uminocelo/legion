@@ -50,7 +50,7 @@ A web page for staff (members, economy, events, war, threat, and audited actions
 1. The user opens the Discord Developer Portal → Cérebro's app → **OAuth2** → **Reset Secret**, and copies it. Never ask them to paste it here.
 2. Tell them to add `DASHBOARD_CLIENT_SECRET=<value>` to `.env` **themselves**. Do not open or read `.env` to check: `legion doctor` shows only whether it is set.
 3. In the same OAuth2 page, **Redirects** → add `<publicUrl>/callback` exactly (default `http://localhost:8081/callback`).
-4. You set `dashboard.enabled: true` in `legion.config.yaml` (and `dashboard.publicUrl` when it is not localhost; use https behind a reverse proxy for outside access).
+4. You set `dashboard.enabled: true` in `legion.config.yaml` (and `dashboard.publicUrl` when it is not localhost; use https behind a reverse proxy for outside access). On a VPS, the simplest access is an SSH tunnel (`ssh -L 8081:localhost:8081 user@vps`, then http://localhost:8081 locally), which keeps the default `publicUrl` and redirect.
 5. Docker: uncomment `- "127.0.0.1:8081:8081"` in `docker-compose.yml`, then `docker compose up -d`.
 6. `legion doctor`: the **Painel da staff** line must be ✅ (❌ = secret missing or port taken; ⚠️ = `publicUrl` not localhost and not https).
 
