@@ -237,6 +237,38 @@
       "last_minion": "Não dá: precisa sobrar pelo menos um minion de nível 1.",
       "disabled": "⛔ Inimigo `{id}` desativado.",
       "enabled": "✅ Inimigo `{id}` ativado."
+    },
+    "dashboard": {
+      "events": "Eventos mundiais",
+      "kind": "Tipo",
+      "status": "Status",
+      "starts": "Início",
+      "ends": "Fim",
+      "hp": "HP",
+      "wave": "Onda",
+      "outcome": "Resultado",
+      "status_scheduled": "agendado",
+      "status_announced": "anunciado",
+      "status_active": "em andamento",
+      "status_ended": "encerrado",
+      "status_cancelled": "cancelado",
+      "outcome_victory": "vitória",
+      "outcome_defeat": "derrota",
+      "war": "Guerra de facções",
+      "no_war": "Nenhuma guerra ainda",
+      "faction": "Facção",
+      "points": "Pontos",
+      "members_scored": "Membros que pontuaram",
+      "war_active": "Guerra em andamento · termina {ends}",
+      "war_last": "Última guerra · terminou {ends}",
+      "war_history": "Histórico de guerras",
+      "winners": "Vencedores",
+      "no_winner": "Sem vencedor",
+      "threat": "Ameaça",
+      "threat_level": "Nível",
+      "threat_band": "Faixa",
+      "next_waves": "Ondas da próxima invasão",
+      "next_difficulty": "Dificuldade da próxima invasão"
     }
   }
 }

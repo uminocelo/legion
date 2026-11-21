@@ -237,6 +237,38 @@
       "last_minion": "Not possible: at least one level-1 minion must remain.",
       "disabled": "⛔ Enemy `{id}` disabled.",
       "enabled": "✅ Enemy `{id}` enabled."
+    },
+    "dashboard": {
+      "events": "World events",
+      "kind": "Kind",
+      "status": "Status",
+      "starts": "Starts",
+      "ends": "Ends",
+      "hp": "HP",
+      "wave": "Wave",
+      "outcome": "Outcome",
+      "status_scheduled": "scheduled",
+      "status_announced": "announced",
+      "status_active": "active",
+      "status_ended": "ended",
+      "status_cancelled": "cancelled",
+      "outcome_victory": "victory",
+      "outcome_defeat": "defeat",
+      "war": "Faction war",
+      "no_war": "No war yet",
+      "faction": "Faction",
+      "points": "Points",
+      "members_scored": "Members who scored",
+      "war_active": "War in progress · ends {ends}",
+      "war_last": "Last war · ended {ends}",
+      "war_history": "War history",
+      "winners": "Winners",
+      "no_winner": "No winner",
+      "threat": "Threat",
+      "threat_level": "Level",
+      "threat_band": "Band",
+      "next_waves": "Next invasion waves",
+      "next_difficulty": "Next invasion difficulty"
     }
   }
 }

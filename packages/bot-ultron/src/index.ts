@@ -2,6 +2,7 @@ import { type LegionBot, staffCommandsCheck } from '@legion/core';
 import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { ultronCommands } from './commands.js';
 import { type UltronConfig, ultronConfigSchema } from './config.js';
+import { ultronPanels } from './dashboard.js';
 import { ultronDoctorChecks } from './doctor.js';
 import { ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 import { ultronServices } from './services.js';
@@ -57,6 +58,7 @@ export const ultron: LegionBot<UltronConfig> = {
   ],
   register: async (ctx) => {
     const s = ultronServices(ctx);
+    for (const panel of ultronPanels(ctx, s)) ctx.dashboard.panel(panel);
     await s.encounters.loadContent();
     ctx.bus.on('mission.started', 'ultron.spawner', (e) => s.encounters.onMissionStarted(e));
     ctx.bus.on('combat.resolved', 'ultron.encounter-result', (e) => s.encounters.onCombatResolved(e));

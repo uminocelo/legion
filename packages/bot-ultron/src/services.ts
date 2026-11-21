@@ -18,6 +18,7 @@ export interface UltronServices {
   encounters: EncounterService;
   world: WorldEventService;
   war: WarService;
+  warRepo: WarRepo;
   threat: ThreatService;
   status: StatusService;
   imports: EnemyImports;
@@ -44,7 +45,8 @@ export function ultronServices(ctx: BotContext<UltronConfig>): UltronServices {
     });
     const encounters = new EncounterService(ctx, repo, flavor);
     const world = new WorldEventService(ctx, eventsRepo, repo, flavor);
-    const war = new WarService(ctx, new WarRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId));
+    const warRepo = new WarRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
+    const war = new WarService(ctx, warRepo);
     world.warScore = {
       strike: (memberId, combatId, ex) => war.scoreStrike(memberId, combatId, ex),
       participation: (eventId, memberIds) => war.scoreParticipation(eventId, memberIds),
@@ -56,6 +58,7 @@ export function ultronServices(ctx: BotContext<UltronConfig>): UltronServices {
       encounters,
       world,
       war,
+      warRepo,
       threat: new ThreatService(ctx, eventsRepo),
       status: new StatusService(ctx, repo, eventsRepo, encounters, flavor),
       imports: new EnemyImports(ctx, repo),

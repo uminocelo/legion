@@ -22,6 +22,11 @@ Segredos ficam no `.env` (veja o README; tokens por bot em [SELF_HOSTING](SELF_H
 | `factions` | as 9 equipes (abaixo) | `{ key, roleKey, emoji, origins? }`. Sem a chave, vale a lista padrão com as equipes cujo cargo existe em `roles`. Tirar uma equipe a desliga ([UNIVERSE.md](UNIVERSE.md#equipes)) |
 | `events.replayLookbackDays` | `7` | Quantos dias de eventos reprocessar no boot |
 | `scheduler.pollIntervalMs` | `5000` | Intervalo do scheduler (mín. 500) |
+| `dashboard.enabled` | `false` | Painel web da staff; precisa de `DASHBOARD_CLIENT_SECRET` ([DASHBOARD.md](DASHBOARD.md)) |
+| `dashboard.port` | `8081` | Porta do painel |
+| `dashboard.publicUrl` | `http://localhost:8081` | Endereço do painel no navegador (o Discord volta para `<publicUrl>/callback`) |
+| `dashboard.sessionHours` | `12` | Duração do login (1–720) |
+| `dashboard.auditDays` | `180` | Dias que a auditoria é guardada |
 
 IDs são *snowflakes* do Discord; escreva entre aspas (`'123…'`).
 

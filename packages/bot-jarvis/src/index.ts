@@ -3,6 +3,7 @@ import { GatewayIntentBits, PermissionFlagsBits } from 'discord.js';
 import { jarvisCommands } from './commands.js';
 import { type JarvisConfig, jarvisConfigSchema } from './config.js';
 import { progressReadModel, registerConsumers } from './consumers.js';
+import { jarvisPanels } from './dashboard.js';
 import { jarvisDoctorChecks } from './doctor.js';
 import { displayedStreak, levelFor, progressBar } from './domain/xp.js';
 import { MISSION_TIMEOUT_JOB } from './missions.js';
@@ -95,6 +96,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.provide('progress', progressReadModel(s));
     ctx.provide('gear', s.inventory.gearReadModel());
     registerConsumers(ctx, s);
+    for (const panel of jarvisPanels(ctx)) ctx.dashboard.panel(panel);
     const res = await s.trivia.reload();
     ctx.log.info({ ...res, errors: res.errors.length }, 'trivia content loaded');
     const ms = await s.missions.reload();
