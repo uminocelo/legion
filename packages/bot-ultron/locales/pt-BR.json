@@ -268,7 +268,21 @@
       "threat_level": "Nível",
       "threat_band": "Faixa",
       "next_waves": "Ondas da próxima invasão",
-      "next_difficulty": "Dificuldade da próxima invasão"
+      "next_difficulty": "Dificuldade da próxima invasão",
+      "actions": {
+        "kind": "Tipo",
+        "when": "Quando (horário do servidor)",
+        "level": "Nível (0–100)",
+        "event_schedule": "Agendar evento",
+        "event_start": "Iniciar evento agora",
+        "event_cancel": "Cancelar evento",
+        "war_start": "Iniciar guerra",
+        "war_end": "Encerrar guerra",
+        "threat_set": "Definir ameaça",
+        "threat_disabled": "O medidor de ameaça está desligado (ultron.threat.enabled: false).",
+        "threat_range": "Use um nível de 0 a {max}.",
+        "threat_done": "Ameaça definida em {level} / {max}."
+      }
     }
   }
 }

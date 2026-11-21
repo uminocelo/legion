@@ -25,7 +25,7 @@ import {
 import type { IdempotencyKeys } from './idempotency.js';
 import { type DashboardOAuth, OAuthError } from './oauth.js';
 import type { DashboardRegistry, RegisteredPanel } from './registry.js';
-import { DASHBOARD_CSS, renderPanelView } from './render.js';
+import { DASHBOARD_CSS, discordToPlain, renderPanelView } from './render.js';
 import { type DashboardSession, type DashboardSessionStore, randomToken } from './sessions.js';
 import type { DashboardStaffChecker, StaffStatus } from './staff.js';
 
@@ -365,7 +365,7 @@ export class DashboardServer {
       return;
     }
     const banner = result
-      ? `<p class="result ${result.ok ? 'ok' : 'fail'}" role="status">${escapeHtml(result.message)}</p>`
+      ? `<p class="result ${result.ok ? 'ok' : 'fail'}" role="status">${escapeHtml(discordToPlain(result.message, this.o.i18n.defaultLocale, this.o.timezone))}</p>`
       : Object.keys(errors).length
         ? `<p class="result fail" role="alert">${escapeHtml(this.t('form_has_errors'))}</p>`
         : '';

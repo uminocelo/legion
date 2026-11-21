@@ -59,3 +59,16 @@ input[aria-invalid=true],select[aria-invalid=true]{border-color:#c92a2a}
 .result.fail{background:#c92a2a22;border:1px solid #c92a2a}
 button[type=submit]{justify-self:start}
 `;
+
+/**
+ * Discord markup in shared command messages, made readable on the web: `<t:unix:…>` → local date,
+ * `<@id>` → `@id`, `<#id>` → `#id`, `**bold**` → text. The result is still escaped by the caller.
+ */
+export function discordToPlain(text: string, locale: string, timeZone: string): string {
+  const fmt = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short', timeZone });
+  return text
+    .replace(/<t:(\d+)(?::[a-zA-Z])?>/g, (_m, s: string) => fmt.format(new Date(Number(s) * 1000)))
+    .replace(/<@[!&]?(\d+)>/g, '@$1')
+    .replace(/<#(\d+)>/g, '#$1')
+    .replace(/\*\*(.+?)\*\*/g, '$1');
+}

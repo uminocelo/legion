@@ -438,7 +438,21 @@
       "balance": "Balance",
       "when": "When",
       "item": "Item",
-      "price": "Price"
+      "price": "Price",
+      "actions": {
+        "member": "Member",
+        "reason": "Reason",
+        "amount": "Amount",
+        "item": "Item ID",
+        "price": "New price (empty = back to the file price)",
+        "credits_give": "Give credits",
+        "credits_remove": "Remove credits",
+        "item_give": "Give item",
+        "item_price": "Change item price",
+        "unknown_item": "Item {item} does not exist.",
+        "price_set": "{item} now costs {price} credits.",
+        "price_cleared": "{item} is back to the file price ({price})."
+      }
     }
   }
 }

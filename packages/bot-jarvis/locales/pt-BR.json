@@ -438,7 +438,21 @@
       "balance": "Saldo",
       "when": "Quando",
       "item": "Item",
-      "price": "Preço"
+      "price": "Preço",
+      "actions": {
+        "member": "Membro",
+        "reason": "Motivo",
+        "amount": "Quantidade",
+        "item": "ID do item",
+        "price": "Novo preço (vazio = volta ao preço do arquivo)",
+        "credits_give": "Dar créditos",
+        "credits_remove": "Tirar créditos",
+        "item_give": "Dar item",
+        "item_price": "Mudar preço de item",
+        "unknown_item": "Item {item} não existe.",
+        "price_set": "Preço de {item} agora é {price} créditos.",
+        "price_cleared": "Preço de {item} voltou ao do arquivo ({price})."
+      }
     }
   }
 }

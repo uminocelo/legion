@@ -1,6 +1,8 @@
-import type { BotContext, PanelSpec } from '@legion/core';
+import type { ActionSpec, BotContext, FieldSpec, PanelSpec } from '@legion/core';
 import { and, desc, eq, gte, inArray, sql } from 'drizzle-orm';
 import { jarvisTables } from './db/tables.js';
+import type { JarvisServices } from './services.js';
+import { STAFF_CREDITS_MAX } from './wallet-ui.js';
 
 const DAY_MS = 86_400_000;
 
@@ -97,6 +99,82 @@ export function jarvisPanels(ctx: BotContext<unknown>): PanelSpec[] {
               -r.amount,
             ]),
           ),
+        };
+      },
+    },
+  ];
+}
+
+const PRICE_MAX = 1_000_000;
+
+/** Staff dashboard actions of J.A.R.V.I.S. (US-21): same services and messages as `/jarvis`. */
+export function jarvisActions(ctx: BotContext<unknown>, s: JarvisServices): ActionSpec[] {
+  const l = ctx.config.locale;
+  const k = (x: string) => `jarvis.dashboard.actions.${x}`;
+  const member: FieldSpec = { name: 'member', type: 'member', labelKey: k('member'), required: true };
+  const reason: FieldSpec = { name: 'reason', type: 'text', labelKey: k('reason'), required: true, max: 200 };
+  const amount: FieldSpec = {
+    name: 'amount',
+    type: 'int',
+    labelKey: k('amount'),
+    required: true,
+    min: 1,
+    max: STAFF_CREDITS_MAX,
+  };
+  const item: FieldSpec = { name: 'item', type: 'text', labelKey: k('item'), required: true, max: 100 };
+  const credits =
+    (sign: 1 | -1): ActionSpec['run'] =>
+    (input, actor) =>
+      s.walletUi.staffAdjust(
+        {
+          discordUserId: String(input.member),
+          amount: sign * Number(input.amount),
+          reason: String(input.reason ?? ''),
+          actorId: actor.discordUserId,
+          sourceKey: `staff:dashboard:${ctx.newId()}`,
+        },
+        l,
+      );
+  return [
+    { id: 'credits-give', titleKey: k('credits_give'), fields: [member, amount, reason], run: credits(1) },
+    {
+      id: 'credits-remove',
+      titleKey: k('credits_remove'),
+      fields: [member, amount, reason],
+      run: credits(-1),
+    },
+    {
+      id: 'item-give',
+      titleKey: k('item_give'),
+      fields: [member, item, { ...reason, required: false }],
+      run: (input, actor) =>
+        s.inventoryUi.staffGrantTo(
+          {
+            discordUserId: String(input.member),
+            itemId: String(input.item),
+            reason: String(input.reason ?? ''),
+            actorId: actor.discordUserId,
+          },
+          l,
+        ),
+    },
+    {
+      id: 'item-price',
+      titleKey: k('item_price'),
+      fields: [item, { name: 'price', type: 'int', labelKey: k('price'), min: 1, max: PRICE_MAX }],
+      run: async (input, actor) => {
+        const id = String(input.item).trim();
+        const price = input.price === null ? null : Number(input.price);
+        const row = await s.items.setPriceOverride(id, price);
+        if (!row)
+          return { ok: false, message: ctx.i18n.t('jarvis.dashboard.actions.unknown_item', { item: id }, l) };
+        ctx.log.info({ staff: actor.discordUserId, itemId: id, price }, 'staff price override');
+        return {
+          ok: true,
+          message:
+            price === null
+              ? ctx.i18n.t('jarvis.dashboard.actions.price_cleared', { item: id, price: row.price ?? '—' }, l)
+              : ctx.i18n.t('jarvis.dashboard.actions.price_set', { item: id, price }, l),
         };
       },
     },

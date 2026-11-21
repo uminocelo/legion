@@ -268,7 +268,21 @@
       "threat_level": "Level",
       "threat_band": "Band",
       "next_waves": "Next invasion waves",
-      "next_difficulty": "Next invasion difficulty"
+      "next_difficulty": "Next invasion difficulty",
+      "actions": {
+        "kind": "Kind",
+        "when": "When (server time)",
+        "level": "Level (0–100)",
+        "event_schedule": "Schedule event",
+        "event_start": "Start event now",
+        "event_cancel": "Cancel event",
+        "war_start": "Start war",
+        "war_end": "End war",
+        "threat_set": "Set threat",
+        "threat_disabled": "The threat meter is off (ultron.threat.enabled: false).",
+        "threat_range": "Use a level from 0 to {max}.",
+        "threat_done": "Threat set to {level} / {max}."
+      }
     }
   }
 }
