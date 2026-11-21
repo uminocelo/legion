@@ -105,6 +105,8 @@ export interface GuildMember {
   joinedAt: string | null;
   accountCreatedAt: string;
   displayName: string;
+  /** True for the server owner (set by `fetchMember`; absent means not known to be the owner). */
+  isOwner?: boolean;
 }
 
 export type ChannelKind = 'text' | 'voice' | 'category' | 'forum' | 'announcement' | 'thread' | 'other';

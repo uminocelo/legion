@@ -1,5 +1,11 @@
 import type { AnyLegionBot, BotContext, GuildEvents, LegionBot } from './bot.js';
 import type { BotId, LegionConfig } from './config/schema.js';
+import { membersPanel } from './dashboard/core-panels.js';
+import { type DashboardOAuth, DiscordOAuth } from './dashboard/oauth.js';
+import { DashboardRegistry } from './dashboard/registry.js';
+import { DashboardServer } from './dashboard/server.js';
+import { DashboardSessionStore } from './dashboard/sessions.js';
+import { GuildStaffChecker } from './dashboard/staff.js';
 import type { LegionDb } from './db/db.js';
 import { KvStore } from './db/kv.js';
 import { syncCommands } from './discord/command-sync.js';
@@ -95,6 +101,8 @@ export class CoreRuntime {
   private readonly botApps = new Map<BotId, string>();
   readonly newId: () => string;
   readonly bots: { bot: AnyLegionBot; ctx: BotContext<unknown> }[] = [];
+  readonly dashboardSessions: DashboardSessionStore;
+  readonly dashboard = new DashboardRegistry();
 
   constructor(private readonly o: CoreRuntimeOptions) {
     const { config, db, clock, log } = o;
@@ -134,6 +142,13 @@ export class CoreRuntime {
       o.roleGuard ?? 'skip',
     );
     this.guildEvents = new GuildEventHub(log.child({ component: 'guild-events' }));
+    this.dashboard.panel('core', membersPanel(this.providers.readModels(), config, this.i18n));
+    this.dashboardSessions = new DashboardSessionStore(db, clock, config.dashboard.sessionHours);
+    if (config.dashboard.enabled)
+      this.scheduler.every('core.dashboard-sessions-purge', '23 4 * * *', async () => {
+        const purged = await this.dashboardSessions.purgeExpired();
+        if (purged) log.info({ purged }, 'expired dashboard sessions deleted');
+      });
     const read = this.providers.readModels();
     this.router = new InteractionRouter({
       gateway: this.gateway,
@@ -179,6 +194,38 @@ export class CoreRuntime {
     return [...ids.values()].some((id) => i.memberRoleIds.includes(id));
   }
 
+  /**
+   * The staff dashboard server (not started). `clientId`/`clientSecret` are Cérebro's app OAuth2
+   * credentials; tests pass a fake `oauth`.
+   */
+  dashboardServer(o: {
+    clientId: string;
+    clientSecret: string;
+    oauth?: DashboardOAuth;
+    host?: string;
+    port?: number;
+  }): DashboardServer {
+    const { config, clock, log } = this.o;
+    return new DashboardServer({
+      config: config.dashboard,
+      oauth: o.oauth ?? new DiscordOAuth({ clientId: o.clientId, clientSecret: o.clientSecret }),
+      sessions: this.dashboardSessions,
+      staff: new GuildStaffChecker({
+        gateway: this.gateway,
+        guildId: this.o.guildId,
+        clock,
+        isStaff: (i) => this.isStaff(i),
+      }),
+      i18n: this.i18n,
+      registry: this.dashboard,
+      db: this.o.db,
+      clock,
+      log: log.child({ component: 'dashboard' }),
+      ...(o.host ? { host: o.host } : {}),
+      ...(o.port !== undefined ? { port: o.port } : {}),
+    });
+  }
+
   contextFor<C>(bot: LegionBot<C>): BotContext<C> {
     const { config, db, clock, random } = this.o;
     const providers = this.providers;
@@ -195,6 +242,7 @@ export class CoreRuntime {
       gateway: this.gateways.get(this.appOf(bot.id)) ?? this.gateway,
       roles: this.roles,
       help: this.help,
+      dashboard: this.dashboard.forBot(bot.id),
       profile: this.profile,
       get rateLimiter() {
         return providers.get('rateLimiter') ?? new InMemoryRateLimiter(clock);

@@ -51,3 +51,33 @@ export const coreKv = sqliteTable('core_kv', {
   value: text('value').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
+
+/** Staff dashboard sessions (US-20): only the SHA-256 of the cookie token is stored. */
+export const coreDashboardSessions = sqliteTable(
+  'core_dashboard_sessions',
+  {
+    tokenHash: text('token_hash').primaryKey(),
+    discordUserId: text('discord_user_id').notNull(),
+    csrfToken: text('csrf_token').notNull(),
+    createdAt: text('created_at').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    lastSeenAt: text('last_seen_at').notNull(),
+  },
+  (t) => [index('core_dashboard_sessions_expires_at_idx').on(t.expiresAt)],
+);
+
+/** Append-only log of staff actions (dashboard and commands; written from US-21). */
+export const coreAuditLog = sqliteTable(
+  'core_audit_log',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    actorDiscordId: text('actor_discord_id').notNull(),
+    source: text('source').notNull(),
+    action: text('action').notNull(),
+    target: text('target'),
+    details: text('details').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [index('core_audit_log_created_at_idx').on(t.createdAt)],
+);

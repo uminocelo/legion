@@ -10,6 +10,19 @@ export type Locale = (typeof LOCALES)[number];
 const snowflake = z.string().regex(/^\d{5,25}$/, { message: 'config.snowflake' });
 const optionalChannel = snowflake.nullable().default(null);
 
+/** Staff web dashboard (US-20). Off by default; needs `DASHBOARD_CLIENT_SECRET` when on. */
+export const dashboardConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  port: z.number().int().min(1).max(65535).default(8081),
+  publicUrl: z
+    .url({ protocol: /^https?$/, message: 'config.dashboard_url' })
+    .transform((u) => u.replace(/\/+$/, ''))
+    .default('http://localhost:8081'),
+  sessionHours: z.number().int().min(1).max(720).default(12),
+  auditDays: z.number().int().min(1).max(3650).default(180),
+});
+export type DashboardConfig = z.infer<typeof dashboardConfigSchema>;
+
 export const channelsSchema = z.object({
   welcome: optionalChannel,
   rules: optionalChannel,
@@ -33,6 +46,7 @@ export const sharedConfigSchema = z
     factions: z.array(factionSchema).optional(),
     events: z.object({ replayLookbackDays: z.number().int().positive().default(7) }).prefault({}),
     scheduler: z.object({ pollIntervalMs: z.number().int().min(500).default(5000) }).prefault({}),
+    dashboard: dashboardConfigSchema.prefault({}),
   })
   .catchall(z.unknown())
   .superRefine((cfg, ctx) => {

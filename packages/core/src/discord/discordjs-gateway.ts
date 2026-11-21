@@ -387,6 +387,7 @@ export class DiscordJsGateway implements DiscordGateway {
         joinedAt: m.joinedAt?.toISOString() ?? null,
         accountCreatedAt: m.user.createdAt.toISOString(),
         displayName: m.displayName,
+        isOwner: guild.ownerId === m.id,
       };
     } catch (err) {
       if (err instanceof DiscordAPIError && (err.code === 10007 || err.code === 10013)) return null;

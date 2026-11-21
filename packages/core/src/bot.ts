@@ -1,6 +1,7 @@
 import type { GatewayIntentBits } from 'discord.js';
 import type { z } from 'zod';
 import type { BotId, LegionConfig } from './config/schema.js';
+import type { DashboardPanels } from './dashboard/registry.js';
 import type { LegionDb } from './db/db.js';
 import type { KvStore } from './db/kv.js';
 import type { DiscordGateway } from './discord/gateway.js';
@@ -68,6 +69,8 @@ export interface BotContext<C = unknown> {
   gateway: DiscordGateway;
   roles: RoleService;
   help: HelpRegistry;
+  /** Staff dashboard panels (US-20): `ctx.dashboard.panel({ id, titleKey, render })`. */
+  dashboard: DashboardPanels;
   profile: ProfileRegistry;
   /** Resolved at call time, so Sentinel can replace it later. */
   readonly rateLimiter: RateLimiter;

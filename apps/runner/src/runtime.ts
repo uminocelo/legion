@@ -7,6 +7,7 @@ import {
   ConfigError,
   CoreRuntime,
   createDb,
+  type DashboardServer,
   type DiscordGateway,
   type Env,
   type LegionConfig,
@@ -88,6 +89,39 @@ export async function buildRuntime(o: BuildRuntimeOptions): Promise<CoreRuntime>
   await runtime.loadBots(o.bots);
   o.log.info({ bots: runtime.enabledBotIds() }, 'bots loaded');
   return runtime;
+}
+
+/**
+ * Starts the staff dashboard when `dashboard.enabled` (US-20). Off, or on without
+ * `DASHBOARD_CLIENT_SECRET`, nothing listens (the bots keep running; doctor shows the error).
+ */
+export async function startDashboard(
+  runtime: CoreRuntime,
+  env: Env,
+  config: LegionConfig,
+  log: Logger,
+  opts: { host?: string; port?: number } = {},
+): Promise<DashboardServer | null> {
+  if (!config.dashboard.enabled) return null;
+  if (!env.DASHBOARD_CLIENT_SECRET) {
+    log.error(
+      'dashboard.enabled is true but DASHBOARD_CLIENT_SECRET is not set; the dashboard is off (see docs/DASHBOARD.md)',
+    );
+    return null;
+  }
+  const dashboard = runtime.dashboardServer({
+    clientId: env.main.clientId,
+    clientSecret: env.DASHBOARD_CLIENT_SECRET,
+    ...opts,
+  });
+  try {
+    const port = await dashboard.start();
+    log.info({ port, publicUrl: config.dashboard.publicUrl }, 'dashboard listening');
+    return dashboard;
+  } catch (err) {
+    log.error({ err, port: opts.port ?? config.dashboard.port }, 'dashboard not started');
+    return null;
+  }
 }
 
 /** Loads `.env` from the working directory if present (Docker passes env vars directly). */
