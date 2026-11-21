@@ -15,7 +15,7 @@ Com uma quinta conta dá para testar o "grupo cheio" no passo 4.
 
 ## Antes (só o dono, uns 15 minutos)
 
-1. Atualize para a versão mais nova: `LEGION_VERSION=0.10.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
+1. Atualize para a versão mais nova: `LEGION_VERSION=1.0.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
 2. No `legion.config.yaml`, para esta sessão:
    ```yaml
    channels:
@@ -167,9 +167,33 @@ Para não esperar o nível 3, a staff pode dar XP com `/jarvis xp` (com motivo).
 | 11.11 | Dono: `/jarvis item desativar item:traje-de-treino` | Responde quantos foram desequipados; J2 continua com o traje no `/inventario`, marcado "desativado" | | |
 | 11.12 | Dono: `/jarvis creditos dar membro:J2 quantidade:-100 motivo:teste` | Recusado: não dá para tirar mais do que o saldo | | |
 
+## 12. Novidades da v1.0: guerra, ondas, ameaça e painel (todos, 40 min)
+
+Antes: o dono liga o painel ([DASHBOARD.md](DASHBOARD.md)) e confere `legion doctor` (**Painel da staff** ✅). Staff 2 precisa de um cargo de staff sem Administrador.
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 12.1 | Dono: `/ultron guerra iniciar` | Confirma a guerra com a data do fim; `/guerra` mostra o placar zerado | | |
+| 12.2 | J1 (X-Men) termina uma missão; J2 (outra equipe) ataca num evento | `/guerra` mostra pontos para as duas equipes; "meus pontos" de cada um bate | | |
+| 12.3 | Dono: `/ultron guerra pontos membro:J1 pontos:15 motivo:teste` | +15 na equipe de J1, com o motivo; `legion playtest-report` lista o ajuste | | |
+| 12.4 | Dono: `/ultron guerra encerrar` | Post do resultado com a equipe vencedora; cada membro vencedor ganha 50 créditos em `/carteira` | | |
+| 12.5 | Dono (painel): **Definir ameaça** 70, depois **Iniciar evento agora** tipo Invasão | Ameaça 70 / 100 no painel; a invasão tem 3 ondas, difícil | | |
+| 12.6 | J1, J2, J3 atacam até zerar a 1ª onda | A mesma mensagem passa para a onda 2 com mais HP; ataques atrasados entram na onda nova | | |
+| 12.7 | Deixe o tempo acabar no meio das ondas | Derrota; o resultado mostra as ondas vencidas e a que falhou | | |
+| 12.8 | J1: `/ameaca` | Mostra o medidor (barra, faixa, o que significa) mesmo sem evento | | |
+| 12.9 | Staff 2: abre http://localhost:8081 e entra com o Discord | Entra; vê membros, economia, eventos, guerra e ameaça | | |
+| 12.10 | J3 (sem cargo de staff) tenta entrar | "Só a staff pode abrir o painel" (403) | | |
+| 12.11 | Dono tira o cargo de Staff 2; Staff 2 recarrega depois de 1 min | 403; precisa de outro login quando o cargo voltar | | |
+| 12.12 | Dono (painel): **Dar créditos** J2, 30, "painel" | Mensagem igual à do `/jarvis creditos dar`; `/carteira` de J2 +30; a linha aparece em `/audit` | | |
+| 12.13 | Dono: recarrega a página do formulário enviado (reenviar) | "Este formulário já foi enviado"; o saldo não muda de novo | | |
+| 12.14 | Dono (painel): **Tirar créditos** J2, um valor maior que o saldo | Recusado com a mesma mensagem do comando; `/audit` mostra `ok: false` | | |
+| 12.15 | Dono (painel): **Mudar preço** `traje-de-treino` para 5; depois `/jarvis item importar` de qualquer arquivo de itens | `/loja` mostra 5 antes e depois da importação; preço vazio volta ao original | | |
+| 12.16 | Dono (painel): **Agendar evento** Raid para daqui a 10 min, depois **Cancelar evento** | O anúncio sai no canal de eventos; o cancelamento confirma; os dois em `/audit` | | |
+| 12.17 | Abra o painel num celular | Usável na largura do celular (tabelas rolam para o lado) | | |
+
 ## Depois
 
-1. **Relatório:** `docker compose exec legion legion playtest-report --since <hora de início>`. A seção **Conferência** deve dizer ✅. Cada ❌ é um problema (XP pago duas vezes ou faltando, limite furado, luta com o grupo errado, carteira diferente do histórico de créditos, pontos de guerra numa facção desconhecida). A seção **Economia** lista as compras e o que a staff deu ou tirou. A seção **Guerra** lista os pontos por facção e por motivo, e os ajustes da staff. Os ⚠️ merecem uma olhada. Use `--json` para guardar o resultado.
+1. **Relatório:** `docker compose exec legion legion playtest-report --since <hora de início>`. A seção **Conferência** deve dizer ✅. Cada ❌ é um problema (XP pago duas vezes ou faltando, limite furado, luta com o grupo errado, carteira diferente do histórico de créditos, pontos de guerra numa facção desconhecida). A seção **Economia** lista as compras e o que a staff deu ou tirou. A seção **Guerra** lista os pontos por facção e por motivo, e os ajustes da staff. As ações do painel ficam em `/audit`. Os ⚠️ merecem uma olhada. Use `--json` para guardar o resultado.
 2. **Ondas e ameaça:** se a invasão de sábado teve mais de uma onda, confira no resultado se cada onda aparece com o tempo e quem mais causou dano. `/ameaca` deve mostrar o medidor mesmo sem evento. A ameaça só muda uma vez por dia, às 00:10.
 3. **Logs:** `docker compose logs legion --since <hora de início> | grep '"level":50'` deve sair vazio. Para os avisos: `grep '"level":40'`.
 4. **Volte a config:** tire o `choiceTimeoutMinutes: 3` (e a revisão, se não quiser deixar ligada) e rode `docker compose up -d`.

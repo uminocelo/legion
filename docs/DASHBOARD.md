@@ -1,6 +1,6 @@
 # Painel da staff
 
-Uma página web dentro do próprio Legion com membros, economia, eventos, guerra e ameaça, para a staff acompanhar o servidor sem comandos. Por enquanto só leitura; as ações (dar créditos, agendar evento…) chegam na v1.0.
+Uma página web dentro do próprio Legion com membros, economia, eventos, guerra e ameaça, e ações para a staff cuidar do servidor sem comandos (dar créditos e itens, mudar preços, agendar eventos, guerra, ameaça).
 
 - Roda no mesmo processo dos bots, na porta `dashboard.port` (8081).
 - Login com o Discord (só o seu ID, `scope=identify`). Entram o **dono do servidor**, quem tem **Administrador** e os **cargos de staff** (Professor X, Conselho da Legião). Os outros recebem "Só a staff pode abrir o painel".
@@ -43,9 +43,33 @@ Sem o `DASHBOARD_CLIENT_SECRET`, os bots sobem normalmente e o painel fica desli
 - **Membros**: registrados por equipe e por faixa de nível.
 - **J.A.R.V.I.S.**: economia (créditos em circulação, ganhos e gastos em 7 dias), maiores saldos, últimas compras.
 - **ULTRON**: eventos mundiais (agendados, em andamento e dos últimos 7 dias), guerra (placar) e histórico, ameaça (nível e o tamanho da próxima invasão).
-- **Auditoria** (`/audit`): ações da staff, mais novas primeiro.
+- **Auditoria** (`/audit`): ações da staff, mais novas primeiro, 50 por página.
 
-Bot desligado = painel dele não aparece.
+Bot desligado = painel e ações dele não aparecem.
+
+## Ações
+
+Cada ação é um formulário no menu. Ela usa **a mesma regra e a mesma mensagem** do comando no Discord: se o comando recusaria, a ação também recusa, com o mesmo texto.
+
+| Ação | Igual a | Campos |
+|---|---|---|
+| Dar créditos | `/jarvis creditos dar` | membro, quantidade (1–10000), motivo |
+| Tirar créditos | `/jarvis creditos dar` com número negativo | membro, quantidade, motivo; não deixa o saldo negativo |
+| Dar item | `/jarvis item dar` | membro, ID do item, motivo (opcional) |
+| Mudar preço de item | — | ID do item, novo preço; vazio volta ao preço do arquivo |
+| Agendar evento | `/ultron evento agendar` | tipo, quando (horário do servidor) |
+| Iniciar evento agora | `/ultron evento iniciar` | tipo |
+| Cancelar evento | `/ultron evento cancelar` | tipo (opcional) |
+| Iniciar / encerrar guerra | `/ultron guerra iniciar` / `encerrar` | — |
+| Definir ameaça | — | nível 0–100 (recusa com `ultron.threat.enabled: false`) |
+
+- **Membro:** cole o ID do Discord (botão direito → Copiar ID, com o modo desenvolvedor ligado) ou a menção `<@…>`.
+- **Preço:** fica guardado à parte (`price_override`) e **sobrevive** a `/jarvis item importar` e ao reinício. A `/loja`, a compra e os painéis usam o preço novo.
+- **Enviar duas vezes** (clique duplo, recarregar a página) não repete a ação: cada formulário vale uma vez. Abra a ação de novo para repetir.
+
+## Auditoria
+
+Toda ação executada fica em `/audit`: quem, quando, qual ação, o membro alvo, os campos e o resultado (`ok: true` ou `ok: false` quando o serviço recusou). Textos longos são cortados em 200 caracteres. Formulário com campo inválido, sessão vencida ou token errado não chega a rodar e não entra na auditoria. A auditoria é guardada por `dashboard.auditDays` (180) dias.
 
 ## Acesso de fora do computador
 
@@ -75,7 +99,7 @@ e troque o redirect no Developer Portal para `https://painel.seudominio.com/call
 - O token de acesso do Discord é usado uma vez no login e descartado.
 - A sessão guarda só um hash (SHA-256) do cookie; cada login cria uma nova; **Sair** apaga. Sessões vencidas são apagadas todo dia.
 - Cookies `HttpOnly`, `SameSite=Lax`, `Secure` em https. O `state` do login vale 10 min e precisa bater.
-- Formulários com token CSRF e conferência de `Origin`.
+- Formulários com token CSRF, conferência de `Origin` e chave de uso único (enviar de novo não repete).
 - Páginas sem scripts; `Content-Security-Policy: default-src 'self'`, `X-Frame-Options: DENY`.
 - No máximo 10 tentativas de login por minuto por IP.
 
