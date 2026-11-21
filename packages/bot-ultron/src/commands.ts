@@ -2,6 +2,14 @@ import type { BotContext, I18n, IncomingInteraction, Responder, SlashCommandDefi
 import { DIFFICULTIES, type UltronConfig } from './config.js';
 import { parseWhen } from './domain/when.js';
 import type { UltronServices } from './services.js';
+import {
+  cancelEvent,
+  type EventKind,
+  endWar,
+  type StaffOutcome,
+  scheduleEvent,
+  startWar,
+} from './staff-actions.js';
 
 export const desc = (i18n: I18n, key: string) => ({
   description: i18n.t(key, {}, 'pt-BR').slice(0, 100),
@@ -32,55 +40,23 @@ export function ultronCommands(ctx: BotContext<UltronConfig>, s: UltronServices)
     choices: choicesOf(i18n, ['invasion', 'raid'], 'ultron.kinds'),
     ...desc(i18n, 'ultron.commands.ultron.tipo'),
   });
-  const unix = (iso: string) => Math.floor(new Date(iso).getTime() / 1000);
+  const reply = (i: IncomingInteraction, r: Responder, o: StaffOutcome) => say(i, r, o.key, o.vars ?? {});
   const evento = async (i: IncomingInteraction, r: Responder) => {
-    const kind = (i.options?.tipo as 'invasion' | 'raid' | undefined) ?? undefined;
-    if (i.subcommand === 'evento cancelar') {
-      const open = await s.eventsRepo.openEvents(kind);
-      const target = open.find((e) => e.status === 'active') ?? open[0];
-      if (!target) return say(i, r, 'ultron.events.nothing_to_cancel');
-      await s.world.cancel(target.id);
-      return say(i, r, 'ultron.events.cancelled', {
-        title: s.world.title(target, (await s.repo.template(target.templateId))?.name ?? target.templateId),
-      });
-    }
-    const now = ctx.clock.now();
-    const startsAt =
-      i.subcommand === 'evento iniciar'
-        ? now
-        : parseWhen(String(i.options?.quando ?? ''), now, ctx.config.timezone);
-    if (!startsAt) return say(i, r, 'ultron.errors.bad_when');
-    if (!ctx.config.channels.events) return say(i, r, 'ultron.errors.no_events_channel');
-    const res = await s.world.schedule({
-      kind: kind ?? 'raid',
-      startsAt,
-      scheduledBy: i.userId,
-      announceNow: i.subcommand === 'evento iniciar',
-    });
-    if (!res.ok) return say(i, r, `ultron.errors.schedule_${res.error}`);
-    if (i.subcommand === 'evento iniciar') {
-      await s.world.start(res.event.id);
-      return say(i, r, 'ultron.events.started_now', { channel: `<#${ctx.config.channels.events}>` });
-    }
-    return say(i, r, 'ultron.events.scheduled', {
-      at: `<t:${unix(res.event.startsAt)}:F>`,
-      announce: `<t:${unix(res.event.announceAt)}:R>`,
-    });
+    const kind = (i.options?.tipo as EventKind | undefined) ?? undefined;
+    if (i.subcommand === 'evento cancelar') return reply(i, r, await cancelEvent(s, kind));
+    const now = i.subcommand === 'evento iniciar';
+    const startsAt = now
+      ? null
+      : parseWhen(String(i.options?.quando ?? ''), ctx.clock.now(), ctx.config.timezone);
+    return reply(
+      i,
+      r,
+      await scheduleEvent(ctx, s, { ...(kind ? { kind } : {}), startsAt, now, actorId: i.userId }),
+    );
   };
   const guerra = async (i: IncomingInteraction, r: Responder) => {
-    if (i.subcommand === 'guerra iniciar') {
-      const res = await s.war.staffStart();
-      if (res === 'active') return say(i, r, 'ultron.war.already_active');
-      if (res === 'disabled') return say(i, r, 'ultron.war.disabled');
-      const active = await s.war.repo.findStatus('active');
-      return say(i, r, 'ultron.war.started', { at: `<t:${unix(active?.endsAt ?? '')}:F>` });
-    }
-    if (i.subcommand === 'guerra encerrar') {
-      const res = await s.war.staffEnd();
-      if (res === 'none') return say(i, r, 'ultron.war.no_war');
-      if (res === 'disabled') return say(i, r, 'ultron.war.disabled');
-      return say(i, r, 'ultron.war.ended');
-    }
+    if (i.subcommand === 'guerra iniciar') return reply(i, r, await startWar(s));
+    if (i.subcommand === 'guerra encerrar') return reply(i, r, await endWar(s));
     const raw = i.options?.pontos;
     const points = typeof raw === 'number' ? raw : Number(raw);
     const target = String(i.options?.membro ?? '');

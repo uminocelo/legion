@@ -1,0 +1,1 @@
+ALTER TABLE "jarvis_items" ADD COLUMN "price_override" integer;

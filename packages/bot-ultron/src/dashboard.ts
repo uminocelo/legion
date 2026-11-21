@@ -1,9 +1,18 @@
-import type { BotContext, PanelSpec } from '@legion/core';
+import type { ActionSpec, BotContext, FieldSpec, PanelSpec } from '@legion/core';
 import { and, desc, eq, gte, inArray, or } from 'drizzle-orm';
 import type { UltronConfig } from './config.js';
 import { ultronTables } from './db/tables.js';
 import { invasionSize, THREAT_MAX, threatBand } from './domain/threat.js';
 import type { UltronServices } from './services.js';
+import {
+  cancelEvent,
+  type EventKind,
+  endWar,
+  type StaffOutcome,
+  scheduleEvent,
+  setThreat,
+  startWar,
+} from './staff-actions.js';
 
 const DAY_MS = 86_400_000;
 
@@ -117,6 +126,65 @@ export function ultronPanels(ctx: BotContext<UltronConfig>, s: UltronServices): 
           ],
         };
       },
+    },
+  ];
+}
+
+/** Staff dashboard actions of ULTRON (US-21): same functions and messages as `/ultron`. */
+export function ultronActions(ctx: BotContext<UltronConfig>, s: UltronServices): ActionSpec[] {
+  const l = ctx.config.locale;
+  const say = (o: StaffOutcome) => ({ ok: o.ok, message: ctx.i18n.t(o.key, o.vars ?? {}, l) });
+  const k = (x: string) => `ultron.dashboard.actions.${x}`;
+  const kind = (required: boolean): FieldSpec => ({
+    name: 'kind',
+    type: 'select',
+    labelKey: k('kind'),
+    required,
+    options: (['invasion', 'raid'] as const).map((v) => ({ value: v, labelKey: `ultron.kinds.${v}` })),
+  });
+  const kindOf = (v: unknown) => (v === 'invasion' || v === 'raid' ? { kind: v as EventKind } : {});
+  return [
+    {
+      id: 'event-schedule',
+      titleKey: k('event_schedule'),
+      fields: [kind(true), { name: 'when', type: 'datetime', labelKey: k('when'), required: true }],
+      run: async (input, actor) =>
+        say(
+          await scheduleEvent(ctx, s, {
+            ...kindOf(input.kind),
+            startsAt: typeof input.when === 'string' ? new Date(input.when) : null,
+            now: false,
+            actorId: actor.discordUserId,
+          }),
+        ),
+    },
+    {
+      id: 'event-start',
+      titleKey: k('event_start'),
+      fields: [kind(true)],
+      run: async (input, actor) =>
+        say(
+          await scheduleEvent(ctx, s, {
+            ...kindOf(input.kind),
+            startsAt: null,
+            now: true,
+            actorId: actor.discordUserId,
+          }),
+        ),
+    },
+    {
+      id: 'event-cancel',
+      titleKey: k('event_cancel'),
+      fields: [kind(false)],
+      run: async (input) => say(await cancelEvent(s, kindOf(input.kind).kind)),
+    },
+    { id: 'war-start', titleKey: k('war_start'), fields: [], run: async () => say(await startWar(s)) },
+    { id: 'war-end', titleKey: k('war_end'), fields: [], run: async () => say(await endWar(s)) },
+    {
+      id: 'threat-set',
+      titleKey: k('threat_set'),
+      fields: [{ name: 'level', type: 'int', labelKey: k('level'), required: true, min: 0, max: THREAT_MAX }],
+      run: async (input) => say(await setThreat(ctx, s, Number(input.level))),
     },
   ];
 }

@@ -31,7 +31,8 @@
         "unavailable": "Não consegui falar com o Discord para conferir seu acesso. Tente de novo daqui a pouco.",
         "rate_limited": "Tentativas de login demais. Tente de novo em {seconds}s.",
         "csrf": "Este formulário expirou. Recarregue a página e tente de novo.",
-        "panel_failed": "Não consegui carregar este painel."
+        "panel_failed": "Não consegui carregar este painel.",
+        "already_submitted": "Este formulário já foi enviado. Abra a ação de novo para repetir."
       },
       "no_panels": "Nenhum painel ainda.",
       "members": {
@@ -53,6 +54,18 @@
         "empty": "Nenhuma ação da staff registrada ainda.",
         "newer": "← Mais recentes",
         "older": "Mais antigas →"
+      },
+      "run": "Executar",
+      "member_hint": "ID do Discord ou menção (<@…>)",
+      "form_has_errors": "Corrija os campos marcados.",
+      "field_errors": {
+        "required": "Obrigatório.",
+        "int": "Use um número inteiro.",
+        "range": "Fora do limite ({min} a {max}).",
+        "member": "Use o ID do Discord (só números) ou uma menção.",
+        "select": "Escolha uma das opções.",
+        "datetime": "Data e hora inválidas.",
+        "length": "Tamanho fora do limite."
       }
     }
   }

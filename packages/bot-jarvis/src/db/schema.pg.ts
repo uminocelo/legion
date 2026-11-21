@@ -211,6 +211,8 @@ export const jarvisItems = table('jarvis_items', {
   cosmetic: integer('cosmetic').notNull(),
   // null = not for sale (US-16)
   price: integer('price'),
+  // dashboard price change (US-21, D24); wins over `price` and survives reloads
+  priceOverride: integer('price_override'),
   definition: text('definition').notNull(),
   contentHash: text('content_hash').notNull(),
   active: integer('active').notNull().default(1),
