@@ -9,6 +9,7 @@ import { displayedStreak, levelFor, progressBar } from './domain/xp.js';
 import { MISSION_TIMEOUT_JOB } from './missions.js';
 import { JARVIS_LOCALES_DIR, JARVIS_MIGRATIONS_DIR } from './paths.js';
 import { jarvisServices } from './services.js';
+import { squadContentImportApi } from './squad-content-import.js';
 import { V } from './ui.js';
 
 export { campaignImportIds, JarvisCampaigns } from './campaigns.js';
@@ -95,6 +96,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     const s = jarvisServices(ctx);
     ctx.provide('progress', progressReadModel(s));
     ctx.provide('gear', s.inventory.gearReadModel());
+    ctx.provide('squadContentImport', squadContentImportApi(ctx, s));
     registerConsumers(ctx, s);
     for (const panel of jarvisPanels(ctx)) ctx.dashboard.panel(panel);
     for (const action of jarvisActions(ctx, s)) ctx.dashboard.action(action);

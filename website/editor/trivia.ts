@@ -18,6 +18,7 @@ interface State {
 
 const saved = store<State>('legion.editor.trivia');
 const state: State = saved.load() ?? { drafts: [], categories: DEFAULT_CATEGORIES.join(', ') };
+state.drafts = state.drafts.map((d) => ({ ...d, squad: d.squad ?? '' }));
 if (!state.drafts.length) state.drafts.push(emptyQuestion([]));
 
 const DIFF_LABEL: Record<string, string> = { facil: 'Fácil', normal: 'Normal', dificil: 'Difícil' };
@@ -46,8 +47,8 @@ function card(d: TriviaDraft, idx: number): HTMLElement {
       d[key] = map((e.target as HTMLInputElement).value);
       refresh();
     };
-  const input = (key: 'id' | 'category' | 'source', attrs = {}) => {
-    const el = h('input', { type: 'text', value: d[key], ...attrs });
+  const input = (key: 'id' | 'category' | 'source' | 'squad', attrs = {}) => {
+    const el = h('input', { type: 'text', value: d[key] ?? '', ...attrs });
     el.addEventListener('input', on(key));
     return el;
   };
@@ -136,6 +137,11 @@ function card(d: TriviaDraft, idx: number): HTMLElement {
         input('source', { maxlength: 200 }),
         'Link ou referência, como "Shang-Chi #4 (2021)"',
         true,
+      ),
+      field(
+        'Esquadrão',
+        input('squad', { maxlength: 32 }),
+        'Nome ou código; vazio = global. Fundadores enviam com /esquadrao conteudo enviar',
       ),
     ),
   );

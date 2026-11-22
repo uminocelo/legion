@@ -163,6 +163,7 @@
       "esquadrao_entrar": "Entra num esquadrão com o código de 6 caracteres.",
       "esquadrao_sair": "Sai do seu esquadrão. O líder não sai: a staff arquiva.",
       "esquadrao_ver": "Mostra o esquadrão. O convite e o código aparecem só para o líder e a staff.",
+      "esquadrao_conteudo": "Envia missão, campanha ou trivia do esquadrão para a staff aprovar.",
       "esquadrao_aprovar": "Aprova um pedido de esquadrão (staff).",
       "esquadrao_recusar": "Recusa um pedido de esquadrão, com motivo (staff).",
       "esquadrao_arquivar": "Arquiva um esquadrão ativo e remove o cargo e o tópico (staff)."
@@ -199,7 +200,10 @@
         "codigo": "Código de 6 caracteres",
         "sair": "Sai do seu esquadrão",
         "ver": "Mostra um esquadrão",
-        "nome_opt": "Nome (padrão: o seu)"
+        "nome_opt": "Nome (padrão: o seu)",
+        "conteudo": "Conteúdo do esquadrão",
+        "conteudo_enviar": "Envia um YAML de missão, campanha ou trivia",
+        "conteudo_arquivo": "Arquivo .yaml / .yml"
       },
       "mutante": {
         "description": "Obsoleto: use /heroi"
@@ -281,7 +285,30 @@
       "squad_inactive": "Esse esquadrão não está ativo.",
       "joined": "Você entrou em **{name}** ({team}).",
       "queue_left_title": "Líder saiu",
-      "queue_left_body": "**{name}** foi arquivado porque o líder saiu do servidor."
+      "queue_left_body": "**{name}** foi arquivado porque o líder saiu do servidor.",
+      "content_not_founder": "Só o líder de um esquadrão ativo pode enviar conteúdo.",
+      "content_jarvis_off": "O J.A.R.V.I.S. precisa estar ligado para receber conteúdo de esquadrão.",
+      "content_problem_missing": "Anexe um arquivo `.yaml` ou `.yml`.",
+      "content_problem_bad_type": "O arquivo precisa ser `.yaml` ou `.yml`.",
+      "content_problem_too_big": "O arquivo passa de {kb} KB.",
+      "content_problem_bad_host": "Não consegui baixar o anexo (host inválido).",
+      "content_problem_download_failed": "Não consegui baixar o anexo. Tente de novo.",
+      "content_invalid": "O arquivo tem erros e nada foi enviado:\n{errors}",
+      "content_no_queue": "Defina `channels.modQueue` para a fila da staff.",
+      "content_queue_failed": "Não consegui postar na fila da staff. Tente de novo.",
+      "content_submitted": "Conteúdo de **{name}** ({kind}) enviado à staff para aprovação.",
+      "content_queue_title": "Conteúdo de esquadrão",
+      "content_queue_body": "{founder} enviou {kind} para **{name}**: {summary}",
+      "content_approve": "Aprovar",
+      "content_refuse": "Recusar",
+      "content_kind_mission": "missão",
+      "content_kind_campaign": "campanha",
+      "content_kind_trivia": "trivia",
+      "content_not_staff": "Apenas a staff pode decidir.",
+      "content_refused": "Conteúdo recusado. Nada foi publicado.",
+      "content_approved": "Conteúdo publicado: `{id}`.",
+      "content_expired": "Esse pedido expirou ou já foi usado.",
+      "content_publish_failed": "Não consegui publicar. O arquivo pode ter ficado inválido."
     },
     "powers": {
       "type": {

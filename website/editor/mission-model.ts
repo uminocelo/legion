@@ -52,6 +52,8 @@ export interface MissionDraft {
   requires: { missions: string; level: number; origins: string[]; factions: string };
   /** Team joined at a success ending of a recruitment campaign (empty = none). */
   joinFaction: string;
+  /** Optional squad name or code; empty = omit from YAML (global content). */
+  squad: string;
 }
 
 /** A campaign file: the campaign and its chapters (`/jarvis campanha importar`). */
@@ -62,6 +64,8 @@ export interface CampaignDraft {
   faction: string;
   title: Text2;
   summary: Text2;
+  /** Optional squad name or code; empty = omit from YAML (global content). */
+  squad: string;
   missions: MissionDraft[];
 }
 
@@ -97,6 +101,7 @@ export const emptyMission = (): MissionDraft => ({
   campaign: { id: '', chapter: 1 },
   requires: { missions: '', level: 0, origins: [], factions: '' },
   joinFaction: '',
+  squad: '',
   scenes: [
     {
       ...emptyScene('inicio'),
@@ -152,7 +157,7 @@ const list = (v: string) =>
     .map((x) => x.trim())
     .filter(Boolean);
 
-/** Drafts saved before campaigns existed get the new fields. */
+/** Drafts saved before campaigns / squad existed get the new fields. */
 export function withDefaults(m: MissionDraft): MissionDraft {
   const e = emptyMission();
   return {
@@ -160,6 +165,7 @@ export function withDefaults(m: MissionDraft): MissionDraft {
     campaign: m.campaign ?? e.campaign,
     requires: { ...e.requires, ...(m.requires ?? {}) },
     joinFaction: m.joinFaction ?? '',
+    squad: m.squad ?? '',
     customCredits: m.customCredits ?? false,
     credits: m.credits ?? e.credits,
   };
@@ -177,6 +183,7 @@ export function toObject(m: MissionDraft) {
           ? { text, combat: { win: s.win, lose: s.lose } }
           : { text, end: s.end };
   }
+  const squad = withDefaults(m).squad.trim();
   return {
     id: m.id.trim(),
     kind: m.kind,
@@ -188,6 +195,7 @@ export function toObject(m: MissionDraft) {
     ...(m.customXp ? { xp: { ...m.xp } } : {}),
     ...(m.customCredits ? { credits: { ...m.credits } } : {}),
     ...campaignFields(m),
+    ...(squad ? { squad } : {}),
     start: m.start,
     scenes,
   };
@@ -297,6 +305,7 @@ export function fromYaml(text: string): MissionDraft {
       factions: strs(req.factions).join(', '),
     },
     joinFaction: str((r.reward as Record<string, unknown> | undefined)?.joinFaction),
+    squad: str(r.squad),
     id: str(r.id),
     kind: str(r.kind, 'daily'),
     title: inText(r.title),
@@ -321,21 +330,30 @@ export const emptyCampaign = (): CampaignDraft => ({
   faction: '',
   title: t2(),
   summary: t2(),
+  squad: '',
   missions: [],
 });
 
+/** Drafts saved before squad existed get the new field. */
+export function withCampaignDefaults(c: CampaignDraft): CampaignDraft {
+  return { ...emptyCampaign(), ...c, squad: c.squad ?? '', missions: c.missions ?? [] };
+}
+
 export function campaignToObject(c: CampaignDraft) {
+  const draft = withCampaignDefaults(c);
+  const squad = draft.squad.trim();
   return {
     campaign: {
-      id: c.id.trim(),
-      kind: c.kind,
-      ...(c.kind === 'recruitment' && c.faction.trim() ? { faction: c.faction.trim() } : {}),
-      title: out(c.title),
-      summary: out(c.summary),
+      id: draft.id.trim(),
+      kind: draft.kind,
+      ...(draft.kind === 'recruitment' && draft.faction.trim() ? { faction: draft.faction.trim() } : {}),
+      title: out(draft.title),
+      summary: out(draft.summary),
+      ...(squad ? { squad } : {}),
     },
-    missions: [...c.missions]
+    missions: [...draft.missions]
       .sort((a, b) => a.campaign.chapter - b.campaign.chapter)
-      .map((m) => toObject({ ...m, campaign: { ...m.campaign, id: c.id.trim() } })),
+      .map((m) => toObject({ ...m, campaign: { ...m.campaign, id: draft.id.trim() } })),
   };
 }
 
@@ -382,6 +400,7 @@ export function campaignFromYaml(text: string): CampaignDraft {
     faction: str(r.campaign.faction),
     title: inText(r.campaign.title),
     summary: inText(r.campaign.summary),
+    squad: str(r.campaign.squad),
     missions: (r.missions ?? []).map((m) => fromYaml(stringify(m))),
   };
 }

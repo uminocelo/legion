@@ -92,6 +92,8 @@ export interface BotContext<C = unknown> {
   /** True when the member is the guild owner or holds `staff_owner`/`staff_council`. */
   isStaff(i: Pick<IncomingInteraction, 'isGuildOwner' | 'memberRoleIds'>): Promise<boolean>;
   provide<K extends keyof Providers>(key: K, impl: Providers[K]): void;
+  /** Read a provider registered by another bot (or undefined when that bot is off). */
+  provider<K extends keyof Providers>(key: K): Providers[K] | undefined;
 }
 
 export interface LegionBot<C = unknown> {

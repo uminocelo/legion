@@ -58,6 +58,10 @@ Um herói, um esquadrão. Sair com `/esquadrao sair` tira o cargo e o tópico, e
 
 `/esquadrao ver` mostra equipe, líder e quantos membros. Quem lidera, e a staff, também vê o convite e o código. Se alguém apagou o convite, essa consulta cria outro.
 
+## Conteúdo do esquadrão
+
+O líder de um esquadrão ativo pode enviar YAML de missão, campanha ou trivia com `/esquadrao conteudo enviar`. O arquivo precisa declarar `squad` com o nome ou o código desse esquadrão (campo opcional nos editores do site). O pedido vai para `channels.modQueue`; a staff aprova ou recusa. Conteúdo aprovado fica com `squad_id` e só aparece para quem tem assento ativo nesse esquadrão (com `squads.enabled`). Missões e campanhas sem `squad` continuam globais. Se o J.A.R.V.I.S. estiver desligado, o comando avisa e nada é enviado.
+
 ## Equipe e saída do servidor
 
 Trocar de equipe por qualquer motivo que não seja a entrada no esquadrão tira a pessoa do esquadrão, inclusive quem lidera. O esquadrão continua ativo (`squad.left`, motivo `team_switch`).

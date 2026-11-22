@@ -83,6 +83,8 @@ export const missionSchema = z
       .strict()
       .optional(),
     requires: requiresSchema.optional(),
+    /** Optional squad name_key or code; resolved to an active squad id at import (US-37). */
+    squad: z.string().trim().min(1).max(32).optional(),
     /** On a `success` ending of a recruitment campaign: ask Cérebro to put the hero on this team (US-28). */
     reward: z.object({ joinFaction: teamKey }).strict().optional(),
     start: sceneId,

@@ -11,6 +11,7 @@ import type {
 import { customId, normalizeName } from '@legion/core';
 import type { CerebroConfig } from './config.js';
 import type { CerebroFlow } from './flow.js';
+import { squadContentComponents, squadContentGroup, submitSquadContent } from './squad-content.js';
 import { renderSquadOutcome, squadText } from './squads.js';
 import { V } from './ui.js';
 
@@ -116,6 +117,11 @@ export function esquadraoCommand(ctx: BotContext<CerebroConfig>, flow: CerebroFl
             },
           ],
         },
+        squadContentGroup({
+          description: desc(i18n, 'cerebro.commands.esquadrao.conteudo'),
+          enviar: desc(i18n, 'cerebro.commands.esquadrao.conteudo_enviar'),
+          arquivo: desc(i18n, 'cerebro.commands.esquadrao.conteudo_arquivo'),
+        }),
       ],
     },
     autocomplete: (i, r) => squadAutocomplete(ctx, flow, i, r, false),
@@ -149,6 +155,7 @@ export function esquadraoCommand(ctx: BotContext<CerebroConfig>, flow: CerebroFl
         );
       if (i.subcommand === 'sair')
         return say(ctx, flow, i, r, await flow.squads.leave({ discordUserId: i.userId }));
+      if (i.subcommand === 'conteudo enviar') return submitSquadContent(ctx, flow, i, r);
       return r.reply(await viewMessage(ctx, flow, i));
     },
   };
@@ -316,6 +323,7 @@ export function squadComponents(ctx: BotContext<CerebroConfig>, flow: CerebroFlo
     { action: 'squad-skip', version: V, handle: (i, r) => flow.skipSquad(i, r) },
     { action: 'squad-code', version: V, handle: (i, r) => flow.askSquadCode(i, r) },
     { action: 'squad-code-modal', version: V, handle: (i, r) => flow.submitSquadCode(i, r) },
+    ...squadContentComponents(ctx, flow),
     {
       action: 'squad-approve',
       version: V,

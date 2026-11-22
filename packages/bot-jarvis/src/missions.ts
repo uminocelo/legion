@@ -12,7 +12,7 @@ import type {
 import { customId } from '@legion/core';
 import { eq } from 'drizzle-orm';
 import type { JarvisConfig } from './config.js';
-import { OPEN_RUN, type RunRow } from './db/repo.js';
+import { type MissionRow, OPEN_RUN, type RunRow } from './db/repo.js';
 import { type Campaign, type HeroFacts, type Unmet, unmet } from './domain/campaign.js';
 import {
   loc,
@@ -35,6 +35,7 @@ import {
   syncMissions,
 } from './mission-content.js';
 import type { JarvisServices } from './services.js';
+import { squadContentVisible } from './squad-visibility.js';
 import { V } from './ui.js';
 
 export const MISSION_TIMEOUT_JOB = 'jarvis.mission-timeout';
@@ -96,9 +97,18 @@ export class JarvisMissions {
   }
 
   async missions(): Promise<Mission[]> {
-    return (await this.s.repo.allMissions())
-      .filter((r) => r.active === 1 && (r.hasCombat === 0 || this.combatReady()))
-      .map(parseMission);
+    return (await this.activeRows()).map(parseMission);
+  }
+
+  private async activeRows(): Promise<MissionRow[]> {
+    return (await this.s.repo.allMissions()).filter(
+      (r) => r.active === 1 && (r.hasCombat === 0 || this.combatReady()),
+    );
+  }
+
+  /** Squad-scoped rows are only for members with an active seat in that squad. */
+  private maySee(row: Pick<MissionRow, 'squadId'>, memberId: string): Promise<boolean> {
+    return squadContentVisible(this.ctx, row.squadId, memberId);
   }
 
   private async mission(id: string): Promise<Mission | null> {
@@ -232,7 +242,11 @@ export class JarvisMissions {
     const member = await this.s.trivia.registered(i, r, l);
     if (!member) return;
     if (!this.cfg.enabled) return r.reply(this.text(this.t('jarvis.missions.disabled', {}, l)));
-    const all = await this.missions();
+    const rows = [];
+    for (const row of await this.activeRows()) {
+      if (await this.maySee(row, member.id)) rows.push(row);
+    }
+    const all = rows.map(parseMission);
     if (!all.length) return r.reply(this.text(this.t('jarvis.missions.none', {}, l)));
     const fields = [];
     const campaigns = await this.campaigns();
@@ -297,7 +311,9 @@ export class JarvisMissions {
     const member = await this.ctx.read.members.getByDiscordId(i.userId);
     const out = [];
     const campaigns = await this.campaigns();
-    for (const m of await this.missions()) {
+    for (const row of await this.activeRows()) {
+      if (member && !(await this.maySee(row, member.id))) continue;
+      const m = parseMission(row);
       const name = `${loc(m.title, l)} (${this.t(`jarvis.missions.kind.${m.kind}`, {}, l)})`;
       if (q && !name.toLowerCase().includes(q) && !m.id.includes(q)) continue;
       if (member && (await this.blocker(member.id, m, campaigns))) continue;
@@ -312,8 +328,10 @@ export class JarvisMissions {
     const member = await this.s.trivia.registered(i, r, l);
     if (!member) return;
     if (!this.cfg.enabled) return r.reply(this.text(this.t('jarvis.missions.disabled', {}, l)));
-    const m = (await this.missions()).find((x) => x.id === missionId);
-    if (!m) return r.reply(this.text(this.t('jarvis.missions.unknown', {}, l)));
+    const row = (await this.activeRows()).find((x) => x.id === missionId);
+    if (!row || !(await this.maySee(row, member.id)))
+      return r.reply(this.text(this.t('jarvis.missions.unknown', {}, l)));
+    const m = parseMission(row);
     const open = await this.openRunOf(member.id);
     if (open)
       return r.reply(this.text(this.t('jarvis.missions.already_open', { thread: this.where(open) }, l)));
@@ -720,6 +738,9 @@ export class JarvisMissions {
     const open = await this.openRunOf(member.id);
     if (open)
       return r.reply(this.text(this.t('jarvis.missions.already_open', { thread: this.where(open) }, l)));
+    const scoped = await this.s.repo.mission(m.id);
+    if (scoped && !(await this.maySee(scoped, member.id)))
+      return r.reply(this.text(this.t('jarvis.missions.unknown', {}, l)));
     // Campaign requirements do not refuse the join: the lobby lists who is missing what.
     const b = await this.blocker(member.id, m);
     if (b?.key === 'hidden') return r.reply(this.text(await this.blockerText(b, l)));
@@ -735,15 +756,23 @@ export class JarvisMissions {
     await r.update(await this.lobbyMessage(run, m));
   }
 
-  /** Party members who miss a campaign requirement, with a "@member: falta …" line each. */
+  /** Party members who miss a squad seat or a campaign requirement, with a "@member: falta …" line each. */
   private async lockedMembers(memberIds: string[], m: Mission, l: Locale) {
-    if (!m.campaign && !m.requires) return [];
+    const row = await this.s.repo.mission(m.id);
     const campaigns = await this.campaigns();
     const out: { memberId: string; line: string }[] = [];
     for (const id of memberIds) {
+      const who = (await this.ctx.read.members.getById(id))?.discordUserId;
+      if (row && !(await this.maySee(row, id))) {
+        out.push({
+          memberId: id,
+          line: `⚠️ <@${who}>: ${this.t('jarvis.missions.blocked.squad', {}, l)}`,
+        });
+        continue;
+      }
+      if (!m.campaign && !m.requires) continue;
       const b = await this.requirements(id, m, campaigns);
       if (!b) continue;
-      const who = (await this.ctx.read.members.getById(id))?.discordUserId;
       const why =
         b.key === 'requires'
           ? await this.unmetText(b.unmet, l)
