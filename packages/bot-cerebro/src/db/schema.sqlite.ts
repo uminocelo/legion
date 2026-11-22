@@ -18,6 +18,10 @@ export const members = sqliteTable(
     factionChangedAt: text('faction_changed_at'),
     /** Squad invite hint until onboarding ends (US-35). Cleared when the member joins or skips. */
     pendingSquadId: text('pending_squad_id'),
+    /** Supporter card frame catalog id (US-24); null = none. */
+    frameId: text('frame_id'),
+    /** Supporter card title catalog id (US-24); null = none. */
+    titleId: text('title_id'),
     rank: text('rank').notNull().default('recruta'),
     optIns: text('opt_ins').notNull().default('[]'),
     leftAt: text('left_at'),

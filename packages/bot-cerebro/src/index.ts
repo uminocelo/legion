@@ -13,6 +13,7 @@ import { squadActions, squadComponents, squadPanels } from './squad-commands.js'
 import { V } from './ui.js';
 
 export * from './config.js';
+export * from './cosmetics.js';
 export * from './db/repo.js';
 export * from './db/tables.js';
 export * from './domain/channels.js';
@@ -23,6 +24,7 @@ export { CEREBRO_CONTENT_DIR } from './paths.js';
 export { type PickMode, PowerFlow, powerIds } from './power-flow.js';
 export * from './powers.js';
 export { CerebroSetup, LAST_ROLE_SYNC_KEY, PERSISTENT_WELCOME_KEY } from './setup.js';
+export { CARD_FILE, SheetCard, SUPPORTER_ROLE_KEY } from './sheet.js';
 export { ids as cerebroIds } from './ui.js';
 
 const pickMode = (m: string | undefined): PickMode => (m === 'e' || m === 'o' ? m : 'r');

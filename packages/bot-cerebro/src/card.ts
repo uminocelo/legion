@@ -4,6 +4,20 @@ import { fileURLToPath } from 'node:url';
 import type { Stats } from '@legion/core';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 
+/** Supporter cosmetics drawn on the card (US-24). Absent/null = bare card. */
+export interface CardCosmetics {
+  /** Frame border stroke (`#RRGGBB`). */
+  frameStroke?: string | null;
+  /** Frame corner accent (`#RRGGBB`). */
+  frameAccent?: string | null;
+  /** Localized title text under the sheet header. */
+  titleLabel?: string | null;
+  /** Title text fill (`#RRGGBB`). */
+  titleFill?: string | null;
+  /** Title underline accent (`#RRGGBB`). */
+  titleAccent?: string | null;
+}
+
 /** Everything printed on the card, already localized. */
 export interface CardData {
   codename: string;
@@ -20,6 +34,8 @@ export interface CardData {
   stats: Stats;
   /** Equipped item names (v0.10); empty or missing = no gear line, as in v0.8.1. */
   gear?: string[];
+  /** Supporter frame/title; missing keeps the bare card look. */
+  cosmetics?: CardCosmetics | null;
   labels: {
     title: string;
     level: string;
@@ -70,12 +86,32 @@ export const clean = (s: string) =>
     .replace(/\p{Extended_Pictographic}|\u{FE0F}|\u{200D}|\u{20E3}/gu, '')
     .replace(/\s+/g, ' ')
     .trim();
-const validColor = (c: string | null) => (c && /^#[0-9a-f]{6}$/i.test(c) ? c : '#5DADE2');
+const isHex = (c: string | null | undefined): c is string => Boolean(c && /^#[0-9a-f]{6}$/i.test(c));
+const validColor = (c: string | null) => (isHex(c) ? c : '#5DADE2');
 
 /** Builds the card SVG (exported for tests). */
 export function cardSvg(d: CardData): string {
   const accent = validColor(d.factionColor);
   const head = fitHeading(clean(d.codename) || '?', 600);
+  const cos = d.cosmetics;
+  const frameStroke = isHex(cos?.frameStroke) ? cos.frameStroke : null;
+  const frameAccent = isHex(cos?.frameAccent) ? cos.frameAccent : frameStroke;
+  const titleLabel = cos?.titleLabel ? clean(cos.titleLabel) : '';
+  const titleFill = isHex(cos?.titleFill) ? cos.titleFill : '#e5e7eb';
+  const titleAccent = isHex(cos?.titleAccent) ? cos.titleAccent : accent;
+  const frameLayer = frameStroke
+    ? `
+  <rect x="8" y="8" width="${CARD_WIDTH - 16}" height="${CARD_HEIGHT - 16}" rx="18" fill="none" stroke="${frameStroke}" stroke-width="4" data-cosmetic="frame"/>
+  <rect x="8" y="8" width="28" height="6" rx="2" fill="${frameAccent}"/>
+  <rect x="${CARD_WIDTH - 36}" y="8" width="28" height="6" rx="2" fill="${frameAccent}"/>
+  <rect x="8" y="${CARD_HEIGHT - 14}" width="28" height="6" rx="2" fill="${frameAccent}"/>
+  <rect x="${CARD_WIDTH - 36}" y="${CARD_HEIGHT - 14}" width="28" height="6" rx="2" fill="${frameAccent}"/>`
+    : '';
+  const titleLayer = titleLabel
+    ? `
+  <text x="932" y="62" class="cosmetic-title" text-anchor="end" fill="${titleFill}" data-cosmetic="title">${esc(clipText(titleLabel, 18, 280, 0.5))}</text>
+  <rect x="652" y="72" width="280" height="3" rx="1.5" fill="${titleAccent}" data-cosmetic="title-accent"/>`
+    : '';
   const statKeys: (keyof Stats)[] = ['hp', 'atk', 'def', 'spd', 'foc'];
   const statMax: Record<keyof Stats, number> = { hp: 400, atk: 60, def: 60, spd: 60, foc: 60 };
   const stats = statKeys
@@ -103,6 +139,7 @@ export function cardSvg(d: CardData): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}">
   <style>
     .title { font-family: Oswald; font-weight: 600; font-size: 20px; letter-spacing: 4px; fill: #9ca3af }
+    .cosmetic-title { font-family: Oswald; font-weight: 600; font-size: 18px; letter-spacing: 3px }
     .name { font-family: Oswald; font-weight: 600; fill: #f9fafb }
     .meta { font-family: 'Noto Sans'; font-weight: 700; font-size: 26px; fill: #e5e7eb }
     .sub { font-family: 'Noto Sans'; font-weight: 400; font-size: 20px; fill: #9ca3af }
@@ -115,8 +152,8 @@ export function cardSvg(d: CardData): string {
   </style>
   <rect width="100%" height="100%" fill="#0b0f19"/>
   <rect width="100%" height="10" fill="${accent}"/>
-  <circle cx="860" cy="120" r="150" fill="${accent}" opacity="0.08"/>
-  <text x="48" y="62" class="title">${esc(d.labels.title)}</text>
+  <circle cx="860" cy="120" r="150" fill="${accent}" opacity="0.08"/>${frameLayer}
+  <text x="48" y="62" class="title">${esc(d.labels.title)}</text>${titleLayer}
   <text x="48" y="${120 + Math.round(head.size * 0.3)}" class="name" font-size="${head.size}">${esc(head.text)}</text>
   <text x="48" y="200" class="meta">${esc(clipText(clean(`${d.origin} · ${d.faction} · ${d.archetype}`), 26, 600))}</text>
   <text x="48" y="236" class="sub">${esc(clipText(clean([d.rank, level].filter(Boolean).join(' · ')), 20, 600))}</text>
