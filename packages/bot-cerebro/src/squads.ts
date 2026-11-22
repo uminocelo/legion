@@ -70,8 +70,9 @@ class CodeAttempts {
 }
 
 /**
- * Squads (US-35). One write path for request, approval, join, leave and archive.
- * A team change and the membership row commit together; the role and the thread happen after.
+ * Squads (US-35 / US-38). One write path for request, approval, join, leave, rename,
+ * co-leader, archive and leadership transfer. A team change and the membership row commit
+ * together; the role and the thread happen after.
  */
 export class Squads {
   /** In-memory wrong-code limiter (not the interaction router). */
@@ -208,9 +209,121 @@ export class Squads {
     if (!seat) return no('not_in_squad');
     const squad = await this.byId(seat.squadId);
     if (!squad || squad.status !== 'active') return no('not_in_squad');
-    if (squad.founderMemberId === member.id) return no('leader_cannot_leave', { name: squad.name });
+    if (squad.founderMemberId === member.id) {
+      if (!squad.coLeaderMemberId) return no('leader_cannot_leave', { name: squad.name });
+      await this.transferAndRemove(squad, member, 'left');
+      return yes('left', { name: squad.name });
+    }
     await this.removeSeat(squad, member, 'left');
     return yes('left', { name: squad.name });
+  }
+
+  /** Leader or co-leader renames an active squad and its Discord role in place. */
+  async rename(o: { discordUserId: string; name: string }): Promise<SquadOutcome> {
+    if (!this.ctx.config.squads.enabled) return no('squads_disabled');
+    const name = o.name.trim().replace(/\s+/g, ' ');
+    if (name.length < 3 || name.length > 32 || !normalizeName(name)) return no('name_length', { name });
+    if (isCanonName(name)) return no('canon_name', { name });
+    const nameKey = normalizeName(name);
+    const actor = await this.activeSeat(o.discordUserId);
+    if (!actor) return no('not_in_squad');
+    const { member, squad } = actor;
+    if (squad.founderMemberId !== member.id && squad.coLeaderMemberId !== member.id) return no('not_leader');
+    if (
+      (await this.list()).some((r) => r.status !== 'archived' && r.nameKey === nameKey && r.id !== squad.id)
+    )
+      return no('name_taken', { name });
+
+    const from = squad.name;
+    const prevKey = squad.nameKey;
+    const t = this.tables().cerebroSquads;
+    try {
+      const updated = await this.ctx.db.orm
+        .update(t)
+        .set({ name, nameKey })
+        .where(and(eq(t.id, squad.id), eq(t.status, 'active')))
+        .returning({ id: t.id });
+      if (!updated.length) return no('not_active');
+    } catch (err) {
+      this.ctx.log.warn({ err }, 'squad rename update failed');
+      return no('name_taken', { name });
+    }
+
+    if (squad.roleId) {
+      try {
+        await this.ctx.gateway.editRole(squad.roleId, { name });
+      } catch (err) {
+        await this.ctx.db.orm.update(t).set({ name: from, nameKey: prevKey }).where(eq(t.id, squad.id));
+        return this.discordFailed(err);
+      }
+    } else {
+      this.ctx.log.warn({ squadId: squad.id }, 'squad rename skipped editRole; roleId missing');
+    }
+
+    await this.recordAudit('command', 'cerebro/squad-rename', o.discordUserId, squad.id, {
+      name,
+      from,
+    });
+    return yes('renamed', { name });
+  }
+
+  /** Leader only. `targetDiscordUserId: null` clears the co-leader. */
+  async setCoLeader(o: { discordUserId: string; targetDiscordUserId: string | null }): Promise<SquadOutcome> {
+    if (!this.ctx.config.squads.enabled) return no('squads_disabled');
+    const actor = await this.activeSeat(o.discordUserId);
+    if (!actor) return no('not_in_squad');
+    const { member, squad } = actor;
+    if (squad.founderMemberId !== member.id) return no('not_leader');
+
+    let coLeaderMemberId: string | null = null;
+    if (o.targetDiscordUserId !== null) {
+      const target = await this.flow.repo.memberByDiscordId(o.targetDiscordUserId);
+      if (!target || target.leftAt) return no('not_member');
+      const seat = await this.membership(target.id);
+      if (!seat || seat.squadId !== squad.id) return no('not_member');
+      if (target.id === squad.founderMemberId) return no('is_leader');
+      coLeaderMemberId = target.id;
+    }
+
+    const t = this.tables().cerebroSquads;
+    const updated = await this.ctx.bus.transaction(async (tx) => {
+      const locked = await this.lockActive(tx, squad.id);
+      if (!locked || locked.founderMemberId !== member.id) return false;
+      const rows = await tx
+        .update(t)
+        .set({ coLeaderMemberId })
+        .where(and(eq(t.id, squad.id), eq(t.status, 'active'), eq(t.founderMemberId, member.id)))
+        .returning({ id: t.id });
+      return rows.length > 0;
+    });
+    if (!updated) return no('not_active');
+
+    await this.recordAudit('command', 'cerebro/squad-coleader', o.discordUserId, squad.id, {
+      coLeaderMemberId,
+    });
+    return yes(coLeaderMemberId ? 'coleader_set' : 'coleader_cleared', { name: squad.name });
+  }
+
+  /** Leader or co-leader archives their own active squad (same Discord cleanup as staff). */
+  async archiveOwn(o: { discordUserId: string; reason: string }): Promise<SquadOutcome> {
+    if (!this.ctx.config.squads.enabled) return no('squads_disabled');
+    const reason = o.reason.trim();
+    if (!reason || reason.length > 200) return no('reason_length');
+    const actor = await this.activeSeat(o.discordUserId);
+    if (!actor) return no('not_in_squad');
+    const { member, squad } = actor;
+    if (squad.founderMemberId !== member.id && squad.coLeaderMemberId !== member.id) return no('not_leader');
+    try {
+      await this.removeSquadDiscord(squad, reason);
+    } catch (err) {
+      return this.discordFailed(err);
+    }
+    await this.markArchived(squad, reason, o.discordUserId, 'archived');
+    await this.recordAudit('command', 'cerebro/squad-archive', o.discordUserId, squad.id, {
+      name: squad.name,
+      reason,
+    });
+    return yes('archived', { name: squad.name });
   }
 
   /**
@@ -299,12 +412,16 @@ export class Squads {
     if (!seat) return;
     const squad = await this.byId(seat.squadId);
     if (!squad || squad.status !== 'active') return;
+    if (squad.founderMemberId === member.id && squad.coLeaderMemberId) {
+      await this.transferAndRemove(squad, member, 'team_switch');
+      return;
+    }
     await this.removeSeat(squad, member, 'team_switch');
   }
 
   /**
    * Someone left the server. A member loses the seat and does not get it back on rejoin.
-   * The founder archives the squad (v1.1 has no co-leader) and staff are told in the mod queue.
+   * With a co-leader, leadership transfers; without one, the squad archives and staff are told.
    */
   async onServerLeft(member: MemberRow): Promise<void> {
     if (!this.ctx.config.squads.enabled) return;
@@ -312,18 +429,23 @@ export class Squads {
     if (!seat) return;
     const squad = await this.byId(seat.squadId);
     if (!squad || squad.status !== 'active') return;
-    if (squad.founderMemberId !== member.id) {
-      await this.removeSeat(squad, member, 'left_server');
+    if (squad.founderMemberId === member.id) {
+      if (squad.coLeaderMemberId) {
+        await this.transferAndRemove(squad, member, 'left_server');
+        await this.postLeadershipMoved(squad);
+        return;
+      }
+      try {
+        await this.removeSquadDiscord(squad, 'left_server');
+      } catch (err) {
+        this.ctx.log.warn({ err, squadId: squad.id }, 'could not remove the squad on Discord');
+        return;
+      }
+      await this.markArchived(squad, 'left_server', member.discordUserId, 'left_server');
+      await this.postFounderLeft(squad);
       return;
     }
-    try {
-      await this.removeSquadDiscord(squad, 'left_server');
-    } catch (err) {
-      this.ctx.log.warn({ err, squadId: squad.id }, 'could not remove the squad on Discord');
-      return;
-    }
-    await this.markArchived(squad, 'left_server', member.discordUserId, 'left_server');
-    await this.postFounderLeft(squad);
+    await this.removeSeat(squad, member, 'left_server');
   }
 
   /** Leader or staff opening `/esquadrao ver`: recreate a permanent invite a mod deleted. */
@@ -710,6 +832,15 @@ export class Squads {
       this.ctx.log.warn({ err, squadId: squad.id }, 'could not remove the member from the squad on Discord');
     }
     await this.ctx.bus.transaction(async (tx) => {
+      if (squad.coLeaderMemberId === member.id) {
+        const squads = this.tables().cerebroSquads;
+        await tx
+          .update(squads)
+          .set({ coLeaderMemberId: null })
+          .where(
+            and(eq(squads.id, squad.id), eq(squads.status, 'active'), eq(squads.coLeaderMemberId, member.id)),
+          );
+      }
       const t = this.tables().cerebroSquadMembers;
       await tx.delete(t).where(eq(t.memberId, member.id));
       await this.ctx.bus.emit(tx, 'squad.left', {
@@ -718,6 +849,68 @@ export class Squads {
         reason,
       });
     });
+  }
+
+  /**
+   * Promote the co-leader to founder, clear the co-leader seat, and drop the old leader's seat.
+   * Discord cleanup for the departing member runs first (same order as removeSeat).
+   */
+  private async transferAndRemove(
+    squad: SquadRow,
+    from: MemberRow,
+    reason: 'left' | 'team_switch' | 'left_server',
+  ): Promise<void> {
+    const toMemberId = squad.coLeaderMemberId;
+    if (!toMemberId) return;
+    try {
+      await this.dropDiscordMember(squad, from.discordUserId);
+    } catch (err) {
+      if (reason === 'left') throw err;
+      this.ctx.log.warn({ err, squadId: squad.id }, 'could not remove the member from the squad on Discord');
+    }
+    const moved = await this.ctx.bus.transaction(async (tx) => {
+      const locked = await this.lockActive(tx, squad.id);
+      if (!locked || locked.founderMemberId !== from.id || locked.coLeaderMemberId !== toMemberId)
+        return false;
+      const squads = this.tables().cerebroSquads;
+      const updated = await tx
+        .update(squads)
+        .set({ founderMemberId: toMemberId, coLeaderMemberId: null })
+        .where(
+          and(
+            eq(squads.id, squad.id),
+            eq(squads.status, 'active'),
+            eq(squads.founderMemberId, from.id),
+            eq(squads.coLeaderMemberId, toMemberId),
+          ),
+        )
+        .returning({ id: squads.id });
+      if (!updated.length) return false;
+      const members = this.tables().cerebroSquadMembers;
+      await tx.delete(members).where(eq(members.memberId, from.id));
+      await this.ctx.bus.emit(tx, 'squad.left', {
+        squadId: squad.id,
+        discordUserId: from.discordUserId,
+        reason,
+      });
+      return true;
+    });
+    if (!moved) return;
+    await this.recordAudit('command', 'cerebro/squad-transfer', from.discordUserId, squad.id, {
+      fromMemberId: from.id,
+      toMemberId,
+      reason,
+    });
+  }
+
+  private async activeSeat(discordUserId: string): Promise<{ member: MemberRow; squad: SquadRow } | null> {
+    const member = await this.flow.repo.memberByDiscordId(discordUserId);
+    if (!member) return null;
+    const seat = await this.membership(member.id);
+    if (!seat) return null;
+    const squad = await this.byId(seat.squadId);
+    if (!squad || squad.status !== 'active') return null;
+    return { member, squad };
   }
 
   private async removeSquadDiscord(squad: SquadRow, reason: string): Promise<void> {
@@ -774,6 +967,26 @@ export class Squads {
       });
     } catch (err) {
       this.ctx.log.warn({ err, squadId: squad.id }, 'could not tell staff the squad leader left');
+    }
+  }
+
+  /** Best-effort mod-queue note when leadership moves because the leader left the server. */
+  private async postLeadershipMoved(squad: SquadRow): Promise<void> {
+    const channelId = this.ctx.config.channels.modQueue;
+    if (!channelId) return;
+    const locale = this.ctx.config.locale;
+    try {
+      await this.ctx.gateway.sendMessage(channelId, {
+        persona: 'cerebro',
+        embeds: [
+          {
+            title: squadText(this.ctx.i18n, 'queue_transfer_title', {}, locale),
+            description: squadText(this.ctx.i18n, 'queue_transfer_body', { name: squad.name }, locale),
+          },
+        ],
+      });
+    } catch (err) {
+      this.ctx.log.warn({ err, squadId: squad.id }, 'could not tell staff leadership moved');
     }
   }
 

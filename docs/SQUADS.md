@@ -54,9 +54,19 @@ Entram juntos na equipe base e no esquadrão (`squad.joined`):
 
 A Irmandade só aceita origem Mutante ou Inumano. Outra origem vê a mensagem da equipe, o convite sugerido é esquecido e o cadastro segue sem esquadrão.
 
-Um herói, um esquadrão. Sair com `/esquadrao sair` tira o cargo e o tópico, e a equipe fica. Quem lidera não sai por esse comando: a staff arquiva. O esquadrão cheio, inativo ou com código errado recusa. Cinco códigos desconhecidos em 10 minutos esperam o restante da janela; um código de esquadrão que existe e não está ativo não entra nessa conta.
+Um herói, um esquadrão. Sair com `/esquadrao sair` tira o cargo e o tópico, e a equipe fica. Se o líder tem co-líder, a liderança passa para o co-líder e o esquadrão continua ativo; sem co-líder, o líder não sai por esse comando — nomeia um co-líder com `/esquadrao coleader` ou arquiva com `/esquadrao arquivar`. O esquadrão cheio, inativo ou com código errado recusa. Cinco códigos desconhecidos em 10 minutos esperam o restante da janela; um código de esquadrão que existe e não está ativo não entra nessa conta.
 
-`/esquadrao ver` mostra equipe, líder e quantos membros. Quem lidera, e a staff, também vê o convite e o código. Se alguém apagou o convite, essa consulta cria outro.
+`/esquadrao ver` mostra equipe, líder, co-líder e quantos membros. Quem lidera, o co-líder e a staff também vêem o convite e o código. Se alguém apagou o convite, essa consulta cria outro.
+
+## Ferramentas do fundador
+
+O líder (e o co-líder, onde indicado) gerencia o esquadrão ativo sem a staff:
+
+- `/esquadrao renomear` (líder ou co-líder): troca o nome do esquadrão e o nome do cargo no Discord (mesmo ID de cargo). As mesmas regras de criar (3–32 caracteres, sem nome canônico Marvel, sem repetir).
+- `/esquadrao coleader` (só o líder): nomeia um membro do esquadrão como co-líder, ou omite o membro para limpar. Só um co-líder por vez; nomear de novo substitui.
+- `/esquadrao arquivar` (líder ou co-líder): arquiva o próprio esquadrão com motivo; some cargo, tópico e convite; os membros ficam na equipe. A staff continua podendo arquivar qualquer esquadrão com `/cerebro esquadrao arquivar`.
+
+Rename, co-líder, transferência de liderança e arquivamento (jogador ou staff) ficam em `/audit`.
 
 ## Conteúdo do esquadrão
 
@@ -64,6 +74,6 @@ O líder de um esquadrão ativo pode enviar YAML de missão, campanha ou trivia 
 
 ## Equipe e saída do servidor
 
-Trocar de equipe por qualquer motivo que não seja a entrada no esquadrão tira a pessoa do esquadrão, inclusive quem lidera. O esquadrão continua ativo (`squad.left`, motivo `team_switch`).
+Trocar de equipe por qualquer motivo que não seja a entrada no esquadrão tira a pessoa do esquadrão. Se quem lidera troca e há co-líder, a liderança passa; sem co-líder, o lugar some e o esquadrão continua ativo (`squad.left`, motivo `team_switch`).
 
-Quem sai do servidor perde o lugar e não volta a ele ao entrar de novo. Se quem sai é quem fundou, o esquadrão é arquivado (nesta versão não há outro líder): somem cargo, tópico e convite, os membros continuam na equipe, e a fila da staff recebe **Líder saiu**. Esse arquivamento não escreve linha de auditoria. O arquivamento pela staff (`/cerebro esquadrao arquivar`, com motivo) escreve, e também mantém a equipe de cada membro.
+Quem sai do servidor perde o lugar e não volta a ele ao entrar de novo. Se quem sai é o líder e há co-líder, a liderança passa e a fila da staff recebe **Liderança transferida**. Sem co-líder, o esquadrão é arquivado: somem cargo, tópico e convite, os membros continuam na equipe, e a fila recebe **Líder saiu**. Esse arquivamento por saída do servidor não escreve linha de auditoria. O arquivamento pela staff (`/cerebro esquadrao arquivar`, com motivo) ou pelo líder/co-líder (`/esquadrao arquivar`) escreve, e também mantém a equipe de cada membro.

@@ -124,7 +124,7 @@ O cargo **Apoiador** (`supporter` em `roles`) é `managedBy: manual`: o Cérebro
 
 ## Esquadrões
 
-Desligados por padrão. O passo a passo de ligar, fundar e entrar está em [SQUADS.md](SQUADS.md). A staff aprova, recusa e arquiva; cada uma dessas ações fica em `/audit`.
+Desligados por padrão. O passo a passo de ligar, fundar, entrar e as ferramentas do fundador (renomear, co-líder, arquivar) está em [SQUADS.md](SQUADS.md). A staff aprova, recusa e arquiva; cada uma dessas ações fica em `/audit`.
 
 | Comando | O que faz |
 |---|---|
@@ -132,7 +132,7 @@ Desligados por padrão. O passo a passo de ligar, fundar e entrar está em [SQUA
 | `/cerebro esquadrao recusar esquadrao motivo` | Recusa o pedido. O motivo vai para quem fundou, se a DM estiver aberta |
 | `/cerebro esquadrao arquivar esquadrao motivo` | Arquiva um esquadrão ativo. Some o cargo, o tópico e o convite. Os membros continuam na equipe |
 
-O pedido também aparece em `channels.modQueue`, com **Aprovar** e **Recusar**. No painel, a tabela **Esquadrões** faz as mesmas duas coisas. Quem fundou e sai do servidor arquiva o esquadrão sem linha de auditoria; a fila avisa **Líder saiu**.
+O pedido também aparece em `channels.modQueue`, com **Aprovar** e **Recusar**. No painel, a tabela **Esquadrões** mostra o co-líder e faz as mesmas duas ações (aprovar/recusar). Se o líder sai do servidor com co-líder, a liderança passa e a fila avisa **Liderança transferida**; sem co-líder, o esquadrão arquiva sem linha de auditoria e a fila avisa **Líder saiu**.
 
 ## Áreas e notícias das equipes
 

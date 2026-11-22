@@ -176,6 +176,46 @@
       "options": []
     },
     {
+      "path": "/esquadrao arquivar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Arquiva o seu esquadrão",
+        "en": "Archives your squad"
+      },
+      "options": [
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo (fica no registro)",
+            "en": "Reason (kept in the record)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/esquadrao coleader",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Nomeia ou remove o co-líder",
+        "en": "Appoints or clears the co-leader"
+      },
+      "options": [
+        {
+          "name": "membro",
+          "nameEn": "member",
+          "required": false,
+          "description": {
+            "pt-BR": "Membro (omitir para limpar)",
+            "en": "Member (omit to clear)"
+          }
+        }
+      ]
+    },
+    {
       "path": "/esquadrao conteudo enviar",
       "kind": "slash",
       "staff": false,
@@ -240,6 +280,26 @@
           "description": {
             "pt-BR": "Código de 6 caracteres",
             "en": "6-character code"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/esquadrao renomear",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Renomeia o seu esquadrão",
+        "en": "Renames your squad"
+      },
+      "options": [
+        {
+          "name": "nome",
+          "nameEn": "name",
+          "required": true,
+          "description": {
+            "pt-BR": "Nome do esquadrão",
+            "en": "Squad name"
           }
         }
       ]

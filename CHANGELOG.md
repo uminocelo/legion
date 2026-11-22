@@ -4,6 +4,18 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-22
+
+Squad founder tools: rename, co-leader, and self-archive.
+
+### Upgrade notes
+- **Migration** `0006_squad_coleader` on Cérebro (`cerebro_squads.co_leader_member_id`, nullable). Existing squads get `null` co-leader and behave as before until a leader appoints one. Runs on restart.
+- **New commands** `/esquadrao renomear`, `coleader`, `arquivar` (player). Restart (or `legion register-commands`) so Discord shows them. Staff `/cerebro esquadrao arquivar` is unchanged.
+- **Leave / server-left.** With a co-leader, leadership transfers and the squad stays active; without one, leader `/sair` is refused (hint points to co-leader or self-archive) and server-left still archives as in 1.1.
+
+### Added
+- Squad founder tools (US-38): leader or co-leader renames in place (`editRole` keeps the same role id); leader appoints or clears one co-leader; leader or co-leader self-archives with a reason. Audits `cerebro/squad-rename`, `cerebro/squad-coleader`, `cerebro/squad-archive`, `cerebro/squad-transfer`. `/esquadrao ver` and the **Esquadrões** dashboard panel show the co-leader. Docs in [docs/SQUADS.md](docs/SQUADS.md).
+
 ## [1.2.0] - 2026-11-22
 
 Seasons, content packs, squad war ranking and content, and supporter cosmetics on the `/perfil` card.
@@ -247,7 +259,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/uminocelo/legion/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/uminocelo/legion/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/uminocelo/legion/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/uminocelo/legion/compare/v0.10.0...v1.0.0
