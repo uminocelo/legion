@@ -81,7 +81,7 @@ A guerra soma pontos da facção no momento do lance (missão, ataque, participa
 
 ## Temporadas
 
-Ranking periódico de XP do ledger na janela (`jarvis.season`, desligado por padrão). `/temporada` mostra o placar, o tempo e as medalhas do jogador. No fim, os `rewards.top` primeiros ganham medalha de colocação; o placar fica arquivado na temporada; o XP vitalício não muda.
+Ranking periódico de XP do ledger na janela (`jarvis.season`, desligado por padrão). `/temporada` mostra o placar, o tempo e as medalhas do jogador. No fim, os `rewards.top` primeiros ganham medalha de colocação; o placar fica arquivado na temporada; o XP vitalício não muda. Guia completo: [SEASONS.md](SEASONS.md).
 
 | Comando | O que faz |
 |---|---|

@@ -5,7 +5,7 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 ## [Unreleased]
 
 ### Added
-- Seasons (US-22): `jarvis.season` (off by default; `length` month or 7–90 days; `reset: season_score`; `rewards.top`). `/temporada` shows the season board and the caller's badges. Staff `/jarvis temporada iniciar|encerrar`. Ending writes winners + archive JSON, emits `season.ended` once, and `jarvis.season-rewards` grants place badges idempotently. Lifetime XP is never wiped.
+- Seasons (US-22): `jarvis.season` (off by default; `length` month or 7–90 days; `reset: season_score`; `rewards.top`). `/temporada` shows the season board and the caller's badges. Staff `/jarvis temporada iniciar|encerrar`. Ending writes winners + archive JSON, emits `season.ended` once, and `jarvis.season-rewards` grants place badges idempotently. Lifetime XP is never wiped. Guide [docs/SEASONS.md](docs/SEASONS.md); site pages for J.A.R.V.I.S. and the community playbook.
 - Squad content (US-37): optional `squad` on mission/campaign/trivia YAML; rows store `squad_id`. With `squads.enabled`, only members with an active seat see that content. Founders submit via `/esquadrao conteudo enviar`; staff approve or refuse in the mod queue.
 - Squad war ranking (US-36): when `squads.enabled`, a score stamps the hero's active squad on the war ledger. `/guerra` shows that squad's points and rank inside the team. Leaving the squad keeps past points on it.
 

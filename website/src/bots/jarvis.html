@@ -14,6 +14,7 @@
     <div><h3>Créditos</h3><p>Missões, respostas certas na trivia e eventos do mundo pagam créditos. <code>/carteira</code> mostra o saldo e as últimas movimentações. Créditos só se ganham jogando: não existe dinheiro real.</p></div>
     <div><h3>Loja</h3><p><code>/loja</code> mostra os itens à venda com preço, nível e bônus. Escolha um e clique em Comprar: os créditos saem e o item entra no inventário de uma vez. Não há venda de volta.</p></div>
     <div><h3>Inventário</h3><p><code>/inventario</code> mostra seus itens em três espaços: traje, acessório e dispositivo. Um item equipado dá um bônus pequeno nas lutas, com teto no total.</p></div>
+    <div><h3>Temporadas</h3><p><code>/temporada</code> mostra o placar da temporada e o tempo restante. Conta o XP ganho <strong>nessa janela</strong>; no fim, os primeiros ganham medalha de colocação e a pontuação da temporada zera. O XP vitalício fica. Desligado por padrão.</p></div>
   </div>
   <h3 class="table-title">Comandos</h3>
   {{player}}
@@ -27,6 +28,7 @@
     <div><h3>Itens e loja</h3><p>Monte itens no <a href="editor-itens.html">editor de itens</a> e anexe em <code>/jarvis item importar</code>; a prévia mostra quantos jogadores têm cada item alterado. <code>/jarvis item dar</code> entrega, <code>desativar</code> tira de jogo e <code>/jarvis creditos dar</code> corrige saldos.</p></div>
     <div><h3>Pelo painel da staff</h3><p>Com o <a href="https://github.com/uminocelo/legion/blob/main/docs/DASHBOARD.md">painel</a> ligado, dê ou tire créditos, entregue itens e mude o preço de um item numa página web, com as mesmas regras dos comandos e tudo na auditoria. O preço novo sobrevive às importações.</p></div>
     <div><h3>XP com histórico</h3><p>Todo XP passa por um livro-caixa. <code>/jarvis xp</code> ajusta com motivo, e <code>/jarvis recalcular</code> refaz o progresso a partir do histórico.</p></div>
+    <div><h3>Temporadas</h3><p>Com <code>jarvis.season.enabled</code>, <code>/jarvis temporada iniciar</code> começa agora e <code>encerrar</code> fecha a ativa uma vez, arquiva o placar e agenda a próxima. O guia é o <a href="{{doc:docs/SEASONS.md}}">docs/SEASONS.md</a>.</p></div>
   </div>
   <h3 class="table-title">Comandos da staff</h3>
   {{staff}}
@@ -36,5 +38,5 @@
   <h2>Configuração</h2>
   <p class="section-lead">Trecho do <code>legion.config.yaml</code> com os padrões.</p>
   {{config}}
-  <p class="more">Leia mais: <a href="{{doc:docs/MISSIONS.md}}">como escrever missões</a> · <a href="{{doc:docs/STAFF.md}}">ferramentas da staff</a> · <a href="personalizar.html#missoes">personalizar missões e trivia</a></p>
+  <p class="more">Leia mais: <a href="{{doc:docs/MISSIONS.md}}">como escrever missões</a> · <a href="{{doc:docs/SEASONS.md}}">temporadas</a> · <a href="{{doc:docs/STAFF.md}}">ferramentas da staff</a> · <a href="personalizar.html#missoes">personalizar missões e trivia</a></p>
 </section>
