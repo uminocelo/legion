@@ -1,12 +1,5 @@
 // Pack editor: metadata + YAML section lists → pack.yaml for `/jarvis pack importar`.
-import {
-  emptyPack,
-  fromYaml,
-  type PackDraft,
-  PACK_FILE,
-  toYaml,
-  validate,
-} from './pack-model.js';
+import { emptyPack, fromYaml, PACK_FILE, type PackDraft, toYaml, validate } from './pack-model.js';
 import { copy, download, field, h, outputPanel, readFile, showResult, store } from './shared.js';
 
 const saved = store<{ draft: PackDraft }>('legion.editor.pack');
@@ -30,11 +23,7 @@ function refresh() {
   );
 }
 
-function textInput(
-  get: () => string,
-  set: (v: string) => void,
-  attrs: Record<string, string | number> = {},
-) {
+function textInput(get: () => string, set: (v: string) => void, attrs: Record<string, string | number> = {}) {
   const el = h('input', { type: 'text', value: get(), ...attrs });
   el.addEventListener('input', () => {
     set(el.value);
@@ -205,12 +194,7 @@ function render() {
     h(
       'div',
       { class: 'editor-layout' },
-      h(
-        'div',
-        { class: 'editor-main' },
-        h('div', { class: 'actions' }, open, clear, fileInput),
-        form,
-      ),
+      h('div', { class: 'editor-main' }, h('div', { class: 'actions' }, open, clear, fileInput), form),
       out.el,
     ),
   );

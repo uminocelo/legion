@@ -47,9 +47,7 @@ export class PackImports {
 
   private packName(nameJson: string | { 'pt-BR': string; en?: string }, l: Locale): string {
     const name =
-      typeof nameJson === 'string'
-        ? (JSON.parse(nameJson) as { 'pt-BR': string; en?: string })
-        : nameJson;
+      typeof nameJson === 'string' ? (JSON.parse(nameJson) as { 'pt-BR': string; en?: string }) : nameJson;
     return (l === 'en' ? name.en : undefined) ?? name['pt-BR'];
   }
 
@@ -64,11 +62,7 @@ export class PackImports {
     c: { new: number; changed: number; same: number },
     l: Locale,
   ) {
-    return this.t(
-      `jarvis.pack_imports.type_${key}`,
-      { added: c.new, changed: c.changed, same: c.same },
-      l,
-    );
+    return this.t(`jarvis.pack_imports.type_${key}`, { added: c.new, changed: c.changed, same: c.same }, l);
   }
 
   private previewBody(p: PackPreviewOk, fileName: string, l: Locale): string {
@@ -94,8 +88,7 @@ export class PackImports {
       this.typeLine('enemies', byType.enemies, l),
       this.typeLine('items', byType.items, l),
     );
-    const deact =
-      deactivate.trivia + deactivate.missions + deactivate.enemies + deactivate.items;
+    const deact = deactivate.trivia + deactivate.missions + deactivate.enemies + deactivate.items;
     if (deact)
       lines.push(
         '',
@@ -201,7 +194,9 @@ export class PackImports {
           id: res.packId,
           version: res.version,
           action: this.t(
-            res.action === 'upgrade' ? 'jarvis.pack_imports.action_upgrade' : 'jarvis.pack_imports.action_install',
+            res.action === 'upgrade'
+              ? 'jarvis.pack_imports.action_upgrade'
+              : 'jarvis.pack_imports.action_install',
             {},
             l,
           ),

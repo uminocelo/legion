@@ -338,7 +338,9 @@ describe('PackInstaller', () => {
     );
 
     const itemsDir = dir({
-      'overlap.yaml': stringify([item('pack-item-1', { bonus: { atk: 2 }, name: { 'pt-BR': 'Sobrescrito' } })]),
+      'overlap.yaml': stringify([
+        item('pack-item-1', { bonus: { atk: 2 }, name: { 'pt-BR': 'Sobrescrito' } }),
+      ]),
     });
     const itemRes = await s.items.reload([itemsDir]);
     expect(itemRes.errors).toEqual([]);

@@ -154,7 +154,10 @@ describe('/jarvis pack importar', () => {
     expect(same.content).toContain('1.0.0');
     expect(await s.packs.list()).toHaveLength(1);
 
-    const pre = reply(tc, await importCmd(tc, stringify(packDoc({ version: '1.1.0', trivia: [trivia('pack-q2')] }))));
+    const pre = reply(
+      tc,
+      await importCmd(tc, stringify(packDoc({ version: '1.1.0', trivia: [trivia('pack-q2')] }))),
+    );
     expect(pre.embeds?.[0]?.title).toBe('Preview: pack.yaml');
     expect(pre.embeds?.[0]?.description).toMatch(/Upgrades installed version 1\.0\.0/);
     expect(pre.embeds?.[0]?.description).toContain('Trivia: 🆕 1 · ✏️ 0 · ＝ 0');

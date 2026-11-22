@@ -740,10 +740,7 @@ export async function installFolderPacks(
     }
     if (res.action === 'install') result.installed.push(pack.id);
     else result.upgraded.push(pack.id);
-    o.log?.info(
-      { packId: pack.id, version: pack.version, action: res.action },
-      'folder pack applied',
-    );
+    o.log?.info({ packId: pack.id, version: pack.version, action: res.action }, 'folder pack applied');
   }
   return result;
 }

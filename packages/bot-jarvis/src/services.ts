@@ -10,12 +10,7 @@ import { JarvisLeaderboard } from './leaderboard.js';
 import { MissionImports } from './mission-imports.js';
 import { JarvisMissions } from './missions.js';
 import { PackImports } from './pack-imports.js';
-import {
-  type FolderPackInstallResult,
-  installFolderPacks,
-  packDirs,
-  PackInstaller,
-} from './packs.js';
+import { type FolderPackInstallResult, installFolderPacks, PackInstaller, packDirs } from './packs.js';
 import { SeasonService } from './season.js';
 import { JarvisShop } from './shop-ui.js';
 import { StaffTrivia } from './staff-trivia.js';

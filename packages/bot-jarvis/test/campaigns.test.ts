@@ -682,9 +682,9 @@ describe('/jarvis missao importar with campaign fields', () => {
     const ok = await importMission(t, chapter('sombras-4', 4, { missions: ['sombras-3'] }));
     expect(reply(t, ok)?.embeds?.[0]?.title).toBe('Prévia: Capítulo sombras-4');
     // File / pack ids cannot be replaced (same rule as trivia/item import).
-    expect(reply(t, await importMission(t, chapter('sombras-2', 2, { missions: ['sombras-1'] })))?.content).toContain(
-      'sombras-2: id de uma missão dos arquivos',
-    );
+    expect(
+      reply(t, await importMission(t, chapter('sombras-2', 2, { missions: ['sombras-1'] })))?.content,
+    ).toContain('sombras-2: id de uma missão dos arquivos');
     // A staff-owned chapter can be re-imported without counting as a chapter repeat.
     await t.interact({
       kind: 'component',

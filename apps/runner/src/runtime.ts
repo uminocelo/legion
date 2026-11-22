@@ -93,11 +93,7 @@ export async function buildRuntime(o: BuildRuntimeOptions): Promise<CoreRuntime>
 }
 
 /** When J.A.R.V.I.S. and ULTRON are both on, inject enemy pack hooks and re-apply folder packs. */
-async function wirePackEnemyHooks(
-  runtime: CoreRuntime,
-  bots: AnyLegionBot[],
-  log: Logger,
-): Promise<void> {
+async function wirePackEnemyHooks(runtime: CoreRuntime, bots: AnyLegionBot[], log: Logger): Promise<void> {
   const jarvisBot = bots.find((b) => b.id === 'jarvis');
   const ultronBot = bots.find((b) => b.id === 'ultron');
   if (!jarvisBot || !ultronBot) return;

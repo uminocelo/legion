@@ -33,16 +33,13 @@ export interface PackEnemyHooks {
 }
 
 /** Adapts `parseEnemiesYaml` to the list callback PackInstaller expects. */
-export function enemiesParserForPacks(
-  parse: typeof parseEnemiesYaml = parseEnemiesYaml,
-): PackEnemyParseFn {
+export function enemiesParserForPacks(parse: typeof parseEnemiesYaml = parseEnemiesYaml): PackEnemyParseFn {
   return (list, label) => parse(toYaml(list), label);
 }
 
 function asEnemy(raw: Record<string, unknown>): EnemyTemplate {
   const res = enemySchema.safeParse(raw);
-  if (!res.success)
-    throw new Error(`inimigo inválido no pacote: ${res.error.issues[0]?.message ?? 'erro'}`);
+  if (!res.success) throw new Error(`inimigo inválido no pacote: ${res.error.issues[0]?.message ?? 'erro'}`);
   return res.data;
 }
 

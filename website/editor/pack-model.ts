@@ -47,9 +47,7 @@ function parseListYaml(text: string, label: Section): { list: unknown[]; errors:
     const pos = err instanceof YAMLParseError ? ` (linha ${err.linePos?.[0]?.line ?? 0})` : '';
     return {
       list: [],
-      errors: [
-        `${PACK_FILE} → ${label}${pos}: YAML inválido: ${(err as Error).message.split('\n')[0]}`,
-      ],
+      errors: [`${PACK_FILE} → ${label}${pos}: YAML inválido: ${(err as Error).message.split('\n')[0]}`],
     };
   }
 }
