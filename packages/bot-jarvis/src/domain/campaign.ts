@@ -22,6 +22,8 @@ export const campaignSchema = z
       .optional(),
     title: text(80),
     summary: text(300),
+    /** Optional squad name_key or code; resolved to an active squad id at import (US-37). */
+    squad: z.string().trim().min(1).max(32).optional(),
   })
   .strict()
   .superRefine((c, ctx) => {

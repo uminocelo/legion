@@ -191,7 +191,8 @@
         "weekly_limit": "Você já fez sua missão semanal nesta semana",
         "story_done": "Você já jogou esta história",
         "combat_unavailable": "Lutas indisponíveis (ULTRON ou Sentinel desligado)",
-        "requires": "Bloqueada: falta {missing}"
+        "requires": "Bloqueada: falta {missing}",
+        "squad": "só membros deste esquadrão"
       },
       "already_open": "Você já tem uma missão em andamento: {thread}. Termine ou use /missao abandonar.",
       "started": "Missão iniciada em {thread}. Boa sorte, agente.",

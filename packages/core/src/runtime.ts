@@ -289,6 +289,7 @@ export class CoreRuntime {
         providers.provide(key, impl, bot.id);
         if (key === 'localeResolver') this.i18n.setResolver(impl as never);
       },
+      provider: (key) => providers.get(key),
     };
   }
 

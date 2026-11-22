@@ -17,6 +17,8 @@ export const questionSchema = z
     // A URL or a reference such as "Shang-Chi #4 (2021)".
     source: z.string().trim().min(3).max(200),
     locale: z.enum(['pt-BR', 'en']).optional(),
+    /** Optional squad name_key or code; resolved to an active squad id at import (US-37). */
+    squad: z.string().trim().min(1).max(32).optional(),
   })
   .refine((q) => q.answer < q.choices.length, {
     path: ['answer'],

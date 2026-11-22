@@ -57,6 +57,13 @@
       "when": 1795299054804,
       "tag": "0007_price_override",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795328654400,
+      "tag": "0008_squad_content",
+      "breakpoints": true
     }
   ]
 }

@@ -22,6 +22,52 @@ export async function activeSquadOf(
   return row ?? null;
 }
 
+/** Resolve an active squad by name_key (lowercased) or by code (uppercased). */
+export async function resolveActiveSquad(
+  db: LegionDb,
+  guildId: string,
+  value: string,
+  ex: Executor = db.orm,
+): Promise<{ id: string; name: string; baseFaction: string } | null> {
+  const s = cerebroTables(db).cerebroSquads;
+  const trimmed = value.trim();
+  const cols = { id: s.id, name: s.name, baseFaction: s.baseFaction };
+  const byCode = async () => {
+    const [row] = await ex
+      .select(cols)
+      .from(s)
+      .where(and(eq(s.guildId, guildId), eq(s.status, 'active'), eq(s.code, trimmed.toUpperCase())))
+      .limit(1);
+    return row ?? null;
+  };
+  const byName = async () => {
+    const [row] = await ex
+      .select(cols)
+      .from(s)
+      .where(and(eq(s.guildId, guildId), eq(s.status, 'active'), eq(s.nameKey, trimmed.toLowerCase())))
+      .limit(1);
+    return row ?? null;
+  };
+  // Prefer exact code when the value looks like a 6-char squad code.
+  if (/^[A-Z0-9]{6}$/i.test(trimmed)) return (await byCode()) ?? byName();
+  return (await byName()) ?? byCode();
+}
+
+/** Active squad founded by this member, or null. */
+export async function founderActiveSquad(
+  db: LegionDb,
+  memberId: string,
+  ex: Executor = db.orm,
+): Promise<{ id: string; name: string; baseFaction: string } | null> {
+  const s = cerebroTables(db).cerebroSquads;
+  const [row] = await ex
+    .select({ id: s.id, name: s.name, baseFaction: s.baseFaction })
+    .from(s)
+    .where(and(eq(s.founderMemberId, memberId), eq(s.status, 'active')))
+    .limit(1);
+  return row ?? null;
+}
+
 /** Display names for squad ids (including archived). Missing ids are omitted. */
 export async function squadNamesOf(
   db: LegionDb,

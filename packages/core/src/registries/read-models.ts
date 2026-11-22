@@ -1,3 +1,4 @@
+import type { Embed } from '../discord/types.js';
 import { DEFAULT_STAT_CAP, type ItemSlot, type StatBonus, ZERO_BONUS } from '../game/stats.js';
 import type { LocaleResolver } from '../i18n/i18n.js';
 import type { RateLimiter } from '../ratelimit/rate-limiter.js';
@@ -69,6 +70,26 @@ export interface ReadModels {
   gear: GearReadModel;
 }
 
+/** Founder YAML staged for staff approve/refuse (US-37). Provided by J.A.R.V.I.S. */
+export interface SquadContentImport {
+  /** Validate YAML for the founder's squad; stage for staff. */
+  stage(o: {
+    text: string;
+    fileName: string;
+    squadId: string;
+    founderUserId: string;
+    locale: string;
+  }): Promise<
+    | { ok: true; stageId: string; kind: 'mission' | 'campaign' | 'trivia'; summary: string; embed: Embed }
+    | { ok: false; errors: string[] }
+  >;
+  publish(
+    stageId: string,
+    staffUserId: string,
+  ): Promise<{ ok: true; id: string } | { ok: false; key: string }>;
+  cancel(stageId: string): Promise<void>;
+}
+
 /** Implementations a bot can provide to core or to other bots (`ctx.provide`). */
 export interface Providers {
   members: MembersReadModel;
@@ -77,6 +98,7 @@ export interface Providers {
   gear: GearReadModel;
   rateLimiter: RateLimiter;
   localeResolver: LocaleResolver;
+  squadContentImport: SquadContentImport;
 }
 
 export class ProviderRegistry {

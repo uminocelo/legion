@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 ## [Unreleased]
 
 ### Added
+- Squad content (US-37): optional `squad` on mission/campaign/trivia YAML; rows store `squad_id`. With `squads.enabled`, only members with an active seat see that content. Founders submit via `/esquadrao conteudo enviar`; staff approve or refuse in the mod queue.
 - Squad war ranking (US-36): when `squads.enabled`, a score stamps the hero's active squad on the war ledger. `/guerra` shows that squad's points and rank inside the team. Leaving the squad keeps past points on it.
 
 ## [1.1.0] - 2026-11-22

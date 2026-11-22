@@ -9,9 +9,10 @@ import {
   type Unmet,
 } from './domain/campaign.js';
 import { loc, type Mission } from './domain/mission.js';
-import { campaignColumns, missionColumns } from './mission-content.js';
+import { campaignColumns, missionColumns, parseCampaign } from './mission-content.js';
 import { IMPORT_MAX_BYTES } from './mission-imports.js';
 import type { JarvisServices } from './services.js';
+import { squadContentVisible } from './squad-visibility.js';
 import { V } from './ui.js';
 
 export const campaignImportIds = {
@@ -45,10 +46,13 @@ export class JarvisCampaigns {
 
   /** Campaigns this member can see (recruitment arcs for their own team are hidden), with chapters. */
   private async visible(memberId: string) {
+    const rows = (await this.s.repo.allCampaigns()).filter((r) => r.active === 1);
     const campaigns = await this.s.missions.campaigns();
     const missions = await this.s.missions.missions();
     const out: { campaign: Campaign; chapters: ChapterState[] }[] = [];
-    for (const c of campaigns.values()) {
+    for (const row of rows) {
+      if (!(await squadContentVisible(this.ctx, row.squadId, memberId))) continue;
+      const c = parseCampaign(row);
       const list = chaptersOf(c.id, missions);
       if (!list.length) continue;
       const first = list[0] as Mission;

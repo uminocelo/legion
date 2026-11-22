@@ -62,8 +62,13 @@ export const jarvisTriviaQuestions = table(
     review: text('review'),
     createdBy: text('created_by'),
     reviewedBy: text('reviewed_by'),
+    // Optional squad scope (US-37): active cerebro squad id resolved at import.
+    squadId: text('squad_id'),
   },
-  (t) => [index('jarvis_trivia_questions_pick_idx').on(t.locale, t.category, t.active)],
+  (t) => [
+    index('jarvis_trivia_questions_pick_idx').on(t.locale, t.category, t.active),
+    index('jarvis_trivia_questions_squad_idx').on(t.squadId),
+  ],
 );
 
 export const jarvisTriviaAttempts = table(
@@ -109,26 +114,37 @@ export const jarvisMissions = table(
     campaignId: text('campaign_id'),
     chapter: integer('chapter'),
     requires: text('requires'),
+    // Optional squad scope (US-37): active cerebro squad id resolved at import.
+    squadId: text('squad_id'),
   },
-  (t) => [index('jarvis_missions_campaign_idx').on(t.campaignId, t.chapter)],
+  (t) => [
+    index('jarvis_missions_campaign_idx').on(t.campaignId, t.chapter),
+    index('jarvis_missions_squad_idx').on(t.squadId),
+  ],
 );
 
 /** Campaign metadata (v0.9, US-27). Mirrors `jarvis_missions`: files or staff imports. */
-export const jarvisCampaigns = table('jarvis_campaigns', {
-  id: text('id').primaryKey(),
-  // tutorial | recruitment | story
-  kind: text('kind').notNull(),
-  // The team a recruitment campaign recruits for; null otherwise.
-  faction: text('faction'),
-  definition: text('definition').notNull(),
-  contentHash: text('content_hash').notNull(),
-  active: integer('active').notNull().default(1),
-  // file | staff
-  origin: text('origin').notNull().default('file'),
-  importedBy: text('imported_by'),
-  disabledBy: text('disabled_by'),
-  updatedAt: text('updated_at').notNull(),
-});
+export const jarvisCampaigns = table(
+  'jarvis_campaigns',
+  {
+    id: text('id').primaryKey(),
+    // tutorial | recruitment | story
+    kind: text('kind').notNull(),
+    // The team a recruitment campaign recruits for; null otherwise.
+    faction: text('faction'),
+    definition: text('definition').notNull(),
+    contentHash: text('content_hash').notNull(),
+    active: integer('active').notNull().default(1),
+    // file | staff
+    origin: text('origin').notNull().default('file'),
+    importedBy: text('imported_by'),
+    disabledBy: text('disabled_by'),
+    updatedAt: text('updated_at').notNull(),
+    // Optional squad scope (US-37): active cerebro squad id resolved at import.
+    squadId: text('squad_id'),
+  },
+  (t) => [index('jarvis_campaigns_squad_idx').on(t.squadId)],
+);
 
 /** One play of a mission. `version` grows on every state change (idempotent clicks and timers). */
 export const jarvisMissionRuns = table(

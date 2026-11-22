@@ -8,6 +8,7 @@ import { pickQuestion, shuffledOrder } from './domain/selection.js';
 import { scoreTrivia } from './domain/xp.js';
 import { JARVIS_CONTENT_DIR } from './paths.js';
 import type { JarvisServices } from './services.js';
+import { squadContentVisible } from './squad-visibility.js';
 import { type AnswerView, JarvisUi } from './ui.js';
 
 /** Content folders: the bundled pack plus optional server packs in ./data/content/trivia. */
@@ -49,6 +50,15 @@ export class JarvisTrivia {
     return null;
   }
 
+  /** Drop squad-scoped questions the member cannot see. Staff lists stay unfiltered. */
+  private async forMember(pool: QuestionRow[], memberId: string): Promise<QuestionRow[]> {
+    const out: QuestionRow[] = [];
+    for (const q of pool) {
+      if (await squadContentVisible(this.ctx, q.squadId, memberId)) out.push(q);
+    }
+    return out;
+  }
+
   /** `/trivia [categoria]` and the "Próxima pergunta" button. */
   async ask(i: IncomingInteraction, r: Responder, category: string | null): Promise<void> {
     const l = await this.locale(i.userId);
@@ -72,9 +82,9 @@ export class JarvisTrivia {
     }
 
     const cat = category && this.cfg.categories.includes(category) ? category : null;
-    let pool = await this.s.repo.activeQuestions(l, cat);
+    let pool = await this.forMember(await this.s.repo.activeQuestions(l, cat), member.id);
     if (!pool.length && l !== this.ctx.config.locale)
-      pool = await this.s.repo.activeQuestions(this.ctx.config.locale, cat);
+      pool = await this.forMember(await this.s.repo.activeQuestions(this.ctx.config.locale, cat), member.id);
     const rng = this.ctx.random.create(this.ctx.random.seed());
     const q = pickQuestion(pool, await this.s.repo.lastSeen(member.id), now, this.cfg.noRepeatDays, rng);
     if (!q) {

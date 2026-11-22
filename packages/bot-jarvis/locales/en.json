@@ -191,7 +191,8 @@
         "weekly_limit": "You already did your weekly mission this week",
         "story_done": "You already played this story",
         "combat_unavailable": "Fights unavailable (ULTRON or Sentinel is off)",
-        "requires": "Locked: you still need to {missing}"
+        "requires": "Locked: you still need to {missing}",
+        "squad": "squad members only"
       },
       "already_open": "You already have a mission in progress: {thread}. Finish it or use /mission abandon.",
       "started": "Mission started in {thread}. Good luck, agent.",

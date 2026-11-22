@@ -163,6 +163,7 @@
       "esquadrao_entrar": "Joins a squad with the 6-character code.",
       "esquadrao_sair": "Leaves your squad. The leader cannot leave: staff archives it.",
       "esquadrao_ver": "Shows a squad. The invite and code are visible only to the leader and staff.",
+      "esquadrao_conteudo": "Submits squad mission, campaign, or trivia YAML for staff approval.",
       "esquadrao_aprovar": "Approves a squad request (staff).",
       "esquadrao_recusar": "Refuses a squad request, with a reason (staff).",
       "esquadrao_arquivar": "Archives an active squad and removes its role and thread (staff)."
@@ -199,7 +200,10 @@
         "codigo": "6-character code",
         "sair": "Leaves your squad",
         "ver": "Shows a squad",
-        "nome_opt": "Name (default: yours)"
+        "nome_opt": "Name (default: yours)",
+        "conteudo": "Squad content",
+        "conteudo_enviar": "Submit a mission, campaign, or trivia YAML",
+        "conteudo_arquivo": ".yaml / .yml file"
       },
       "mutante": {
         "description": "Deprecated: use /heroi"
@@ -281,7 +285,30 @@
       "squad_inactive": "That squad is not active.",
       "joined": "You joined **{name}** ({team}).",
       "queue_left_title": "Leader left",
-      "queue_left_body": "**{name}** was archived because the leader left the server."
+      "queue_left_body": "**{name}** was archived because the leader left the server.",
+      "content_not_founder": "Only the leader of an active squad can submit content.",
+      "content_jarvis_off": "J.A.R.V.I.S. must be enabled to receive squad content.",
+      "content_problem_missing": "Attach a `.yaml` or `.yml` file.",
+      "content_problem_bad_type": "The file must be `.yaml` or `.yml`.",
+      "content_problem_too_big": "The file is over {kb} KB.",
+      "content_problem_bad_host": "Could not download the attachment (invalid host).",
+      "content_problem_download_failed": "Could not download the attachment. Try again.",
+      "content_invalid": "The file has errors and nothing was sent:\n{errors}",
+      "content_no_queue": "Set `channels.modQueue` for the staff queue.",
+      "content_queue_failed": "Could not post to the staff queue. Try again.",
+      "content_submitted": "Content for **{name}** ({kind}) sent to staff for approval.",
+      "content_queue_title": "Squad content",
+      "content_queue_body": "{founder} submitted {kind} for **{name}**: {summary}",
+      "content_approve": "Approve",
+      "content_refuse": "Refuse",
+      "content_kind_mission": "mission",
+      "content_kind_campaign": "campaign",
+      "content_kind_trivia": "trivia",
+      "content_not_staff": "Only staff can decide.",
+      "content_refused": "Content refused. Nothing was published.",
+      "content_approved": "Content published: `{id}`.",
+      "content_expired": "That request expired or was already used.",
+      "content_publish_failed": "Could not publish. The file may have become invalid."
     },
     "powers": {
       "type": {
