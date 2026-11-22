@@ -30,7 +30,9 @@ docker run --rm -it -v "$PWD:/out" ghcr.io/uminocelo/legion legion init --out /o
 ```
 (No PowerShell troque `"$PWD:/out"` por `"${PWD}:/out"`.)
 
-Jeito manual: copie `.env.example` para `.env` e `legion.config.example.yaml` para `legion.config.yaml`, e preencha. Os IDs dos canais você copia no Discord com o botão direito → **Copiar ID** (precisa do Modo desenvolvedor).
+Depois das perguntas, o `init` lê os canais do servidor e preenche os IDs no `legion.config.yaml` pelos nomes do [modelo](TEMPLATE.md). Confira o relatório, rode `legion doctor` e só corrija à mão o que ficou ausente ou ambíguo. Se o YAML já existir com IDs nulos, use `legion init --fill-channels` (ou `--force-fill-channels` para substituir os que já estão preenchidos).
+
+Jeito manual: copie `.env.example` para `.env` e `legion.config.example.yaml` para `legion.config.yaml`, e preencha. Os IDs dos canais você copia no Discord com o botão direito → **Copiar ID** (precisa do Modo desenvolvedor) — esse continua sendo o fallback se o auto-preenchimento não achar o canal.
 
 ## 5. Convide o bot e suba o cargo dele
 

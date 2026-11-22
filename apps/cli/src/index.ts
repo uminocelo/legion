@@ -13,7 +13,7 @@ import { Command } from 'commander';
 import { PermissionFlagsBits } from 'discord.js';
 import { CONTENT_TYPES, type ContentType, formatValidate, validateContent } from './content-validate.js';
 import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
-import { isSnowflake, writeInitFiles } from './init.js';
+import { isSnowflake, runFillChannels, runFreshInitFill } from './init.js';
 import { invitePermissions, inviteUrl, SQUAD_INVITE_PERMISSIONS } from './invite.js';
 import { cliLocale, msg } from './messages.js';
 import { formatPlaytest, parseSince, playtestReport } from './playtest.js';
@@ -31,21 +31,49 @@ import {
   templateStatus,
 } from './server-template.js';
 
-const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('1.3.0');
+const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('1.4.0');
 const configOpt = ['-c, --config <path>', 'legion.config.yaml', DEFAULT_CONFIG_PATH] as const;
 
 program
   .command('init')
-  .description('Cria .env e legion.config.yaml com perguntas')
+  .description('Cria .env e legion.config.yaml com perguntas (preenche IDs dos canais pelo modelo)')
   .option('-o, --out <dir>', 'pasta onde escrever os arquivos', '.')
-  .action(async (o: { out: string }) => {
+  .option('--fill-channels', 'preenche IDs nulos no legion.config.yaml a partir do servidor')
+  .option('--force-fill-channels', 'como --fill-channels, mas substitui IDs já preenchidos sem perguntar')
+  .action(async (o: { out: string; fillChannels?: boolean; forceFillChannels?: boolean }) => {
     const L = cliLocale();
-    p.intro(msg(L, 'init.intro'));
     const ask = async <T>(v: Promise<T | symbol>): Promise<Exclude<T, symbol>> => {
       const r = await v;
       if (p.isCancel(r)) process.exit(1);
       return r as Exclude<T, symbol>;
     };
+
+    if (o.fillChannels || o.forceFillChannels) {
+      p.intro(msg(L, 'init.intro'));
+      const result = await runFillChannels({
+        dir: o.out,
+        force: !!o.forceFillChannels,
+        confirmReplace: () => ask(p.confirm({ message: msg(L, 'init.fill_replace'), initialValue: false })),
+        createRest: (token) => createDiscordRest(token),
+      });
+      if (!result.ok) {
+        p.log.error(
+          /HTTP \d+/.test(result.error)
+            ? msg(L, 'init.fill_rest_error_only', { detail: result.error })
+            : result.error,
+        );
+        p.outro(msg(L, 'init.done'));
+        process.exitCode = 1;
+        return;
+      }
+      p.log.info(msg(L, 'init.fill_heading'));
+      for (const line of result.report) p.log.info(line);
+      p.log.info(msg(L, 'init.fill_written'));
+      p.outro(msg(L, 'init.done'));
+      return;
+    }
+
+    p.intro(msg(L, 'init.intro'));
     const id = (v: string | undefined) => (v && isSnowflake(v) ? undefined : msg(L, 'init.invalid_id'));
     const token = await ask(
       p.password({
@@ -95,12 +123,25 @@ program
           ownApps[bot] = { token: botToken, clientId: botClient };
         }
     }
-    const results = await writeInitFiles(
-      o.out,
-      { token, clientId, guildId, locale, bots, ownApps },
-      async (file) => ask(p.confirm({ message: msg(L, 'init.overwrite', { file }), initialValue: false })),
-    );
-    for (const r of results) p.log.info(msg(L, r.written ? 'init.written' : 'init.kept', { file: r.file }));
+    const result = await runFreshInitFill({
+      dir: o.out,
+      answers: { token, clientId, guildId, locale, bots, ownApps },
+      overwrite: (file) =>
+        ask(p.confirm({ message: msg(L, 'init.overwrite', { file }), initialValue: false })),
+      createRest: (t) => createDiscordRest(t),
+    });
+    p.log.info(msg(L, result.envWritten ? 'init.written' : 'init.kept', { file: '.env' }));
+    if (!result.ok) {
+      p.log.error(msg(L, 'init.fill_rest_error', { detail: result.error }));
+      p.outro(msg(L, 'init.done'));
+      process.exitCode = 1;
+      return;
+    }
+    p.log.info(msg(L, result.configWritten ? 'init.written' : 'init.kept', { file: 'legion.config.yaml' }));
+    if (result.configWritten) {
+      p.log.info(msg(L, 'init.fill_heading'));
+      for (const line of result.report) p.log.info(line);
+    }
     p.outro(msg(L, 'init.done'));
   });
 

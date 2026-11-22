@@ -86,6 +86,14 @@ const pt = {
     'Pronto! Próximos passos: "legion invite-url" para convidar o bot e "legion doctor" para conferir tudo.',
   'init.invalid_id': 'Use só números (ID do Discord).',
   'init.required': 'Obrigatório.',
+  'init.fill_heading': 'Canais e áreas preenchidos pelos nomes do modelo:',
+  'init.fill_written': 'legion.config.yaml atualizado com os IDs dos canais.',
+  'init.fill_replace':
+    'Alguns IDs já estão preenchidos e o Discord tem outros valores. Substituir os que já existem?',
+  'init.fill_rest_error':
+    'Não consegui ler os canais do Discord ({detail}). O .env foi salvo; o legion.config.yaml não foi alterado. Confira o token, o ID do servidor e se o bot está no servidor.',
+  'init.fill_rest_error_only':
+    'Não consegui ler os canais do Discord ({detail}). Nenhum arquivo de canais foi alterado. Confira o token, o ID do servidor e se o bot está no servidor.',
   'commands.registered': '{count} comando(s) registrado(s) no servidor: {names}',
 } as const;
 
@@ -173,6 +181,14 @@ const en: Record<keyof typeof pt, string> = {
   'init.done': 'Done! Next: "legion invite-url" to invite the bot and "legion doctor" to check everything.',
   'init.invalid_id': 'Use digits only (Discord ID).',
   'init.required': 'Required.',
+  'init.fill_heading': 'Channels and team areas filled from template names:',
+  'init.fill_written': 'legion.config.yaml updated with channel IDs.',
+  'init.fill_replace':
+    'Some IDs are already set and Discord has different values. Replace the ones that already exist?',
+  'init.fill_rest_error':
+    'Could not read Discord channels ({detail}). .env was saved; legion.config.yaml was not changed. Check the token, guild ID, and that the bot is in the server.',
+  'init.fill_rest_error_only':
+    'Could not read Discord channels ({detail}). No channel config was changed. Check the token, guild ID, and that the bot is in the server.',
   'commands.registered': '{count} command(s) registered in the server: {names}',
 };
 
