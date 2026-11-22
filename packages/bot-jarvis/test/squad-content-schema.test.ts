@@ -82,7 +82,14 @@ describe('0008_squad_content migration', () => {
     await db.migrate('jarvis', JARVIS_MIGRATIONS_DIR);
     const tables = ['jarvis_missions', 'jarvis_campaigns', 'jarvis_trivia_questions'] as const;
     for (const table of tables) {
-      const cols = await rows<{ name: string }>(db, sql`pragma table_info(${sql.raw(table)})`);
+      const cols =
+        db.dialect === 'sqlite'
+          ? await rows<{ name: string }>(db, sql`pragma table_info(${sql.raw(table)})`)
+          : await rows<{ name: string }>(
+              db,
+              sql`select column_name as name from information_schema.columns
+                  where table_schema = current_schema() and table_name = ${table}`,
+            );
       expect(cols.some((c) => c.name === 'squad_id')).toBe(true);
     }
   });
