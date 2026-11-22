@@ -1,6 +1,6 @@
 import { GatewayError, type TestContext } from '@legion/core';
 import { afterEach, describe, expect, it } from 'vitest';
-import { CerebroRepo, PERSISTENT_WELCOME_KEY } from '../src/index.js';
+import { CerebroRepo, cerebro, PERSISTENT_WELCOME_KEY } from '../src/index.js';
 import { CH, events, join, register, setupCerebro, USER } from './helpers.js';
 
 let t: TestContext | undefined;
@@ -311,5 +311,111 @@ describe('role sync on ready', () => {
     const creates = t.gateway.callsOf('createRole').length;
     await t.runtime.ready({ startPolling: false });
     expect(t.gateway.callsOf('createRole')).toHaveLength(creates);
+  });
+});
+
+describe('faction areas (US-34)', () => {
+  it('opens a team category only to that team and staff, and keeps it private for others', async () => {
+    const CAT = '300000000000000050';
+    const ROOM = '300000000000000051';
+    t = await setupCerebro({
+      factions: [
+        { key: 'independent', roleKey: 'faction_independent' },
+        { key: 'xmen', roleKey: 'faction_xmen', categoryId: CAT },
+        { key: 'brotherhood', roleKey: 'faction_brotherhood' },
+      ],
+    });
+    t.gateway.addChannel({ id: CAT, name: 'X-Men', kind: 'category' });
+    t.gateway.addChannel({ id: ROOM, name: 'quartel-xmen', kind: 'text', parentId: CAT });
+    t.gateway.addMember({ userId: '12', roleIds: [staffRoleId(t)] });
+    const run = (aplicar: boolean) =>
+      t.interact({
+        kind: 'command',
+        userId: '12',
+        commandName: 'cerebro',
+        subcommand: 'setup',
+        options: { canais: true, aplicar },
+      });
+    const dry = t.gateway.lastReply(await run(false))?.content ?? '';
+    expect(dry).toContain('#quartel-xmen: área da equipe, liberar para a equipe');
+    await run(true);
+    const xmen = t.gateway.roleByName('X-Men')?.id;
+    const brotherhood = t.gateway.roleByName('Irmandade')?.id;
+    const reg = t.gateway.roleByName('Herói Registrado')?.id;
+    for (const id of [CAT, ROOM]) {
+      const ow = t.gateway.channels.get(id)?.overwrites ?? [];
+      const allows = (rid?: string) => ow.find((o) => o.id === rid)?.allow.includes('ViewChannel') ?? false;
+      expect(allows(xmen)).toBe(true);
+      expect(allows(staffRoleId(t))).toBe(true);
+      expect(allows(reg)).toBe(false);
+      expect(allows(brotherhood)).toBe(false);
+      expect(ow.find((o) => o.id === t.gateway.guildId)?.deny).toContain('ViewChannel');
+    }
+    expect(t.gateway.lastReply(await run(true))?.content).not.toContain('área da equipe');
+  });
+});
+
+describe('doctor: faction areas (US-34)', () => {
+  const CAT = '300000000000000060';
+  const check = async (tc: TestContext) =>
+    (await cerebro
+      .doctorChecks?.(tc.ctxOf(cerebro))
+      .find((c) => c.id === 'cerebro.areas')
+      ?.run()) ?? null;
+  const factions = (categoryId?: string) => [
+    { key: 'independent', roleKey: 'faction_independent' },
+    { key: 'xmen', roleKey: 'faction_xmen', ...(categoryId ? { categoryId } : {}) },
+    { key: 'brotherhood', roleKey: 'faction_brotherhood' },
+  ];
+
+  it('is ok with no areas, fails on a missing or wrong category, passes after setup', async () => {
+    t = await setupCerebro({ factions: factions() });
+    expect((await check(t))?.status).toBe('ok');
+    await t.close();
+    t = await setupCerebro({ factions: factions(CAT) });
+    expect(await check(t)).toMatchObject({
+      status: 'fail',
+      message: 'xmen: a categoria não existe no servidor',
+    });
+    t.gateway.addChannel({ id: CAT, name: 'xmen-texto', kind: 'text' });
+    expect((await check(t))?.message).toContain('não é de uma categoria');
+    t.gateway.channels.delete(CAT);
+    t.gateway.addChannel({ id: CAT, name: 'X-Men', kind: 'category' });
+    t.gateway.addChannel({ id: '300000000000000061', name: 'quartel', kind: 'text', parentId: CAT });
+    expect((await check(t))?.message).toContain('@everyone consegue ver');
+    t.gateway.addMember({ userId: '12', roleIds: [staffRoleId(t)] });
+    await t.interact({
+      kind: 'command',
+      userId: '12',
+      commandName: 'cerebro',
+      subcommand: 'setup',
+      options: { canais: true, aplicar: true },
+    });
+    expect((await check(t))?.status).toBe('ok');
+  });
+
+  it('warns when a channel inside the area is opened to another team', async () => {
+    t = await setupCerebro({ factions: factions(CAT) });
+    t.gateway.addChannel({ id: CAT, name: 'X-Men', kind: 'category' });
+    t.gateway.addChannel({ id: '300000000000000061', name: 'quartel', kind: 'text', parentId: CAT });
+    t.gateway.addMember({ userId: '12', roleIds: [staffRoleId(t)] });
+    await t.interact({
+      kind: 'command',
+      userId: '12',
+      commandName: 'cerebro',
+      subcommand: 'setup',
+      options: { canais: true, aplicar: true },
+    });
+    const ch = t.gateway.channels.get('300000000000000061');
+    ch?.overwrites.push({
+      id: t.gateway.roleByName('Irmandade')?.id ?? '',
+      type: 'role',
+      allow: ['ViewChannel'],
+      deny: [],
+    });
+    expect(await check(t)).toMatchObject({
+      status: 'warn',
+      message: 'xmen (#quartel): outra equipe consegue ver',
+    });
   });
 });

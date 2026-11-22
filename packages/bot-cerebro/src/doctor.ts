@@ -1,5 +1,6 @@
 import { type BotContext, DEFAULT_FACTION_KEYS, type DoctorCheck, TIKTOK_ROLE_NAME } from '@legion/core';
 import type { CerebroConfig } from './config.js';
+import { type AreaProblem, auditFactionAreas } from './domain/channels.js';
 import { allowsOrigin, powerFiles, readPowers } from './powers.js';
 import type { CerebroSetup } from './setup.js';
 
@@ -8,7 +9,59 @@ import type { CerebroSetup } from './setup.js';
  * are checked by the CLI with REST data (US-3); these cover what the gateway can see.
  */
 export function cerebroDoctorChecks(ctx: BotContext<CerebroConfig>, setup: CerebroSetup): DoctorCheck[] {
+  const AREA_TEXT: Record<AreaProblem['code'], string> = {
+    missing: 'a categoria não existe no servidor',
+    not_category: 'o ID não é de uma categoria',
+    team_cannot_view: 'a equipe não consegue ver',
+    open_to_everyone: '@everyone consegue ver',
+    open_to_registered: 'todo Herói Registrado consegue ver',
+    open_to_other_team: 'outra equipe consegue ver',
+  };
   return [
+    {
+      id: 'cerebro.areas',
+      title: 'Áreas das equipes',
+      run: async () => {
+        const configured = ctx.config.factions.filter((f) => f.categoryId);
+        if (!configured.length) return { status: 'ok', message: 'Nenhuma (factions[].categoryId vazio)' };
+        const areas = [];
+        for (const f of configured)
+          areas.push({
+            faction: f.key,
+            categoryId: f.categoryId as string,
+            roleId: (await ctx.roles.resolve(f.roleKey))?.id ?? null,
+          });
+        const teamRoleIds: string[] = [];
+        for (const f of ctx.config.factions) {
+          const r = await ctx.roles.resolve(f.roleKey);
+          if (r) teamRoleIds.push(r.id);
+        }
+        const problems = auditFactionAreas({
+          teamRoleIds,
+          channels: await ctx.gateway.fetchChannels(),
+          everyoneRoleId: ctx.guildId,
+          registeredRoleId: (await ctx.roles.resolve('registered'))?.id ?? null,
+          areas,
+        });
+        if (!problems.length)
+          return {
+            status: 'ok',
+            message: `${configured.length} área(s), cada uma só para a sua equipe e a staff`,
+          };
+        const text = problems
+          .slice(0, 8)
+          .map((p) => `${p.faction}${p.channelName ? ` (#${p.channelName})` : ''}: ${AREA_TEXT[p.code]}`)
+          .join('\n');
+        const fail = problems.some((p) => p.level === 'fail');
+        return {
+          status: fail ? 'fail' : 'warn',
+          message: text,
+          fix: fail
+            ? 'Confira factions[].categoryId (ID de uma categoria) e rode /cerebro setup canais:true aplicar:true'
+            : 'Um canal dentro da área tem permissão diferente; rode /cerebro setup canais:true aplicar:true ou deixe se foi de propósito',
+        };
+      },
+    },
     {
       id: 'cerebro.powers',
       title: 'Catálogo de poderes',

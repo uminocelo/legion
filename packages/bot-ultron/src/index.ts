@@ -6,6 +6,7 @@ import { ultronActions, ultronPanels } from './dashboard.js';
 import { ultronDoctorChecks } from './doctor.js';
 import { ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 import { ultronServices } from './services.js';
+import { TEAM_NEWS_CRON, TEAM_NEWS_JOB, TeamNews } from './team-news.js';
 import { THREAT_CRON, THREAT_JOB } from './threat.js';
 import { WAR_JOBS } from './war.js';
 import { JOBS, V } from './world-events.js';
@@ -65,6 +66,10 @@ export const ultron: LegionBot<UltronConfig> = {
     ctx.bus.on('combat.resolved', 'ultron.encounter-result', (e) => s.encounters.onCombatResolved(e));
     ctx.bus.on('combat.resolved', 'ultron.raid-result', (e) => s.world.onStrikeResolved(e));
     ctx.bus.on('mission.completed', 'ultron.war-missions', (e) => s.war.scoreMission(e.payload));
+    const news = new TeamNews(ctx, s.war);
+    ctx.bus.on('war.ended', 'ultron.team-news-war', (e) => news.onWarEnded(e));
+    ctx.bus.on('world.event', 'ultron.team-news-event', (e) => news.onWorldEvent(e));
+    ctx.scheduler.every(TEAM_NEWS_JOB, TEAM_NEWS_CRON, () => news.standings());
     const w = s.world;
     ctx.scheduler.define<{ id: string }>(JOBS.announce, (p) => w.announce(p.id));
     ctx.scheduler.define<{ id: string }>(JOBS.start, (p) => w.start(p.id));
