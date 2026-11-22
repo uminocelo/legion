@@ -79,6 +79,18 @@ export function jarvisCommands(
       execute: (i, r) => board.command(i, r),
     },
     {
+      name: 'temporada',
+      json: {
+        name: 'temporada',
+        name_localizations: { 'en-US': 'season' },
+        ...desc(i18n, 'jarvis.commands.temporada.description'),
+      },
+      execute: async (i, r) => {
+        const l = await i18n.localeFor(i.userId);
+        await r.reply(await s.season.playerView(i.userId, l));
+      },
+    },
+    {
       name: 'sequencia',
       json: {
         name: 'sequencia',

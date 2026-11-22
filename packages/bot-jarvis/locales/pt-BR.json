@@ -54,6 +54,18 @@
       "empty": "Ninguém ganhou XP neste período ainda. Que tal um /trivia?",
       "factions": "Facções: {totals}"
     },
+    "season": {
+      "title": "🏆 Temporada",
+      "time_left": "Termina {at}.",
+      "board_title": "Ranking da temporada",
+      "line": "**{pos}.** {codename} — {xp} XP",
+      "you": "Você: **{pos}º** com {xp} XP nesta temporada",
+      "you_none": "Você ainda não tem XP nesta temporada.",
+      "empty": "Ninguém ganhou XP nesta temporada ainda.",
+      "no_active": "Não há temporada ativa.",
+      "no_active_next": "Não há temporada ativa. A próxima começa em {at}.",
+      "disabled": "As temporadas estão desligadas (jarvis.season.enabled: false)."
+    },
     "streak": {
       "title": "🔥 Sua sequência",
       "current": "Atual",
@@ -86,6 +98,7 @@
     "help": {
       "trivia": "Responda uma pergunta rápida e ganhe XP.",
       "ranking": "Veja quem mais ganhou XP na semana, no mês ou no total.",
+      "temporada": "Ranking da temporada e tempo restante até o fim.",
       "sequencia": "Veja sua sequência de dias ativos e o bônus de amanhã.",
       "missao": "Missões com escolhas (e lutas), sozinho ou em grupo",
       "campanha": "Mostra suas campanhas, o progresso e o próximo capítulo.",
@@ -102,6 +115,9 @@
         "description": "Ranking de XP",
         "periodo": "Período (padrão: semana)",
         "faccao": "Filtrar por facção"
+      },
+      "temporada": {
+        "description": "Ranking da temporada e tempo restante"
       },
       "sequencia": {
         "description": "Sua sequência de dias ativos"

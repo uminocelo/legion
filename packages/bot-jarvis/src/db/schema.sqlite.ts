@@ -304,3 +304,27 @@ export const jarvisWalletLedger = table(
     index('jarvis_wallet_ledger_member_idx').on(t.memberId),
   ],
 );
+
+/** Season windows (US-22). Score is XP ledger sum in [starts_at, ends_at). */
+export const jarvisSeasons = table(
+  'jarvis_seasons',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    /** scheduled | active | ended */
+    status: text('status').notNull(),
+    startsAt: text('starts_at').notNull(),
+    endsAt: text('ends_at').notNull(),
+    /** JSON winners [{ memberId, place, xp }]; null until ended. */
+    winners: text('winners'),
+    /** JSON archive snapshot; filled in stream 2. */
+    archive: text('archive'),
+    resultMessageId: text('result_message_id'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('jarvis_seasons_start_uq').on(t.guildId, t.startsAt),
+    index('jarvis_seasons_status_idx').on(t.status),
+  ],
+);

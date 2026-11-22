@@ -54,6 +54,18 @@
       "empty": "Nobody earned XP in this period yet. How about a /trivia?",
       "factions": "Factions: {totals}"
     },
+    "season": {
+      "title": "🏆 Season",
+      "time_left": "Ends {at}.",
+      "board_title": "Season leaderboard",
+      "line": "**{pos}.** {codename} — {xp} XP",
+      "you": "You: **#{pos}** with {xp} XP this season",
+      "you_none": "You have no XP in this season yet.",
+      "empty": "Nobody earned XP this season yet.",
+      "no_active": "No season is active.",
+      "no_active_next": "No season is active. The next one starts {at}.",
+      "disabled": "Seasons are off (jarvis.season.enabled: false)."
+    },
     "streak": {
       "title": "🔥 Your streak",
       "current": "Current",
@@ -86,6 +98,7 @@
     "help": {
       "trivia": "Answer a quick question and earn XP.",
       "ranking": "See who earned the most XP this week, this month or all time.",
+      "temporada": "Season leaderboard and time left until the season ends.",
       "sequencia": "See your active-day streak and tomorrow's bonus.",
       "missao": "Missions with choices (and fights), solo or in a party",
       "campanha": "Shows your campaigns, progress and next chapter.",
@@ -102,6 +115,9 @@
         "description": "XP leaderboard",
         "periodo": "Period (default: week)",
         "faccao": "Filter by faction"
+      },
+      "temporada": {
+        "description": "Season leaderboard and time left"
       },
       "sequencia": {
         "description": "Your active-day streak"

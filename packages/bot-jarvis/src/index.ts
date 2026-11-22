@@ -8,6 +8,7 @@ import { jarvisDoctorChecks } from './doctor.js';
 import { displayedStreak, levelFor, progressBar } from './domain/xp.js';
 import { MISSION_TIMEOUT_JOB } from './missions.js';
 import { JARVIS_LOCALES_DIR, JARVIS_MIGRATIONS_DIR } from './paths.js';
+import { SEASON_JOBS } from './season.js';
 import { jarvisServices } from './services.js';
 import { squadContentImportApi } from './squad-content-import.js';
 import { V } from './ui.js';
@@ -17,11 +18,13 @@ export * from './config.js';
 export * from './consumers.js';
 export * from './content.js';
 export * from './db/repo.js';
+export * from './db/season-repo.js';
 export * from './db/tables.js';
 export { jarvisDoctorChecks } from './doctor.js';
 export * from './domain/campaign.js';
 export * from './domain/mission.js';
 export * from './domain/periods.js';
+export * from './domain/season-window.js';
 export * from './domain/selection.js';
 export * from './domain/xp.js';
 export { inventoryIds, JarvisInventory } from './inventory-ui.js';
@@ -31,6 +34,7 @@ export { JarvisLeaderboard } from './leaderboard.js';
 export * from './mission-content.js';
 export { IMPORT_MAX_BYTES, MissionImports, missionImportIds, parseMissionYaml } from './mission-imports.js';
 export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
+export { SEASON_JOBS, SeasonService } from './season.js';
 export * from './services.js';
 export { JarvisShop, SHOP_PAGE, shopIds, shopStock } from './shop-ui.js';
 export { StaffTrivia, staffTriviaIds, statusOf } from './staff-trivia.js';
@@ -110,6 +114,9 @@ export const jarvis: LegionBot<JarvisConfig> = {
     ctx.scheduler.define<{ runId: string; version: number }>(MISSION_TIMEOUT_JOB, (p) =>
       s.missions.onTimeout(p),
     );
+    ctx.scheduler.define<{ id: string }>(SEASON_JOBS.start, (p) => s.season.startJob(p.id));
+    ctx.scheduler.define<{ id: string }>(SEASON_JOBS.end, (p) => s.season.end(p.id));
+    ctx.scheduler.every(SEASON_JOBS.plan, '27 * * * *', () => s.season.planNext());
     ctx.bus.on('combat.resolved', 'jarvis.mission-combat', (e) => s.missions.onCombatResolved(e));
     ctx.profile.add('jarvis', async ({ memberId }, l) => {
       const p = await s.repo.progress(memberId);
@@ -131,6 +138,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
     });
     ctx.help.add({ bot: 'jarvis', command: '/trivia', descriptionKey: 'jarvis.help.trivia' });
     ctx.help.add({ bot: 'jarvis', command: '/ranking', descriptionKey: 'jarvis.help.ranking' });
+    ctx.help.add({ bot: 'jarvis', command: '/temporada', descriptionKey: 'jarvis.help.temporada' });
     ctx.help.add({ bot: 'jarvis', command: '/sequencia', descriptionKey: 'jarvis.help.sequencia' });
     ctx.help.add({ bot: 'jarvis', command: '/missao', descriptionKey: 'jarvis.help.missao' });
     ctx.help.add({ bot: 'jarvis', command: '/campanha', descriptionKey: 'jarvis.help.campanha' });
@@ -140,8 +148,10 @@ export const jarvis: LegionBot<JarvisConfig> = {
   },
   doctorChecks: (ctx) => [...jarvisDoctorChecks(ctx), staffCommandsCheck(ctx, ['jarvis'])],
   onReady: async (ctx) => {
-    const n = await jarvisServices(ctx).missions.recover();
+    const s = jarvisServices(ctx);
+    const n = await s.missions.recover();
     if (n) ctx.log.info({ runs: n }, 'open missions restored');
+    await s.season.planNext();
   },
 };
 

@@ -64,6 +64,13 @@
       "when": 1795328654400,
       "tag": "0008_squad_content",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795500000000,
+      "tag": "0009_seasons",
+      "breakpoints": true
     }
   ]
 }

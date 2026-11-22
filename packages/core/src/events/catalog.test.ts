@@ -64,3 +64,30 @@ describe('team events (v0.9)', () => {
     );
   });
 });
+
+describe('season.ended (US-22)', () => {
+  const payload = {
+    seasonId: 's1',
+    winners: [
+      { memberId: 'm1', place: 1, xp: 120 },
+      { memberId: 'm2', place: 2, xp: 90 },
+    ],
+    endsAt: '2026-04-01T03:00:00.000Z',
+  };
+
+  it('accepts top places and an empty winners list', () => {
+    expect(validatePayload('season.ended', payload)).toEqual(payload);
+    expect(validatePayload('season.ended', { ...payload, winners: [] })).toMatchObject({ winners: [] });
+  });
+
+  it('rejects a zero place or missing endsAt', () => {
+    expect(() =>
+      validatePayload('season.ended', {
+        ...payload,
+        winners: [{ memberId: 'm1', place: 0, xp: 1 }],
+      }),
+    ).toThrow(/Invalid payload/);
+    const { endsAt: _drop, ...noEnd } = payload;
+    expect(() => validatePayload('season.ended', noEnd)).toThrow(/Invalid payload/);
+  });
+});
