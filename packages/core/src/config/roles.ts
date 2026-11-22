@@ -101,12 +101,24 @@ export const DEFAULT_ROLES: RoleInput[] = [
   { key: 'rivals_strategist', group: 'rivals', name: 'Estrategista', color: null, managedBy: 'cerebro' },
 ];
 
+const areaId = z
+  .string()
+  .regex(/^\d{5,25}$/, { message: 'config.snowflake' })
+  .nullish()
+  .transform((v) => v ?? undefined);
+
 export const factionSchema = z.object({
   key: z.string().regex(/^[a-z][a-z0-9_]*$/, { message: 'config.role_key' }),
   roleKey: z.string(),
   emoji: z.string().default(''),
   /** Origins that may join this team (v0.9); absent = every origin. */
   origins: z.array(z.enum(ORIGINS)).min(1).optional(),
+  /** v1.1 faction area: the team's Discord category, shown only to this team and staff. */
+  categoryId: areaId,
+  /** v1.1: where ULTRON posts this team's war and event news. */
+  newsChannelId: areaId,
+  /** v1.1: the text channel that holds this team's squad threads. */
+  squadChannelId: areaId,
 });
 export type FactionConfig = z.infer<typeof factionSchema>;
 

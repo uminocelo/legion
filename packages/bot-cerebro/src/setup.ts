@@ -6,13 +6,21 @@ import {
   type RoleSyncResult,
 } from '@legion/core';
 import { toMemberView } from './db/repo.js';
-import { planChannelVisibility } from './domain/channels.js';
+import { type ChannelChange, planChannelVisibility } from './domain/channels.js';
 import { expectedRoles } from './domain/onboarding.js';
 import type { CerebroFlow } from './flow.js';
 
 export const LAST_ROLE_SYNC_KEY = 'cerebro.lastRoleSync';
 export const PERSISTENT_WELCOME_KEY = 'cerebro.persistentWelcome';
 const MAX_LINES = 40;
+const CHANNEL_LINE: Record<ChannelChange['kind'], string> = {
+  keep_bot_access: 'channel_show',
+  show_to_registered: 'channel_show',
+  hide_from_everyone: 'channel_hide',
+  show_to_faction: 'channel_area_team',
+  show_to_staff: 'channel_area_staff',
+  close_to_registered: 'channel_area_close',
+};
 
 export interface LastRoleSync {
   at: string;
@@ -24,6 +32,25 @@ export interface LastRoleSync {
 /** Role sync, channel visibility, persistent welcome and member reconcile (`/cerebro setup`, `onReady`). */
 export class CerebroSetup {
   constructor(private readonly flow: CerebroFlow) {}
+
+  /** Faction areas (`factions[].categoryId`) with their team role, and the staff roles that keep View. */
+  async areaInput(): Promise<{
+    factionAreas: { categoryId: string; roleId: string }[];
+    staffRoleIds: string[];
+  }> {
+    const factionAreas: { categoryId: string; roleId: string }[] = [];
+    for (const f of this.ctx.config.factions) {
+      if (!f.categoryId) continue;
+      const role = await this.ctx.roles.resolve(f.roleKey);
+      if (role) factionAreas.push({ categoryId: f.categoryId, roleId: role.id });
+    }
+    const staffRoleIds: string[] = [];
+    for (const r of this.ctx.config.roles.filter((x) => x.group === 'staff' && x.key !== 'staff_bots')) {
+      const role = await this.ctx.roles.resolve(r.key);
+      if (role) staffRoleIds.push(role.id);
+    }
+    return { factionAreas, staffRoleIds };
+  }
 
   /** Registered heroes per stored team key (the doctor's disabled-team check). */
   membersByFaction(): Promise<Record<string, number>> {
@@ -68,6 +95,7 @@ export class CerebroSetup {
     const registered = await this.ctx.roles.resolve('registered');
     const { welcome, rules } = this.ctx.config.channels;
     const plan = planChannelVisibility({
+      ...(await this.areaInput()),
       channels: await this.ctx.gateway.fetchChannels(),
       everyoneRoleId: this.ctx.guildId,
       registeredRoleId: registered?.id ?? 'registered-role-not-created-yet',
@@ -81,9 +109,7 @@ export class CerebroSetup {
     const failed = new Set<string>();
     for (const c of plan) {
       if (c.kind !== 'keep_bot_access')
-        lines.push(
-          `• ${this.t(c.kind === 'hide_from_everyone' ? 'channel_hide' : 'channel_show', { channel: c.channelName })}`,
-        );
+        lines.push(`• ${this.t(CHANNEL_LINE[c.kind], { channel: c.channelName })}`);
       // Stop at the first failure in a channel: never deny @everyone after the earlier steps failed.
       if (!apply || !registered || failed.has(c.channelId)) continue;
       try {
