@@ -77,6 +77,8 @@ export function readPacks(packsRoot: string, o: ReadPacksOptions = {}): PackLoad
 
 export const packDirs = (dataDir = 'data/content') => [`${dataDir}/packs`];
 
+export type EnemyOrigin = 'file' | 'staff' | 'pack';
+
 export type EnemyApplyFn = (args: {
   tx: Executor;
   upserts: Array<{ id: string; enemy: Record<string, unknown> }>;
@@ -84,6 +86,8 @@ export type EnemyApplyFn = (args: {
   importedBy: string | null;
   now: string;
 }) => Promise<void>;
+
+export type EnemyOriginLookup = (id: string) => Promise<EnemyOrigin | null>;
 
 export interface PackInstallDeps {
   repo: JarvisRepo;
@@ -93,6 +97,16 @@ export interface PackInstallDeps {
   parseEnemies?: ParseEnemiesFn;
   /** Writes/deactivates enemies inside the same transaction (injected from ULTRON). */
   applyEnemies?: EnemyApplyFn;
+  /** Looks up an enemy id's origin in ULTRON so file/staff ids are refused. */
+  lookupEnemyOrigin?: EnemyOriginLookup;
+}
+
+export interface FolderPackInstallResult {
+  installed: string[];
+  upgraded: string[];
+  unchanged: string[];
+  skipped: string[];
+  errors: string[];
 }
 
 export interface PackApplyResult {
@@ -121,10 +135,28 @@ type Change = 'new' | 'changed' | 'same';
  * Content removed from the pack is deactivated (items unequipped, inventory kept).
  */
 export class PackInstaller {
-  constructor(private readonly deps: PackInstallDeps) {}
+  constructor(private deps: PackInstallDeps) {}
 
   private get t() {
     return this.deps.repo.t;
+  }
+
+  /** Inject or replace ULTRON hooks after construction (runner / tests). */
+  setEnemyHooks(hooks: {
+    parseEnemies?: ParseEnemiesFn;
+    applyEnemies?: EnemyApplyFn;
+    lookupEnemyOrigin?: EnemyOriginLookup;
+  }): void {
+    this.deps = { ...this.deps, ...hooks };
+  }
+
+  canApplyEnemies(): boolean {
+    return Boolean(this.deps.parseEnemies && this.deps.applyEnemies);
+  }
+
+  /** Enemy parser currently configured (for folder load / doctor). */
+  parseEnemies(): ParseEnemiesFn | undefined {
+    return this.deps.parseEnemies;
   }
 
   async apply(
@@ -384,7 +416,22 @@ export class PackInstaller {
         errors.push(`enemies → ${enemy.id}: id pertence a outro pacote`);
         continue;
       }
-      // Without reading ULTRON rows here, owned enemies are rewritten on each newer pack version.
+      if (!mine && this.deps.lookupEnemyOrigin) {
+        const origin = await this.deps.lookupEnemyOrigin(enemy.id);
+        if (origin === 'file') {
+          errors.push(`enemies → ${enemy.id}: id de um inimigo dos arquivos; use outro id`);
+          continue;
+        }
+        if (origin === 'staff') {
+          errors.push(`enemies → ${enemy.id}: id já usado por conteúdo da staff; use outro id`);
+          continue;
+        }
+        if (origin === 'pack') {
+          errors.push(`enemies → ${enemy.id}: id pertence a outro pacote`);
+          continue;
+        }
+      }
+      // Owned enemies are rewritten on each newer pack version (hash compare needs ULTRON).
       enemies.push({ enemy, change: mine ? 'changed' : 'new' });
     }
 
@@ -555,4 +602,67 @@ export function enemiesParserFromYaml(
   parseEnemiesYaml: (text: string, name: string) => { enemies: Array<{ id: string }>; errors: string[] },
 ): ParseEnemiesFn {
   return (list, label) => parseEnemiesYaml(enemiesListYaml(list), label);
+}
+
+type PackLog = {
+  info: (obj: Record<string, unknown>, msg: string) => void;
+  warn: (obj: Record<string, unknown>, msg: string) => void;
+};
+
+/**
+ * Loads `packsRoot` and installs/upgrades each valid pack with `source: 'folder'`.
+ * Packs that need enemies without ULTRON hooks are skipped (all-or-nothing). Same version is a no-op.
+ */
+export async function installFolderPacks(
+  installer: PackInstaller,
+  packsRoot: string,
+  o: ReadPacksOptions & { log?: PackLog } = {},
+): Promise<FolderPackInstallResult> {
+  const { packs, errors: loadErrors } = readPacks(packsRoot, o);
+  const result: FolderPackInstallResult = {
+    installed: [],
+    upgraded: [],
+    unchanged: [],
+    skipped: [],
+    errors: [...loadErrors],
+  };
+  const installed = new Map((await installer.list()).map((p) => [p.id, p]));
+
+  for (const pack of packs) {
+    if (pack.enemies.length && !installer.canApplyEnemies()) {
+      const msg = `pacote "${pack.id}": tem inimigos e ULTRON não está disponível; pacote ignorado`;
+      result.skipped.push(pack.id);
+      result.errors.push(msg);
+      o.log?.warn({ packId: pack.id }, msg);
+      continue;
+    }
+    const prev = installed.get(pack.id);
+    if (prev) {
+      const cmp = compareSemver(pack.version, prev.version);
+      if (cmp === 0) {
+        result.unchanged.push(pack.id);
+        continue;
+      }
+      if (cmp < 0) {
+        const msg = `pacote "${pack.id}": pasta ${pack.version} é mais antiga que a instalada (${prev.version}); ignorado`;
+        result.skipped.push(pack.id);
+        result.errors.push(msg);
+        o.log?.warn({ packId: pack.id, folder: pack.version, installed: prev.version }, msg);
+        continue;
+      }
+    }
+    const res = await installer.applyValidated(pack, { source: 'folder' });
+    if (!res.ok) {
+      result.errors.push(...res.errors.map((e) => `pacote "${pack.id}": ${e}`));
+      o.log?.warn({ packId: pack.id, errors: res.errors }, 'folder pack install failed');
+      continue;
+    }
+    if (res.action === 'install') result.installed.push(pack.id);
+    else result.upgraded.push(pack.id);
+    o.log?.info(
+      { packId: pack.id, version: pack.version, action: res.action },
+      'folder pack applied',
+    );
+  }
+  return result;
 }

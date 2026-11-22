@@ -106,7 +106,7 @@ export const jarvisMissions = table(
     contentHash: text('content_hash').notNull(),
     active: integer('active').notNull().default(1),
     updatedAt: text('updated_at').notNull(),
-    // file (content folders) | staff (imported in Discord; file reloads never touch it)
+    // file | staff | pack (file reloads never touch staff/pack)
     origin: text('origin').notNull().default('file'),
     importedBy: text('imported_by'),
     // Set when staff turned it off: stays off across file reloads until turned on again.

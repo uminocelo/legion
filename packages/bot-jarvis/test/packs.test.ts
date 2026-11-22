@@ -5,7 +5,14 @@ import { isCanonName, type TestContext } from '@legion/core';
 import { eq } from 'drizzle-orm';
 import { afterEach, describe, expect, it } from 'vitest';
 import { stringify } from 'yaml';
-import { enemiesParserFromYaml, PACK_ORIGIN, PackInstaller, readPacks, validatePack } from '../src/index.js';
+import {
+  enemiesParserFromYaml,
+  installFolderPacks,
+  PACK_ORIGIN,
+  PackInstaller,
+  readPacks,
+  validatePack,
+} from '../src/index.js';
 import { addMember, servicesOf, setupJarvis } from './helpers.js';
 
 let t: TestContext | undefined;
@@ -286,6 +293,81 @@ describe('PackInstaller', () => {
     const res = await installer.apply(packDoc({ trivia: [trivia('file-q')] }), { source: 'bot' });
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.errors.join()).toMatch(/arquivos de conteúdo/);
+  });
+
+  it('file sync with the same ids leaves pack-origin rows untouched', async () => {
+    const { s, installer } = await setup();
+    expect((await installer.apply(packDoc(), { source: 'bot' })).ok).toBe(true);
+    const beforeQ = await s.repo.question('pack-q1');
+    const beforeM = await s.repo.mission('pack-m1');
+    const beforeI = await s.items.row('pack-item-1');
+
+    const triviaDir = dir({
+      'overlap.yaml': stringify([
+        {
+          ...trivia('pack-q1'),
+          question: 'Pergunta sobrescrita pelo arquivo?',
+          locale: 'pt-BR',
+        },
+      ]),
+    });
+    const triviaRes = await s.trivia.reload([triviaDir]);
+    expect(triviaRes.errors.some((e) => e.includes('pack-q1'))).toBe(true);
+    expect(await s.repo.question('pack-q1')).toMatchObject({
+      origin: PACK_ORIGIN,
+      question: beforeQ?.question,
+      contentHash: beforeQ?.contentHash,
+      active: 1,
+    });
+
+    const missionRoot = dir({
+      'missions/pack-m1.yaml': stringify({
+        ...mission('pack-m1'),
+        title: { 'pt-BR': 'Missão sobrescrita' },
+      }),
+    });
+    const missionRes = await s.missions.reload([join(missionRoot, 'missions')]);
+    expect(missionRes.errors).toEqual([]);
+    expect(await s.repo.mission('pack-m1')).toMatchObject({
+      origin: PACK_ORIGIN,
+      contentHash: beforeM?.contentHash,
+      active: 1,
+    });
+    expect(JSON.parse((await s.repo.mission('pack-m1'))?.definition ?? '{}').title).toEqual(
+      mission('pack-m1').title,
+    );
+
+    const itemsDir = dir({
+      'overlap.yaml': stringify([item('pack-item-1', { bonus: { atk: 2 }, name: { 'pt-BR': 'Sobrescrito' } })]),
+    });
+    const itemRes = await s.items.reload([itemsDir]);
+    expect(itemRes.errors).toEqual([]);
+    expect(await s.items.row('pack-item-1')).toMatchObject({
+      origin: PACK_ORIGIN,
+      contentHash: beforeI?.contentHash,
+      active: 1,
+    });
+    expect(JSON.parse((await s.items.row('pack-item-1'))?.definition ?? '{}').name).toEqual(
+      item('pack-item-1').name,
+    );
+  });
+
+  it('installFolderPacks skips enemy packs without hooks and installs the rest', async () => {
+    const { s, installer } = await setup();
+    const root = dir({
+      'sem-inimigos/pack.yaml': stringify(packDoc({ id: 'pack-limpo' })),
+      'com-inimigos/pack.yaml': stringify(packDoc({ id: 'pack-com-e', enemies: [enemy('pack-e-x')] })),
+    });
+    const res = await installFolderPacks(installer, root, { categories: CATEGORIES });
+    expect(res.installed).toEqual(['pack-limpo']);
+    expect(res.skipped).toEqual(['pack-com-e']);
+    expect(res.errors.some((e) => e.includes('ULTRON'))).toBe(true);
+    expect(await s.repo.question('pack-q1')).toMatchObject({ origin: PACK_ORIGIN });
+    expect(await installer.list()).toHaveLength(1);
+
+    const again = await installFolderPacks(installer, root, { categories: CATEGORIES });
+    expect(again.unchanged).toEqual(['pack-limpo']);
+    expect(again.installed).toEqual([]);
   });
 });
 

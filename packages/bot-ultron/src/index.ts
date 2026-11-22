@@ -22,6 +22,18 @@ export * from './domain/when.js';
 export { EncounterService, playerCombatantId } from './encounters.js';
 export { ENEMY_IMPORT_MAX_BYTES, EnemyImports, enemyImportIds } from './enemy-imports.js';
 export { AI_PROVIDER, type AiEnv, type FlavorKind, FlavorText, filterFlavor } from './flavor.js';
+export {
+  createPackEnemyApply,
+  createPackEnemyHooks,
+  createPackEnemyOriginLookup,
+  enemiesParserForPacks,
+  PACK_ENEMY_ORIGIN,
+  type PackEnemyApplyFn,
+  type PackEnemyHooks,
+  type PackEnemyOrigin,
+  type PackEnemyOriginLookup,
+  type PackEnemyParseFn,
+} from './pack-enemies.js';
 export { ULTRON_CONTENT_DIR, ULTRON_LOCALES_DIR, ULTRON_MIGRATIONS_DIR } from './paths.js';
 export * from './services.js';
 export { THREAT_CRON, THREAT_JOB, ThreatService } from './threat.js';

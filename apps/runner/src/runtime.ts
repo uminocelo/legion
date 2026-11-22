@@ -87,8 +87,37 @@ export async function buildRuntime(o: BuildRuntimeOptions): Promise<CoreRuntime>
   });
   await runtime.migrateCore();
   await runtime.loadBots(o.bots);
+  await wirePackEnemyHooks(runtime, o.bots, o.log);
   o.log.info({ bots: runtime.enabledBotIds() }, 'bots loaded');
   return runtime;
+}
+
+/** When J.A.R.V.I.S. and ULTRON are both on, inject enemy pack hooks and re-apply folder packs. */
+async function wirePackEnemyHooks(
+  runtime: CoreRuntime,
+  bots: AnyLegionBot[],
+  log: Logger,
+): Promise<void> {
+  const jarvisBot = bots.find((b) => b.id === 'jarvis');
+  const ultronBot = bots.find((b) => b.id === 'ultron');
+  if (!jarvisBot || !ultronBot) return;
+  const { jarvisServices } = await import('@legion/bot-jarvis');
+  const { createPackEnemyHooks, ultronServices } = await import('@legion/bot-ultron');
+  const js = jarvisServices(runtime.contextFor(jarvisBot as never));
+  const us = ultronServices(runtime.contextFor(ultronBot as never));
+  js.packs.setEnemyHooks(createPackEnemyHooks(us.repo));
+  const packs = await js.reloadPacks();
+  if (packs.errors.length) log.warn({ errors: packs.errors }, 'content pack load has errors');
+  log.info(
+    {
+      installed: packs.installed.length,
+      upgraded: packs.upgraded.length,
+      unchanged: packs.unchanged.length,
+      skipped: packs.skipped.length,
+      errors: packs.errors.length,
+    },
+    'content packs loaded with ULTRON enemy hooks',
+  );
 }
 
 /**

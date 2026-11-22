@@ -113,22 +113,32 @@ describe('mission imports', () => {
     expect(reply(t, fake)?.content).toMatch(/Apenas a staff/);
   });
 
-  it('cancel changes nothing; replacing a file mission warns and wins over reloads', async () => {
+  it('cancel changes nothing; refuses file and pack mission ids', async () => {
     t = await setup();
     const s = servicesOf(t);
     const first = await importCmd(t, upload(t, shangChi));
     await click(t, buttons(t, first)[1] ?? '');
     expect(await s.repo.mission('shang-chi-4')).toBeNull();
 
-    const override = shipped.replace('pt-BR: Patrulha noturna', 'pt-BR: Patrulha da staff');
-    const id = await importCmd(t, upload(t, override, 'override.yaml'));
-    expect(reply(t, id)?.embeds?.[0]?.description).toMatch(/Substitui a missão `patrulha-noturna`/);
-    await click(t, buttons(t, id)[0] ?? '');
-    const res = await s.missions.reload();
-    expect(res.errors).toEqual([]);
-    const row = await s.repo.mission('patrulha-noturna');
-    expect(row).toMatchObject({ origin: 'staff', active: 1 });
-    expect(row?.definition).toMatch(/Patrulha da staff/);
+    const fileId = await importCmd(t, upload(t, shipped, 'override.yaml'));
+    expect(reply(t, fileId)?.content).toMatch(/patrulha-noturna: id de uma missão dos arquivos/);
+
+    await t.db.orm.insert(s.repo.t.jarvisMissions).values({
+      id: 'pack-mission',
+      kind: 'daily',
+      minLevel: 1,
+      party: 1,
+      difficulty: 'normal',
+      hasCombat: 0,
+      definition: '{}',
+      contentHash: 'x',
+      active: 1,
+      updatedAt: s.repo.now(),
+      origin: 'pack',
+    });
+    const packYaml = shangChi.replace('id: shang-chi-4', 'id: pack-mission');
+    const packId = await importCmd(t, upload(t, packYaml, 'pack.yaml'));
+    expect(reply(t, packId)?.content).toMatch(/pack-mission: id pertence a um pacote/);
   });
 
   it('lists origins; disable hides a mission at once and survives reloads', async () => {

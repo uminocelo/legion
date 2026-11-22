@@ -150,7 +150,8 @@ export class ItemCatalog {
   async sync(loaded: ItemLoadResult): Promise<ItemSyncResult> {
     const t = this.repo.t.jarvisItems;
     const all = await this.all();
-    const staff = new Set(all.filter((r) => r.origin === 'staff').map((r) => r.id));
+    // Staff and pack rows win over files; reloads never overwrite them.
+    const reserved = new Set(all.filter((r) => r.origin !== 'file').map((r) => r.id));
     const existing = new Map(all.filter((r) => r.origin === 'file').map((r) => [r.id, r]));
     const res: ItemSyncResult = {
       added: 0,
@@ -164,7 +165,7 @@ export class ItemCatalog {
     await this.repo.db.transaction(async (tx) => {
       const turnedOff: string[] = [];
       for (const item of loaded.items) {
-        if (staff.has(item.id)) continue;
+        if (reserved.has(item.id)) continue;
         const prev = existing.get(item.id);
         const active = prev?.disabledBy || item.active === false ? 0 : 1;
         const row = { ...itemColumns(item), active, updatedAt: now };

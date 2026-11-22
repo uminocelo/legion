@@ -44,7 +44,11 @@ export { IMPORT_MAX_BYTES, MissionImports, missionImportIds, parseMissionYaml } 
 export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
 export {
   type EnemyApplyFn,
+  type EnemyOrigin,
+  type EnemyOriginLookup,
   enemiesParserFromYaml,
+  type FolderPackInstallResult,
+  installFolderPacks,
   PACK_ORIGIN,
   type PackApplyOutcome,
   type PackInstallDeps,
@@ -131,6 +135,18 @@ export const jarvis: LegionBot<JarvisConfig> = {
     const items = await s.items.reload();
     if (items.errors.length) ctx.log.warn({ errors: items.errors }, 'item content has errors');
     ctx.log.info({ ...items, errors: items.errors.length }, 'item content loaded');
+    const packs = await s.reloadPacks();
+    if (packs.errors.length) ctx.log.warn({ errors: packs.errors }, 'content pack load has errors');
+    ctx.log.info(
+      {
+        installed: packs.installed.length,
+        upgraded: packs.upgraded.length,
+        unchanged: packs.unchanged.length,
+        skipped: packs.skipped.length,
+        errors: packs.errors.length,
+      },
+      'content packs loaded',
+    );
     ctx.scheduler.define<{ runId: string; version: number }>(MISSION_TIMEOUT_JOB, (p) =>
       s.missions.onTimeout(p),
     );

@@ -149,8 +149,8 @@ export interface MissionSyncResult {
 export async function syncMissions(repo: JarvisRepo, loaded: MissionLoadResult): Promise<MissionSyncResult> {
   const t = repo.t.jarvisMissions;
   const all = await repo.allMissions();
-  // Imported missions win over files with the same id and are never deactivated by a reload.
-  const staff = new Set(all.filter((r) => r.origin === 'staff').map((r) => r.id));
+  // Staff and pack rows win over files with the same id and are never deactivated by a reload.
+  const reserved = new Set(all.filter((r) => r.origin !== 'file').map((r) => r.id));
   const existing = new Map(all.filter((r) => r.origin === 'file').map((r) => [r.id, r]));
   const res: MissionSyncResult = {
     added: 0,
@@ -162,7 +162,7 @@ export async function syncMissions(repo: JarvisRepo, loaded: MissionLoadResult):
   const now = repo.now();
   await repo.db.transaction(async (tx) => {
     for (const m of loaded.missions) {
-      if (staff.has(m.id)) continue;
+      if (reserved.has(m.id)) continue;
       const cols = missionColumns(m);
       const hash = cols.contentHash;
       const row = { ...cols, active: 1, updatedAt: now };
@@ -198,12 +198,12 @@ export async function syncCampaigns(
 ): Promise<void> {
   const t = repo.t.jarvisCampaigns;
   const all = await repo.allCampaigns();
-  const staff = new Set(all.filter((r) => r.origin === 'staff').map((r) => r.id));
+  const reserved = new Set(all.filter((r) => r.origin !== 'file').map((r) => r.id));
   const existing = new Map(all.filter((r) => r.origin === 'file').map((r) => [r.id, r]));
   const now = repo.now();
   await repo.db.transaction(async (tx) => {
     for (const c of campaigns) {
-      if (staff.has(c.id)) continue;
+      if (reserved.has(c.id)) continue;
       const prev = existing.get(c.id);
       const row = { ...campaignColumns(c), active: prev?.disabledBy ? 0 : 1, updatedAt: now };
       if (!prev) await tx.insert(t).values({ id: c.id, ...row });
