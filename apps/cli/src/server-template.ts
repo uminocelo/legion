@@ -40,7 +40,7 @@ export const HIGH_TO_LOW_KEYS = [
 ] as const;
 
 /** Channel suffix. ASCII so Discord's name normalization stays stable. Category names keep accents. */
-const TEAMS = [
+export const TEAMS = [
   { category: '🔵 X-Men', slug: 'x-men', roleKey: 'faction_xmen' },
   { category: '🔴 Irmandade', slug: 'irmandade', roleKey: 'faction_brotherhood' },
   { category: '🟡 Vingadores', slug: 'vingadores', roleKey: 'faction_avengers' },
@@ -50,6 +50,7 @@ const TEAMS = [
   { category: '⚡ Thunderbolts', slug: 'thunderbolts', roleKey: 'faction_thunderbolts' },
   { category: '🌙 Filhos da Meia-Noite', slug: 'filhos-da-meia-noite', roleKey: 'faction_midnight_sons' },
 ] as const;
+export type TemplateTeam = (typeof TEAMS)[number];
 
 const TEAM_CHANNELS = [
   ['quartel', 'text'],
