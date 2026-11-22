@@ -68,6 +68,7 @@
       "no_points": "Nobody has scored yet.",
       "mine": "Your points: {points}",
       "my_faction": "{faction}: {points}",
+      "my_squad": "Squad **{name}**: {points} · rank {rank} of {total}",
       "register_first": "Register your hero to see your points.",
       "started": "War started. It ends {at}.",
       "already_active": "A war is already active.",

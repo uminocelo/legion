@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { CerebroRepo } from '@legion/bot-cerebro';
+import { CerebroRepo, cerebroTables } from '@legion/bot-cerebro';
 import { formatIssues, type TestContext } from '@legion/core';
+import { eq } from 'drizzle-orm';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ultronConfigSchema } from '../src/config.js';
 import { ultronDoctorChecks } from '../src/doctor.js';
@@ -429,6 +430,121 @@ describe('/guerra and /ultron guerra', () => {
     expect(post?.msg.embeds?.[0]?.title).toBe('Faction war ended');
     expect(post?.msg.embeds?.[0]?.description).toContain('Winners:');
     expect(JSON.stringify(post?.msg.embeds)).toContain('economy is off');
+  });
+});
+
+describe('squad war ranking (US-36)', () => {
+  async function seat(
+    tc: TestContext,
+    memberId: string,
+    squad: { id: string; name: string; code: string; faction: string; founder: string },
+  ) {
+    const tables = cerebroTables(tc.db);
+    const now = tc.clock.now().toISOString();
+    const [existing] = await tc.db.orm
+      .select({ id: tables.cerebroSquads.id })
+      .from(tables.cerebroSquads)
+      .where(eq(tables.cerebroSquads.id, squad.id));
+    if (!existing) {
+      await tc.db.orm.insert(tables.cerebroSquads).values({
+        id: squad.id,
+        guildId: tc.gateway.guildId,
+        name: squad.name,
+        nameKey: squad.name.toLowerCase(),
+        baseFaction: squad.faction,
+        founderMemberId: squad.founder,
+        status: 'active',
+        code: squad.code,
+        requestedAt: now,
+        decidedAt: now,
+        decidedBy: 'staff',
+      });
+    }
+    await tc.db.orm
+      .insert(tables.cerebroSquadMembers)
+      .values({ memberId, squadId: squad.id, joinedAt: now, via: 'founder' })
+      .onConflictDoNothing();
+  }
+
+  it('stamps the squad on a score and keeps it after the member leaves', async () => {
+    t = await setupUltron({
+      config: { ...quiet(), squads: { enabled: true } },
+    });
+    await ultron.onReady?.(t.ctxOf(ultron));
+    const s = servicesOf(t);
+    const hero = await addMember(t, '111', 'xmen');
+    await seat(t, hero, {
+      id: 'sq-noite',
+      name: 'Noite',
+      code: 'NOITE1',
+      faction: 'xmen',
+      founder: hero,
+    });
+    await s.war.staffStart();
+    expect(await s.war.score(hero, 10, 'mission', 'war:mission:sq:1')).toBe(true);
+    const [first] = await ledger(t);
+    expect(first).toMatchObject({ squadId: 'sq-noite', faction: 'xmen', points: 10 });
+    await t.db.orm
+      .delete(cerebroTables(t.db).cerebroSquadMembers)
+      .where(eq(cerebroTables(t.db).cerebroSquadMembers.memberId, hero));
+    expect(await s.war.score(hero, 3, 'mission', 'war:mission:sq:2')).toBe(true);
+    const rows = await ledger(t);
+    expect(rows).toHaveLength(2);
+    expect(rows.find((r) => r.sourceKey === 'war:mission:sq:1')?.squadId).toBe('sq-noite');
+    expect(rows.find((r) => r.sourceKey === 'war:mission:sq:2')?.squadId).toBeNull();
+  });
+
+  it('shows squad points and rank on /guerra, and hides the line after leaving', async () => {
+    t = await setupUltron({
+      config: { ...quiet(), squads: { enabled: true } },
+    });
+    await ultron.onReady?.(t.ctxOf(ultron));
+    const s = servicesOf(t);
+    const a = await addMember(t, '111', 'xmen');
+    const b = await addMember(t, '222', 'xmen');
+    await seat(t, a, {
+      id: 'sq-noite',
+      name: 'Noite',
+      code: 'NOITE1',
+      faction: 'xmen',
+      founder: a,
+    });
+    await seat(t, b, {
+      id: 'sq-aurora',
+      name: 'Aurora',
+      code: 'AURORA',
+      faction: 'xmen',
+      founder: b,
+    });
+    await s.war.staffStart();
+    await s.war.score(a, 10, 'mission', 'war:mission:n:1');
+    await s.war.score(b, 3, 'mission', 'war:mission:a:1');
+    const id = await t.interact({ kind: 'command', userId: '111', commandName: 'guerra' });
+    const text = t.gateway.lastReply(id)?.content ?? '';
+    expect(text).toContain('Esquadrão **Noite**: 10 · 1º de 2');
+    expect(text).toContain('Seus pontos: 10');
+    await t.db.orm
+      .delete(cerebroTables(t.db).cerebroSquadMembers)
+      .where(eq(cerebroTables(t.db).cerebroSquadMembers.memberId, a));
+    const after = await t.interact({ kind: 'command', userId: '111', commandName: 'guerra' });
+    expect(t.gateway.lastReply(after)?.content ?? '').not.toMatch(/Esquadrão/);
+    const other = await t.interact({ kind: 'command', userId: '222', commandName: 'guerra' });
+    expect(t.gateway.lastReply(other)?.content ?? '').toContain('Esquadrão **Aurora**: 3 · 2º de 2');
+  });
+
+  it('does not stamp a squad when squads are off', async () => {
+    const s = await boot();
+    const hero = await addMember(t, '111', 'xmen');
+    await seat(t, hero, {
+      id: 'sq-noite',
+      name: 'Noite',
+      code: 'NOITE1',
+      faction: 'xmen',
+      founder: hero,
+    });
+    await s.war.staffStart();
+    await s.war.score(hero, 10, 'mission', 'war:mission:off:1');
+    expect((await ledger(t))[0]?.squadId).toBeNull();
   });
 });
 

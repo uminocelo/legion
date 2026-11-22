@@ -180,6 +180,9 @@ importers:
 
   packages/bot-ultron:
     dependencies:
+      '@legion/bot-cerebro':
+        specifier: workspace:*
+        version: link:../bot-cerebro
       '@legion/core':
         specifier: workspace:*
         version: link:../core

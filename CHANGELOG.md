@@ -4,6 +4,9 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Added
+- Squad war ranking (US-36): when `squads.enabled`, a score stamps the hero's active squad on the war ledger. `/guerra` shows that squad's points and rank inside the team. Leaving the squad keeps past points on it.
+
 ## [1.1.0] - 2026-11-22
 
 Squads: a founder requests a group under a base team, staff approve it, and members join by invite or by code.

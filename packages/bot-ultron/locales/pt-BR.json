@@ -68,6 +68,7 @@
       "no_points": "Ninguém pontuou ainda.",
       "mine": "Seus pontos: {points}",
       "my_faction": "{faction}: {points}",
+      "my_squad": "Esquadrão **{name}**: {points} · {rank}º de {total}",
       "register_first": "Registre seu herói para ver os seus pontos.",
       "started": "Guerra iniciada. Termina {at}.",
       "already_active": "Já existe uma guerra ativa.",

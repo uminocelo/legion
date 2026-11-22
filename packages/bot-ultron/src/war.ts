@@ -1,3 +1,4 @@
+import { activeSquadOf, squadNamesOf } from '@legion/bot-cerebro';
 import type { BotContext, Executor, LegionEvent, Locale, OutgoingMessage } from '@legion/core';
 import { shownFaction } from '@legion/core';
 import { and, eq } from 'drizzle-orm';
@@ -172,6 +173,7 @@ export class WarService {
     if (!member.faction || member.faction === INDEPENDENT_FACTION) return { ok: false, error: 'independent' };
     const war = await this.repo.findStatus('active');
     if (!war) return { ok: false, error: 'no_war' };
+    const squadId = await this.squadIdFor(member.id, member.faction);
     const inserted = await this.repo.addPoint({
       warId: war.id,
       memberId: member.id,
@@ -179,6 +181,7 @@ export class WarService {
       points: o.points,
       reason: 'staff',
       sourceKey: o.sourceKey,
+      squadId,
       createdBy: o.actorId,
       note,
     });
@@ -202,12 +205,21 @@ export class WarService {
       const member = await this.ctx.read.members.getById(memberId);
       if (!member || member.leftAt || member.onboardingStep !== 'registered') return false;
       if (!member.faction || member.faction === INDEPENDENT_FACTION) return false;
+      const squadId = await this.squadIdFor(memberId, member.faction, tx);
       return this.repo.addPoint(
-        { warId: war.id, memberId, faction: member.faction, points, reason, sourceKey },
+        { warId: war.id, memberId, faction: member.faction, points, reason, sourceKey, squadId },
         tx,
       );
     };
     return ex ? run(ex) : this.ctx.db.transaction(run);
+  }
+
+  /** Active squad whose base team is the faction being scored. Null when squads are off. */
+  private async squadIdFor(memberId: string, faction: string, ex?: Executor): Promise<string | null> {
+    if (!this.ctx.config.squads.enabled) return null;
+    const squad = await activeSquadOf(this.ctx.db, memberId, ex ?? this.ctx.db.orm);
+    if (!squad || squad.baseFaction !== faction) return null;
+    return squad.id;
   }
 
   async scoreMission(p: LegionEvent<'mission.completed'>['payload']): Promise<void> {
@@ -259,8 +271,40 @@ export class WarService {
           locale,
         ),
       );
+      const squadLine = await this.squadLine(active.id, member.id, member.faction, locale);
+      if (squadLine) lines.push(squadLine);
     }
     return lines.join('\n');
+  }
+
+  /**
+   * Points and rank for the viewer's current squad inside their team.
+   * Past points stay with the squad after a leave; the leaver no longer sees this line.
+   */
+  private async squadLine(
+    warId: string,
+    memberId: string,
+    faction: string | null,
+    locale: Locale,
+  ): Promise<string | null> {
+    if (!this.ctx.config.squads.enabled || !faction || faction === INDEPENDENT_FACTION) return null;
+    const squad = await activeSquadOf(this.ctx.db, memberId);
+    if (!squad || squad.baseFaction !== faction) return null;
+    const scores = await this.repo.squadScores(warId, faction);
+    if (!scores.some((s) => s.squadId === squad.id)) scores.push({ squadId: squad.id, points: 0 });
+    const names = await squadNamesOf(
+      this.ctx.db,
+      scores.map((s) => s.squadId),
+    );
+    names.set(squad.id, squad.name);
+    scores.sort(
+      (a, b) =>
+        b.points - a.points ||
+        (names.get(a.squadId) ?? a.squadId).localeCompare(names.get(b.squadId) ?? b.squadId),
+    );
+    const rank = scores.findIndex((s) => s.squadId === squad.id) + 1;
+    const points = scores.find((s) => s.squadId === squad.id)?.points ?? 0;
+    return this.t('ultron.war.my_squad', { name: squad.name, points, rank, total: scores.length }, locale);
   }
 
   /**

@@ -173,6 +173,8 @@ export const ultronWarPoints = table(
     memberId: text('member_id').notNull(),
     /** Faction at the moment the points were scored. */
     faction: text('faction').notNull(),
+    /** Active squad at score time (US-36). Stays after the member leaves the squad. */
+    squadId: text('squad_id'),
     points: integer('points').notNull(),
     /** mission | strike | participation | staff */
     reason: text('reason').notNull(),
@@ -185,6 +187,7 @@ export const ultronWarPoints = table(
     uniqueIndex('ultron_war_points_source_uq').on(t.sourceKey),
     index('ultron_war_points_faction_idx').on(t.warId, t.faction),
     index('ultron_war_points_member_idx').on(t.warId, t.memberId),
+    index('ultron_war_points_squad_idx').on(t.warId, t.squadId),
   ],
 );
 

@@ -1,5 +1,5 @@
 import type { Clock, Executor, LegionDb } from '@legion/core';
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
 import { type UltronTables, ultronTables } from './tables.js';
 
 export type WarRow = UltronTables['ultronWars']['$inferSelect'];
@@ -109,6 +109,7 @@ export class WarRepo {
       points: number;
       reason: WarReason;
       sourceKey: string;
+      squadId?: string | null;
       createdBy?: string | null;
       note?: string | null;
     },
@@ -122,12 +123,38 @@ export class WarRepo {
         guildId: this.guildId,
         createdBy: row.createdBy ?? null,
         note: row.note ?? null,
+        squadId: row.squadId ?? null,
         createdAt: this.now(),
-        ...row,
+        warId: row.warId,
+        memberId: row.memberId,
+        faction: row.faction,
+        points: row.points,
+        reason: row.reason,
+        sourceKey: row.sourceKey,
       })
       .onConflictDoNothing()
       .returning({ id: p.id });
     return rows.length > 0;
+  }
+
+  /** Sum of points per squad for one faction. Rows with a null squad_id are skipped. */
+  async squadScores(
+    warId: string,
+    faction: string,
+    ex: Executor = this.db.orm,
+  ): Promise<{ squadId: string; points: number }[]> {
+    const p = this.t.ultronWarPoints;
+    const rows = await ex
+      .select({
+        squadId: p.squadId,
+        points: sql<number>`sum(${p.points})`.mapWith(Number),
+      })
+      .from(p)
+      .where(and(eq(p.warId, warId), eq(p.faction, faction), isNotNull(p.squadId)))
+      .groupBy(p.squadId);
+    return rows
+      .filter((r): r is { squadId: string; points: number } => !!r.squadId)
+      .map((r) => ({ squadId: r.squadId, points: Number(r.points) }));
   }
 
   async scores(warId: string, ex: Executor = this.db.orm): Promise<FactionScore[]> {
