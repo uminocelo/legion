@@ -7,12 +7,18 @@ import {
   type PartialGuildMember,
 } from 'discord.js';
 
-export function intentsFor(bots: AnyLegionBot[]): GatewayIntentBits[] {
-  return [...new Set([GatewayIntentBits.Guilds, ...bots.flatMap((b) => b.intents)])];
+/**
+ * Union of the enabled bots' intents. `GuildInvites` is added only when `squads.enabled`,
+ * because invite create/delete events are how a squad link is guessed.
+ */
+export function intentsFor(bots: AnyLegionBot[], squadsEnabled = false): GatewayIntentBits[] {
+  const bits = [GatewayIntentBits.Guilds, ...bots.flatMap((b) => b.intents)];
+  if (squadsEnabled) bits.push(GatewayIntentBits.GuildInvites);
+  return [...new Set(bits)];
 }
 
-export function createClient(bots: AnyLegionBot[]): Client {
-  return new Client({ intents: intentsFor(bots), allowedMentions: { parse: [] } });
+export function createClient(bots: AnyLegionBot[], squadsEnabled = false): Client {
+  return new Client({ intents: intentsFor(bots, squadsEnabled), allowedMentions: { parse: [] } });
 }
 
 const toMember = (m: DjsMember) => ({
@@ -24,7 +30,7 @@ const toMember = (m: DjsMember) => ({
   displayName: m.displayName,
 });
 
-/** Wires discord.js events into the runtime (interactions and member join/leave). */
+/** Wires discord.js events into the runtime (interactions, member join/leave, invites). */
 export function wireClient(
   client: Client,
   gateway: DiscordJsGateway,
@@ -50,5 +56,17 @@ export function wireClient(
   });
   client.on(Events.GuildMemberRemove, (m: DjsMember | PartialGuildMember) => {
     if (m.guild.id === guildId) runtime()?.guildEvents.memberRemoved(m.id);
+  });
+  client.on(Events.InviteCreate, (invite) => {
+    if (invite.guild?.id !== guildId) return;
+    runtime()?.guildEvents.inviteCreated({
+      code: invite.code,
+      uses: invite.uses ?? 0,
+      channelId: invite.channelId ?? '',
+    });
+  });
+  client.on(Events.InviteDelete, (invite) => {
+    if (invite.guild?.id !== guildId || !invite.code) return;
+    runtime()?.guildEvents.inviteDeleted(invite.code);
   });
 }

@@ -67,7 +67,7 @@ async function main(): Promise<void> {
   // One discord.js client per app; `main` (Cérebro's app) is first.
   const apps = plan.apps.map((a) => {
     const appBots = bots.filter((b) => a.bots.includes(b.id));
-    const client = createClient(appBots);
+    const client = createClient(appBots, config.squads.enabled);
     return { ...a, client, gateway: new DiscordJsGateway(client, env.DISCORD_GUILD_ID) };
   });
   const main = apps.find((a) => a.key === 'main') ?? apps[0];

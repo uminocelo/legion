@@ -152,6 +152,54 @@ export class FakeDiscordGateway implements DiscordGateway {
     return { threadId };
   }
 
+  /** Squad invites: code → uses. Use counts live here, not in the database. */
+  readonly invites = new Map<string, { code: string; uses: number; channelId: string }>();
+  /** Private-thread membership. A thread created here starts empty. */
+  readonly threadMembers = new Map<string, Set<string>>();
+
+  /** Test helper: Discord reports invite uses; the fake does not see joins by itself. */
+  noteInviteUse(code: string): void {
+    const invite = this.invites.get(code);
+    if (!invite) throw new GatewayError('Unknown Invite', 10006);
+    invite.uses += 1;
+  }
+
+  async createInvite(channelId: string, o: { maxAge: 0; maxUses: 0; unique: true; reason?: string }) {
+    this.record('createInvite', [channelId, o]);
+    const code = this.nextId().slice(-8);
+    this.invites.set(code, { code, uses: 0, channelId });
+    return { code, url: `https://discord.gg/${code}` };
+  }
+  async fetchInvites() {
+    this.record('fetchInvites', []);
+    return [...this.invites.values()].map((i) => ({ ...i }));
+  }
+  async deleteInvite(code: string, reason?: string) {
+    this.record('deleteInvite', [code, reason]);
+    if (!this.invites.delete(code)) throw new GatewayError('Unknown Invite', 10006);
+  }
+  async createPrivateThread(channelId: string, name: string) {
+    this.record('createPrivateThread', [channelId, name]);
+    if (this.channels.get(channelId)?.kind === 'thread')
+      throw new GatewayError('Channel cannot host threads', 50024);
+    const threadId = this.nextId();
+    this.addChannel({ id: threadId, name, kind: 'thread', parentId: channelId });
+    this.threadMembers.set(threadId, new Set());
+    return { threadId };
+  }
+  async addThreadMember(threadId: string, userId: string) {
+    this.record('addThreadMember', [threadId, userId]);
+    const members = this.threadMembers.get(threadId);
+    if (!members) throw new GatewayError('Unknown Channel', 10003);
+    members.add(userId);
+  }
+  async removeThreadMember(threadId: string, userId: string) {
+    this.record('removeThreadMember', [threadId, userId]);
+    const members = this.threadMembers.get(threadId);
+    if (!members) throw new GatewayError('Unknown Channel', 10003);
+    members.delete(userId);
+  }
+
   /** Files the fake CDN serves (url → text), and command permission overwrites by command name. */
   readonly cdn = new Map<string, string>();
   commandPermissions: Record<string, CommandPermissionOverwrite[]> = {};
@@ -211,6 +259,16 @@ export class FakeDiscordGateway implements DiscordGateway {
   async createRole(role: RoleCreate): Promise<GuildRole> {
     this.record('createRole', [role]);
     return this.addRole({ name: role.name, color: role.color, position: 1 });
+  }
+  async deleteRole(roleId: string, reason?: string): Promise<void> {
+    this.record('deleteRole', [roleId, reason]);
+    if (!this.roles.delete(roleId)) throw new GatewayError('Unknown Role', 10011);
+    for (const member of this.members.values()) member.roleIds = member.roleIds.filter((id) => id !== roleId);
+  }
+  async deleteChannel(channelId: string, reason?: string): Promise<void> {
+    this.record('deleteChannel', [channelId, reason]);
+    if (!this.channels.delete(channelId)) throw new GatewayError('Unknown Channel', 10003);
+    this.threadMembers.delete(channelId);
   }
   async editRole(roleId: string, patch: Partial<RoleCreate>): Promise<void> {
     this.record('editRole', [roleId, patch]);

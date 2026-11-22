@@ -14,7 +14,7 @@ import { PermissionFlagsBits } from 'discord.js';
 import { CONTENT_TYPES, type ContentType, formatValidate, validateContent } from './content-validate.js';
 import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
 import { isSnowflake, writeInitFiles } from './init.js';
-import { invitePermissions, inviteUrl } from './invite.js';
+import { invitePermissions, inviteUrl, SQUAD_INVITE_PERMISSIONS } from './invite.js';
 import { cliLocale, msg } from './messages.js';
 import { formatPlaytest, parseSince, playtestReport } from './playtest.js';
 import { registerCommands } from './register.js';
@@ -31,7 +31,7 @@ import {
   templateStatus,
 } from './server-template.js';
 
-const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('1.0.0');
+const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('1.1.0');
 const configOpt = ['-c, --config <path>', 'legion.config.yaml', DEFAULT_CONFIG_PATH] as const;
 
 program
@@ -151,7 +151,7 @@ program
   .action(async (o: { config: string }) => {
     loadDotEnv();
     const env = parseEnv(process.env, cliLocale());
-    const { bots } = await loadConfigAndBots(o.config);
+    const { bots, config } = await loadConfigAndBots(o.config);
     const plan = planApps(
       env,
       bots.map((b) => b.id),
@@ -159,9 +159,11 @@ program
     if (plan.errors.length) throw new ConfigError(plan.errors.map((e) => `.env → ${e}`));
     // One link per app, each with only its bots' permissions.
     for (const a of plan.apps) {
+      const squadBits = config.squads.enabled && a.bots.includes('cerebro') ? SQUAD_INVITE_PERMISSIONS : 0n;
       const url = inviteUrl(
         a.clientId,
         bots.filter((b) => a.bots.includes(b.id)),
+        squadBits,
       );
       console.log(plan.apps.length > 1 ? `${a.bots.join(', ')}: ${url}` : url);
     }

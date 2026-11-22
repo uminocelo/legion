@@ -39,6 +39,8 @@ docker compose run --rm legion legion invite-url
 ```
 Abra o link, escolha seu servidor e autorize. Depois, em **Configurações do servidor → Cargos**, arraste o cargo do bot para cima de todos os cargos do Legion (veja o [README](../README.md#️-suba-o-cargo-do-bot)).
 
+Com `squads.enabled: true`, o mesmo link também pede **Gerenciar servidor**, **Criar convite**, **Criar tópicos privados** e **Gerenciar tópicos**. O padrão é desligado, e aí o link não pede nada disso. Ao ligar, autorize de novo (ou marque as permissões no cargo) e reinicie: o bot passa a ouvir os convites do servidor. O `legion doctor` (linha **Esquadrões**) diz o que falta. Veja [SQUADS.md](SQUADS.md).
+
 ## 6. Confira e ligue
 
 ```bash

@@ -23,6 +23,19 @@ export const dashboardConfigSchema = z.object({
 });
 export type DashboardConfig = z.infer<typeof dashboardConfigSchema>;
 
+/**
+ * Squads (US-35). Off by default. `founderRole` is a role key or a snowflake; null means staff only.
+ * `maxSquads` stays under Discord's 250-role cap (one role per squad).
+ */
+export const squadsConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  founderRole: z.string().min(1).nullable().default(null),
+  maxPerFounder: z.number().int().min(1).max(50).default(1),
+  maxMembers: z.number().int().min(1).max(1000).default(50),
+  maxSquads: z.number().int().min(1).max(250).default(20),
+});
+export type SquadsConfig = z.infer<typeof squadsConfigSchema>;
+
 export const channelsSchema = z.object({
   welcome: optionalChannel,
   rules: optionalChannel,
@@ -47,6 +60,7 @@ export const sharedConfigSchema = z
     events: z.object({ replayLookbackDays: z.number().int().positive().default(7) }).prefault({}),
     scheduler: z.object({ pollIntervalMs: z.number().int().min(500).default(5000) }).prefault({}),
     dashboard: dashboardConfigSchema.prefault({}),
+    squads: squadsConfigSchema.prefault({}),
   })
   .catchall(z.unknown())
   .superRefine((cfg, ctx) => {

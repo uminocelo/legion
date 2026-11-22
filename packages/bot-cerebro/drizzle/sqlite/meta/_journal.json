@@ -29,6 +29,13 @@
       "when": 1795023803469,
       "tag": "0003_faction_changes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1795190000000,
+      "tag": "0004_squads",
+      "breakpoints": true
     }
   ]
 }

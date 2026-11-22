@@ -39,6 +39,84 @@
       ]
     },
     {
+      "path": "/cerebro esquadrao aprovar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Aprova um pedido de esquadrão",
+        "en": "Approves a squad request"
+      },
+      "options": [
+        {
+          "name": "esquadrao",
+          "nameEn": "squad",
+          "required": true,
+          "description": {
+            "pt-BR": "Esquadrão",
+            "en": "Squad"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/cerebro esquadrao arquivar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Arquiva um esquadrão ativo",
+        "en": "Archives an active squad"
+      },
+      "options": [
+        {
+          "name": "esquadrao",
+          "nameEn": "squad",
+          "required": true,
+          "description": {
+            "pt-BR": "Esquadrão",
+            "en": "Squad"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo (fica no registro)",
+            "en": "Reason (kept in the record)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/cerebro esquadrao recusar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Recusa um pedido de esquadrão",
+        "en": "Refuses a squad request"
+      },
+      "options": [
+        {
+          "name": "esquadrao",
+          "nameEn": "squad",
+          "required": true,
+          "description": {
+            "pt-BR": "Esquadrão",
+            "en": "Squad"
+          }
+        },
+        {
+          "name": "motivo",
+          "nameEn": "reason",
+          "required": true,
+          "description": {
+            "pt-BR": "Motivo (fica no registro)",
+            "en": "Reason (kept in the record)"
+          }
+        }
+      ]
+    },
+    {
       "path": "/cerebro preferencias",
       "kind": "slash",
       "staff": false,
@@ -86,6 +164,85 @@
         "en": "Registration status (staff)"
       },
       "options": []
+    },
+    {
+      "path": "/esquadrao criar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Pede para fundar um esquadrão",
+        "en": "Asks to found a squad"
+      },
+      "options": [
+        {
+          "name": "nome",
+          "nameEn": "name",
+          "required": true,
+          "description": {
+            "pt-BR": "Nome do esquadrão",
+            "en": "Squad name"
+          }
+        },
+        {
+          "name": "base",
+          "nameEn": "base",
+          "required": true,
+          "description": {
+            "pt-BR": "Equipe base",
+            "en": "Base team"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/esquadrao entrar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Entra num esquadrão com o código",
+        "en": "Joins a squad with the code"
+      },
+      "options": [
+        {
+          "name": "codigo",
+          "nameEn": "code",
+          "required": true,
+          "description": {
+            "pt-BR": "Código de 6 caracteres",
+            "en": "6-character code"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/esquadrao sair",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Sai do seu esquadrão",
+        "en": "Leaves your squad"
+      },
+      "options": []
+    },
+    {
+      "path": "/esquadrao ver",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Mostra um esquadrão",
+        "en": "Shows a squad"
+      },
+      "options": [
+        {
+          "name": "nome",
+          "nameEn": "name",
+          "required": false,
+          "description": {
+            "pt-BR": "Nome (padrão: o seu)",
+            "en": "Name (default: yours)"
+          }
+        }
+      ]
     },
     {
       "path": "/heroi ficha",

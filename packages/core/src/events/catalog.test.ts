@@ -22,6 +22,28 @@ describe('team events (v0.9)', () => {
     expect(
       validatePayload('player.faction_changed', { ...changed, from: null, reason: 'staff' }),
     ).toBeTruthy();
+    expect(
+      validatePayload('player.faction_changed', {
+        ...changed,
+        reason: 'squad',
+        sourceKey: 'squad:s1:m1',
+      }),
+    ).toMatchObject({ reason: 'squad' });
+    const created = {
+      squadId: 's1',
+      name: 'Noite',
+      baseFaction: 'xmen',
+      founderDiscordId: '111',
+    };
+    expect(validatePayload('squad.created', created)).toEqual(created);
+    expect(
+      validatePayload('squad.joined', { squadId: 's1', discordUserId: '222', via: 'code' }),
+    ).toMatchObject({
+      via: 'code',
+    });
+    expect(
+      validatePayload('squad.left', { squadId: 's1', discordUserId: '222', reason: 'team_switch' }),
+    ).toMatchObject({ reason: 'team_switch' });
   });
 
   it('rejects missing fields, unknown codes and reasons, and a bad date', () => {

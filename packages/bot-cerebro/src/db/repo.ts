@@ -192,7 +192,7 @@ export class CerebroRepo {
       memberId: string;
       from: string | null;
       to: string;
-      reason: 'onboarding' | 'arc' | 'staff';
+      reason: 'onboarding' | 'arc' | 'staff' | 'squad';
       sourceKey: string;
       by: string | null;
     },

@@ -36,6 +36,20 @@ export interface DiscordGateway {
   editMessage(channelId: string, messageId: string, msg: OutgoingMessage): Promise<void>;
   sendDm(userId: string, msg: OutgoingMessage): Promise<SentMessage>;
   createThread(channelId: string, name: string, fromMessageId?: string): Promise<{ threadId: string }>;
+  /**
+   * Permanent invite (`maxAge: 0`, `maxUses: 0`). Needs Create Invite on the channel.
+   * Listing invites needs Manage Server.
+   */
+  createInvite(
+    channelId: string,
+    o: { maxAge: 0; maxUses: 0; unique: true; reason?: string },
+  ): Promise<{ code: string; url: string }>;
+  fetchInvites(): Promise<{ code: string; uses: number; channelId: string }[]>;
+  deleteInvite(code: string, reason?: string): Promise<void>;
+  /** Private thread in a text channel. Members are added one by one (threads have no role permissions). */
+  createPrivateThread(channelId: string, name: string): Promise<{ threadId: string }>;
+  addThreadMember(threadId: string, userId: string): Promise<void>;
+  removeThreadMember(threadId: string, userId: string): Promise<void>;
   /** Pins a message (needs Pin Messages in that channel). */
   pinMessage(channelId: string, messageId: string): Promise<void>;
   // interactions
@@ -51,6 +65,9 @@ export interface DiscordGateway {
   fetchRoles(): Promise<GuildRole[]>;
   createRole(role: RoleCreate): Promise<GuildRole>;
   editRole(roleId: string, patch: Partial<RoleCreate>): Promise<void>;
+  deleteRole(roleId: string, reason?: string): Promise<void>;
+  /** Deletes a channel or thread. */
+  deleteChannel(channelId: string, reason?: string): Promise<void>;
   fetchMember(userId: string): Promise<GuildMember | null>;
   addMemberRole(userId: string, roleId: string, reason?: string): Promise<void>;
   removeMemberRole(userId: string, roleId: string, reason?: string): Promise<void>;

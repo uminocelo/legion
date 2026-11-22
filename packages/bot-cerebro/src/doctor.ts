@@ -1,8 +1,24 @@
-import { type BotContext, DEFAULT_FACTION_KEYS, type DoctorCheck, TIKTOK_ROLE_NAME } from '@legion/core';
+import {
+  type BotContext,
+  DEFAULT_FACTION_KEYS,
+  type DoctorCheck,
+  missingGuildPermissions,
+  TIKTOK_ROLE_NAME,
+} from '@legion/core';
+import { and, eq } from 'drizzle-orm';
 import type { CerebroConfig } from './config.js';
+import { cerebroTables } from './db/tables.js';
 import { type AreaProblem, auditFactionAreas } from './domain/channels.js';
 import { allowsOrigin, powerFiles, readPowers } from './powers.js';
 import type { CerebroSetup } from './setup.js';
+
+const SQUAD_PERMS = ['ManageGuild', 'CreateInstantInvite', 'CreatePrivateThreads', 'ManageThreads'] as const;
+const SQUAD_PERM_LABEL: Record<(typeof SQUAD_PERMS)[number], string> = {
+  ManageGuild: 'Gerenciar servidor',
+  CreateInstantInvite: 'Criar convite',
+  CreatePrivateThreads: 'Criar tópicos privados',
+  ManageThreads: 'Gerenciar tópicos',
+};
 
 /**
  * Cérebro's `legion doctor` checks. The Server Members intent and channel send/embed permissions
@@ -187,6 +203,66 @@ export function cerebroDoctorChecks(ctx: BotContext<CerebroConfig>, setup: Cereb
             fix: 'O Legion nunca mexe nele; confira a integração do TikTok',
           };
         return { status: 'ok', message: 'Gerenciado pela integração (o Legion nunca mexe nele)' };
+      },
+    },
+    {
+      id: 'cerebro.squads',
+      title: 'Esquadrões',
+      run: async () => {
+        if (!ctx.config.squads.enabled) return { status: 'ok', message: 'Desligado (squads.enabled: false)' };
+        const lines: string[] = [];
+        let status: 'ok' | 'warn' | 'fail' = 'ok';
+        const bump = (next: 'warn' | 'fail') => {
+          if (status !== 'fail') status = next;
+        };
+        const bot = await ctx.gateway.fetchMember(ctx.gateway.botUserId);
+        const roles = await ctx.gateway.fetchRoles();
+        const missing = bot ? missingGuildPermissions(ctx.guildId, bot, roles, SQUAD_PERMS) : null;
+        if (!bot || missing === null) {
+          bump('warn');
+          lines.push('Não consegui ler as permissões do bot.');
+        } else if (missing.length) {
+          bump('fail');
+          lines.push(
+            `Faltando: ${missing.map((p) => SQUAD_PERM_LABEL[p as (typeof SQUAD_PERMS)[number]] ?? p).join(', ')}`,
+          );
+        }
+        const teams = ctx.config.factions.filter((f) => f.key !== 'independent');
+        const noChannel = teams.filter((f) => !f.squadChannelId);
+        if (!teams.some((f) => f.squadChannelId)) {
+          bump('warn');
+          lines.push('Nenhuma equipe tem squadChannelId.');
+        } else if (noChannel.length) {
+          bump('warn');
+          lines.push(`Sem squadChannelId: ${noChannel.map((f) => f.key).join(', ')}`);
+        }
+        const existing = new Set((await ctx.gateway.fetchChannels()).map((c) => c.id));
+        const unknown = teams.filter((f) => f.squadChannelId && !existing.has(f.squadChannelId));
+        if (unknown.length) {
+          bump('fail');
+          lines.push(`Canal de esquadrão não encontrado: ${unknown.map((f) => f.key).join(', ')}`);
+        }
+        try {
+          const t = cerebroTables(ctx.db).cerebroSquads;
+          const active = await ctx.db.orm
+            .select()
+            .from(t)
+            .where(and(eq(t.guildId, ctx.guildId), eq(t.status, 'active')));
+          const codes = new Set((await ctx.gateway.fetchInvites()).map((i) => i.code));
+          const lost = active.filter((s) => s.inviteCode && !codes.has(s.inviteCode));
+          if (lost.length) {
+            bump('warn');
+            lines.push(`Convite apagado: ${lost.map((s) => s.name).join(', ')}`);
+          }
+        } catch {
+          // The doctor can open the DB before this migration. The db check reports that.
+        }
+        if (status === 'ok') return { status: 'ok', message: 'Permissões e canais de esquadrão ok' };
+        return {
+          status,
+          message: lines.join('\n'),
+          fix: 'Dê ao cargo do bot Gerenciar servidor, Criar convite, Criar tópicos privados e Gerenciar tópicos. Confira squadChannelId em factions (veja docs/SQUADS.md).',
+        };
       },
     },
   ];

@@ -9,6 +9,7 @@ import { CEREBRO_LOCALES_DIR, CEREBRO_MIGRATIONS_DIR } from './paths.js';
 import type { PickMode } from './power-flow.js';
 import { membersReadModel, mutantsReadModel } from './read-models.js';
 import { CerebroSetup } from './setup.js';
+import { squadActions, squadComponents, squadPanels } from './squad-commands.js';
 import { V } from './ui.js';
 
 export * from './config.js';
@@ -81,6 +82,7 @@ export const cerebro: LegionBot<CerebroConfig> = {
       },
       { action: 'pnext', version: V, handle: (i, r, [mode]) => flow.powers.next(i, r, pickMode(mode)) },
       { action: 'pback', version: V, handle: (i, r, [mode]) => flow.powers.back(i, r, pickMode(mode)) },
+      ...squadComponents(ctx, flow),
     ];
   },
 
@@ -91,7 +93,17 @@ export const cerebro: LegionBot<CerebroConfig> = {
     ctx.provide('mutants', mutantsReadModel(flow.repo));
     ctx.guildEvents.onMemberAdd((m) => flow.memberJoined(m));
     ctx.guildEvents.onMemberRemove((userId) => flow.memberLeft(userId));
+    ctx.guildEvents.onInviteCreate(async (invite) => {
+      flow.invites.remember(invite.code, invite.uses);
+    });
+    ctx.guildEvents.onInviteDelete(async (code) => {
+      flow.invites.forget(code);
+    });
     ctx.bus.on('faction.join_requested', FACTION_JOIN, (e) => flow.factionJoin.onRequest(e));
+    ctx.bus.on('player.faction_changed', 'cerebro.squad-team', async (e) => {
+      if (e.payload.reason === 'squad' || e.payload.reason === 'onboarding') return;
+      await flow.squads.onTeamSwitched(e.payload.discordUserId);
+    });
     ctx.bus.on('rank.changed', 'cerebro.rank-roles', (e) =>
       flow.onRankChanged(e.payload.memberId, e.payload.to),
     );
@@ -122,13 +134,50 @@ export const cerebro: LegionBot<CerebroConfig> = {
       descriptionKey: 'cerebro.help.status',
       adminOnly: true,
     });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/esquadrao criar',
+      descriptionKey: 'cerebro.help.esquadrao_criar',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/esquadrao entrar',
+      descriptionKey: 'cerebro.help.esquadrao_entrar',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/esquadrao sair',
+      descriptionKey: 'cerebro.help.esquadrao_sair',
+    });
+    ctx.help.add({ bot: 'cerebro', command: '/esquadrao ver', descriptionKey: 'cerebro.help.esquadrao_ver' });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro esquadrao aprovar',
+      descriptionKey: 'cerebro.help.esquadrao_aprovar',
+      adminOnly: true,
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro esquadrao recusar',
+      descriptionKey: 'cerebro.help.esquadrao_recusar',
+      adminOnly: true,
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro esquadrao arquivar',
+      descriptionKey: 'cerebro.help.esquadrao_arquivar',
+      adminOnly: true,
+    });
+    for (const panel of squadPanels(ctx, flow)) ctx.dashboard.panel(panel);
+    for (const action of squadActions(ctx, flow)) ctx.dashboard.action(action);
   },
 
   onReady: async (ctx) => {
-    const { setup } = services(ctx);
+    const { setup, flow } = services(ctx);
     await setup.syncRoles(true);
     const warn = setup.hierarchyLine(await setup.hierarchyProblems());
     if (warn) ctx.log.warn({ hint: 'Server Settings → Roles: drag the bot role up' }, warn);
+    await flow.invites.baseline();
   },
 
   doctorChecks: (ctx) => cerebroDoctorChecks(ctx, services(ctx).setup),

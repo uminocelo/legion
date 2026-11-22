@@ -50,10 +50,19 @@ export interface DoctorCheck {
   run(): Promise<DoctorResult>;
 }
 
-/** Guild member events from the gateway connection (Cérebro needs joins and leaves). */
+/** A guild invite event. `uses` is the count Discord reports at that moment. */
+export interface GuildInvite {
+  code: string;
+  uses: number;
+  channelId: string;
+}
+
+/** Guild events from the gateway connection (Cérebro needs joins, leaves and invites). */
 export interface GuildEvents {
   onMemberAdd(handler: (member: GuildMember) => Promise<void>): void;
   onMemberRemove(handler: (userId: string) => Promise<void>): void;
+  onInviteCreate(handler: (invite: GuildInvite) => Promise<void>): void;
+  onInviteDelete(handler: (code: string) => Promise<void>): void;
 }
 
 export interface BotContext<C = unknown> {

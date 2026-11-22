@@ -15,7 +15,7 @@ Com uma quinta conta dá para testar o "grupo cheio" no passo 4.
 
 ## Antes (só o dono, uns 15 minutos)
 
-1. Atualize para a versão mais nova: `LEGION_VERSION=1.0.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
+1. Atualize para a versão mais nova: `LEGION_VERSION=1.1.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
 2. No `legion.config.yaml`, para esta sessão:
    ```yaml
    channels:
@@ -190,6 +190,21 @@ Antes: o dono liga o painel ([DASHBOARD.md](DASHBOARD.md)) e confere `legion doc
 | 12.15 | Dono (painel): **Mudar preço** `traje-de-treino` para 5; depois `/jarvis item importar` de qualquer arquivo de itens | `/loja` mostra 5 antes e depois da importação; preço vazio volta ao original | | |
 | 12.16 | Dono (painel): **Agendar evento** Raid para daqui a 10 min, depois **Cancelar evento** | O anúncio sai no canal de eventos; o cancelamento confirma; os dois em `/audit` | | |
 | 12.17 | Abra o painel num celular | Usável na largura do celular (tabelas rolam para o lado) | | |
+
+## 13. Novidades da v1.1: esquadrões (dono e uma conta nova, 25 min)
+
+Antes: no `legion.config.yaml`, `squads.enabled: true`, `founderRole: staff_council`, `channels.welcome` com o canal de boas-vindas, e `squadChannelId` em cada equipe que não seja Independente (o canal `esquadroes-<equipe>` do modelo). `docker compose up -d`. `legion doctor`: a linha **Esquadrões** sem ❌. Se citar uma permissão, rode `legion invite-url` de novo e autorize.
+
+| # | Passo | Deve acontecer | Resultado | Notas |
+|---|---|---|---|---|
+| 13.1 | J1 (cargo de fundador, já herói): `/esquadrao criar nome:Noite Norte base:Vingadores` | "Pedido enviado"; a fila da staff mostra **Noite Norte** com Aprovar e Recusar | | |
+| 13.2 | Staff 2: **Aprovar** (ou `/cerebro esquadrao aprovar`, ou o painel **Esquadrões**) | J1 ganha o cargo, entra no tópico privado e recebe um código de 6 caracteres na resposta e na DM. A linha aparece em `/audit` | | |
+| 13.3 | J1: `/esquadrao ver`. J3 entra pelo link do convite, escolhe origem Mutante e **Entrar** | J3 fica no esquadrão e nos Vingadores, com o cargo do esquadrão | | |
+| 13.4 | Quinta conta, já herói em Independente: `/esquadrao entrar` com o código (ou o botão **Tenho um código** no cadastro) | Entra no mesmo esquadrão e nos Vingadores | | |
+| 13.5 | Staff 2 (herói): `/esquadrao criar` com base Irmandade, e aprova. Uma conta com origem Tecnologia tenta entrar | "**Irmandade** não aceita essa origem". O cadastro segue. A pessoa não entra no esquadrão | | |
+| 13.6 | J2, já em outra equipe: `/esquadrao entrar` com o código de Noite Norte | "Troque de equipe primeiro". A equipe de J2 não muda | | |
+| 13.7 | A quinta conta: `/esquadrao sair`. J1 tenta `/esquadrao sair` | Quem saiu continua nos Vingadores, sem o cargo. J1 ouve que o líder não pode sair | | |
+| 13.8 | Staff 2: `/cerebro esquadrao arquivar` em Noite Norte, com motivo | Esquadrão arquivado. Os membros continuam na equipe. Somem o cargo, o tópico e o convite. A linha está em `/audit` | | |
 
 ## Depois
 

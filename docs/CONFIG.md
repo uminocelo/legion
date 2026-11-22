@@ -27,6 +27,7 @@ Segredos ficam no `.env` (veja o README; tokens por bot em [SELF_HOSTING](SELF_H
 | `dashboard.publicUrl` | `http://localhost:8081` | Endereço do painel no navegador (o Discord volta para `<publicUrl>/callback`) |
 | `dashboard.sessionHours` | `12` | Duração do login (1–720) |
 | `dashboard.auditDays` | `180` | Dias que a auditoria é guardada |
+| `squads.enabled` | `false` | Esquadrões ([SQUADS.md](SQUADS.md)). Junto: `founderRole` (`null`), `maxPerFounder` (`1`), `maxMembers` (`50`), `maxSquads` (`20`) |
 
 IDs são *snowflakes* do Discord; escreva entre aspas (`'123…'`).
 
@@ -87,7 +88,7 @@ factions:
 |---|---|
 | `categoryId` | A categoria da equipe. `/cerebro setup canais:true aplicar:true` deixa a categoria e os canais dela visíveis só para a equipe e a staff; quem troca de equipe troca de área sozinho, porque troca de cargo. O Legion não cria nem apaga canais |
 | `newsChannelId` | Onde o ULTRON posta as notícias da equipe (guerra e eventos) |
-| `squadChannelId` | Canal de texto onde ficam os tópicos dos esquadrões da equipe |
+| `squadChannelId` | Canal de texto dos tópicos de esquadrão. Obrigatório nessa equipe quando `squads.enabled` está ligado |
 
 ```yaml
 factions:
