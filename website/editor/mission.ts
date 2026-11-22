@@ -28,6 +28,7 @@ import {
   toYaml,
   validate,
   validateCampaign,
+  withCampaignDefaults,
   withDefaults,
 } from './mission-model.js';
 import { SHIPPED_MISSIONS } from './missions-shipped.js';
@@ -36,7 +37,7 @@ import { copy, download, field, h, outputPanel, readFile, showResult, store } fr
 const saved = store<MissionDraft>('legion.editor.mission');
 let m: MissionDraft = withDefaults(saved.load() ?? emptyMission());
 const savedCampaign = store<CampaignDraft>('legion.editor.campaign');
-let c: CampaignDraft = savedCampaign.load() ?? emptyCampaign();
+let c: CampaignDraft = withCampaignDefaults(savedCampaign.load() ?? emptyCampaign());
 
 const KIND_LABEL: Record<string, string> = { daily: 'Diária', weekly: 'Semanal', story: 'História' };
 const CAMPAIGN_LABEL: Record<string, string> = {
@@ -214,6 +215,15 @@ function missionCampaignFields(): HTMLElement {
           { maxlength: 40 },
         ),
         'Só no capítulo final de uma campanha de recrutamento',
+      ),
+      field(
+        'Esquadrão',
+        textInput(
+          () => m.squad,
+          (v) => (m.squad = v),
+          { maxlength: 32 },
+        ),
+        'Nome ou código; vazio = global. Fundadores enviam com /esquadrao conteudo enviar',
       ),
     ),
     field('Origens aceitas (nenhuma marcada = todas)', origins, undefined, true),
@@ -525,7 +535,7 @@ function drawCampaign() {
     fileIn.value = '';
     if (!f) return;
     try {
-      c = campaignFromYaml(await readFile(f));
+      c = withCampaignDefaults(campaignFromYaml(await readFile(f)));
       drawCampaign();
       refreshCampaign();
     } catch (err) {
@@ -548,6 +558,11 @@ function drawCampaign() {
     c.faction = faction.value;
     refreshCampaign();
   });
+  const squad = h('input', { type: 'text', value: c.squad, maxlength: 32 });
+  squad.addEventListener('input', () => {
+    c.squad = squad.value;
+    refreshCampaign();
+  });
   campaignPanel.replaceChildren(
     h(
       'article',
@@ -568,6 +583,11 @@ function drawCampaign() {
         field('Id da campanha', id),
         field('Tipo', kind),
         c.kind === 'recruitment' ? field('Equipe que recruta', faction, 'Chave, como avengers') : null,
+        field(
+          'Esquadrão',
+          squad,
+          'Nome ou código; vazio = global. Fundadores enviam com /esquadrao conteudo enviar',
+        ),
       ),
       h('ol', { class: 'chapters' }, ...chapters),
       addThis,

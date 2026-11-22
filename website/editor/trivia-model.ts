@@ -25,6 +25,8 @@ export interface TriviaDraft {
   answer: number;
   explanation: string;
   source: string;
+  /** Optional squad name or code; empty = omit from YAML (global content). */
+  squad: string;
 }
 
 /** Next free id like `meu-servidor-0003`. */
@@ -46,12 +48,14 @@ export const emptyQuestion = (drafts: readonly TriviaDraft[]): TriviaDraft => ({
   answer: 0,
   explanation: '',
   source: '',
+  squad: '',
 });
 
 /** The file items: empty alternatives dropped, the right answer re-indexed (-1 when it was empty). */
 export function toItems(drafts: readonly TriviaDraft[]) {
   return drafts.map((d) => {
     const kept = d.choices.map((c, i) => ({ c: c.trim(), i })).filter((x) => x.c !== '');
+    const squad = (d.squad ?? '').trim();
     return {
       id: d.id.trim(),
       locale: d.locale,
@@ -62,6 +66,7 @@ export function toItems(drafts: readonly TriviaDraft[]) {
       answer: kept.findIndex((x) => x.i === d.answer),
       explanation: d.explanation.trim(),
       source: d.source.trim(),
+      ...(squad ? { squad } : {}),
     };
   });
 }
@@ -97,6 +102,7 @@ export function fromYaml(text: string): TriviaDraft[] {
       answer: typeof x.answer === 'number' ? x.answer : 0,
       explanation: str(x.explanation),
       source: str(x.source),
+      squad: str(x.squad),
     };
   });
 }

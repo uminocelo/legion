@@ -166,6 +166,26 @@
       "options": []
     },
     {
+      "path": "/esquadrao conteudo enviar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Envia um YAML de missão, campanha ou trivia",
+        "en": "Submit a mission, campaign, or trivia YAML"
+      },
+      "options": [
+        {
+          "name": "arquivo",
+          "nameEn": "file",
+          "required": true,
+          "description": {
+            "pt-BR": "Arquivo .yaml / .yml",
+            "en": ".yaml / .yml file"
+          }
+        }
+      ]
+    },
+    {
       "path": "/esquadrao criar",
       "kind": "slash",
       "staff": false,

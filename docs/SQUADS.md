@@ -60,7 +60,7 @@ Um herói, um esquadrão. Sair com `/esquadrao sair` tira o cargo e o tópico, e
 
 ## Conteúdo do esquadrão
 
-O líder de um esquadrão ativo pode enviar YAML de missão, campanha ou trivia com `/esquadrao conteudo enviar`. O arquivo precisa declarar `squad` com o nome ou o código desse esquadrão. O pedido vai para `channels.modQueue`; a staff aprova ou recusa. Conteúdo aprovado fica com `squad_id` e só aparece para quem tem assento ativo nesse esquadrão (com `squads.enabled`). Missões e campanhas sem `squad` continuam globais. Se o J.A.R.V.I.S. estiver desligado, o comando avisa e nada é enviado.
+O líder de um esquadrão ativo pode enviar YAML de missão, campanha ou trivia com `/esquadrao conteudo enviar`. O arquivo precisa declarar `squad` com o nome ou o código desse esquadrão (campo opcional nos editores do site). O pedido vai para `channels.modQueue`; a staff aprova ou recusa. Conteúdo aprovado fica com `squad_id` e só aparece para quem tem assento ativo nesse esquadrão (com `squads.enabled`). Missões e campanhas sem `squad` continuam globais. Se o J.A.R.V.I.S. estiver desligado, o comando avisa e nada é enviado.
 
 ## Equipe e saída do servidor
 

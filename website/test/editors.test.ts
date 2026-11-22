@@ -95,6 +95,18 @@ describe('trivia editor', () => {
     expect(trivia.validate(trivia.toYaml([]), ['geral'])).toEqual(['perguntas.yaml: nenhuma pergunta']);
   });
 
+  it('writes optional squad and omits it when empty', () => {
+    const d = question();
+    expect(trivia.toYaml([d])).not.toMatch(/\bsquad\b/);
+    d.squad = '  Alfa  ';
+    const yaml = trivia.toYaml([d]);
+    expect(yaml).toMatch(/^ {2}squad: Alfa$/m);
+    expect(trivia.fromYaml(yaml)[0]).toMatchObject({ squad: 'Alfa' });
+    expect(trivia.validate(yaml, trivia.DEFAULT_CATEGORIES)).toEqual([]);
+    d.squad = 'x'.repeat(33);
+    expect(trivia.validate(trivia.toYaml([d]), trivia.DEFAULT_CATEGORIES).join('\n')).toMatch(/squad/);
+  });
+
   it('opens the shipped questions and saves them back unchanged in meaning', () => {
     const text = readFileSync(join(ROOT, 'packages/bot-jarvis/content/trivia/pt-BR.yaml'), 'utf8');
     const drafts = trivia.fromYaml(text);
@@ -378,9 +390,34 @@ describe('mission editor: campaigns', () => {
     });
     expect(missions.fromYaml(missions.toYaml(m))).toEqual(m);
     // Empty fields are not written.
-    expect(missions.toYaml(missions.emptyMission())).not.toMatch(/campaign|requires|reward/);
+    expect(missions.toYaml(missions.emptyMission())).not.toMatch(/campaign|requires|reward|\bsquad\b/);
     m.requires.origins = ['alienigena'];
     expect(missions.validate(m).join('\n')).toMatch(/requires\.origins\.0/);
+  });
+
+  it('writes optional squad on mission and campaign YAML, and omits it when empty', () => {
+    const m = chapterDraft('solo-1', 1, '');
+    m.campaign = { id: '', chapter: 1 };
+    expect(missions.toYaml(m)).not.toMatch(/\bsquad\b/);
+    m.squad = '  Noite Norte  ';
+    const text = missions.toYaml(m);
+    expect(text).toMatch(/^squad: Noite Norte$/m);
+    expect(missions.fromYaml(text)).toMatchObject({ squad: 'Noite Norte' });
+    expect(missions.validate(m)).toEqual([]);
+    m.squad = 'x'.repeat(33);
+    expect(missions.validate(m).join('\n')).toMatch(/squad/);
+
+    const c = missions.emptyCampaign();
+    c.id = 'noite-longa';
+    c.title = { pt: 'Noite longa', en: '' };
+    c.summary = { pt: 'Resumo.', en: '' };
+    missions.addChapter(c, chapterDraft('noite-1', 1));
+    expect(missions.campaignToYaml(c)).not.toMatch(/\bsquad\b/);
+    c.squad = 'ABC123';
+    const camp = missions.campaignToYaml(c);
+    expect(camp).toMatch(/campaign:[\s\S]*\bsquad: ABC123\b/);
+    expect(missions.campaignFromYaml(camp)).toMatchObject({ squad: 'ABC123' });
+    expect(missions.validateCampaign(c)).toEqual([]);
   });
 
   it('writes optional credits and reads them back; the bot accepts them (v0.10)', () => {
@@ -412,9 +449,14 @@ describe('mission editor: campaigns', () => {
     delete old.campaign;
     delete old.requires;
     delete old.joinFaction;
+    delete old.squad;
     const m = missions.withDefaults(old as missions.MissionDraft);
     expect(m.requires).toEqual({ missions: '', level: 0, origins: [], factions: '' });
+    expect(m.squad).toBe('');
     expect(missions.validate({ ...m, title: { pt: 'x', en: '' } }).join()).not.toMatch(/campaign/);
+    const cold = missions.emptyCampaign() as Partial<missions.CampaignDraft>;
+    delete cold.squad;
+    expect(missions.withCampaignDefaults(cold as missions.CampaignDraft).squad).toBe('');
   });
 
   it('builds a campaign file that /jarvis campanha importar accepts, and opens it again', async () => {
