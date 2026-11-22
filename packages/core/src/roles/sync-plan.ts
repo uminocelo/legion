@@ -22,14 +22,15 @@ export function isProtectedRoleConfig(r: Pick<RoleConfig, 'key' | 'name' | 'mana
  */
 export function planRoleSync(existing: readonly GuildRole[], config: readonly RoleConfig[]): RoleSyncPlan {
   const byName = new Map(existing.map((r) => [r.name, r]));
-  const plan: RoleSyncPlan = { create: [], updateColor: [], rename: [] };
+  const rename: NonNullable<RoleSyncPlan['rename']> = [];
+  const plan: RoleSyncPlan = { create: [], updateColor: [], rename };
   for (const role of config) {
     if (isProtectedRoleConfig(role)) continue;
     let found = byName.get(role.name);
     if (!found) {
       const old = (role.renamedFrom ?? []).map((n) => byName.get(n)).find((r) => r && !r.managed);
       if (old) {
-        plan.rename.push({ roleId: old.id, key: role.key, from: old.name, to: role.name });
+        rename.push({ roleId: old.id, key: role.key, from: old.name, to: role.name });
         found = old;
       }
     }
