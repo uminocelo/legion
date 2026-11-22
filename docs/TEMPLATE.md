@@ -13,6 +13,10 @@ Um **modelo de servidor do Discord** cria as categorias, os canais, os cargos e 
 
 O modelo copia estrutura, cargos e permissões. Mensagens e bots não vêm junto.
 
+## Refazer o modelo (mantenedores)
+
+`pnpm legion template` mostra o plano. Com o Cérebro num servidor vazio que você criou, `pnpm legion template --guild <id>` diz o que vai fazer e `--guild <id> --create` monta tudo e publica o modelo. Ele recusa um servidor com cargos ou canais fora desta lista e só apaga os canais padrão do Discord. O cargo do Cérebro precisa ficar no topo da lista. É uma ferramenta para montar o modelo: os bots em funcionamento continuam sem criar canais.
+
 ## Categorias e canais
 
 Tipo: 💬 texto · 📋 fórum · 🔊 voz · 📢 anúncios.
@@ -90,7 +94,7 @@ Na categoria, a permissão **Ver canal** fica: `@everyone` ❌, o cargo da equip
 
 ## Comunidade do Discord (depois de criar)
 
-O modelo pode não guardar as configurações de Comunidade, então ligue à mão em **Configurações do servidor → Ativar Comunidade**:
+O modelo não guarda as configurações de Comunidade. Só o **dono do servidor** (ou um bot com **Administrador**) consegue ligar a Comunidade, então ligue à mão em **Configurações do servidor → Ativar Comunidade**:
 
 | Configuração | Use o canal |
 |---|---|
