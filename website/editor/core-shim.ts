@@ -12,6 +12,7 @@ export const isCanonName = (text: string): boolean => filter.isCanon(text);
 export const LOCALES = ['pt-BR', 'en'] as const;
 export type Locale = (typeof LOCALES)[number];
 export * from '../../packages/core/src/game/item.js';
+export * from '../../packages/core/src/game/pack.js';
 export {
   DEFAULT_STAT_CAP,
   ITEM_SLOTS,

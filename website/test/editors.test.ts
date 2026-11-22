@@ -10,6 +10,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import * as enemies from '../editor/enemy-model.js';
 import * as items from '../editor/item-model.js';
 import * as missions from '../editor/mission-model.js';
+import * as packs from '../editor/pack-model.js';
 import { store } from '../editor/shared.js';
 import * as trivia from '../editor/trivia-model.js';
 // @ts-expect-error plain ESM script without types
@@ -546,12 +547,79 @@ describe('drafts and bundle', () => {
     try {
       await bundleEditors(out);
       const files = readdirSync(join(out, 'assets/js'));
-      expect(files).toEqual(expect.arrayContaining(['trivia.js', 'enemy.js', 'mission.js', 'item.js']));
+      expect(files).toEqual(
+        expect.arrayContaining(['trivia.js', 'enemy.js', 'mission.js', 'item.js', 'pack.js']),
+      );
       const all = files.map((f) => readFileSync(join(out, 'assets/js', f), 'utf8')).join('\n');
       expect(all).not.toMatch(/from\s*["']node:/);
       expect(all.toLowerCase()).toContain('magneto');
     } finally {
       rmSync(out, { recursive: true, force: true });
     }
+  });
+});
+
+describe('pack editor', () => {
+  const triviaYaml = () => {
+    const q = question();
+    return trivia.toYaml([q]).replace(/^#.*\n/, '');
+  };
+
+  const itemYaml = () => {
+    const a = {
+      ...items.emptyItem([]),
+      id: 'luva-do-pack',
+      namePt: 'Luva do pack',
+      nameEn: 'Pack glove',
+    };
+    return items.toYaml([a]).replace(/^#.*\n/, '');
+  };
+
+  it('builds a valid pack.yaml that /jarvis pack importar accepts and publishes', async () => {
+    const draft = packs.emptyPack();
+    draft.id = 'pack-site';
+    draft.namePt = 'Pacote do site';
+    draft.author = 'Staff do site';
+    draft.triviaYaml = triviaYaml();
+    draft.itemsYaml = itemYaml();
+    expect(packs.validate(draft)).toEqual([]);
+    const yaml = packs.toYaml(draft);
+    expect(yaml).toMatch(/^id: pack-site$/m);
+    expect(packs.fromYaml(yaml)).toMatchObject({
+      id: 'pack-site',
+      namePt: 'Pacote do site',
+      author: 'Staff do site',
+    });
+
+    t = await createTestContext({ bots: [cerebro, jarvis] });
+    expect(await importAndPublish(t, 'jarvis', 'pack importar', yaml, packs.PACK_FILE)).toMatch(
+      /Pacote `pack-site` v1\.0\.0 instalado/,
+    );
+    const s = jarvisServices(t.ctxOf(jarvis));
+    expect(await s.packs.list()).toHaveLength(1);
+    expect(await s.items.row('luva-do-pack')).toMatchObject({ origin: 'pack', active: 1 });
+  });
+
+  it('reports bad metadata and empty packs like the bot', () => {
+    const empty = packs.emptyPack();
+    empty.author = '';
+    expect(packs.validate(empty).join('\n')).toMatch(/author|pacote vazio/);
+    empty.author = 'Staff';
+    expect(packs.validate(empty).join('\n')).toContain('pacote vazio');
+
+    empty.id = 'BAD';
+    empty.itemsYaml = itemYaml();
+    expect(packs.validate(empty).join('\n')).toMatch(/id/);
+
+    empty.id = 'ok-pack';
+    empty.version = 'nope';
+    expect(packs.validate(empty).join('\n')).toMatch(/version|semver/);
+
+    empty.version = '1.0.0';
+    empty.itemsYaml = '- id: [quebrado';
+    expect(packs.validate(empty).join('\n')).toMatch(/items.*YAML inválido/);
+
+    empty.itemsYaml = 'id: not-a-list';
+    expect(packs.validate(empty).join('\n')).toMatch(/items: deve ser uma lista/);
   });
 });

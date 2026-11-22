@@ -172,6 +172,12 @@
         "item_exportar": "Baixa os itens da staff em YAML",
         "item_desativar": "Tira um item de jogo (desequipa de quem usa)",
         "item_ativar": "Volta um item desativado",
+        "pack": "Pacotes de conteúdo (trivia, missões, inimigos, itens)",
+        "pack_importar": "Importa um pacote .yaml com prévia",
+        "pack_arquivo": "O arquivo pack.yaml (editor do site ou pasta data/content/packs)",
+        "pack_lista": "Lista os pacotes instalados",
+        "pack_remover": "Remove um pacote e desativa o conteúdo dele",
+        "pack_id": "Id do pacote (ex.: meu-pack)",
         "temporada": "Temporadas: iniciar ou encerrar",
         "temporada_iniciar": "Começa a temporada agora",
         "temporada_encerrar": "Encerra a temporada ativa e agenda a próxima"
@@ -450,6 +456,23 @@
       "already_off": "**{item}** já está desativado.",
       "already_on": "**{item}** já está ativo.",
       "off_in_file": "**{item}** está com `active: false` no arquivo. Mude o arquivo para ativar."
+    },
+    "pack_imports": {
+      "meta": "`{id}` · **{name}** · v{version} · {author}",
+      "upgrade_from": "⬆️ Atualiza a versão instalada {version}.",
+      "type_trivia": "Trivia: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "type_missions": "Missões: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "type_enemies": "Inimigos: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "type_items": "Itens: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "deactivate": "⚠️ Sai do pacote e será desativado: trivia {trivia}, missões {missions}, inimigos {enemies}, itens {items}.",
+      "action_install": "instalado",
+      "action_upgrade": "atualizado",
+      "published": "✅ Pacote `{id}` v{version} {action}: {added} novo(s), {changed} alterado(s), {same} igual(is). Desativados: {deactivated}. Desequipados: {unequipped}.",
+      "list_empty": "Nenhum pacote instalado.",
+      "list_title": "Pacotes instalados ({total}):",
+      "list_line": "• `{id}` · {name} · v{version} · {author}",
+      "need_id": "Informe o id do pacote.",
+      "removed": "🗑️ Pacote `{id}` removido. O conteúdo dele foi desativado."
     },
     "dashboard": {
       "economy": "Economia",

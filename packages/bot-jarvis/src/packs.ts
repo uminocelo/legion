@@ -130,6 +130,23 @@ export type PackApplyOutcome = PackApplyResult | PackApplyFailure;
 
 type Change = 'new' | 'changed' | 'same';
 
+export type PackTypeCounts = { new: number; changed: number; same: number };
+
+export type PackPreviewOk = {
+  ok: true;
+  pack: ValidatedPack;
+  existingVersion: string | null;
+  byType: {
+    trivia: PackTypeCounts;
+    missions: PackTypeCounts;
+    enemies: PackTypeCounts;
+    items: PackTypeCounts;
+  };
+  deactivate: { trivia: number; missions: number; enemies: number; items: number };
+};
+
+export type PackPreviewOutcome = PackPreviewOk | PackApplyFailure;
+
 /**
  * Installs or upgrades a validated pack all-or-nothing. Newer semver only; older/same refused.
  * Content removed from the pack is deactivated (items unequipped, inventory kept).
@@ -159,17 +176,81 @@ export class PackInstaller {
     return this.deps.parseEnemies;
   }
 
-  async apply(
-    raw: unknown,
-    opts: { source: PackSource; importedBy?: string | null; label?: string } = { source: 'bot' },
-  ): Promise<PackApplyOutcome> {
-    const validated = validatePack(raw, {
+  private validateOpts(label: string) {
+    return {
       isCanon: this.deps.isCanon ?? isCanonName,
       categories: this.deps.categories,
       locale: this.deps.locale,
       parseEnemies: this.deps.parseEnemies,
-      label: opts.label ?? 'pack.yaml',
-    });
+      label,
+    };
+  }
+
+  private typeCounts(rows: { change: Change }[]): PackTypeCounts {
+    return {
+      new: rows.filter((x) => x.change === 'new').length,
+      changed: rows.filter((x) => x.change === 'changed').length,
+      same: rows.filter((x) => x.change === 'same').length,
+    };
+  }
+
+  /**
+   * Validates pack YAML and diffs against installed content for the Discord preview.
+   * Version conflicts and id ownership errors are returned as `errors` (nothing staged).
+   */
+  async previewYaml(text: string, label = 'pack.yaml'): Promise<PackPreviewOutcome> {
+    const validated = validatePackYaml(text, this.validateOpts(label));
+    if (validated.errors.length) return { ok: false, errors: validated.errors };
+    const pack = validated.pack;
+    if (pack.enemies.length && !this.deps.parseEnemies)
+      return {
+        ok: false,
+        errors: ['enemies: validação de inimigos indisponível (ULTRON não carregado)'],
+      };
+
+    const existing = await this.packRow(pack.id);
+    if (existing) {
+      const cmp = compareSemver(pack.version, existing.version);
+      if (cmp < 0)
+        return {
+          ok: false,
+          errors: [
+            `pacote "${pack.id}": versão ${pack.version} é mais antiga que a instalada (${existing.version})`,
+          ],
+        };
+      if (cmp === 0)
+        return {
+          ok: false,
+          errors: [`pacote "${pack.id}": versão ${pack.version} já está instalada`],
+        };
+    }
+
+    const plan = await this.plan(pack);
+    if (plan.errors.length) return { ok: false, errors: plan.errors };
+    return {
+      ok: true,
+      pack,
+      existingVersion: existing?.version ?? null,
+      byType: {
+        trivia: this.typeCounts(plan.trivia),
+        missions: this.typeCounts(plan.missions),
+        enemies: this.typeCounts(plan.enemies),
+        items: this.typeCounts(plan.items),
+      },
+      deactivate: {
+        trivia: plan.deactivate.trivia.length,
+        missions: plan.deactivate.missions.length,
+        enemies: plan.deactivate.enemies.length,
+        items: plan.deactivate.items.length,
+      },
+    };
+  }
+
+  async apply(
+    raw: unknown,
+    opts: { source: PackSource; importedBy?: string | null; label?: string } = { source: 'bot' },
+  ): Promise<PackApplyOutcome> {
+    const validated = validatePack(raw, this.validateOpts(opts.label ?? 'pack.yaml'));
     if (validated.errors.length) return { ok: false, errors: validated.errors };
     return this.applyValidated(validated.pack, opts);
   }

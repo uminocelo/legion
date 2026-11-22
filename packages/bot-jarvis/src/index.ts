@@ -42,6 +42,7 @@ export { JarvisLeaderboard } from './leaderboard.js';
 export * from './mission-content.js';
 export { IMPORT_MAX_BYTES, MissionImports, missionImportIds, parseMissionYaml } from './mission-imports.js';
 export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
+export { PackImports, packImportIds } from './pack-imports.js';
 export {
   type EnemyApplyFn,
   type EnemyOrigin,
@@ -54,7 +55,10 @@ export {
   type PackInstallDeps,
   PackInstaller,
   type PackLoadResult,
+  type PackPreviewOk,
+  type PackPreviewOutcome,
   type PackSource,
+  type PackTypeCounts,
   packDirs,
   readPacks,
 } from './packs.js';
@@ -111,6 +115,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
       { action: 'campaign-import', version: V, handle: (i, r, args) => s.campaigns.decide(i, r, args) },
       { action: 'trivia-import', version: V, handle: (i, r, args) => s.triviaImports.decide(i, r, args) },
       { action: 'item-import', version: V, handle: (i, r, args) => s.itemImports.decide(i, r, args) },
+      { action: 'pack-import', version: V, handle: (i, r, args) => s.packImports.decide(i, r, args) },
       { action: 'inv', version: V, handle: (i, r, args) => s.inventoryUi.component(i, r, args) },
       { action: 'shop', version: V, handle: (i, r, args) => s.shop.component(i, r, args) },
       {

@@ -593,6 +593,56 @@
       "options": []
     },
     {
+      "path": "/jarvis pack importar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Importa um pacote .yaml com prévia",
+        "en": "Import a pack .yaml with a preview"
+      },
+      "options": [
+        {
+          "name": "arquivo",
+          "nameEn": "file",
+          "required": true,
+          "description": {
+            "pt-BR": "O arquivo pack.yaml (editor do site ou pasta data/content/packs)",
+            "en": "The pack.yaml file (website editor or data/content/packs)"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/jarvis pack lista",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Lista os pacotes instalados",
+        "en": "List installed packs"
+      },
+      "options": []
+    },
+    {
+      "path": "/jarvis pack remover",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Remove um pacote e desativa o conteúdo dele",
+        "en": "Remove a pack and deactivate its content"
+      },
+      "options": [
+        {
+          "name": "id",
+          "nameEn": "id",
+          "required": true,
+          "description": {
+            "pt-BR": "Id do pacote (ex.: meu-pack)",
+            "en": "Pack id (e.g. my-pack)"
+          }
+        }
+      ]
+    },
+    {
       "path": "/jarvis recalcular",
       "kind": "slash",
       "staff": true,

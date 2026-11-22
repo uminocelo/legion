@@ -9,6 +9,7 @@ import { InventoryService, ItemCatalog } from './items.js';
 import { JarvisLeaderboard } from './leaderboard.js';
 import { MissionImports } from './mission-imports.js';
 import { JarvisMissions } from './missions.js';
+import { PackImports } from './pack-imports.js';
 import {
   type FolderPackInstallResult,
   installFolderPacks,
@@ -34,6 +35,7 @@ export interface JarvisServices {
   imports: MissionImports;
   triviaImports: TriviaImports;
   itemImports: ItemImports;
+  packImports: PackImports;
   campaigns: JarvisCampaigns;
   items: ItemCatalog;
   inventory: InventoryService;
@@ -75,6 +77,7 @@ export function jarvisServices(ctx: BotContext<JarvisConfig>): JarvisServices {
     partial.imports = new MissionImports(ctx, partial);
     partial.triviaImports = new TriviaImports(ctx, partial);
     partial.itemImports = new ItemImports(ctx, partial);
+    partial.packImports = new PackImports(ctx, partial);
     partial.campaigns = new JarvisCampaigns(ctx, partial);
     partial.items = new ItemCatalog(repo);
     partial.inventory = new InventoryService(ctx, repo, partial.items, partial.wallet);
