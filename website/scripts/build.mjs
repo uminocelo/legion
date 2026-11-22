@@ -13,6 +13,27 @@ const REPO = 'https://github.com/uminocelo/legion/blob/main/';
 
 /** Pages: output file, source fragment, title, description, nav key, accent color, bot id. */
 export const PAGES = [
+  ...[
+    [
+      'montar',
+      'Monte o servidor',
+      'Do servidor vazio ao primeiro herói: o modelo do Discord, a configuração, cargos, canais e o doctor.',
+    ],
+    [
+      'primeira-semana',
+      'A primeira semana',
+      'Guia, primeiras missões, equipes, o primeiro evento e a primeira guerra.',
+    ],
+    ['comunidade', 'Cuide da comunidade', 'Áreas das equipes, notícias, a rotina da staff e o painel.'],
+    ['conteudo', 'Crie conteúdo', 'Editores de missões, trivia, inimigos e itens, e as skills para IA.'],
+  ].map(([id, title, description]) => ({
+    out: `playbook-${id}.html`,
+    src: `playbook/${id}.html`,
+    title: `${title} · Playbook · Legion`,
+    description,
+    nav: 'playbook',
+    chapter: id,
+  })),
   {
     out: 'index.html',
     src: 'index.html',
@@ -118,6 +139,13 @@ export const PAGES = [
     description: 'Missões, perguntas de trivia, inimigos, poderes e textos do seu servidor.',
     nav: 'custom',
   },
+];
+
+export const CHAPTERS = [
+  ['montar', '1. Monte o servidor'],
+  ['primeira-semana', '2. A primeira semana'],
+  ['comunidade', '3. Cuide da comunidade'],
+  ['conteudo', '4. Crie conteúdo'],
 ];
 
 export const BOT_LINKS = [
@@ -270,6 +298,10 @@ function layout(page, body) {
   const bots = BOT_LINKS.map(
     ([id, label]) => `<a href="${id}.html"${page.bot === id ? ' aria-current="page"' : ''}>${label}</a>`,
   ).join('');
+  const chapters = CHAPTERS.map(
+    ([id, label]) =>
+      `<a href="playbook-${id}.html"${page.chapter === id ? ' aria-current="page"' : ''}>${label}</a>`,
+  ).join('');
   return `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -288,7 +320,8 @@ function layout(page, body) {
   <header class="top">
     <a class="brand" href="index.html">LEGION</a>
     <nav>
-      <details class="menu"><summary${page.nav === 'bots' ? ' aria-current="page"' : ''}>Bots</summary><div>${bots}</div></details>
+      <details class="menu"><summary${page.nav === 'playbook' ? ' aria-current="page"' : ''}>Playbook</summary><div>${chapters}</div></details>
+      <details class="menu"><summary${page.nav === 'bots' ? ' aria-current="page"' : ''}>Referência</summary><div>${bots}<a href="skills.html">Skills para IA</a></div></details>
       ${nav('custom', 'personalizar.html', 'Personalizar')}
       <a class="hide-sm" href="https://github.com/uminocelo/legion/blob/main/TUTORIAL.md">Hospedar</a>
       <a class="gh" href="https://github.com/uminocelo/legion">GitHub</a>

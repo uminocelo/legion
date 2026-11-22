@@ -2,6 +2,8 @@
 
 Para quem é **dono ou staff de um servidor** e quer colocar o Legion no ar. No fim você terá os cinco bots rodando, os cargos criados, o guia "como jogar" fixado e terá feito você mesmo o caminho de um jogador novo.
 
+Comece criando o servidor pelo [modelo do Legion](docs/TEMPLATE.md): ele já traz as categorias, os canais e as áreas das equipes. Para a visão geral, leia o [playbook](https://uminocelo.github.io/legion/playbook-montar.html).
+
 Leva cerca de **40 minutos**. Cada etapa termina com um **✅ Confira**: só siga quando ele bater.
 
 Referências usadas no caminho: [README](README.md) (resumo), [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md) (Docker e problemas comuns), [docs/CONFIG.md](docs/CONFIG.md) (todas as opções).

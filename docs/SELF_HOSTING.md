@@ -1,6 +1,6 @@
 # Hospedar o Legion (passo a passo)
 
-Para quem nunca usou Docker. Leva uns 10 minutos.
+Para quem nunca usou Docker. Leva uns 10 minutos. Ainda não tem o servidor do Discord? Crie pelo [modelo](TEMPLATE.md) antes; a ordem completa está no [playbook](https://uminocelo.github.io/legion/playbook-montar.html).
 
 ## 1. Instale o Docker
 
