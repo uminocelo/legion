@@ -79,6 +79,15 @@ A guerra soma pontos da facção no momento do lance (missão, ataque, participa
 
 `/guerra` (jogadores) mostra o placar, o tempo, os pontos da pessoa e os da facção dela.
 
+## Temporadas
+
+Ranking periódico de XP do ledger na janela (`jarvis.season`, desligado por padrão). `/temporada` mostra o placar, o tempo e as medalhas do jogador. No fim, os `rewards.top` primeiros ganham medalha de colocação; o placar fica arquivado na temporada; o XP vitalício não muda.
+
+| Comando | O que faz |
+|---|---|
+| `/jarvis temporada iniciar` | Começa agora. Se já houver uma agendada, ela é antecipada |
+| `/jarvis temporada encerrar` | Encerra a temporada ativa, grava o arquivo, emite `season.ended` e agenda a próxima |
+
 ## Créditos
 
 | Comando | O que faz |

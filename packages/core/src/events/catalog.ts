@@ -191,7 +191,7 @@ export const eventCatalog = {
     ),
     winnerMemberIds: z.array(id),
   }),
-  /** Season closed. Top places by season XP (ledger in the window). Badges land in stream 2. */
+  /** Season closed. Top places by season XP (ledger in the window). `jarvis.season-rewards` grants badges. */
   'season.ended': z.object({
     seasonId: id,
     winners: z.array(

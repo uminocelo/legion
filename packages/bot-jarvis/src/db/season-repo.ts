@@ -1,8 +1,9 @@
 import type { Clock, Executor, LegionDb } from '@legion/core';
-import { and, desc, eq, gte, inArray, lt, sum } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, lt, sum } from 'drizzle-orm';
 import { type JarvisTables, jarvisTables } from './tables.js';
 
 export type SeasonRow = JarvisTables['jarvisSeasons']['$inferSelect'];
+export type SeasonBadgeRow = JarvisTables['jarvisSeasonBadges']['$inferSelect'];
 export type SeasonStatus = 'scheduled' | 'active' | 'ended';
 
 export interface SeasonWinner {
@@ -14,6 +15,18 @@ export interface SeasonWinner {
 export interface SeasonScore {
   memberId: string;
   xp: number;
+}
+
+export interface SeasonArchiveEntry {
+  memberId: string;
+  discordUserId?: string;
+  codename?: string;
+  xp: number;
+  place: number;
+}
+
+export interface SeasonArchive {
+  board: SeasonArchiveEntry[];
 }
 
 /** Data access for season windows and season XP from the ledger. */
@@ -105,6 +118,14 @@ export class SeasonRepo {
       .where(eq(s.id, id));
   }
 
+  async setArchive(id: string, archive: SeasonArchive, ex: Executor = this.db.orm): Promise<void> {
+    const s = this.t.jarvisSeasons;
+    await ex
+      .update(s)
+      .set({ archive: JSON.stringify(archive), updatedAt: this.now() })
+      .where(eq(s.id, id));
+  }
+
   /**
    * Season XP: sum of `jarvis_xp_ledger.amount` with `created_at` in `[startsAt, endsAt)`.
    * Highest first; ties broken by memberId.
@@ -137,5 +158,51 @@ export class SeasonRepo {
       .where(and(eq(s.guildId, this.guildId), eq(s.startsAt, startsAt)))
       .limit(1);
     return !!hit;
+  }
+
+  /** Insert place badges; duplicates of `(season_id, member_id)` are ignored. */
+  async insertBadges(
+    seasonId: string,
+    winners: SeasonWinner[],
+    newId: () => string,
+    ex: Executor = this.db.orm,
+  ): Promise<number> {
+    if (!winners.length) return 0;
+    const b = this.t.jarvisSeasonBadges;
+    const now = this.now();
+    const rows = await ex
+      .insert(b)
+      .values(
+        winners.map((w) => ({
+          id: newId(),
+          guildId: this.guildId,
+          seasonId,
+          memberId: w.memberId,
+          place: w.place,
+          xp: w.xp,
+          createdAt: now,
+        })),
+      )
+      .onConflictDoNothing()
+      .returning({ id: b.id });
+    return rows.length;
+  }
+
+  async badgesForMember(memberId: string, ex: Executor = this.db.orm): Promise<SeasonBadgeRow[]> {
+    const b = this.t.jarvisSeasonBadges;
+    return ex
+      .select()
+      .from(b)
+      .where(and(eq(b.guildId, this.guildId), eq(b.memberId, memberId)))
+      .orderBy(asc(b.place), desc(b.createdAt));
+  }
+
+  async badgesForSeason(seasonId: string, ex: Executor = this.db.orm): Promise<SeasonBadgeRow[]> {
+    const b = this.t.jarvisSeasonBadges;
+    return ex
+      .select()
+      .from(b)
+      .where(and(eq(b.guildId, this.guildId), eq(b.seasonId, seasonId)))
+      .orderBy(asc(b.place));
   }
 }

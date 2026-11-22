@@ -64,7 +64,12 @@
       "empty": "Ninguém ganhou XP nesta temporada ainda.",
       "no_active": "Não há temporada ativa.",
       "no_active_next": "Não há temporada ativa. A próxima começa em {at}.",
-      "disabled": "As temporadas estão desligadas (jarvis.season.enabled: false)."
+      "disabled": "As temporadas estão desligadas (jarvis.season.enabled: false).",
+      "started": "Temporada iniciada. Termina {at}.",
+      "already_active": "Já existe uma temporada ativa.",
+      "ended": "Temporada encerrada.",
+      "none": "Não há temporada ativa para encerrar.",
+      "badges": "Suas medalhas: {count} (melhor: {best}º)"
     },
     "streak": {
       "title": "🔥 Sua sequência",
@@ -166,7 +171,10 @@
         "item_arquivo": "O arquivo .yaml com os itens (o do editor do site ou do exportar)",
         "item_exportar": "Baixa os itens da staff em YAML",
         "item_desativar": "Tira um item de jogo (desequipa de quem usa)",
-        "item_ativar": "Volta um item desativado"
+        "item_ativar": "Volta um item desativado",
+        "temporada": "Temporadas: iniciar ou encerrar",
+        "temporada_iniciar": "Começa a temporada agora",
+        "temporada_encerrar": "Encerra a temporada ativa e agenda a próxima"
       },
       "missao": {
         "description": "Missões: histórias curtas com escolhas, sozinho ou em grupo",

@@ -202,3 +202,102 @@ describe('/temporada when seasons are off', () => {
     expect(rows).toEqual([]);
   });
 });
+
+const staff = (tc: TestContext, subcommand: string) =>
+  tc.interact({
+    kind: 'command',
+    userId: '999',
+    isGuildOwner: true,
+    commandName: 'jarvis',
+    subcommand,
+  });
+
+describe('season rewards and staff (US-22 stream 2)', () => {
+  it('grants badges once, keeps lifetime XP, and archives the board', async () => {
+    const { tc, s } = await boot({ season: { length: 14, rewards: { top: 2 } } });
+    expect(await s.season.staffStart()).toBe('started');
+    const a = await addMember(tc, '111', 'xmen', 'Storm');
+    const b = await addMember(tc, '222', 'brotherhood', 'Mystique');
+    const c = await addMember(tc, '333', 'avengers', 'Wasp');
+    await award(tc, a, 100, 's:a', 'grant');
+    await award(tc, b, 50, 's:b', 'grant');
+    await award(tc, c, 75, 's:c', 'grant');
+    const xpBefore = (await s.repo.progress(a))?.xp ?? 0;
+    expect(xpBefore).toBeGreaterThan(0);
+
+    const active = await s.season.repo.findStatus('active');
+    if (!active) throw new Error('no active season');
+    await s.season.end(active.id);
+    await tc.runtime.bus.drain();
+    await s.season.end(active.id);
+    await tc.runtime.bus.drain();
+
+    const badges = await s.season.repo.badgesForSeason(active.id);
+    expect(badges).toHaveLength(2);
+    expect(badges.map((x) => ({ memberId: x.memberId, place: x.place }))).toEqual([
+      { memberId: a, place: 1 },
+      { memberId: c, place: 2 },
+    ]);
+    expect((await s.repo.progress(a))?.xp).toBe(xpBefore);
+
+    const ended = await s.season.repo.season(active.id);
+    const archive = JSON.parse(ended?.archive ?? 'null') as {
+      board: { memberId: string; place: number; xp: number; codename?: string }[];
+    };
+    expect(archive.board).toEqual([
+      expect.objectContaining({ memberId: a, place: 1, codename: 'Storm', xp: 105 }),
+      expect.objectContaining({ memberId: c, place: 2, codename: 'Wasp', xp: 80 }),
+      expect.objectContaining({ memberId: b, place: 3, codename: 'Mystique', xp: 55 }),
+    ]);
+
+    const [event] = await events(tc, 'season.ended');
+    await tc.runtime.bus.forSource('jarvis').emit(tc.db.orm, 'season.ended', event);
+    await tc.runtime.bus.drain();
+    expect(await s.season.repo.badgesForSeason(active.id)).toHaveLength(2);
+
+    const viewId = await tc.interact({ kind: 'command', userId: '111', commandName: 'temporada' });
+    const reply = tc.gateway.lastReply(viewId);
+    const text = reply?.embeds?.[0]?.description ?? reply?.content ?? '';
+    expect(text).toMatch(/Suas medalhas: 1 \(melhor: 1º\)/);
+  });
+
+  it('staff start/end refusals and happy path', async () => {
+    const { tc, s } = await boot({ season: { length: 14 } });
+    tc.gateway.addMember({ userId: '999' });
+
+    const denied = await tc.interact({
+      kind: 'command',
+      userId: '111',
+      commandName: 'jarvis',
+      subcommand: 'temporada iniciar',
+    });
+    expect(tc.gateway.lastReply(denied)?.content).toBe('Apenas a staff pode usar este comando.');
+
+    expect(tc.gateway.lastReply(await staff(tc, 'temporada encerrar'))?.content).toBe(
+      'Não há temporada ativa para encerrar.',
+    );
+    expect(tc.gateway.lastReply(await staff(tc, 'temporada iniciar'))?.content).toMatch(
+      /^Temporada iniciada\. Termina <t:\d+:F>\.$/,
+    );
+    expect(tc.gateway.lastReply(await staff(tc, 'temporada iniciar'))?.content).toBe(
+      'Já existe uma temporada ativa.',
+    );
+    expect(tc.gateway.lastReply(await staff(tc, 'temporada encerrar'))?.content).toBe('Temporada encerrada.');
+    await tc.runtime.bus.drain();
+    expect(await s.season.repo.findStatus('active')).toBeNull();
+    expect(await s.season.staffEnd()).toBe('none');
+  });
+
+  it('staff start refuses when seasons are disabled', async () => {
+    const tc = await setupJarvis({ jarvis: { season: { enabled: false } } });
+    t = tc;
+    await jarvis.onReady?.(tc.ctxOf(jarvis));
+    tc.gateway.addMember({ userId: '999' });
+    expect(tc.gateway.lastReply(await staff(tc, 'temporada iniciar'))?.content).toMatch(
+      /jarvis\.season\.enabled: false/,
+    );
+    expect(tc.gateway.lastReply(await staff(tc, 'temporada encerrar'))?.content).toMatch(
+      /jarvis\.season\.enabled: false/,
+    );
+  });
+});

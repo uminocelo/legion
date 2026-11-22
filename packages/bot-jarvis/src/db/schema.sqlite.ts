@@ -317,7 +317,7 @@ export const jarvisSeasons = table(
     endsAt: text('ends_at').notNull(),
     /** JSON winners [{ memberId, place, xp }]; null until ended. */
     winners: text('winners'),
-    /** JSON archive snapshot; filled in stream 2. */
+    /** JSON archive `{ board: [...] }`; set when the season ends. */
     archive: text('archive'),
     resultMessageId: text('result_message_id'),
     createdAt: text('created_at').notNull(),
@@ -326,5 +326,23 @@ export const jarvisSeasons = table(
   (t) => [
     uniqueIndex('jarvis_seasons_start_uq').on(t.guildId, t.startsAt),
     index('jarvis_seasons_status_idx').on(t.status),
+  ],
+);
+
+/** Place badges for season winners (US-22). Unique per season+member for idempotent grants. */
+export const jarvisSeasonBadges = table(
+  'jarvis_season_badges',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    seasonId: text('season_id').notNull(),
+    memberId: text('member_id').notNull(),
+    place: integer('place').notNull(),
+    xp: integer('xp').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('jarvis_season_badges_season_member_uq').on(t.seasonId, t.memberId),
+    index('jarvis_season_badges_member_idx').on(t.memberId),
   ],
 );

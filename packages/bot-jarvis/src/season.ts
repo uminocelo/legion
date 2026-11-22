@@ -1,6 +1,6 @@
-import type { BotContext, Executor, Locale, OutgoingMessage } from '@legion/core';
+import type { BotContext, EventPayloads, Executor, Locale, OutgoingMessage } from '@legion/core';
 import type { JarvisConfig } from './config.js';
-import type { SeasonRepo, SeasonRow, SeasonWinner } from './db/season-repo.js';
+import type { SeasonArchiveEntry, SeasonRepo, SeasonRow, SeasonWinner } from './db/season-repo.js';
 import { monthStartAtOrAfter, nextSeasonWindow } from './domain/season-window.js';
 
 export const SEASON_JOBS = {
@@ -74,8 +74,8 @@ export class SeasonService {
   }
 
   /**
-   * `jarvis.season.end`. Status change and `season.ended` commit together.
-   * A second call finds 0 rows and is a no-op.
+   * `jarvis.season.end`. Status change, winners, archive and `season.ended` commit together.
+   * A second call finds 0 rows and is a no-op. Lifetime XP is never wiped.
    */
   async end(id: string, opts?: { endsAt?: string }): Promise<void> {
     const current = await this.repo.season(id);
@@ -89,6 +89,7 @@ export class SeasonService {
         if (!ended) return;
         const winners = await this.topWinners(ended, tx);
         await this.repo.setWinners(id, winners, tx);
+        await this.repo.setArchive(id, { board: await this.archiveBoard(ended, tx) }, tx);
         await this.ctx.bus.emit(tx, 'season.ended', {
           seasonId: id,
           winners,
@@ -133,6 +134,14 @@ export class SeasonService {
     return 'ended';
   }
 
+  /**
+   * `season.ended` consumer (`jarvis.season-rewards`): one badge per winner.
+   * Re-delivery is a no-op via unique `(season_id, member_id)`.
+   */
+  async grantBadges(e: EventPayloads['season.ended']): Promise<number> {
+    return this.repo.insertBadges(e.seasonId, e.winners, this.ctx.newId);
+  }
+
   /** Public `/temporada` body. */
   async playerView(discordUserId: string, locale: Locale): Promise<OutgoingMessage> {
     if (!this.cfg.enabled) {
@@ -141,14 +150,16 @@ export class SeasonService {
         content: this.t('jarvis.season.disabled', {}, locale),
       };
     }
+    const badgesLine = await this.badgesLine(discordUserId, locale);
     const active = await this.repo.findStatus('active');
     if (!active) {
       const next = await this.repo.findStatus('scheduled');
+      const base = next
+        ? this.t('jarvis.season.no_active_next', { at: `<t:${unix(next.startsAt)}:F>` }, locale)
+        : this.t('jarvis.season.no_active', {}, locale);
       return {
         persona: 'jarvis',
-        content: next
-          ? this.t('jarvis.season.no_active_next', { at: `<t:${unix(next.startsAt)}:F>` }, locale)
-          : this.t('jarvis.season.no_active', {}, locale),
+        content: badgesLine ? `${base}\n${badgesLine}` : base,
       };
     }
     const board = await this.boardRows(active);
@@ -161,22 +172,33 @@ export class SeasonService {
       me >= 0
         ? this.t('jarvis.season.you', { pos: me + 1, xp: board[me]?.xp ?? 0 }, locale)
         : this.t('jarvis.season.you_none', {}, locale);
+    const description = [
+      this.t('jarvis.season.time_left', { at: `<t:${unix(active.endsAt)}:R>` }, locale),
+      '',
+      this.t('jarvis.season.board_title', {}, locale),
+      lines.length ? lines.join('\n') : this.t('jarvis.season.empty', {}, locale),
+      '',
+      you,
+    ];
+    if (badgesLine) description.push('', badgesLine);
     return {
       persona: 'jarvis',
       embeds: [
         {
           title: this.t('jarvis.season.title', {}, locale),
-          description: [
-            this.t('jarvis.season.time_left', { at: `<t:${unix(active.endsAt)}:R>` }, locale),
-            '',
-            this.t('jarvis.season.board_title', {}, locale),
-            lines.length ? lines.join('\n') : this.t('jarvis.season.empty', {}, locale),
-            '',
-            you,
-          ].join('\n'),
+          description: description.join('\n'),
         },
       ],
     };
+  }
+
+  private async badgesLine(discordUserId: string, locale: Locale): Promise<string | null> {
+    const member = await this.ctx.read.members.getByDiscordId(discordUserId);
+    if (!member) return null;
+    const badges = await this.repo.badgesForMember(member.id);
+    if (!badges.length) return null;
+    const best = Math.min(...badges.map((b) => b.place));
+    return this.t('jarvis.season.badges', { count: badges.length, best }, locale);
   }
 
   private async boardRows(season: SeasonRow) {
@@ -198,6 +220,28 @@ export class SeasonService {
       });
     }
     return out;
+  }
+
+  private async archiveBoard(season: SeasonRow, tx: Executor): Promise<SeasonArchiveEntry[]> {
+    const members = await this.ctx.read.members.listRegistered();
+    const byId = new Map(members.filter((m) => !m.leftAt).map((m) => [m.id, m]));
+    const scores = await this.repo.scoreboard(season.startsAt, season.endsAt, [...byId.keys()], tx);
+    const board: SeasonArchiveEntry[] = [];
+    for (let i = 0; i < scores.length; i++) {
+      const s = scores[i];
+      if (!s) continue;
+      const m = byId.get(s.memberId);
+      if (!m) continue;
+      const mutant = await this.ctx.read.mutants.getByMemberId(m.id);
+      board.push({
+        memberId: m.id,
+        discordUserId: m.discordUserId,
+        codename: mutant?.codename ?? undefined,
+        xp: s.xp,
+        place: i + 1,
+      });
+    }
+    return board;
   }
 
   private async topWinners(season: SeasonRow, tx: Executor): Promise<SeasonWinner[]> {
