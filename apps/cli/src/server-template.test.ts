@@ -137,16 +137,16 @@ describe('buildGuildTemplatePayload', () => {
 
     const guia = channel('guia').permission_overwrites ?? [];
     expect(hasBit(guia.find((item) => item.id === 0)?.deny ?? '0', VIEW)).toBe(true);
-    expect(hasBit(guia.find((item) => item.id === roleId('Mutante Registrado'))?.allow ?? '0', VIEW)).toBe(
+    expect(hasBit(guia.find((item) => item.id === roleId('Herói Registrado'))?.allow ?? '0', VIEW)).toBe(
       true,
     );
 
     const news = channel('anuncios').permission_overwrites ?? [];
-    expect(hasBit(news.find((item) => item.id === roleId('Mutante Registrado'))?.deny ?? '0', WRITE)).toBe(
+    expect(hasBit(news.find((item) => item.id === roleId('Herói Registrado'))?.deny ?? '0', WRITE)).toBe(
       true,
     );
     expect(hasBit(news.find((item) => item.id === roleId('Professor X'))?.allow ?? '0', WRITE)).toBe(true);
-    expect(hasBit(news.find((item) => item.id === roleId('Mutante Registrado'))?.allow ?? '0', VIEW)).toBe(
+    expect(hasBit(news.find((item) => item.id === roleId('Herói Registrado'))?.allow ?? '0', VIEW)).toBe(
       true,
     );
 
@@ -160,11 +160,11 @@ describe('buildGuildTemplatePayload', () => {
     expect(
       hasBit(overwrites.find((item) => item.id === roleId('Conselho da Legião'))?.allow ?? '0', VIEW),
     ).toBe(true);
-    expect(overwrites.some((item) => item.id === roleId('Mutante Registrado'))).toBe(false);
+    expect(overwrites.some((item) => item.id === roleId('Herói Registrado'))).toBe(false);
 
     const staff = channel('🛡️ Staff').permission_overwrites ?? [];
     expect(hasBit(staff.find((item) => item.id === 0)?.deny ?? '0', VIEW)).toBe(true);
-    expect(staff.some((item) => item.id === roleId('Mutante Registrado'))).toBe(false);
+    expect(staff.some((item) => item.id === roleId('Herói Registrado'))).toBe(false);
     expect(channel('logs').permission_overwrites).toEqual(staff);
   });
 });
