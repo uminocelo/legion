@@ -43,6 +43,10 @@ You may read and edit this file (it holds no secrets). Common edits:
 
 After an edit, restart (`docker compose up -d`) and run `legion doctor`. A config error names the line and the key.
 
+## Team areas (optional)
+
+Each team can have its own category, visible only to that team and staff, and a news channel. The server layout comes from the Discord template in `docs/TEMPLATE.md`; Legion never creates channels. Add `categoryId` and `newsChannelId` (ids in quotes) to that team's entry in `factions` (copy the whole list from `docs/CONFIG.md` first), then `/cerebro setup canais:true aplicar:true` and `legion doctor` (**Áreas das equipes** must be ✅).
+
 ## Staff dashboard (optional)
 
 A web page for staff (members, economy, events, war, threat, and audited actions), off by default. Full guide: `docs/DASHBOARD.md`.

@@ -81,6 +81,21 @@ factions:
   - { key: midnight_sons, roleKey: faction_midnight_sons, emoji: 🌙 }
 ```
 
+**Áreas das equipes (v1.1, opcional).** Cada equipe pode ganhar três IDs, sempre entre aspas:
+
+| Chave | Para quê |
+|---|---|
+| `categoryId` | A categoria da equipe. `/cerebro setup canais:true aplicar:true` deixa a categoria e os canais dela visíveis só para a equipe e a staff; quem troca de equipe troca de área sozinho, porque troca de cargo. O Legion não cria nem apaga canais |
+| `newsChannelId` | Onde o ULTRON posta as notícias da equipe (guerra e eventos) |
+| `squadChannelId` | Canal de texto onde ficam os tópicos dos esquadrões da equipe |
+
+```yaml
+factions:
+  - { key: xmen, roleKey: faction_xmen, emoji: 🔵, categoryId: "123…", newsChannelId: "456…" }
+```
+
+Escrever `factions` troca a lista inteira: copie as 9 equipes acima e acrescente as chaves nas que tiverem área. O `legion doctor` confere cada área (linha **Áreas das equipes**).
+
 ## `cerebro`
 
 | Chave | Padrão | Descrição |

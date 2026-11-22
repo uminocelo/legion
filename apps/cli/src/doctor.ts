@@ -372,6 +372,12 @@ export async function runDoctor(o: DoctorOptions): Promise<CheckResult[]> {
     const targets: { key: string; id: string; app: (typeof appInfos)[number] | undefined }[] = [];
     const main = appInfos.find((x) => x.key === 'main');
     for (const [key, id] of Object.entries(cfg.channels)) if (id) targets.push({ key, id, app: main });
+    // US-34: each team's news channel is posted to by ULTRON.
+    const ultronApp = appInfos.find((x) => x.bots.includes('ultron')) ?? main;
+    if (cfg.bots.includes('ultron'))
+      for (const f of cfg.factions)
+        if (f.newsChannelId)
+          targets.push({ key: `factions.${f.key}.newsChannelId`, id: f.newsChannelId, app: ultronApp });
     for (const b of bots)
       for (const c of b.doctorChannels?.((cfg as Record<string, unknown>)[b.id]) ?? [])
         if (c.id) targets.push({ key: c.key, id: c.id, app: appInfos.find((x) => x.bots.includes(b.id)) });
