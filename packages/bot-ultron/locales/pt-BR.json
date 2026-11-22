@@ -283,6 +283,17 @@
         "threat_range": "Use um nível de 0 a {max}.",
         "threat_done": "Ameaça definida em {level} / {max}."
       }
+    },
+    "team_news": {
+      "leading": "⚔️ Guerra: sua equipe lidera com {points} pontos, {gap} à frente de {other}.",
+      "behind": "⚔️ Guerra: sua equipe está em {place}º com {points} pontos, {gap} atrás de {other}.",
+      "no_points": "⚔️ Guerra: sua equipe ainda não pontuou. Missões, ataques e eventos valem pontos.",
+      "war_won": "🏆 Sua equipe venceu a guerra com {points} pontos!",
+      "war_ended": "A guerra acabou: sua equipe ficou em {place}º com {points} pontos. Venceu: {winners}.",
+      "war_ended_none": "A guerra acabou sem pontos da sua equipe. Venceu: {winners}.",
+      "event": "{title}: {outcome}. Da sua equipe, {count} herói(s) participaram.",
+      "victory": "vitória",
+      "defeat": "derrota"
     }
   }
 }
