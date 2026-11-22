@@ -4,6 +4,12 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+### Upgrade notes
+- **The `registered` role is now "Herói Registrado".** On the first start, Cérebro renames your existing "Mutante Registrado" role in place: same role, every member keeps it, channel permissions stay. Nothing to do. To keep the old name, set `name: Mutante Registrado` on the `registered` role in `roles`. If the bot's role sits below it, the rename fails with a warning in the logs and the old name keeps working.
+
+### Changed
+- Default role name `registered`: "Mutante Registrado" → "Herói Registrado", since heroes of every origin register. Roles gain `renamedFrom`, so role sync renames instead of creating a duplicate.
+
 ## [1.0.0] - 2026-11-21
 
 The world: faction war, multi-wave invasions, the threat meter, and an optional staff dashboard with audited actions.

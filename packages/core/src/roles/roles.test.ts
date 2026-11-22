@@ -26,7 +26,7 @@ describe('planRoleSync', () => {
     );
   });
 
-  it('fixes colors only on Cérebro-managed roles and never plans deletes or renames', async () => {
+  it('fixes colors only on Cérebro-managed roles, never deletes and never renames unknown roles', async () => {
     const { gw } = make();
     gw.addRole({ name: 'X-Men', color: 0x111111 }); // cerebro-managed, wrong color
     gw.addRole({ name: 'Professor X', color: 0x222222 }); // manual, wrong color
@@ -35,7 +35,43 @@ describe('planRoleSync', () => {
     expect(plan.updateColor).toEqual([
       expect.objectContaining({ key: 'faction_xmen', from: 0x111111, to: hexToInt('#3498DB') }),
     ]);
-    expect(Object.keys(plan)).toEqual(['create', 'updateColor']);
+    expect(Object.keys(plan)).toEqual(['create', 'updateColor', 'rename']);
+    expect(plan.rename).toEqual([]);
+  });
+
+  it('renames the old "Mutante Registrado" in place: same role, members keep it, no duplicate', async () => {
+    const { gw, roles } = make();
+    const old = gw.addRole({ name: 'Mutante Registrado', color: hexToInt('#5DADE2') });
+    gw.addMember({ userId: '1', roleIds: [old.id] });
+    expect((await roles.resolve('registered'))?.id).toBe(old.id); // found before the sync
+    const plan = planRoleSync(await gw.fetchRoles(), config.roles);
+    expect(plan.rename).toEqual([
+      { roleId: old.id, key: 'registered', from: 'Mutante Registrado', to: 'Herói Registrado' },
+    ]);
+    expect(plan.create.map((r) => r.key)).not.toContain('registered');
+    const res = await roles.applySyncPlan(plan);
+    expect(res.renamed).toEqual(['registered']);
+    expect(gw.roleByName('Herói Registrado')?.id).toBe(old.id);
+    expect(gw.roleByName('Mutante Registrado')).toBeUndefined();
+    expect(gw.memberRoleNames('1')).toEqual(['Herói Registrado']);
+    expect(planRoleSync(await gw.fetchRoles(), config.roles).rename).toEqual([]);
+  });
+
+  it('keeps a server that already has both names, and a config that keeps the old name', async () => {
+    const { gw } = make();
+    gw.addRole({ name: 'Mutante Registrado' });
+    gw.addRole({ name: 'Herói Registrado' });
+    expect(planRoleSync(await gw.fetchRoles(), config.roles).rename).toEqual([]);
+    const custom = parseConfig({
+      roles: config.roles.map((r) =>
+        r.key === 'registered' ? { ...r, name: 'Mutante Registrado', renamedFrom: [] } : r,
+      ),
+    });
+    const only = new FakeDiscordGateway();
+    only.addRole({ name: 'Mutante Registrado' });
+    const plan = planRoleSync(await only.fetchRoles(), custom.roles);
+    expect(plan.rename).toEqual([]);
+    expect(plan.create.map((r) => r.key)).not.toContain('registered');
   });
 
   it('never touches an existing TikTok integration role', async () => {
@@ -124,7 +160,7 @@ describe('RoleService operations', () => {
     await roles.assign('1', 'signal');
     const before = gw.calls.length;
     await roles.reconcileMember('1', ['registered', 'rank_recruta'], ['signal']);
-    expect(gw.memberRoleNames('1')).toEqual(['Mutante Registrado', 'Recruta']);
+    expect(gw.memberRoleNames('1')).toEqual(['Herói Registrado', 'Recruta']);
     await roles.reconcileMember('1', ['registered', 'rank_recruta'], ['signal']);
     const writes = gw.calls
       .slice(before)

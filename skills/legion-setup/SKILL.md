@@ -27,7 +27,7 @@ Variable names (values come from the Developer Portal and from Discord):
    - Questions in the terminal (the user runs it; tokens are typed into hidden prompts): `docker run --rm -it -v "$PWD:/out" ghcr.io/uminocelo/legion legion init --out /out` (PowerShell: `"${PWD}:/out"`).
    - By hand: the user copies `.env.example` to `.env` and fills it; you may create `legion.config.yaml` from `legion.config.example.yaml`.
 5. **Invite**: `docker compose run --rm legion legion invite-url`, open the link, authorize.
-6. **Role order**: in Server Settings → Roles, drag the bot's role (the app's name) **above** every role Legion manages (Sinal Detectado, Mutante Registrado, the nine teams, Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). Discord only lets a bot give roles below its own.
+6. **Role order**: in Server Settings → Roles, drag the bot's role (the app's name) **above** every role Legion manages (Sinal Detectado, Herói Registrado, the nine teams, Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). Discord only lets a bot give roles below its own.
 7. **Check and start**: `docker compose run --rm legion legion doctor` until there is no ❌, then `docker compose up -d`.
 8. **In Discord** (staff): `/cerebro setup` shows what it would change; `/cerebro setup aplicar:true` applies it.
 

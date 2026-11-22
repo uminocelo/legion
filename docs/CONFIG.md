@@ -32,7 +32,7 @@ IDs são *snowflakes* do Discord; escreva entre aspas (`'123…'`).
 
 ### `roles`
 
-Campos: `key` (fixa; o código usa ela), `name` (o que aparece no Discord), `color` (`'#RRGGBB'` ou `null`), `group` (`staff`, `onboarding`, `faction`, `rank`, `community`, `rivals`), `managedBy` (`manual`, `cerebro`, `integration`, …), `hoist`, `mentionable`.
+Campos: `key` (fixa; o código usa ela), `name` (o que aparece no Discord), `color` (`'#RRGGBB'` ou `null`), `group` (`staff`, `onboarding`, `faction`, `rank`, `community`, `rivals`), `managedBy` (`manual`, `cerebro`, `integration`, …), `hoist`, `mentionable`. `renamedFrom` (opcional): nomes antigos do cargo; o Cérebro renomeia um cargo achado por um deles em vez de criar outro.
 
 ```yaml
 roles:
@@ -40,7 +40,7 @@ roles:
   - { key: staff_council, group: staff, name: Conselho da Legião, color: '#9B59B6', managedBy: manual, hoist: true }
   - { key: staff_bots, group: staff, name: Sentinela, color: '#95A5A6', managedBy: manual }
   - { key: signal, group: onboarding, name: Sinal Detectado, color: null, managedBy: cerebro }
-  - { key: registered, group: onboarding, name: Mutante Registrado, color: '#5DADE2', managedBy: cerebro }
+  - { key: registered, group: onboarding, name: Herói Registrado, renamedFrom: [Mutante Registrado], color: '#5DADE2', managedBy: cerebro }
   - { key: faction_xmen, group: faction, name: X-Men, color: '#3498DB', managedBy: cerebro, hoist: true }
   - { key: faction_brotherhood, group: faction, name: Irmandade, color: '#E74C3C', managedBy: cerebro, hoist: true }
   - { key: faction_independent, group: faction, name: Independente, color: '#2ECC71', managedBy: cerebro, hoist: true }

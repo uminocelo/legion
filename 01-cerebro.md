@@ -74,9 +74,9 @@ Also create: root `package.json` scripts (`dev`, `build`, `test`, `typecheck`, `
 
 The plan is a pure function `planRoleSync(existingRoles, configRoles) → RoleSyncPlan`, tested without Discord.
 
-**Channel visibility:** `Sinal Detectado` members see only the welcome and rules channels; `Mutante Registrado` unlocks the rest. Cérebro never changes channel overwrites on startup. `/cerebro setup` does it on request:
+**Channel visibility:** `Sinal Detectado` members see only the welcome and rules channels; `Herói Registrado` unlocks the rest. Cérebro never changes channel overwrites on startup. `/cerebro setup` does it on request:
 - Options: `aplicar` (boolean, default `false` = dry run) and `canais` (boolean, default `false`; when true, also plan channel overwrites).
-- With `canais: true`, the plan is: `@everyone` deny View Channel on every channel except `channels.welcome` and `channels.rules`; `Mutante Registrado` allow View Channel on the community channels (every channel not in `cerebro.setup.excludeChannelIds`, by default staff channels are excluded when they already deny `@everyone`).
+- With `canais: true`, the plan is: `@everyone` deny View Channel on every channel except `channels.welcome` and `channels.rules`; `Herói Registrado` allow View Channel on the community channels (every channel not in `cerebro.setup.excludeChannelIds`, by default staff channels are excluded when they already deny `@everyone`).
 - The command replies ephemerally with the full list of what it would change (dry run) or what it changed (`aplicar: true`).
 - Restricted to members holding `staff_owner` or `staff_council` (and the guild owner). Others get `cerebro.errors.not_staff`.
 
@@ -172,7 +172,7 @@ Plus the shared `roles`, `factions`, `channels.welcome`, `channels.rules`, `chan
 
 - Member leaves mid-onboarding: keep the row; resume where they stopped when they come back.
 - Member leaves after registering and returns: rejoin restore (roles from DB), no new mutant.
-- Admin removes `Mutante Registrado` by hand: Cérebro does not fight it; `/cerebro status` lists DB-registered members missing the role, and `/cerebro setup aplicar:true` can reconcile them.
+- Admin removes `Herói Registrado` by hand: Cérebro does not fight it; `/cerebro status` lists DB-registered members missing the role, and `/cerebro setup aplicar:true` can reconcile them.
 - Config renames a role: sync creates the role with the new name (the old one stays); docs explain renaming in Discord first.
 - Bot restarted between the DB commit and the role calls: the `cerebro.reconcile-member` job and the startup replay fix it.
 - Discord API errors (missing permission, hierarchy): log with a hint, reply ephemerally with `cerebro.errors.role_permission`, never crash.
@@ -205,7 +205,7 @@ Plus the shared `roles`, `factions`, `channels.welcome`, `channels.rules`, `chan
 In a test server:
 - A new member joins and sees only the welcome and rules channels.
 - They complete registration in under a minute.
-- They end with `Mutante Registrado` + exactly one faction + `Recruta`, and `Sinal Detectado` is removed.
+- They end with `Herói Registrado` + exactly one faction + `Recruta`, and `Sinal Detectado` is removed.
 - The rest of the server unlocks.
 - The opt-in toggles work.
 - Restarting the bot changes nothing.

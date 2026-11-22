@@ -18,6 +18,7 @@ export interface LastRoleSync {
   at: string;
   created: string[];
   recolored: string[];
+  renamed?: string[];
   errors: { key: string; error: string }[];
 }
 
@@ -42,6 +43,7 @@ export class CerebroSetup {
     const lines = isEmptyPlan(plan)
       ? [this.t('roles_none')]
       : [
+          ...(plan.rename ?? []).map((r) => `• ${this.t('roles_rename', { from: r.from, to: r.to })}`),
           ...plan.create.map((r) => `• ${this.t('roles_create', { name: r.name })}`),
           ...plan.updateColor.map((u) => `• ${this.t('roles_color', { name: u.name })}`),
         ];

@@ -104,7 +104,7 @@ describe('buildRuntime', () => {
       'heroi',
       'perfil',
     ]);
-    expect(gateway.roleByName('Mutante Registrado')).toBeDefined();
+    expect(gateway.roleByName('Herói Registrado')).toBeDefined();
     await runtime.stop(1000);
     await runtime.close();
   });

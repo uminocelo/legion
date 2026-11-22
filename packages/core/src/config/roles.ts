@@ -17,6 +17,8 @@ export const roleSchema = z.object({
   managedBy: z.enum(ROLE_MANAGERS),
   hoist: z.boolean().default(false),
   mentionable: z.boolean().default(false),
+  /** Old names of this role: role sync renames a role found by one of them instead of creating a new one. */
+  renamedFrom: z.array(z.string().min(1).max(100)).default([]),
 });
 export type RoleConfig = z.infer<typeof roleSchema>;
 
@@ -45,7 +47,8 @@ export const DEFAULT_ROLES: RoleInput[] = [
   {
     key: 'registered',
     group: 'onboarding',
-    name: 'Mutante Registrado',
+    name: 'Herói Registrado',
+    renamedFrom: ['Mutante Registrado'],
     color: '#5DADE2',
     managedBy: 'cerebro',
   },

@@ -81,7 +81,7 @@ describe('rank.changed', () => {
       );
     await emit();
     await t.runtime.bus.drain();
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Agente', 'Independente', 'Mutante Registrado']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Agente', 'Herói Registrado', 'Independente']);
     expect((await repoOf(t).memberByDiscordId(USER))?.rank).toBe('agente');
     const writes = () =>
       t?.gateway.calls.filter((c) => c.method === 'addMemberRole' || c.method === 'removeMemberRole').length;
@@ -126,7 +126,7 @@ describe('role failures', () => {
     expect((await repoOf(t).memberByDiscordId(USER))?.onboardingStep).toBe('registered');
     t.clock.advance(5_000);
     await t.settle();
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Independente', 'Mutante Registrado', 'Recruta']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Herói Registrado', 'Independente', 'Recruta']);
   });
 });
 
@@ -261,7 +261,7 @@ describe('/cerebro setup and status', () => {
   it('the guild owner can run setup without a staff role, and status reports steps and missing roles', async () => {
     t = await setupCerebro();
     await register(t);
-    const reg = t.gateway.roleByName('Mutante Registrado')?.id;
+    const reg = t.gateway.roleByName('Herói Registrado')?.id;
     const m = t.gateway.members.get(USER);
     if (m) m.roleIds = m.roleIds.filter((r) => r !== reg); // an admin removed it by hand
     t.gateway.addMember({ userId: '13' });
@@ -283,7 +283,7 @@ describe('/cerebro setup and status', () => {
       options: { aplicar: true },
       isGuildOwner: true,
     });
-    expect(t.gateway.memberRoleNames(USER)).toContain('Mutante Registrado');
+    expect(t.gateway.memberRoleNames(USER)).toContain('Herói Registrado');
   });
 
   it('warns about the role hierarchy', async () => {
@@ -306,7 +306,7 @@ describe('/cerebro setup and status', () => {
 describe('role sync on ready', () => {
   it('creates the role set once and never the TikTok role', async () => {
     t = await setupCerebro();
-    expect(t.gateway.roleByName('Mutante Registrado')).toBeDefined();
+    expect(t.gateway.roleByName('Herói Registrado')).toBeDefined();
     expect(t.gateway.roleByName('Assinante TikTok')).toBeUndefined();
     const creates = t.gateway.callsOf('createRole').length;
     await t.runtime.ready({ startPolling: false });
