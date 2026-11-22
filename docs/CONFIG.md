@@ -32,7 +32,7 @@ IDs são *snowflakes* do Discord; escreva entre aspas (`'123…'`).
 
 ### `roles`
 
-Campos: `key` (fixa; o código usa ela), `name` (o que aparece no Discord), `color` (`'#RRGGBB'` ou `null`), `group` (`staff`, `onboarding`, `faction`, `rank`, `community`, `rivals`), `managedBy` (`manual`, `cerebro`, `integration`, …), `hoist`, `mentionable`.
+Campos: `key` (fixa; o código usa ela), `name` (o que aparece no Discord), `color` (`'#RRGGBB'` ou `null`), `group` (`staff`, `onboarding`, `faction`, `rank`, `community`, `rivals`), `managedBy` (`manual`, `cerebro`, `integration`, …), `hoist`, `mentionable`. `renamedFrom` (opcional): nomes antigos do cargo; o Cérebro renomeia um cargo achado por um deles em vez de criar outro.
 
 ```yaml
 roles:
@@ -40,7 +40,7 @@ roles:
   - { key: staff_council, group: staff, name: Conselho da Legião, color: '#9B59B6', managedBy: manual, hoist: true }
   - { key: staff_bots, group: staff, name: Sentinela, color: '#95A5A6', managedBy: manual }
   - { key: signal, group: onboarding, name: Sinal Detectado, color: null, managedBy: cerebro }
-  - { key: registered, group: onboarding, name: Mutante Registrado, color: '#5DADE2', managedBy: cerebro }
+  - { key: registered, group: onboarding, name: Herói Registrado, renamedFrom: [Mutante Registrado], color: '#5DADE2', managedBy: cerebro }
   - { key: faction_xmen, group: faction, name: X-Men, color: '#3498DB', managedBy: cerebro, hoist: true }
   - { key: faction_brotherhood, group: faction, name: Irmandade, color: '#E74C3C', managedBy: cerebro, hoist: true }
   - { key: faction_independent, group: faction, name: Independente, color: '#2ECC71', managedBy: cerebro, hoist: true }
@@ -80,6 +80,21 @@ factions:
   - { key: thunderbolts, roleKey: faction_thunderbolts, emoji: ⚡ }
   - { key: midnight_sons, roleKey: faction_midnight_sons, emoji: 🌙 }
 ```
+
+**Áreas das equipes (v1.1, opcional).** Cada equipe pode ganhar três IDs, sempre entre aspas:
+
+| Chave | Para quê |
+|---|---|
+| `categoryId` | A categoria da equipe. `/cerebro setup canais:true aplicar:true` deixa a categoria e os canais dela visíveis só para a equipe e a staff; quem troca de equipe troca de área sozinho, porque troca de cargo. O Legion não cria nem apaga canais |
+| `newsChannelId` | Onde o ULTRON posta as notícias da equipe (guerra e eventos) |
+| `squadChannelId` | Canal de texto onde ficam os tópicos dos esquadrões da equipe |
+
+```yaml
+factions:
+  - { key: xmen, roleKey: faction_xmen, emoji: 🔵, categoryId: "123…", newsChannelId: "456…" }
+```
+
+Escrever `factions` troca a lista inteira: copie as 9 equipes acima e acrescente as chaves nas que tiverem área. O `legion doctor` confere cada área (linha **Áreas das equipes**).
 
 ## `cerebro`
 

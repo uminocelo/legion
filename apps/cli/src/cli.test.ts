@@ -166,6 +166,16 @@ describe('legion doctor', () => {
     expect(msgText).toContain('channels.rules (#regras): faltam Enviar mensagens');
   });
 
+  it('checks each team news channel when ULTRON is on (US-34)', async () => {
+    const path = join(tmp(), 'legion.config.yaml');
+    writeFileSync(
+      path,
+      `bots: [cerebro, sentinel, ultron]\nchannels:\n  welcome: '${CH.welcome}'\n  rules: '${CH.rules}'\nfactions:\n  - { key: independent, roleKey: faction_independent }\n  - { key: xmen, roleKey: faction_xmen, newsChannelId: '300000000000000099' }\n`,
+    );
+    const msgText = (await doctor(fakeRest(), envOk, path)).find((r) => r.id === 'channels')?.message ?? '';
+    expect(msgText).toContain('factions.xmen.newsChannelId (300000000000000099) não existe');
+  });
+
   it('reports invalid config lines', async () => {
     const dir = tmp();
     const rs = await doctor(fakeRest(), envOk, configAt(dir, 'cerebro:\n  welcomePing: talvez\n'));

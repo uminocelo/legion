@@ -16,6 +16,7 @@ export class RoleGuardError extends Error {
 export interface RoleSyncResult {
   created: string[];
   recolored: string[];
+  renamed: string[];
   errors: { key: string; error: string }[];
 }
 
@@ -59,7 +60,11 @@ export class RoleService {
   async resolve(key: string): Promise<GuildRole | null> {
     const cfg = this.byKey.get(key);
     if (!cfg) return null;
-    const find = (list: GuildRole[]) => list.find((r) => r.name === cfg.name) ?? null;
+    // The current name first; an old name (`renamedFrom`) until role sync renames it.
+    const find = (list: GuildRole[]) =>
+      list.find((r) => r.name === cfg.name) ??
+      list.find((r) => (cfg.renamedFrom ?? []).includes(r.name) && !r.managed) ??
+      null;
     return find(await this.roles()) ?? find(await this.refresh());
   }
 
@@ -151,7 +156,18 @@ export class RoleService {
 
   /** Applies a plan from `planRoleSync`, logging each change. Continues past individual failures. */
   async applySyncPlan(plan: RoleSyncPlan): Promise<RoleSyncResult> {
-    const result: RoleSyncResult = { created: [], recolored: [], errors: [] };
+    const result: RoleSyncResult = { created: [], recolored: [], renamed: [], errors: [] };
+    for (const r of plan.rename ?? []) {
+      try {
+        if (!this.check(r.key, null, 'edit')) continue;
+        await this.gateway.editRole(r.roleId, { name: r.to });
+        result.renamed.push(r.key);
+        this.log.info({ key: r.key, from: r.from, to: r.to }, 'role renamed');
+      } catch (err) {
+        result.errors.push({ key: r.key, error: (err as Error).message });
+        this.log.warn({ err, key: r.key }, 'could not rename role');
+      }
+    }
     for (const r of plan.create) {
       try {
         if (!this.check(r.key, null, 'create')) continue;
@@ -181,7 +197,7 @@ export class RoleService {
         this.log.warn({ err, key: u.key }, 'could not edit role');
       }
     }
-    if (result.created.length || result.recolored.length) await this.refresh();
+    if (result.created.length || result.recolored.length || result.renamed.length) await this.refresh();
     return result;
   }
 
@@ -193,7 +209,10 @@ export class RoleService {
     const problems: HierarchyProblem[] = [];
     for (const key of keys) {
       const cfg = this.byKey.get(key);
-      const role = cfg && roles.find((r) => r.name === cfg.name);
+      const role =
+        cfg &&
+        (roles.find((r) => r.name === cfg.name) ??
+          roles.find((r) => (cfg.renamedFrom ?? []).includes(r.name)));
       if (role && role.position >= top) problems.push({ key, name: role.name });
     }
     return problems;

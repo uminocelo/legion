@@ -194,3 +194,110 @@ describe('planChannelVisibility', () => {
     ]);
   });
 });
+
+describe('planChannelVisibility faction areas (US-34)', () => {
+  const EVERYONE = '1000';
+  const REG = '2000';
+  const BOT = '3000';
+  const XMEN = '4001';
+  const BROTHERHOOD = '4002';
+  const STAFF = '5000';
+  const ch = (
+    id: string,
+    name: string,
+    kind: GuildChannel['kind'],
+    parentId: string | null,
+    overwrites: GuildChannel['overwrites'] = [],
+  ) => ({
+    id,
+    name,
+    kind,
+    parentId,
+    overwrites,
+  });
+  const base = {
+    everyoneRoleId: EVERYONE,
+    registeredRoleId: REG,
+    botUserId: BOT,
+    welcomeId: null,
+    rulesId: null,
+    excludeIds: ['13'],
+    factionAreas: [
+      { categoryId: '10', roleId: XMEN },
+      { categoryId: '20', roleId: BROTHERHOOD },
+    ],
+    staffRoleIds: [STAFF],
+  };
+  const view = (id: string, list: 'allow' | 'deny') => ({
+    id,
+    type: 'role' as const,
+    allow: list === 'allow' ? ['ViewChannel'] : [],
+    deny: list === 'deny' ? ['ViewChannel'] : [],
+  });
+
+  it('opens each area only to its team and staff, closing Registered and @everyone last', () => {
+    const channels = [
+      ch('10', 'X-Men', 'category', null),
+      ch('11', 'quartel-xmen', 'text', '10', [
+        view(REG, 'allow'),
+        { id: EVERYONE, type: 'role', allow: ['SendMessages'], deny: [] },
+      ]),
+      ch('12', 'sala-de-perigo', 'voice', '10'),
+      ch('13', 'excluido', 'text', '10'),
+      ch('20', 'Irmandade', 'category', null),
+      ch('30', 'geral', 'text', null),
+    ];
+    const plan = planChannelVisibility({ ...base, channels });
+    const of = (name: string) => plan.filter((c) => c.channelName === name).map((c) => c.kind);
+    expect(of('X-Men')).toEqual([
+      'keep_bot_access',
+      'show_to_faction',
+      'show_to_staff',
+      'hide_from_everyone',
+    ]);
+    expect(of('quartel-xmen')).toEqual([
+      'keep_bot_access',
+      'show_to_faction',
+      'show_to_staff',
+      'close_to_registered',
+      'hide_from_everyone',
+    ]);
+    expect(of('sala-de-perigo')).not.toContain('show_to_registered');
+    expect(of('excluido')).toEqual([]);
+    expect(of('Irmandade')).toContain('show_to_faction');
+    expect(of('geral')).toEqual(['keep_bot_access', 'show_to_registered', 'hide_from_everyone']);
+    const quartel = plan.filter((c) => c.channelName === 'quartel-xmen');
+    expect(quartel.find((c) => c.kind === 'show_to_faction')?.overwrite.id).toBe(XMEN);
+    expect(quartel.some((c) => c.overwrite.id === BROTHERHOOD)).toBe(false);
+    expect(quartel.find((c) => c.kind === 'close_to_registered')?.overwrite).toEqual({
+      id: REG,
+      type: 'role',
+      allow: [],
+      deny: [],
+    });
+    expect(quartel.at(-1)?.overwrite).toEqual({
+      id: EVERYONE,
+      type: 'role',
+      allow: ['SendMessages'],
+      deny: ['ViewChannel'],
+    });
+  });
+
+  it('changes nothing in an area that is already right, and skips teams without a category', () => {
+    const bot = {
+      id: BOT,
+      type: 'member' as const,
+      allow: ['ViewChannel', 'SendMessages', 'EmbedLinks', 'ReadMessageHistory'],
+      deny: [],
+    };
+    const done = [bot, view(XMEN, 'allow'), view(STAFF, 'allow'), view(EVERYONE, 'deny')];
+    const channels = [ch('10', 'X-Men', 'category', null, done), ch('11', 'quartel', 'text', '10', done)];
+    expect(planChannelVisibility({ ...base, channels })).toEqual([]);
+    const none = planChannelVisibility({
+      ...base,
+      factionAreas: [],
+      channels: [ch('11', 'quartel', 'text', '10')],
+    });
+    expect(none.map((c) => c.kind)).toContain('show_to_registered');
+  });
+});

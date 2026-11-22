@@ -71,9 +71,23 @@ Cada ação é um formulário no menu. Ela usa **a mesma regra e a mesma mensage
 
 Toda ação executada fica em `/audit`: quem, quando, qual ação, o membro alvo, os campos e o resultado (`ok: true` ou `ok: false` quando o serviço recusou). Textos longos são cortados em 200 caracteres. Formulário com campo inválido, sessão vencida ou token errado não chega a rodar e não entra na auditoria. A auditoria é guardada por `dashboard.auditDays` (180) dias.
 
-## Acesso de fora do computador
+## Num VPS (ou outro computador)
 
-Por padrão o compose publica só em `127.0.0.1`: o painel abre só na máquina do Legion. Para abrir de outro lugar, **use https** com um proxy reverso. Por http fora do localhost, o login e o cookie passam sem criptografia; o `legion doctor` avisa com ⚠️.
+O painel roda **dentro do mesmo container** dos bots: no VPS você continua só com o Docker, sem nada a mais para instalar. Siga [Ligar](#ligar) normalmente. O compose publica a porta só em `127.0.0.1`, então o painel não fica aberto na internet. Para chegar nele, escolha um dos dois jeitos:
+
+### Túnel SSH (mais simples, nada público)
+
+No seu computador:
+
+```bash
+ssh -L 8081:localhost:8081 usuario@ip-do-vps
+```
+
+Com a conexão aberta, acesse http://localhost:8081 no seu navegador. O `publicUrl` padrão e o redirect `http://localhost:8081/callback` continuam valendo; não precisa de domínio nem de certificado. Fechou o SSH, fechou o painel.
+
+### Proxy reverso com https (para a staff toda, sem SSH)
+
+Para abrir de outro lugar sem túnel, **use https** com um proxy reverso. Por http fora do localhost, o login e o cookie passam sem criptografia; o `legion doctor` avisa com ⚠️.
 
 Exemplo com [Caddy](https://caddyserver.com/) (cuida do certificado sozinho):
 

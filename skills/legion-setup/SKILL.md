@@ -27,7 +27,7 @@ Variable names (values come from the Developer Portal and from Discord):
    - Questions in the terminal (the user runs it; tokens are typed into hidden prompts): `docker run --rm -it -v "$PWD:/out" ghcr.io/uminocelo/legion legion init --out /out` (PowerShell: `"${PWD}:/out"`).
    - By hand: the user copies `.env.example` to `.env` and fills it; you may create `legion.config.yaml` from `legion.config.example.yaml`.
 5. **Invite**: `docker compose run --rm legion legion invite-url`, open the link, authorize.
-6. **Role order**: in Server Settings → Roles, drag the bot's role (the app's name) **above** every role Legion manages (Sinal Detectado, Mutante Registrado, the nine teams, Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). Discord only lets a bot give roles below its own.
+6. **Role order**: in Server Settings → Roles, drag the bot's role (the app's name) **above** every role Legion manages (Sinal Detectado, Herói Registrado, the nine teams, Recruta, Agente, Veterano, Aviso de Live, Vanguarda, Duelista, Estrategista). Discord only lets a bot give roles below its own.
 7. **Check and start**: `docker compose run --rm legion legion doctor` until there is no ❌, then `docker compose up -d`.
 8. **In Discord** (staff): `/cerebro setup` shows what it would change; `/cerebro setup aplicar:true` applies it.
 
@@ -43,6 +43,10 @@ You may read and edit this file (it holds no secrets). Common edits:
 
 After an edit, restart (`docker compose up -d`) and run `legion doctor`. A config error names the line and the key.
 
+## Team areas (optional)
+
+Each team can have its own category, visible only to that team and staff, and a news channel. The server layout comes from the Discord template in `docs/TEMPLATE.md`; Legion never creates channels. Add `categoryId` and `newsChannelId` (ids in quotes) to that team's entry in `factions` (copy the whole list from `docs/CONFIG.md` first), then `/cerebro setup canais:true aplicar:true` and `legion doctor` (**Áreas das equipes** must be ✅).
+
 ## Staff dashboard (optional)
 
 A web page for staff (members, economy, events, war, threat, and audited actions), off by default. Full guide: `docs/DASHBOARD.md`.
@@ -50,7 +54,7 @@ A web page for staff (members, economy, events, war, threat, and audited actions
 1. The user opens the Discord Developer Portal → Cérebro's app → **OAuth2** → **Reset Secret**, and copies it. Never ask them to paste it here.
 2. Tell them to add `DASHBOARD_CLIENT_SECRET=<value>` to `.env` **themselves**. Do not open or read `.env` to check: `legion doctor` shows only whether it is set.
 3. In the same OAuth2 page, **Redirects** → add `<publicUrl>/callback` exactly (default `http://localhost:8081/callback`).
-4. You set `dashboard.enabled: true` in `legion.config.yaml` (and `dashboard.publicUrl` when it is not localhost; use https behind a reverse proxy for outside access).
+4. You set `dashboard.enabled: true` in `legion.config.yaml` (and `dashboard.publicUrl` when it is not localhost; use https behind a reverse proxy for outside access). On a VPS, the simplest access is an SSH tunnel (`ssh -L 8081:localhost:8081 user@vps`, then http://localhost:8081 locally), which keeps the default `publicUrl` and redirect.
 5. Docker: uncomment `- "127.0.0.1:8081:8081"` in `docker-compose.yml`, then `docker compose up -d`.
 6. `legion doctor`: the **Painel da staff** line must be ✅ (❌ = secret missing or port taken; ⚠️ = `publicUrl` not localhost and not https).
 

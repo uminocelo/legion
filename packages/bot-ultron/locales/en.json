@@ -283,6 +283,17 @@
         "threat_range": "Use a level from 0 to {max}.",
         "threat_done": "Threat set to {level} / {max}."
       }
+    },
+    "team_news": {
+      "leading": "⚔️ War: your team leads with {points} points, {gap} ahead of {other}.",
+      "behind": "⚔️ War: your team is #{place} with {points} points, {gap} behind {other}.",
+      "no_points": "⚔️ War: your team has not scored yet. Missions, strikes and events score.",
+      "war_won": "🏆 Your team won the war with {points} points!",
+      "war_ended": "The war is over: your team finished #{place} with {points} points. Winner: {winners}.",
+      "war_ended_none": "The war is over with no points from your team. Winner: {winners}.",
+      "event": "{title}: {outcome}. {count} hero(es) from your team took part.",
+      "victory": "victory",
+      "defeat": "defeat"
     }
   }
 }

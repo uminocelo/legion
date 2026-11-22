@@ -96,7 +96,7 @@ Mesmo vendo o comando, só quem tem esses cargos (ou é dono) consegue usá-lo.
 
 ## Painel da staff (opcional)
 
-Para ver membros, economia, eventos e guerra numa página web, ligue `dashboard.enabled`, coloque o `DASHBOARD_CLIENT_SECRET` no `.env`, adicione o redirect no Developer Portal e tire o `#` da linha `127.0.0.1:8081:8081` do `docker-compose.yml`. Passo a passo em [DASHBOARD.md](DASHBOARD.md).
+Para ver membros, economia, eventos e guerra numa página web, ligue `dashboard.enabled`, coloque o `DASHBOARD_CLIENT_SECRET` no `.env`, adicione o redirect no Developer Portal e tire o `#` da linha `127.0.0.1:8081:8081` do `docker-compose.yml`. Passo a passo em [DASHBOARD.md](DASHBOARD.md). Num VPS o painel vem no mesmo container; acesse por túnel SSH ou por um proxy com https ([Num VPS](DASHBOARD.md#num-vps-ou-outro-computador)).
 
 ## Atualizar, backup, parar
 

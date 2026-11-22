@@ -19,7 +19,7 @@ describe('parseConfig', () => {
     const cfg = parseConfigText('bots: [cerebro]\n');
     expect(cfg.locale).toBe('pt-BR');
     expect(cfg.timezone).toBe('America/Sao_Paulo');
-    expect(cfg.roles.find((r) => r.key === 'registered')?.name).toBe('Mutante Registrado');
+    expect(cfg.roles.find((r) => r.key === 'registered')?.name).toBe('Herói Registrado');
     expect(cfg.factions.map((f) => f.key)).toEqual([...DEFAULT_FACTION_KEYS]);
     expect(cfg.channels.welcome).toBeNull();
     expect(cfg.scheduler.pollIntervalMs).toBe(5000);
