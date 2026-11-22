@@ -13,6 +13,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   BOT_LINKS,
   build,
+  CHAPTERS,
   configBlock,
   PAGES,
   SKILLS_DIR,
@@ -76,6 +77,27 @@ describe('site build', () => {
       expect(html, p.out).not.toMatch(/<(script|img)[^>]+src="https?:/);
       expect(html, p.out).not.toMatch(/<link[^>]+href="https?:/);
     }
+  });
+
+  it('reads as a playbook: chapters in order in the menu, the home page and step 1 pointing to the template', () => {
+    const chapters = CHAPTERS as [string, string][];
+    for (const p of PAGES as { out: string }[]) {
+      const html = page(p.out);
+      const at = chapters.map(([id]) => html.indexOf(`href="playbook-${id}.html"`));
+      expect(
+        at.every((i) => i > 0),
+        p.out,
+      ).toBe(true);
+      expect(
+        [...at].sort((a, b) => a - b),
+        p.out,
+      ).toEqual(at);
+      for (const [id] of BOT_LINKS as [string, string][]) expect(html, p.out).toContain(`href="${id}.html"`);
+    }
+    expect(page('index.html')).toContain('href="playbook-montar.html">Começar pelo playbook');
+    const montar = page('playbook-montar.html');
+    expect(montar).toContain('docs/TEMPLATE.md');
+    expect(montar).toContain('<a href="playbook-montar.html" aria-current="page">');
   });
 
   it('shows every command of a bot on its page, split into player and staff', () => {

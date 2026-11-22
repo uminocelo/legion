@@ -1,0 +1,27 @@
+<section class="page-hero">
+  <p class="eyebrow">Playbook · Capítulo 1</p>
+  <h1>Monte o servidor</h1>
+  <p class="lead">Do servidor vazio ao primeiro herói registrado. O servidor vem de um modelo do Discord; o Legion roda o jogo dentro dele.</p>
+</section>
+
+<section>
+  <h2>Os passos</h2>
+  <ol class="steps">
+    <li><strong>Crie o servidor pelo modelo.</strong> O <a href="https://discord.new/2atTmU2JHg59">modelo do Legion</a> cria as categorias Início, O Mundo, Comunidade, uma área por equipe e Staff, com os cargos e as permissões (<a href="{{doc:docs/TEMPLATE.md}}">o que vem nele</a>).</li>
+    <li><strong>Crie o app do Cérebro.</strong> No Discord Developer Portal, com a Server Members Intent ligada (<a href="{{doc:TUTORIAL.md}}">tutorial</a>).</li>
+    <li><strong>Configure.</strong> <code>legion init</code> pergunta o essencial. Cole os IDs dos canais do modelo em <code>channels</code> e, para cada equipe, a categoria e o canal de notícias em <code>factions</code> (<a href="{{doc:docs/CONFIG.md}}">CONFIG</a>).</li>
+    <li><strong>Suba.</strong> <code>docker compose up -d</code>. Num VPS é igual (<a href="{{doc:docs/SELF_HOSTING.md}}">auto-hospedagem</a>).</li>
+    <li><strong>Acerte cargos e canais.</strong> <code>/cerebro setup aplicar:true canais:true</code>: cria os cargos que faltam e deixa cada área visível só para a sua equipe e a staff.</li>
+    <li><strong>Confira.</strong> <code>legion doctor</code>: cada ❌ diz como corrigir.</li>
+    <li><strong>Teste você mesmo.</strong> Clique em Começar no <code>#boas-vindas</code> e registre um herói.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Escolha os bots</h2>
+  <div class="facts">
+    <div><h3>Só o Cérebro</h3><p>Recepção, cadastro, equipes e cargos. Bom para começar pequeno.</p></div>
+    <div><h3>+ J.A.R.V.I.S. e H.E.R.B.I.E.</h3><p>XP, trivia, missões, créditos e loja; tutorial e ajuda. É o jogo do dia a dia.</p></div>
+    <div><h3>+ Sentinel e ULTRON</h3><p>Lutas, invasões, raids, a guerra de facções e a ameaça. O servidor inteiro joga junto.</p></div>
+  </div>
+</section>

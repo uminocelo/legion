@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import * as p from '@clack/prompts';
+import { cerebro } from '@legion/bot-cerebro';
 import { type BotId, ConfigError, createDb, type Locale, parseEnv, planApps } from '@legion/core';
 import {
   AVAILABLE_BOTS,
@@ -9,14 +10,26 @@ import {
   loadDotEnv,
 } from '@legion/runner';
 import { Command } from 'commander';
+import { PermissionFlagsBits } from 'discord.js';
 import { CONTENT_TYPES, type ContentType, formatValidate, validateContent } from './content-validate.js';
 import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
 import { isSnowflake, writeInitFiles } from './init.js';
-import { inviteUrl } from './invite.js';
+import { invitePermissions, inviteUrl } from './invite.js';
 import { cliLocale, msg } from './messages.js';
 import { formatPlaytest, parseSince, playtestReport } from './playtest.js';
 import { registerCommands } from './register.js';
 import { createDiscordRest } from './rest.js';
+import {
+  createLegionTemplate,
+  createTemplateApi,
+  describeGuildFill,
+  fillGuildTemplate,
+  formatCreatedTemplate,
+  formatFilledTemplate,
+  formatTemplatePlan,
+  TemplateAccessError,
+  templateStatus,
+} from './server-template.js';
 
 const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('1.0.0');
 const configOpt = ['-c, --config <path>', 'legion.config.yaml', DEFAULT_CONFIG_PATH] as const;
@@ -230,6 +243,73 @@ content
     });
     console.log(o.json ? JSON.stringify(report, null, 2) : formatValidate(report));
     process.exitCode = report.exitCode;
+  });
+
+const templateInvite = (clientId: string, guildId: string) => {
+  const permissions = (invitePermissions([cerebro]) | PermissionFlagsBits.ManageGuild).toString();
+  const params = new URLSearchParams({
+    client_id: clientId,
+    scope: 'bot applications.commands',
+    permissions,
+    guild_id: guildId,
+    disable_guild_select: 'true',
+  });
+  return [
+    `O Cérebro não está no servidor ${guildId}.`,
+    'Abra este link, confirme esse servidor e autorize. O cargo do bot precisa ficar no topo da lista.',
+    `https://discord.com/oauth2/authorize?${params}`,
+    `Depois: pnpm legion template --guild ${guildId}`,
+  ].join('\n');
+};
+
+program
+  .command('template')
+  .description('Monta o modelo de servidor do Discord (docs/TEMPLATE.md) com o bot do Cérebro')
+  .option('--guild <id>', 'servidor já criado onde montar o modelo')
+  .option('--create', 'cria o servidor novo, ou publica o modelo no --guild')
+  .action(async (o: { create?: boolean; guild?: string }) => {
+    if (o.guild && !isSnowflake(o.guild)) throw new ConfigError(['--guild precisa ser o ID do servidor']);
+    const envOf = () => {
+      loadDotEnv();
+      return parseEnv(process.env);
+    };
+    if (o.guild) {
+      const env = envOf();
+      const api = createTemplateApi(env.main.token);
+      try {
+        console.log(
+          o.create
+            ? formatFilledTemplate(await fillGuildTemplate(api, o.guild))
+            : await describeGuildFill(api, o.guild),
+        );
+      } catch (err) {
+        if (err instanceof TemplateAccessError) {
+          console.log(templateInvite(env.main.clientId, o.guild));
+          process.exitCode = 1;
+          return;
+        }
+        throw err;
+      }
+      return;
+    }
+    if (!o.create) {
+      console.log(formatTemplatePlan());
+      try {
+        const env = envOf();
+        console.log(`\n${await templateStatus(createTemplateApi(env.main.token))}`);
+      } catch (err) {
+        console.log(
+          `\n${
+            err instanceof ConfigError
+              ? 'Não conferi os servidores do bot: o .env está incompleto. Rode legion doctor.'
+              : `Não conferi os servidores do bot: ${err instanceof Error ? err.message : err}`
+          }`,
+        );
+      }
+      return;
+    }
+    const env = envOf();
+    console.log(formatCreatedTemplate(await createLegionTemplate(createTemplateApi(env.main.token))));
   });
 
 program.parseAsync().catch((err) => {
