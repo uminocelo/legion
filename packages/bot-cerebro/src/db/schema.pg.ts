@@ -125,6 +125,8 @@ export const cerebroSquads = pgTable(
     nameKey: text('name_key').notNull(),
     baseFaction: text('base_faction').notNull(),
     founderMemberId: text('founder_member_id').notNull(),
+    /** Current co-leader member id (US-38); null when none. */
+    coLeaderMemberId: text('co_leader_member_id'),
     // requested | active | refused | archived
     status: text('status').notNull(),
     code: text('code'),

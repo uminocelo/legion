@@ -43,6 +43,13 @@
       "when": 1795300000000,
       "tag": "0005_supporter_cosmetics",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795400000000,
+      "tag": "0006_squad_coleader",
+      "breakpoints": true
     }
   ]
 }

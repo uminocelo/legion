@@ -303,6 +303,8 @@
       "joined": "You joined **{name}** ({team}).",
       "queue_left_title": "Leader left",
       "queue_left_body": "**{name}** was archived because the leader left the server.",
+      "queue_transfer_title": "Leadership transferred",
+      "queue_transfer_body": "**{name}**: the leader left the server and leadership moved to the co-leader.",
       "content_not_founder": "Only the leader of an active squad can submit content.",
       "content_jarvis_off": "J.A.R.V.I.S. must be enabled to receive squad content.",
       "content_problem_missing": "Attach a `.yaml` or `.yml` file.",

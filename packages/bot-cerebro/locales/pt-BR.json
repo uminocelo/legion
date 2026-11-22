@@ -303,6 +303,8 @@
       "joined": "Você entrou em **{name}** ({team}).",
       "queue_left_title": "Líder saiu",
       "queue_left_body": "**{name}** foi arquivado porque o líder saiu do servidor.",
+      "queue_transfer_title": "Liderança transferida",
+      "queue_transfer_body": "**{name}**: o líder saiu do servidor e a liderança passou ao co-líder.",
       "content_not_founder": "Só o líder de um esquadrão ativo pode enviar conteúdo.",
       "content_jarvis_off": "O J.A.R.V.I.S. precisa estar ligado para receber conteúdo de esquadrão.",
       "content_problem_missing": "Anexe um arquivo `.yaml` ou `.yml`.",
