@@ -97,6 +97,10 @@ Itens vêm de arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)) ou do Discor
 | `/jarvis item desativar item` | Tira o item de jogo e da loja na hora. Desequipa de quem usa (responde quantos) e cada um continua com o item. Vale mesmo depois de reiniciar |
 | `/jarvis item ativar item` | Volta um item desativado. Quem tem precisa equipar de novo |
 
+## Áreas e notícias das equipes
+
+Cada equipe pode ter uma categoria só dela (`factions[].categoryId`) e um canal de notícias (`factions[].newsChannelId`), veja [CONFIG.md](CONFIG.md#factions) e o [modelo de servidor](TEMPLATE.md). `/cerebro setup canais:true aplicar:true` fecha cada área para quem é de outra equipe; o `legion doctor` confere (**Áreas das equipes**). No canal de notícias, o ULTRON posta o placar da equipe na guerra (no máximo uma vez por hora, só quando muda), o resultado da guerra e o de cada evento, com quantos heróis da equipe participaram.
+
 ## Painel da staff
 
 Com o painel ligado ([DASHBOARD.md](DASHBOARD.md)), as mesmas tarefas têm formulários na web: dar e tirar créditos, dar item, mudar o preço de um item (sobrevive a importações), agendar, iniciar ou cancelar eventos, iniciar e encerrar a guerra e definir a ameaça. As regras e as mensagens são as dos comandos, e tudo fica na auditoria (`/audit`).
