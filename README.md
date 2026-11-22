@@ -12,7 +12,7 @@ Kit de bots de RPG para Discord, **auto-hospedável**, inspirado nos X-Men. Um �
 
 ![Ficha de herói de exemplo gerada pelo /perfil](website/assets/ficha-exemplo.png)
 
-**Primeira vez?** Siga o [TUTORIAL.md](TUTORIAL.md): do zero ao primeiro jogo, com uma conferência no fim de cada passo. Site do projeto: [uminocelo.github.io/legion](https://uminocelo.github.io/legion/).
+**Primeira vez?** Siga o [TUTORIAL.md](TUTORIAL.md): do zero ao primeiro jogo, com uma conferência no fim de cada passo. Site do projeto: [uminocelo.github.io/legion](https://uminocelo.github.io/legion/), com o [playbook](https://uminocelo.github.io/legion/playbook-montar.html) (montar o servidor pelo [modelo](docs/TEMPLATE.md), a primeira semana, cuidar da comunidade, criar conteúdo).
 
 ## Início rápido (3 passos)
 
@@ -158,7 +158,7 @@ A pasta [`skills/`](skills/) tem cinco skills que ensinam um agente de IA (Claud
 
 ## Site
 
-A página do projeto fica em [`website/`](website/): uma página por bot (com os comandos gerados do próprio código) um guia para [personalizar](https://uminocelo.github.io/legion/personalizar.html) missões, trivia, inimigos, itens e textos, e editores no navegador para montar [missões](https://uminocelo.github.io/legion/editor-missoes.html), [perguntas](https://uminocelo.github.io/legion/editor-trivia.html), [inimigos](https://uminocelo.github.io/legion/editor-inimigos.html) e [itens](https://uminocelo.github.io/legion/editor-itens.html) com as mesmas regras dos bots. Estático, sem chamadas externas: nada sai do navegador. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente: `pnpm site:build` e abra `website/dist/index.html`. Detalhes em [website/README.md](website/README.md).
+A página do projeto fica em [`website/`](website/): o playbook em quatro capítulos, uma página por bot (com os comandos gerados do próprio código) um guia para [personalizar](https://uminocelo.github.io/legion/personalizar.html) missões, trivia, inimigos, itens e textos, e editores no navegador para montar [missões](https://uminocelo.github.io/legion/editor-missoes.html), [perguntas](https://uminocelo.github.io/legion/editor-trivia.html), [inimigos](https://uminocelo.github.io/legion/editor-inimigos.html) e [itens](https://uminocelo.github.io/legion/editor-itens.html) com as mesmas regras dos bots. Estático, sem chamadas externas: nada sai do navegador. Publicada em [uminocelo.github.io/legion](https://uminocelo.github.io/legion/) a cada mudança em `website/` no `main` (workflow `Pages`). Para ver localmente: `pnpm site:build` e abra `website/dist/index.html`. Detalhes em [website/README.md](website/README.md).
 
 ## Desenvolvimento
 
