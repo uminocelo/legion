@@ -16,10 +16,11 @@ import { CerebroRepo, type MemberRow, type MutantRow, pendingPowersOf, toMemberV
 import { validateCodename } from './domain/codename.js';
 import { expectedRoles, transition } from './domain/onboarding.js';
 import { FactionJoin } from './faction-join.js';
+import { InviteTracker } from './invite-tracker.js';
 import { OriginChange } from './origin-change.js';
 import { PowerFlow } from './power-flow.js';
 import { CARD_FILE, SheetCard } from './sheet.js';
-import { Squads } from './squads.js';
+import { renderSquadOutcome, Squads } from './squads.js';
 import { TeamMove } from './team-move.js';
 import { CerebroUi, channelMention } from './ui.js';
 
@@ -38,6 +39,7 @@ export class CerebroFlow {
   readonly teamMove: TeamMove;
   readonly factionJoin: FactionJoin;
   readonly squads: Squads;
+  readonly invites: InviteTracker;
 
   constructor(readonly ctx: BotContext<CerebroConfig>) {
     this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
@@ -51,6 +53,7 @@ export class CerebroFlow {
     this.teamMove = new TeamMove(this);
     this.factionJoin = new FactionJoin(this);
     this.squads = new Squads(this);
+    this.invites = new InviteTracker(this);
   }
 
   /** Origins offered now: configured ones that have at least one power (when the catalog is on). */
@@ -119,12 +122,18 @@ export class CerebroFlow {
         await this.ctx.bus.emit(tx, 'player.rejoined', { memberId: row.id, discordUserId: member.userId });
       return { row, isRejoin: Boolean(before) };
     });
-    this.ctx.log.info({ userId: member.userId, step: row.onboardingStep, isRejoin }, 'member joined');
-    await this.applyExpectedRoles(row);
+    let current = row;
+    if (this.ctx.config.squads.enabled && current.onboardingStep !== 'registered') {
+      const squadId = await this.invites.diff();
+      if (squadId && squadId !== current.pendingSquadId)
+        current = (await this.repo.updateMember(current.id, { pendingSquadId: squadId })) ?? current;
+    }
+    this.ctx.log.info({ userId: member.userId, step: current.onboardingStep, isRejoin }, 'member joined');
+    await this.applyExpectedRoles(current);
     const welcome = this.ctx.config.channels.welcome;
     if (!welcome) return;
-    if (row.onboardingStep === 'registered') {
-      const mutant = await this.repo.mutantByMemberId(row.id);
+    if (current.onboardingStep === 'registered') {
+      const mutant = await this.repo.mutantByMemberId(current.id);
       await this.safeSend(welcome, this.ui.welcomeBack(mutant?.codename ?? `<@${member.userId}>`));
     } else {
       await this.safeSend(welcome, this.ui.welcome(member.userId));
@@ -135,6 +144,7 @@ export class CerebroFlow {
     const row = await this.repo.memberByDiscordId(userId);
     if (row && !row.leftAt)
       await this.repo.updateMember(row.id, { leftAt: this.ctx.clock.now().toISOString() });
+    if (row) await this.squads.onServerLeft(row);
   }
 
   private async safeSend(channelId: string, msg: Parameters<BotContext['gateway']['sendMessage']>[1]) {
@@ -273,7 +283,72 @@ export class CerebroFlow {
         pendingOrigin: origin,
         ...(changed ? { pendingPowers: null, pendingArchetype: null } : {}),
       })) ?? row;
+    if (this.ctx.config.squads.enabled) return r.update(await this.squadOffer(next, locale));
     await r.update(await this.currentScreen(next, locale));
+  }
+
+  /** Squad step after origin. Skip clears the invite hint and continues the normal flow. */
+  private async squadOffer(row: MemberRow, locale: Locale, prefix?: string): Promise<OutgoingMessage> {
+    const hinted = row.pendingSquadId ? await this.squads.byId(row.pendingSquadId) : null;
+    const live = hinted?.status === 'active' ? hinted : null;
+    return this.ui.squadOffer(locale, {
+      prefix,
+      hint: live ? { name: live.name, team: this.ui.factionLabel(live.baseFaction, locale) } : undefined,
+    });
+  }
+
+  async acceptSquadHint(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    if (!this.ctx.config.squads.enabled || stepOf(row) !== 'origin_chosen')
+      return r.update(await this.currentScreen(row, locale, this.t('errors.continue', {}, locale)));
+    const outcome = await this.squads.join({
+      discordUserId: i.userId,
+      squadId: row.pendingSquadId ?? undefined,
+      via: 'link',
+    });
+    await this.afterSquadChoice(i.userId, r, locale, outcome);
+  }
+
+  async skipSquad(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.loadOrCreate(i.userId);
+    if (row.pendingSquadId) await this.repo.updateMember(row.id, { pendingSquadId: null });
+    const fresh = (await this.repo.memberById(row.id)) ?? row;
+    await r.update(await this.currentScreen(fresh, locale));
+  }
+
+  async askSquadCode(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    await r.showModal(this.ui.squadCodeModal(locale));
+  }
+
+  async submitSquadCode(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    await r.defer(true);
+    const outcome = await this.squads.join({
+      discordUserId: i.userId,
+      code: i.fields?.codigo ?? '',
+      via: 'code',
+    });
+    await this.afterSquadChoice(i.userId, r, locale, outcome, true);
+  }
+
+  private async afterSquadChoice(
+    userId: string,
+    r: Responder,
+    locale: Locale,
+    outcome: { ok: boolean; key: string; vars?: Record<string, string | number> },
+    modal = false,
+  ): Promise<void> {
+    const fresh = await this.repo.memberByDiscordId(userId);
+    const message = renderSquadOutcome(this.ctx.i18n, outcome, locale);
+    const send = async (msg: OutgoingMessage) => (modal ? r.send(msg) : r.update(msg));
+    if (!fresh) return send(this.ui.text(message));
+    if (outcome.ok || outcome.key === 'origin') return send(await this.currentScreen(fresh, locale, message));
+    if (this.ctx.config.squads.enabled && stepOf(fresh) === 'origin_chosen')
+      return send(await this.squadOffer(fresh, locale, message));
+    return send(this.ui.text(message));
   }
 
   /** "Trocar origem" on the power picker: back to the origin menu, picks cleared. */
@@ -420,21 +495,24 @@ export class CerebroFlow {
             pendingArchetype: null,
             pendingPowers: null,
             pendingOrigin: null,
+            pendingSquadId: null,
           },
           tx,
         );
         if (!member) throw new Error('member vanished');
-        await this.repo.insertFactionChange(
-          {
-            memberId: member.id,
-            from: null,
-            to: faction,
-            reason: 'onboarding',
-            sourceKey: `onboarding:${member.id}`,
-            by: null,
-          },
-          tx,
-        );
+        // A squad join already recorded the team. A second change from null would be a lie.
+        if (!fresh.factionChangedAt)
+          await this.repo.insertFactionChange(
+            {
+              memberId: member.id,
+              from: null,
+              to: faction,
+              reason: 'onboarding',
+              sourceKey: `onboarding:${member.id}`,
+              by: null,
+            },
+            tx,
+          );
         await this.ctx.bus.emit(tx, 'player.created', {
           memberId: member.id,
           discordUserId: member.discordUserId,

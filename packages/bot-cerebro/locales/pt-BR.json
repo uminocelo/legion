@@ -160,6 +160,7 @@
       "heroi_origem": "Escolhe a origem do seu herói (uma vez, para quem se registrou antes das origens)",
       "equipe_mover": "Move um herói de equipe, com motivo (staff).",
       "esquadrao_criar": "Pede para fundar um esquadrão na sua equipe.",
+      "esquadrao_entrar": "Entra num esquadrão com o código de 6 caracteres.",
       "esquadrao_sair": "Sai do seu esquadrão. O líder não sai: a staff arquiva.",
       "esquadrao_ver": "Mostra o esquadrão. O convite e o código aparecem só para o líder e a staff.",
       "esquadrao_aprovar": "Aprova um pedido de esquadrão (staff).",
@@ -190,10 +191,12 @@
         "esquadrao_opt": "Esquadrão"
       },
       "esquadrao": {
-        "description": "Cria, vê ou sai de um esquadrão",
+        "description": "Cria, vê, entra ou sai de um esquadrão",
         "criar": "Pede para fundar um esquadrão",
         "nome": "Nome do esquadrão",
         "base": "Equipe base",
+        "entrar": "Entra num esquadrão com o código",
+        "codigo": "Código de 6 caracteres",
         "sair": "Sai do seu esquadrão",
         "ver": "Mostra um esquadrão",
         "nome_opt": "Nome (padrão: o seu)"
@@ -260,7 +263,25 @@
       "dash_approve": "Aprovar esquadrão",
       "dash_refuse": "Recusar esquadrão",
       "dash_squad": "Id do esquadrão",
-      "dash_reason": "Motivo"
+      "dash_reason": "Motivo",
+      "offer_title": "Esquadrão",
+      "offer": "Se você tem um código de esquadrão, digite agora. Senão, siga o cadastro.",
+      "hint": "Você chegou pelo convite do esquadrão **{name}** ({team}). Entrar?",
+      "join_button": "Entrar",
+      "skip_button": "Seguir sem esquadrão",
+      "code_button": "Tenho um código de esquadrão",
+      "code_modal_title": "Código do esquadrão",
+      "code_input": "Código",
+      "other_team": "Troque de equipe primeiro. Entre em **{team}** pela missão de recrutamento.",
+      "origin": "**{team}** não aceita essa origem.",
+      "already_in_squad": "Você já está em um esquadrão.",
+      "bad_code": "Código inválido.",
+      "code_limited": "Muitas tentativas com código errado. Espere {minutes} min e tente de novo.",
+      "squad_full": "Esse esquadrão está cheio ({max} membros).",
+      "squad_inactive": "Esse esquadrão não está ativo.",
+      "joined": "Você entrou em **{name}** ({team}).",
+      "queue_left_title": "Líder saiu",
+      "queue_left_body": "**{name}** foi arquivado porque o líder saiu do servidor."
     },
     "powers": {
       "type": {

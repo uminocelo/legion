@@ -4,8 +4,20 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-22
+
+Squads: a founder requests a group under a base team, staff approve it, and members join by invite or by code.
+
 ### Upgrade notes
+- **Squads off by default.** `squads.enabled: false` leaves registration, teams and the invite link as they were. Turning them on is [docs/SQUADS.md](docs/SQUADS.md).
+- **Migration** `0004_squads` on Cérebro (squads, squad members, `members.pending_squad_id`). Existing servers get empty tables. It runs on restart.
+- **Guild Invites.** With squads on, the process also listens for invite create and delete. This is not a privileged intent in the Developer Portal. Restart after you change `squads.enabled`.
+- **Permissions.** With squads on, `legion invite-url` also asks for Manage Server, Create Invite, Create Private Threads and Manage Threads. With squads off, the link does not. `legion doctor` (line **Esquadrões**) names each missing one. Every team except Independente needs `factions[].squadChannelId`, and `channels.welcome` is where the permanent invite is created.
 - **The `registered` role is now "Herói Registrado".** On the first start, Cérebro renames your existing "Mutante Registrado" role in place: same role, every member keeps it, channel permissions stay. Nothing to do. To keep the old name, set `name: Mutante Registrado` on the `registered` role in `roles`. If the bot's role sits below it, the rename fails with a warning in the logs and the old name keeps working.
+
+### Added
+- Squads (US-35): `/esquadrao criar`, `entrar`, `sair` and `ver`. Staff approve, refuse or archive with `/cerebro esquadrao` or the **Esquadrões** dashboard panel; approve, refuse and staff archive are audited. An approved squad gets a role, a private thread, a permanent invite and a 6-character code. A new member joining by that invite or code joins the base team when they are still registering or Independente. An Irmandade squad refuses any other origin and registration continues. One squad per member. The last free seat is given to one joiner. A deleted invite is recreated the next time the leader or staff opens `/esquadrao ver`. Leaving the server drops the seat; the founder leaving archives the squad and posts in the mod queue. A team change that is not the join itself drops the seat, including the leader's.
+- Events `squad.created`, `squad.joined` and `squad.left`. `player.faction_changed` accepts `reason: 'squad'`.
 
 ### Changed
 - Default role name `registered`: "Mutante Registrado" → "Herói Registrado", since heroes of every origin register. Roles gain `renamedFrom`, so role sync renames instead of creating a duplicate.
@@ -217,7 +229,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/uminocelo/legion/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/uminocelo/legion/compare/v0.10.0...v1.0.0
 [0.10.0]: https://github.com/uminocelo/legion/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/uminocelo/legion/compare/v0.9.0...v0.9.1

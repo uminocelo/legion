@@ -47,6 +47,15 @@ After an edit, restart (`docker compose up -d`) and run `legion doctor`. A confi
 
 Each team can have its own category, visible only to that team and staff, and a news channel. The server layout comes from the Discord template in `docs/TEMPLATE.md`; Legion never creates channels. Add `categoryId` and `newsChannelId` (ids in quotes) to that team's entry in `factions` (copy the whole list from `docs/CONFIG.md` first), then `/cerebro setup canais:true aplicar:true` and `legion doctor` (**Áreas das equipes** must be ✅).
 
+## Squads (optional)
+
+Off by default (`squads.enabled: false`). Full guide: `docs/SQUADS.md`.
+
+1. Set `squads.enabled: true`. `founderRole` is a `roles` key or a role id (`null` = only staff can found). `maxPerFounder` (1), `maxMembers` (50) and `maxSquads` (20) have defaults.
+2. Copy the whole `factions` list from `docs/CONFIG.md` and set `squadChannelId` (quoted channel id) on every team except `independent`. `channels.welcome` is where the permanent invite is created.
+3. Restart (`docker compose up -d`). `legion invite-url` then also asks for Manage Server, Create Instant Invite, Create Private Threads and Manage Threads. Authorize again if `legion doctor`'s **Esquadrões** line names a missing permission. Guild Invites is not a privileged portal intent; the restart is what turns it on.
+4. A founder-role member uses `/esquadrao criar`. Staff approve or refuse in `#fila-moderacao`, with `/cerebro esquadrao`, or on the dashboard **Esquadrões** panel. Approval is audited.
+
 ## Staff dashboard (optional)
 
 A web page for staff (members, economy, events, war, threat, and audited actions), off by default. Full guide: `docs/DASHBOARD.md`.
@@ -75,7 +84,7 @@ docker compose run --rm legion legion content validate data/content
 
 ## Update, backup
 
-- Update: `docker compose pull && docker compose up -d`; migrations run on their own. Pin a version with `LEGION_VERSION=1.0.0` in `.env` (the user edits it). Read `CHANGELOG.md` "Upgrade notes" first.
+- Update: `docker compose pull && docker compose up -d`; migrations run on their own. Pin a version with `LEGION_VERSION=1.1.0` in `.env` (the user edits it). Read `CHANGELOG.md` "Upgrade notes" first.
 - Back up the `data/` folder before every update (it holds the SQLite database and server content). Never open `data/legion.db` from the host while the container runs; stop it first or copy the file.
 
 ## pt-BR style

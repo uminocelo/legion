@@ -97,6 +97,18 @@ Itens vêm de arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)) ou do Discor
 | `/jarvis item desativar item` | Tira o item de jogo e da loja na hora. Desequipa de quem usa (responde quantos) e cada um continua com o item. Vale mesmo depois de reiniciar |
 | `/jarvis item ativar item` | Volta um item desativado. Quem tem precisa equipar de novo |
 
+## Esquadrões
+
+Desligados por padrão. O passo a passo de ligar, fundar e entrar está em [SQUADS.md](SQUADS.md). A staff aprova, recusa e arquiva; cada uma dessas ações fica em `/audit`.
+
+| Comando | O que faz |
+|---|---|
+| `/cerebro esquadrao aprovar esquadrao` | Cria o cargo, o tópico privado, o convite permanente e o código. Quem fundou entra no esquadrão |
+| `/cerebro esquadrao recusar esquadrao motivo` | Recusa o pedido. O motivo vai para quem fundou, se a DM estiver aberta |
+| `/cerebro esquadrao arquivar esquadrao motivo` | Arquiva um esquadrão ativo. Some o cargo, o tópico e o convite. Os membros continuam na equipe |
+
+O pedido também aparece em `channels.modQueue`, com **Aprovar** e **Recusar**. No painel, a tabela **Esquadrões** faz as mesmas duas coisas. Quem fundou e sai do servidor arquiva o esquadrão sem linha de auditoria; a fila avisa **Líder saiu**.
+
 ## Áreas e notícias das equipes
 
 Cada equipe pode ter uma categoria só dela (`factions[].categoryId`) e um canal de notícias (`factions[].newsChannelId`), veja [CONFIG.md](CONFIG.md#factions) e o [modelo de servidor](TEMPLATE.md). `/cerebro setup canais:true aplicar:true` fecha cada área para quem é de outra equipe; o `legion doctor` confere (**Áreas das equipes**). No canal de notícias, o ULTRON posta o placar da equipe na guerra (no máximo uma vez por hora, só quando muda), o resultado da guerra e o de cada evento, com quantos heróis da equipe participaram.

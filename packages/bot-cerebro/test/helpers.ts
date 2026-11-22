@@ -47,12 +47,15 @@ export async function register(
   await join(t, userId);
   await t.interact({ kind: 'component', userId, customId: 'cerebro:v1:start' });
   await t.interact({ kind: 'component', userId, customId: 'cerebro:v1:rules' });
-  await t.interact({
+  const originId = await t.interact({
     kind: 'component',
     userId,
     customId: 'cerebro:v1:origin',
     values: [opts.origin ?? 'mutante'],
   });
+  const offered = t.gateway.lastReply(originId)?.components?.flat() ?? [];
+  if (offered.some((b) => 'customId' in b && b.customId.includes('squad-skip')))
+    await t.interact({ kind: 'component', userId, customId: 'cerebro:v1:squad-skip' });
   await t.interact({ kind: 'component', userId, customId: 'cerebro:v1:archetype', values: ['Elemental'] });
   return t.interact({
     kind: 'modal',

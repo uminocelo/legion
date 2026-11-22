@@ -26,6 +26,10 @@ export const ids = {
   archetype: () => customId('cerebro', V, 'archetype'),
   reopen: () => customId('cerebro', V, 'reopen'),
   mutant: () => customId('cerebro', V, 'mutant'),
+  squadJoin: () => customId('cerebro', V, 'squad-join'),
+  squadSkip: () => customId('cerebro', V, 'squad-skip'),
+  squadCode: () => customId('cerebro', V, 'squad-code'),
+  squadCodeModal: () => customId('cerebro', V, 'squad-code-modal'),
   optin: (roleKey: string) => customId('cerebro', V, 'optin', roleKey),
   share: (memberId: string) => customId('cerebro', V, 'share', memberId),
 };
@@ -249,6 +253,72 @@ export class CerebroUi {
 
   text(content: string): OutgoingMessage {
     return { persona: 'cerebro', ephemeral: true, content };
+  }
+
+  /** After the origin step, when squads are on. The code button is always here. */
+  squadOffer(locale: Locale, o: { hint?: { name: string; team: string }; prefix?: string }): OutgoingMessage {
+    const row: ActionRow = o.hint
+      ? [
+          {
+            type: 'button',
+            customId: ids.squadJoin(),
+            label: this.t('squads.join_button', {}, locale),
+            style: 'success',
+          },
+          {
+            type: 'button',
+            customId: ids.squadSkip(),
+            label: this.t('squads.skip_button', {}, locale),
+            style: 'secondary',
+          },
+        ]
+      : [
+          {
+            type: 'button',
+            customId: ids.squadSkip(),
+            label: this.t('squads.skip_button', {}, locale),
+            style: 'secondary',
+          },
+        ];
+    return {
+      persona: 'cerebro',
+      ephemeral: true,
+      ...(o.prefix ? { content: o.prefix } : {}),
+      embeds: [
+        {
+          title: this.t('squads.offer_title', {}, locale),
+          description: o.hint ? this.t('squads.hint', o.hint, locale) : this.t('squads.offer', {}, locale),
+        },
+      ],
+      components: [
+        row,
+        [
+          {
+            type: 'button',
+            customId: ids.squadCode(),
+            label: this.t('squads.code_button', {}, locale),
+            style: 'primary',
+          },
+        ],
+      ],
+    };
+  }
+
+  squadCodeModal(locale: Locale): Modal {
+    return {
+      customId: ids.squadCodeModal(),
+      title: this.t('squads.code_modal_title', {}, locale).slice(0, 45),
+      inputs: [
+        {
+          customId: 'codigo',
+          label: this.t('squads.code_input', {}, locale).slice(0, 45),
+          style: 'short',
+          minLength: 6,
+          maxLength: 6,
+          required: true,
+        },
+      ],
+    };
   }
 
   optIns(locale: Locale, current: readonly string[], header?: Embed): OutgoingMessage {

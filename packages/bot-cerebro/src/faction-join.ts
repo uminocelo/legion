@@ -12,7 +12,13 @@ export const FACTION_JOIN = 'cerebro.faction-join';
 export async function recordFactionChange(
   flow: CerebroFlow,
   tx: Executor,
-  v: { memberId: string; to: string; reason: 'arc' | 'staff'; sourceKey: string; by: string | null },
+  v: {
+    memberId: string;
+    to: string;
+    reason: 'arc' | 'staff' | 'squad';
+    sourceKey: string;
+    by: string | null;
+  },
 ): Promise<MemberRow | null> {
   const { ctx, repo } = flow;
   const fresh = await repo.memberById(v.memberId, tx);

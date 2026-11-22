@@ -7,7 +7,7 @@ import { PermissionFlagsBits } from 'discord.js';
 import { describe, expect, it } from 'vitest';
 import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
 import { configFile, envFile, isSnowflake, writeInitFiles } from './init.js';
-import { invitePermissions, inviteUrl } from './invite.js';
+import { invitePermissions, inviteUrl, SQUAD_INVITE_PERMISSIONS } from './invite.js';
 import { channelPermissions } from './permissions.js';
 import { registerCommands } from './register.js';
 import { type ApiChannel, type ApiRole, type DiscordRest, RestError } from './rest.js';
@@ -279,6 +279,16 @@ describe('legion invite-url', () => {
     expect(perms).toBe(invitePermissions([cerebro]));
     expect(perms & P.ManageRoles).toBe(P.ManageRoles);
     expect(perms & P.Administrator).toBe(0n);
+    expect(perms & P.ManageGuild).toBe(0n);
+  });
+
+  it('adds the squad bits only when the caller passes them', () => {
+    const url = new URL(inviteUrl(APP, [cerebro], SQUAD_INVITE_PERMISSIONS));
+    const perms = BigInt(url.searchParams.get('permissions') ?? '0');
+    expect(perms & P.ManageGuild).toBe(P.ManageGuild);
+    expect(perms & P.CreateInstantInvite).toBe(P.CreateInstantInvite);
+    expect(perms & P.CreatePrivateThreads).toBe(P.CreatePrivateThreads);
+    expect(perms & P.ManageThreads).toBe(P.ManageThreads);
   });
 });
 

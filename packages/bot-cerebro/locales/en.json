@@ -160,6 +160,7 @@
       "heroi_origem": "Picks your hero's origin (once, for heroes registered before origins)",
       "equipe_mover": "Moves a hero to another team, with a reason (staff).",
       "esquadrao_criar": "Asks to found a squad on your team.",
+      "esquadrao_entrar": "Joins a squad with the 6-character code.",
       "esquadrao_sair": "Leaves your squad. The leader cannot leave: staff archives it.",
       "esquadrao_ver": "Shows a squad. The invite and code are visible only to the leader and staff.",
       "esquadrao_aprovar": "Approves a squad request (staff).",
@@ -190,10 +191,12 @@
         "esquadrao_opt": "Squad"
       },
       "esquadrao": {
-        "description": "Creates, views, or leaves a squad",
+        "description": "Creates, views, joins, or leaves a squad",
         "criar": "Asks to found a squad",
         "nome": "Squad name",
         "base": "Base team",
+        "entrar": "Joins a squad with the code",
+        "codigo": "6-character code",
         "sair": "Leaves your squad",
         "ver": "Shows a squad",
         "nome_opt": "Name (default: yours)"
@@ -260,7 +263,25 @@
       "dash_approve": "Approve squad",
       "dash_refuse": "Refuse squad",
       "dash_squad": "Squad id",
-      "dash_reason": "Reason"
+      "dash_reason": "Reason",
+      "offer_title": "Squad",
+      "offer": "If you have a squad code, enter it now. Otherwise, continue registration.",
+      "hint": "You arrived through the invite of **{name}** ({team}). Join?",
+      "join_button": "Join",
+      "skip_button": "Continue without a squad",
+      "code_button": "I have a squad code",
+      "code_modal_title": "Squad code",
+      "code_input": "Code",
+      "other_team": "Switch teams first. Join **{team}** through the recruitment mission.",
+      "origin": "**{team}** does not accept that origin.",
+      "already_in_squad": "You are already in a squad.",
+      "bad_code": "Invalid code.",
+      "code_limited": "Too many wrong codes. Wait {minutes} min and try again.",
+      "squad_full": "That squad is full ({max} members).",
+      "squad_inactive": "That squad is not active.",
+      "joined": "You joined **{name}** ({team}).",
+      "queue_left_title": "Leader left",
+      "queue_left_body": "**{name}** was archived because the leader left the server."
     },
     "powers": {
       "type": {

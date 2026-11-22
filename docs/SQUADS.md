@@ -1,0 +1,65 @@
+# Esquadrões
+
+Um esquadrão é um grupo dentro de uma equipe. Quem funda convida outras pessoas para jogarem juntas, com um cargo, um tópico privado, um convite permanente e um código de 6 caracteres.
+
+Desligado por padrão (`squads.enabled: false`). Nada muda até você ligar.
+
+## Ligar
+
+```yaml
+squads:
+  enabled: true
+  founderRole: staff_council   # key de roles, ou o ID do cargo; null = só a staff funda
+  maxPerFounder: 1             # 1–50
+  maxMembers: 50               # 1–1000, contando quem fundou
+  maxSquads: 20                # 1–250, pedidos e ativos
+```
+
+Cada equipe que não seja Independente precisa de `factions[].squadChannelId`: o canal de texto onde o tópico privado do esquadrão é criado. O convite permanente sai em `channels.welcome`. Os dois são IDs entre aspas. Escrever `factions` troca a lista inteira; copie as 9 equipes de [CONFIG.md](CONFIG.md#factions) antes de acrescentar o canal.
+
+Reinicie (`docker compose up -d`). Com esquadrões ligados, o processo também escuta convites do servidor. Não é uma intent privilegiada no Developer Portal: o reinício basta.
+
+O `legion doctor` ganha a linha **Esquadrões**:
+
+- ✅ permissões e canais ok
+- ❌ lista cada permissão que falta: **Gerenciar servidor**, **Criar convite**, **Criar tópicos privados**, **Gerenciar tópicos**
+- ⚠️ não conseguiu ler as permissões, alguma equipe está sem `squadChannelId`, ou o convite de um esquadrão ativo sumiu do Discord
+
+`legion invite-url` só pede essas quatro permissões quando `squads.enabled` está ligado e o Cérebro está em `bots`. Com esquadrões desligados, o link continua o de antes. Se o doctor apontar falta de permissão, rode o invite de novo e autorize, ou marque as permissões no cargo do bot.
+
+## Fundar
+
+`/esquadrao criar` pede o nome e a equipe base. Quem funda precisa ser um herói registrado, ter o cargo de `founderRole` (a staff passa mesmo sem ele) e uma origem que a equipe aceite. O nome tem de 3 a 32 caracteres e não pode ser o de um personagem ou equipe da Marvel, nem repetir um esquadrão que já existe. Independente não serve de base.
+
+O pedido vai para `channels.modQueue`, com os botões **Aprovar** e **Recusar**, e fica em `squad.created`. A staff decide por ali, por `/cerebro esquadrao aprovar` ou `recusar` (com motivo), ou pelo painel **Esquadrões**. Recusar e aprovar ficam na auditoria (`/audit`). Um segundo clique não cria outro esquadrão.
+
+Aprovar cria, de uma vez:
+
+- o cargo do esquadrão (abaixo do cargo do bot)
+- um tópico privado no `squadChannelId` da equipe, com quem fundou
+- um convite permanente em `channels.welcome`
+- um código de 6 caracteres
+
+Quem fundou recebe o código na resposta e na DM, e já entra como membro. Se o Discord recusar (permissão, canal faltando), o pedido continua aguardando: corrija e aprove de novo. O que já tinha sido criado é reaproveitado.
+
+## Entrar
+
+Quem chega pelo convite, e ainda não é herói, vê a pergunta depois de escolher a origem: entrar naquele esquadrão ou seguir sem ele. **Tenho um código de esquadrão** abre o código. Quem já é herói usa `/esquadrao entrar`.
+
+Entram juntos na equipe base e no esquadrão (`squad.joined`):
+
+- quem ainda está no cadastro, ou já está em Independente, muda para a equipe do esquadrão. Essa mudança não conta a espera de `teams.switchCooldownDays`
+- quem já está na equipe do esquadrão só ganha o lugar
+- quem está em outra equipe ouve para trocar de equipe primeiro, pela missão de recrutamento. Nada muda
+
+A Irmandade só aceita origem Mutante ou Inumano. Outra origem vê a mensagem da equipe, o convite sugerido é esquecido e o cadastro segue sem esquadrão.
+
+Um herói, um esquadrão. Sair com `/esquadrao sair` tira o cargo e o tópico, e a equipe fica. Quem lidera não sai por esse comando: a staff arquiva. O esquadrão cheio, inativo ou com código errado recusa. Cinco códigos desconhecidos em 10 minutos esperam o restante da janela; um código de esquadrão que existe e não está ativo não entra nessa conta.
+
+`/esquadrao ver` mostra equipe, líder e quantos membros. Quem lidera, e a staff, também vê o convite e o código. Se alguém apagou o convite, essa consulta cria outro.
+
+## Equipe e saída do servidor
+
+Trocar de equipe por qualquer motivo que não seja a entrada no esquadrão tira a pessoa do esquadrão, inclusive quem lidera. O esquadrão continua ativo (`squad.left`, motivo `team_switch`).
+
+Quem sai do servidor perde o lugar e não volta a ele ao entrar de novo. Se quem sai é quem fundou, o esquadrão é arquivado (nesta versão não há outro líder): somem cargo, tópico e convite, os membros continuam na equipe, e a fila da staff recebe **Líder saiu**. Esse arquivamento não escreve linha de auditoria. O arquivamento pela staff (`/cerebro esquadrao arquivar`, com motivo) escreve, e também mantém a equipe de cada membro.

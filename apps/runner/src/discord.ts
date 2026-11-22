@@ -30,7 +30,7 @@ const toMember = (m: DjsMember) => ({
   displayName: m.displayName,
 });
 
-/** Wires discord.js events into the runtime (interactions and member join/leave). */
+/** Wires discord.js events into the runtime (interactions, member join/leave, invites). */
 export function wireClient(
   client: Client,
   gateway: DiscordJsGateway,
@@ -56,5 +56,17 @@ export function wireClient(
   });
   client.on(Events.GuildMemberRemove, (m: DjsMember | PartialGuildMember) => {
     if (m.guild.id === guildId) runtime()?.guildEvents.memberRemoved(m.id);
+  });
+  client.on(Events.InviteCreate, (invite) => {
+    if (invite.guild?.id !== guildId) return;
+    runtime()?.guildEvents.inviteCreated({
+      code: invite.code,
+      uses: invite.uses ?? 0,
+      channelId: invite.channelId ?? '',
+    });
+  });
+  client.on(Events.InviteDelete, (invite) => {
+    if (invite.guild?.id !== guildId || !invite.code) return;
+    runtime()?.guildEvents.inviteDeleted(invite.code);
   });
 }

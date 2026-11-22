@@ -1,4 +1,4 @@
-import type { AnyLegionBot, BotContext, GuildEvents, LegionBot } from './bot.js';
+import type { AnyLegionBot, BotContext, GuildEvents, GuildInvite, LegionBot } from './bot.js';
 import type { BotId, LegionConfig } from './config/schema.js';
 import { AuditLog } from './dashboard/audit.js';
 import { membersPanel } from './dashboard/core-panels.js';
@@ -31,16 +31,24 @@ import type { Clock } from './time/clock.js';
 
 export const STAFF_ROLE_KEYS = ['staff_owner', 'staff_council'] as const;
 
-/** Fan-out of guild member events with an error boundary per handler. */
+/** Fan-out of guild member and invite events with an error boundary per handler. */
 export class GuildEventHub implements GuildEvents {
   private readonly adds: ((m: GuildMember) => Promise<void>)[] = [];
   private readonly removes: ((userId: string) => Promise<void>)[] = [];
+  private readonly inviteAdds: ((invite: GuildInvite) => Promise<void>)[] = [];
+  private readonly inviteDrops: ((code: string) => Promise<void>)[] = [];
   constructor(private readonly log: Logger) {}
   onMemberAdd(h: (m: GuildMember) => Promise<void>): void {
     this.adds.push(h);
   }
   onMemberRemove(h: (userId: string) => Promise<void>): void {
     this.removes.push(h);
+  }
+  onInviteCreate(h: (invite: GuildInvite) => Promise<void>): void {
+    this.inviteAdds.push(h);
+  }
+  onInviteDelete(h: (code: string) => Promise<void>): void {
+    this.inviteDrops.push(h);
   }
   async memberAdded(m: GuildMember): Promise<void> {
     await this.run(
@@ -52,6 +60,18 @@ export class GuildEventHub implements GuildEvents {
     await this.run(
       this.removes.map((h) => () => h(userId)),
       { userId, event: 'memberRemove' },
+    );
+  }
+  async inviteCreated(invite: GuildInvite): Promise<void> {
+    await this.run(
+      this.inviteAdds.map((h) => () => h(invite)),
+      { code: invite.code, event: 'inviteCreate' },
+    );
+  }
+  async inviteDeleted(code: string): Promise<void> {
+    await this.run(
+      this.inviteDrops.map((h) => () => h(code)),
+      { code, event: 'inviteDelete' },
     );
   }
   private async run(fns: (() => Promise<void>)[], ctx: object) {

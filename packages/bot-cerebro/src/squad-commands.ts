@@ -79,6 +79,23 @@ export function esquadraoCommand(ctx: BotContext<CerebroConfig>, flow: CerebroFl
         },
         {
           type: 1,
+          name: 'entrar',
+          name_localizations: { 'en-US': 'join' },
+          ...desc(i18n, 'cerebro.commands.esquadrao.entrar'),
+          options: [
+            {
+              type: 3,
+              name: 'codigo',
+              name_localizations: { 'en-US': 'code' },
+              required: true,
+              min_length: 6,
+              max_length: 6,
+              ...desc(i18n, 'cerebro.commands.esquadrao.codigo'),
+            },
+          ],
+        },
+        {
+          type: 1,
           name: 'sair',
           name_localizations: { 'en-US': 'leave' },
           ...desc(i18n, 'cerebro.commands.esquadrao.sair'),
@@ -118,6 +135,18 @@ export function esquadraoCommand(ctx: BotContext<CerebroConfig>, flow: CerebroFl
           }),
         );
       }
+      if (i.subcommand === 'entrar')
+        return say(
+          ctx,
+          flow,
+          i,
+          r,
+          await flow.squads.join({
+            discordUserId: i.userId,
+            code: String(i.options?.codigo ?? ''),
+            via: 'code',
+          }),
+        );
       if (i.subcommand === 'sair')
         return say(ctx, flow, i, r, await flow.squads.leave({ discordUserId: i.userId }));
       return r.reply(await viewMessage(ctx, flow, i));
@@ -268,11 +297,13 @@ async function viewMessage(ctx: BotContext<CerebroConfig>, flow: CerebroFlow, i:
   );
   const mine = await flow.squads.membershipOf(i.userId);
   const isLeader = Boolean(mine && mine.squad.id === squad.id && squad.founderMemberId === mine.member.id);
-  if ((isLeader || (await ctx.isStaff(i))) && squad.inviteCode && squad.code) {
+  const staff = await ctx.isStaff(i);
+  const shown = isLeader || staff ? await flow.squads.repairInvite(squad) : squad;
+  if ((isLeader || staff) && shown.inviteCode && shown.code) {
     description += `\n${squadText(
       ctx.i18n,
       'view_secret',
-      { url: `https://discord.gg/${squad.inviteCode}`, code: squad.code },
+      { url: `https://discord.gg/${shown.inviteCode}`, code: shown.code },
       locale,
     )}`;
   }
@@ -281,6 +312,10 @@ async function viewMessage(ctx: BotContext<CerebroConfig>, flow: CerebroFlow, i:
 
 export function squadComponents(ctx: BotContext<CerebroConfig>, flow: CerebroFlow): ComponentDefinition[] {
   return [
+    { action: 'squad-join', version: V, handle: (i, r) => flow.acceptSquadHint(i, r) },
+    { action: 'squad-skip', version: V, handle: (i, r) => flow.skipSquad(i, r) },
+    { action: 'squad-code', version: V, handle: (i, r) => flow.askSquadCode(i, r) },
+    { action: 'squad-code-modal', version: V, handle: (i, r) => flow.submitSquadCode(i, r) },
     {
       action: 'squad-approve',
       version: V,

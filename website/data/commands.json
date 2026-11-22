@@ -195,6 +195,26 @@
       ]
     },
     {
+      "path": "/esquadrao entrar",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Entra num esquadrão com o código",
+        "en": "Joins a squad with the code"
+      },
+      "options": [
+        {
+          "name": "codigo",
+          "nameEn": "code",
+          "required": true,
+          "description": {
+            "pt-BR": "Código de 6 caracteres",
+            "en": "6-character code"
+          }
+        }
+      ]
+    },
+    {
       "path": "/esquadrao sair",
       "kind": "slash",
       "staff": false,
