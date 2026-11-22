@@ -172,6 +172,12 @@
         "item_exportar": "Download the staff items as YAML",
         "item_desativar": "Take an item out of play (unequips it from everyone)",
         "item_ativar": "Bring back a disabled item",
+        "pack": "Content packs (trivia, missions, enemies, items)",
+        "pack_importar": "Import a pack .yaml with a preview",
+        "pack_arquivo": "The pack.yaml file (website editor or data/content/packs)",
+        "pack_lista": "List installed packs",
+        "pack_remover": "Remove a pack and deactivate its content",
+        "pack_id": "Pack id (e.g. my-pack)",
         "temporada": "Seasons: start or end",
         "temporada_iniciar": "Start the season now",
         "temporada_encerrar": "End the active season and schedule the next one"
@@ -450,6 +456,23 @@
       "already_off": "**{item}** is already disabled.",
       "already_on": "**{item}** is already active.",
       "off_in_file": "**{item}** has `active: false` in its file. Change the file to enable it."
+    },
+    "pack_imports": {
+      "meta": "`{id}` · **{name}** · v{version} · {author}",
+      "upgrade_from": "⬆️ Upgrades installed version {version}.",
+      "type_trivia": "Trivia: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "type_missions": "Missions: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "type_enemies": "Enemies: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "type_items": "Items: 🆕 {added} · ✏️ {changed} · ＝ {same}",
+      "deactivate": "⚠️ Leaving the pack and will be deactivated: trivia {trivia}, missions {missions}, enemies {enemies}, items {items}.",
+      "action_install": "installed",
+      "action_upgrade": "upgraded",
+      "published": "✅ Pack `{id}` v{version} {action}: {added} new, {changed} changed, {same} unchanged. Deactivated: {deactivated}. Unequipped: {unequipped}.",
+      "list_empty": "No packs installed.",
+      "list_title": "Installed packs ({total}):",
+      "list_line": "• `{id}` · {name} · v{version} · {author}",
+      "need_id": "Provide the pack id.",
+      "removed": "🗑️ Pack `{id}` removed. Its content was deactivated."
     },
     "dashboard": {
       "economy": "Economy",

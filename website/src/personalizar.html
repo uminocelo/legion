@@ -29,6 +29,11 @@
       <p>Trajes, acessórios e dispositivos com bônus pequenos ou só visuais, e o preço na loja. Confere os limites e os nomes na hora.</p>
     </article>
     <article class="bot" style="--c:#9B59B6">
+      <h3><a href="editor-pacotes.html">Pacotes</a></h3>
+      <p class="role">J.A.R.V.I.S.</p>
+      <p>Junte trivia, missões, inimigos e itens num pacote versionado. Importe com <code>/jarvis pack importar</code> ou coloque em <code>data/content/packs/</code>.</p>
+    </article>
+    <article class="bot" style="--c:#9B59B6">
       <h3><a href="skills.html">Skills para IA</a></h3>
       <p class="role">Claude Code e outros agentes</p>
       <p>Peça a um agente de IA uma missão, campanha, trivia ou inimigo. Ele segue as regras do Legion e confere com <code>legion content validate</code>.</p>
@@ -102,6 +107,18 @@
     <tr><th>Tirar de jogo</th><td><code>/jarvis item desativar</code>: desequipa de quem usa, e cada um continua com o item</td></tr>
   </table>
   <p class="more">Formato completo: <a href="{{doc:docs/ECONOMY.md}}">docs/ECONOMY.md</a></p>
+</section>
+
+<section id="pacotes">
+  <h2>Pacotes de conteúdo</h2>
+  <p class="section-lead">Um <code>pack.yaml</code> junta trivia, missões, inimigos e itens com id, nome, versão e autor. A instalação é tudo ou nada; uma versão nova só sobe (semver) e aplica o diferencial; remover desativa o conteúdo do pacote.</p>
+  <table class="kv">
+    <tr><th>Editor</th><td><a href="editor-pacotes.html">Editor de pacotes</a>: metadados + seções YAML e baixe o arquivo</td></tr>
+    <tr><th>Importar</th><td><code>/jarvis pack importar arquivo:</code> prévia com contagens por tipo; <strong>Publicar</strong> aplica</td></tr>
+    <tr><th>Ou na pasta</th><td><code>data/content/packs/&lt;id&gt;/pack.yaml</code> e reinicie (fonte <code>folder</code>)</td></tr>
+    <tr><th>Listar / remover</th><td><code>/jarvis pack lista</code> · <code>/jarvis pack remover id:</code></td></tr>
+  </table>
+  <p class="more">Detalhes: <a href="{{doc:docs/STAFF.md}}">docs/STAFF.md</a> · <a href="{{doc:docs/CONFIG.md}}">docs/CONFIG.md</a></p>
 </section>
 
 <section id="poderes">

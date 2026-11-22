@@ -60,6 +60,14 @@ describe('legion content validate', () => {
     expect(detectType({ id: 'm', scenes: {} })).toBe('mission');
     expect(detectType({ id: 'c', kind: 'story', title: {} })).toBe('campaign');
     expect(detectType({ campaign: {}, missions: [] })).toBe('campaign-file');
+    expect(
+      detectType({
+        id: 'meu-pack',
+        version: '1.0.0',
+        author: 'Staff',
+        items: [{ id: 'x' }],
+      }),
+    ).toBe('pack');
     expect(detectType({ chain: 'x', steps: [] })).toBeNull();
     expect(detectType([])).toBeNull();
   });
@@ -132,6 +140,40 @@ describe('legion content validate', () => {
       join(dir({ 'x.yaml': file.replace('chapter: 1', 'chapter: 1 }\n#') }), 'x.yaml'),
     ]);
     expect(r.files[0]?.type).toBe('campaign-file');
+  });
+
+  it('validates a content pack with injected enemy rules', () => {
+    const simple = dir({
+      'pack.yaml': `id: pack-simples
+name: { pt-BR: Simples }
+version: 1.0.0
+author: Staff
+items:
+  - { id: pack-item-ok, slot: traje, name: { pt-BR: Capuz ok }, bonus: { def: 1 } }
+enemies:
+  - id: drone-pack
+    name: Drone Pack
+    tier: minion
+    minLevel: 1
+    base: { hp: 40, atk: 5, def: 4, spd: 6, foc: 3 }
+    powerCooldownMax: 4
+`,
+    });
+    expect(validateContent([join(simple, 'pack.yaml')])).toMatchObject({ exitCode: 0 });
+
+    const bad = dir({
+      'pack.yaml': `id: pack-ruim
+name: { pt-BR: Ruim }
+version: "1.0"
+author: Staff
+items:
+  - { id: pack-item-bad, slot: traje, name: { pt-BR: Capuz }, bonus: { def: 1 } }
+`,
+    });
+    const r = validateContent([join(bad, 'pack.yaml')]);
+    expect(r.exitCode).toBe(1);
+    expect(r.files[0]?.type).toBe('pack');
+    expect(r.files[0]?.errors.join('\n')).toMatch(/semver/);
   });
 
   it('validates item files like J.A.R.V.I.S. (and the skill example)', () => {

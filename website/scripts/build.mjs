@@ -124,6 +124,16 @@ export const PAGES = [
     script: 'mission',
   },
   {
+    out: 'editor-pacotes.html',
+    src: 'editor-pacotes.html',
+    title: 'Editor de pacotes · Legion',
+    description:
+      'Monte um pacote de conteúdo (trivia, missões, inimigos, itens) e importe com /jarvis pack importar.',
+    nav: 'custom',
+    color: '#9B59B6',
+    script: 'pack',
+  },
+  {
     out: 'skills.html',
     src: 'skills.html',
     title: 'Skills para IA · Legion',
@@ -367,7 +377,7 @@ export function readData() {
  * Editor bundles: `@legion/core` is swapped for the browser stand-in and the canon list is inlined.
  * The validation code (zod, yaml, schemas) goes into one shared chunk the browser caches across editors.
  */
-export const EDITORS = ['trivia', 'enemy', 'mission', 'item'];
+export const EDITORS = ['trivia', 'enemy', 'mission', 'item', 'pack'];
 
 export async function bundleEditors(out) {
   const { build: esbuild } = await import('esbuild');

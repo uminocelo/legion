@@ -681,9 +681,19 @@ describe('/jarvis missao importar with campaign fields', () => {
     ).toContain('requires.missions.0: missão "fantasma" não existe');
     const ok = await importMission(t, chapter('sombras-4', 4, { missions: ['sombras-3'] }));
     expect(reply(t, ok)?.embeds?.[0]?.title).toBe('Prévia: Capítulo sombras-4');
-    // Replacing a chapter with a new version of itself is not a repeat.
-    const again = await importMission(t, chapter('sombras-2', 2, { missions: ['sombras-1'] }));
-    expect(reply(t, again)?.embeds?.[0]?.title).toBe('Prévia: Capítulo sombras-2');
+    // File / pack ids cannot be replaced (same rule as trivia/item import).
+    expect(
+      reply(t, await importMission(t, chapter('sombras-2', 2, { missions: ['sombras-1'] })))?.content,
+    ).toContain('sombras-2: id de uma missão dos arquivos');
+    // A staff-owned chapter can be re-imported without counting as a chapter repeat.
+    await t.interact({
+      kind: 'component',
+      userId: STAFF,
+      isGuildOwner: true,
+      customId: (reply(t, ok)?.components?.[0]?.[0] as { customId?: string } | undefined)?.customId ?? '',
+    });
+    const again = await importMission(t, chapter('sombras-4', 4, { missions: ['sombras-3'] }));
+    expect(reply(t, again)?.embeds?.[0]?.title).toBe('Prévia: Capítulo sombras-4');
   });
 });
 

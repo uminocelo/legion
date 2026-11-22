@@ -183,6 +183,24 @@ As perguntas vêm de `packages/bot-jarvis/content/trivia/*.yaml` (30 em pt-BR) e
 
 Ao iniciar, e com `/jarvis trivia recarregar`, as perguntas são sincronizadas pelo `id`: novas entram, alteradas são atualizadas e as que sumiram dos arquivos ficam inativas (nunca apagadas, para o histórico continuar válido). Se algum arquivo tiver erro, nada é desativado e a staff vê a lista de erros.
 
+### Pacotes de conteúdo
+
+Pastas em `./data/content/packs/<id>/pack.yaml` são lidas no boot (e no reload de conteúdo). Cada arquivo é um objeto:
+
+```yaml
+id: meu-pack                 # letras minúsculas, números e "-" (3 a 48)
+name:
+  pt-BR: Meu pacote          # en opcional
+version: 1.0.0               # semver; só sobe versão ao atualizar
+author: Staff do servidor
+trivia: []                   # opcional — mesma forma das perguntas acima
+missions: []                 # opcional — objetos de missão (docs/MISSIONS.md)
+enemies: []                  # opcional — mesma forma de enemies.yaml (precisa do ULTRON)
+items: []                    # opcional — mesma forma dos itens (docs/ECONOMY.md)
+```
+
+Pelo menos uma seção de conteúdo é obrigatória. Um pacote quebrado é ignorado (os outros ainda carregam); o `legion doctor` e `legion content validate` listam os erros. Pelo Discord: `/jarvis pack importar` (prévia + Publicar), `lista` e `remover` — veja [STAFF.md](STAFF.md#pacotes-de-conteúdo). O [editor de pacotes](https://uminocelo.github.io/legion/editor-pacotes.html) monta o arquivo no navegador.
+
 ## `herbie`
 
 | Chave | Padrão | Descrição |

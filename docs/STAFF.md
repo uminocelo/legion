@@ -106,6 +106,18 @@ Itens vêm de arquivos ([ECONOMY.md](ECONOMY.md#arquivos-de-itens)) ou do Discor
 | `/jarvis item desativar item` | Tira o item de jogo e da loja na hora. Desequipa de quem usa (responde quantos) e cada um continua com o item. Vale mesmo depois de reiniciar |
 | `/jarvis item ativar item` | Volta um item desativado. Quem tem precisa equipar de novo |
 
+## Pacotes de conteúdo
+
+Um pacote (`pack.yaml`) junta trivia, missões, inimigos e itens com `id`, `name`, `version` (semver) e `author`. A instalação é **tudo ou nada**: qualquer erro na prévia ou no Publicar deixa o servidor como estava. Uma versão **mais nova** atualiza só o que mudou e desativa o que saiu do pacote (itens desequipados, inventário mantido); versão igual ou mais antiga é recusada. Remover desativa o conteúdo do pacote e apaga o registro. Monte o arquivo no [editor de pacotes](https://uminocelo.github.io/legion/editor-pacotes.html) ou coloque em `data/content/packs/<id>/pack.yaml` (carrega no boot / `reload`, origem `folder`).
+
+| Comando | O que faz |
+|---|---|
+| `/jarvis pack importar arquivo` | Anexe o `.yaml`. A prévia mostra id, nome, versão, autor e contagens 🆕/✏️/＝ por tipo (trivia, missões, inimigos, itens); **Publicar** instala ou atualiza; **Cancelar** não muda nada |
+| `/jarvis pack lista` | Lista os pacotes instalados (id, nome, versão, autor) |
+| `/jarvis pack remover id` | Remove o pacote e desativa o conteúdo dele (se a pasta `data/content/packs/<id>/` continuar no disco, o boot/reload reinstala) |
+
+Ids que já existem em arquivos, na staff ou em outro pacote são recusados. Pacotes com inimigos precisam do ULTRON ligado (validação e escrita). Confira também o `legion doctor` (linha de pacotes) e `legion content validate` na pasta `data/content/packs`.
+
 ## Esquadrões
 
 Desligados por padrão. O passo a passo de ligar, fundar e entrar está em [SQUADS.md](SQUADS.md). A staff aprova, recusa e arquiva; cada uma dessas ações fica em `/audit`.

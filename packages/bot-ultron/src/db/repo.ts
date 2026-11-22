@@ -29,14 +29,14 @@ export class UltronRepo {
   ): Promise<{ added: number; updated: number; deactivated: number }> {
     const t = this.t.ultronEnemyTemplates;
     const all = await this.db.orm.select().from(t);
-    // Imported enemies win over files with the same id; reloads only manage file rows.
-    const staff = new Set(all.filter((r) => r.origin === 'staff').map((r) => r.id));
+    // Staff and pack enemies win over files with the same id; reloads only manage file rows.
+    const reserved = new Set(all.filter((r) => r.origin !== 'file').map((r) => r.id));
     const current = new Map(all.filter((r) => r.origin === 'file').map((r) => [r.id, r]));
     let added = 0;
     let updated = 0;
     await this.db.transaction(async (tx) => {
       for (const e of enemies) {
-        if (staff.has(e.id)) continue;
+        if (reserved.has(e.id)) continue;
         const hash = contentHash(e);
         const prev = current.get(e.id);
         const active = prev?.disabledBy ? 0 : 1;

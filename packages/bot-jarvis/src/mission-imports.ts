@@ -80,6 +80,17 @@ export class MissionImports {
     const parsed = parseMissionYaml(text);
     if ('errors' in parsed) return parsed;
     const m = parsed.mission;
+    const prev = await this.s.repo.mission(m.id);
+    // Same rule as trivia/item import: only staff-owned ids may be replaced.
+    if (prev && prev.origin !== 'staff') {
+      return {
+        errors: [
+          prev.origin === 'pack'
+            ? `${m.id}: id pertence a um pacote de conteúdo; use outro id`
+            : `${m.id}: id de uma missão dos arquivos de conteúdo; use outro id`,
+        ],
+      };
+    }
     if (!m.campaign && !m.requires && !m.reward) return parsed;
     const rows = (await this.s.repo.allMissions()).filter((r) => r.active === 1 && r.id !== m.id);
     const others = rows.map((r) => JSON.parse(r.definition) as Mission);

@@ -558,6 +558,50 @@ export function jarvisCommands(
             ],
           },
           {
+            type: 2,
+            name: 'pack',
+            name_localizations: { 'en-US': 'pack' },
+            ...desc(i18n, 'jarvis.commands.jarvis.pack'),
+            options: [
+              {
+                type: 1,
+                name: 'importar',
+                name_localizations: { 'en-US': 'import' },
+                ...desc(i18n, 'jarvis.commands.jarvis.pack_importar'),
+                options: [
+                  {
+                    type: 11,
+                    name: 'arquivo',
+                    name_localizations: { 'en-US': 'file' },
+                    required: true,
+                    ...desc(i18n, 'jarvis.commands.jarvis.pack_arquivo'),
+                  },
+                ],
+              },
+              {
+                type: 1,
+                name: 'lista',
+                name_localizations: { 'en-US': 'list' },
+                ...desc(i18n, 'jarvis.commands.jarvis.pack_lista'),
+              },
+              {
+                type: 1,
+                name: 'remover',
+                name_localizations: { 'en-US': 'remove' },
+                ...desc(i18n, 'jarvis.commands.jarvis.pack_remover'),
+                options: [
+                  {
+                    type: 3,
+                    name: 'id',
+                    required: true,
+                    max_length: 48,
+                    ...desc(i18n, 'jarvis.commands.jarvis.pack_id'),
+                  },
+                ],
+              },
+            ],
+          },
+          {
             type: 1,
             name: 'recalcular',
             name_localizations: { 'en-US': 'recalculate' },
@@ -612,6 +656,9 @@ export function jarvisCommands(
         if (sub === 'item exportar') return s.itemImports.export(i, r);
         if (sub === 'item desativar') return s.itemImports.setActive(i, r, false);
         if (sub === 'item ativar') return s.itemImports.setActive(i, r, true);
+        if (sub === 'pack importar') return s.packImports.import(i, r);
+        if (sub === 'pack lista') return s.packImports.list(i, r);
+        if (sub === 'pack remover') return s.packImports.remove(i, r);
         if (sub === 'creditos dar') return s.walletUi.staffGive(i, r, l);
         if (sub === 'trivia recarregar') {
           const res = await trivia.reload();

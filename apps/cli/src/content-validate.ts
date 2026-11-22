@@ -9,15 +9,17 @@ import {
   campaignSchema,
   checkCampaignContent,
   checkTriviaItems,
+  enemiesParserFromYaml,
   jarvisConfigSchema,
   type Mission,
   missionDirs,
   parseCampaignYaml,
   parseMissionYaml,
   readContent,
+  validatePack,
 } from '@legion/bot-jarvis';
 import { parseEnemiesYaml } from '@legion/bot-ultron';
-import { contentIssue, isCanonName, type Locale, parseItemsYaml } from '@legion/core';
+import { contentIssue, isCanonName, type Locale, looksLikePack, parseItemsYaml } from '@legion/core';
 import { parse as parseYaml, YAMLParseError } from 'yaml';
 
 export const CONTENT_TYPES = [
@@ -28,7 +30,10 @@ export const CONTENT_TYPES = [
   'enemy',
   'power',
   'item',
+  'pack',
 ] as const;
+
+const parsePackEnemies = enemiesParserFromYaml(parseEnemiesYaml);
 export type ContentType = (typeof CONTENT_TYPES)[number];
 
 export interface FileResult {
@@ -69,6 +74,7 @@ export function detectType(raw: unknown): ContentType | null {
     return null;
   }
   if (!isObj(raw)) return null;
+  if (looksLikePack(raw)) return 'pack';
   if ('campaign' in raw && 'missions' in raw) return 'campaign-file';
   if ('scenes' in raw || 'start' in raw) return 'mission';
   if ('kind' in raw && 'title' in raw) return 'campaign';
@@ -209,9 +215,21 @@ export function validateContent(paths: string[], o: ValidateOptions = {}): Valid
           }
           break;
         }
+        case 'pack': {
+          const res = validatePack(doc.raw, {
+            isCanon: isCanonName,
+            categories,
+            locale: 'pt-BR',
+            parseEnemies: parsePackEnemies,
+            label: name,
+          });
+          r.errors.push(...res.errors);
+          break;
+        }
         default:
           if (single || !isDir) r.errors.push(`tipo desconhecido; use --type (${CONTENT_TYPES.join(', ')})`);
-          else r.warnings.push('ignorado: não parece trivia, missão, campanha, inimigo, poder nem item');
+          else
+            r.warnings.push('ignorado: não parece trivia, missão, campanha, inimigo, poder, item nem pacote');
       }
     }
   }

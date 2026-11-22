@@ -23,6 +23,14 @@ export * from './db/tables.js';
 export { jarvisDoctorChecks } from './doctor.js';
 export * from './domain/campaign.js';
 export * from './domain/mission.js';
+export {
+  enemiesListYaml,
+  type ParseEnemiesFn,
+  type ValidatedPack,
+  type ValidatePackOptions,
+  validatePack,
+  validatePackYaml,
+} from './domain/pack.js';
 export * from './domain/periods.js';
 export * from './domain/season-window.js';
 export * from './domain/selection.js';
@@ -34,6 +42,26 @@ export { JarvisLeaderboard } from './leaderboard.js';
 export * from './mission-content.js';
 export { IMPORT_MAX_BYTES, MissionImports, missionImportIds, parseMissionYaml } from './mission-imports.js';
 export { combatMissionId, JarvisMissions, MISSION_TIMEOUT_JOB, missionIds } from './missions.js';
+export { PackImports, packImportIds } from './pack-imports.js';
+export {
+  type EnemyApplyFn,
+  type EnemyOrigin,
+  type EnemyOriginLookup,
+  enemiesParserFromYaml,
+  type FolderPackInstallResult,
+  installFolderPacks,
+  PACK_ORIGIN,
+  type PackApplyOutcome,
+  type PackInstallDeps,
+  PackInstaller,
+  type PackLoadResult,
+  type PackPreviewOk,
+  type PackPreviewOutcome,
+  type PackSource,
+  type PackTypeCounts,
+  packDirs,
+  readPacks,
+} from './packs.js';
 export { SEASON_JOBS, SeasonService } from './season.js';
 export * from './services.js';
 export { JarvisShop, SHOP_PAGE, shopIds, shopStock } from './shop-ui.js';
@@ -87,6 +115,7 @@ export const jarvis: LegionBot<JarvisConfig> = {
       { action: 'campaign-import', version: V, handle: (i, r, args) => s.campaigns.decide(i, r, args) },
       { action: 'trivia-import', version: V, handle: (i, r, args) => s.triviaImports.decide(i, r, args) },
       { action: 'item-import', version: V, handle: (i, r, args) => s.itemImports.decide(i, r, args) },
+      { action: 'pack-import', version: V, handle: (i, r, args) => s.packImports.decide(i, r, args) },
       { action: 'inv', version: V, handle: (i, r, args) => s.inventoryUi.component(i, r, args) },
       { action: 'shop', version: V, handle: (i, r, args) => s.shop.component(i, r, args) },
       {
@@ -111,6 +140,18 @@ export const jarvis: LegionBot<JarvisConfig> = {
     const items = await s.items.reload();
     if (items.errors.length) ctx.log.warn({ errors: items.errors }, 'item content has errors');
     ctx.log.info({ ...items, errors: items.errors.length }, 'item content loaded');
+    const packs = await s.reloadPacks();
+    if (packs.errors.length) ctx.log.warn({ errors: packs.errors }, 'content pack load has errors');
+    ctx.log.info(
+      {
+        installed: packs.installed.length,
+        upgraded: packs.upgraded.length,
+        unchanged: packs.unchanged.length,
+        skipped: packs.skipped.length,
+        errors: packs.errors.length,
+      },
+      'content packs loaded',
+    );
     ctx.scheduler.define<{ runId: string; version: number }>(MISSION_TIMEOUT_JOB, (p) =>
       s.missions.onTimeout(p),
     );
