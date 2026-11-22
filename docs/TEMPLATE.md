@@ -83,12 +83,30 @@ Na categoria, a permissão **Ver canal** fica: `@everyone` ❌, o cargo da equip
 | `staff` | 💬 | — |
 | `logs` | 💬 | — |
 | `sala-staff` | 🔊 | — |
+| `atualizacoes-discord` | 💬 | — (canal de atualizações da comunidade, veja abaixo) |
+| `alertas-seguranca` | 💬 | — (canal de notificações de segurança, veja abaixo) |
 
 `@everyone` ❌ em Ver canal, cargos da staff ✅. O Legion não mexe em canais da staff.
 
+## Comunidade do Discord (depois de criar)
+
+O modelo pode não guardar as configurações de Comunidade, então ligue à mão em **Configurações do servidor → Ativar Comunidade**:
+
+| Configuração | Use o canal |
+|---|---|
+| Canal de regras | `regras` |
+| Canal de atualizações da comunidade | `atualizacoes-discord` (avisos do Discord para a moderação) |
+| Canal de notificações de segurança | `alertas-seguranca` (alertas de atividade estranha, como raids e spam por DM) |
+
+Com a Comunidade ligada, o `anuncios` pode virar um canal de anúncios de verdade.
+
+**Descrição do servidor** (Configurações → Perfil do servidor; aparece nos convites):
+
+> Base de heróis originais do universo Marvel. Crie seu herói, entre numa equipe, faça missões e trivia, lute e defenda o servidor nas invasões do ULTRON. Tudo dentro do Discord.
+
 ## Cargos do modelo
 
-Os cargos padrão do Legion ([CONFIG.md](CONFIG.md#roles)), com os mesmos nomes: Professor X, Conselho da Legião, Sentinela, Sinal Detectado, Mutante Registrado, as 9 equipes, os ranks e os opcionais. O Cérebro reconhece cada um pelo nome e não cria de novo. Arraste o cargo do bot para cima dos cargos de equipe e de rank.
+Os cargos padrão do Legion ([CONFIG.md](CONFIG.md#roles)), com os mesmos nomes: Professor X, Conselho da Legião, Sentinela, Sinal Detectado, Herói Registrado, as 9 equipes, os ranks e os opcionais. O Cérebro reconhece cada um pelo nome e não cria de novo. Arraste o cargo do bot para cima dos cargos de equipe e de rank.
 
 ## Depois de montar
 
