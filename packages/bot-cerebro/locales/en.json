@@ -120,6 +120,21 @@
       "rivals_duelist": "Duelist",
       "rivals_strategist": "Strategist"
     },
+    "visual": {
+      "title": "✨ Card look",
+      "body": "Pick a frame and a title for your `/perfil` card. Cosmetic only: no stats or XP. Needs the Supporter role.",
+      "frame_field": "Frame",
+      "title_field": "Title",
+      "frame_placeholder": "Choose a frame",
+      "title_placeholder": "Choose a title",
+      "none": "None",
+      "clear_hint": "Clears the frame or title from the card",
+      "need_supporter": "Only members with the **Supporter** role can customize the card. Ask staff if you support the server.",
+      "frame_set": "Frame set: **{name}**. Check `/perfil`.",
+      "title_set": "Title set: **{name}**. Check `/perfil`.",
+      "frame_cleared": "Frame cleared.",
+      "title_cleared": "Title cleared."
+    },
     "setup": {
       "dry_run": "🔎 **Dry run** (nothing changed). Run with `aplicar: true` to apply.",
       "applied": "✅ **Applied.**",
@@ -154,6 +169,7 @@
     "help": {
       "perfil": "Shows your hero sheet (or another member's).",
       "preferencias": "Turns optional roles on and off, like Live alerts.",
+      "visual": "Picks the card frame and title (Supporter only; cosmetic only).",
       "setup": "Syncs roles and, if asked, channel visibility.",
       "status": "Shows how many members are at each registration step.",
       "heroi_poderes": "Picks catalog powers for an already registered hero (once)",
@@ -176,6 +192,7 @@
       "cerebro": {
         "description": "Cérebro commands",
         "preferencias": "Turn optional roles on and off",
+        "visual": "Card frame and title (Supporter)",
         "setup": "Sync roles and channels (staff)",
         "aplicar": "Apply the changes (default: dry run)",
         "canais": "Also adjust channel visibility",

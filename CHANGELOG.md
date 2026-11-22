@@ -4,7 +4,19 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-22
+
+Seasons, content packs, squad war ranking and content, and supporter cosmetics on the `/perfil` card.
+
+### Upgrade notes
+- **Migration** `0005_supporter_cosmetics` on Cérebro (`members.frame_id`, `members.title_id`). Empty for existing servers. Runs on restart.
+- **New command** `/cerebro visual`: restart (or `legion register-commands`) so Discord shows it.
+- **Supporter role is manual.** Staff assigns **Apoiador** (`supporter`) by hand. Cosmetics never grant stats, XP or credits.
+- **Seasons off by default.** `jarvis.season.enabled: false` leaves ranking and XP as they were. Guide: [docs/SEASONS.md](docs/SEASONS.md).
+- **Content packs.** Folder packs under `data/content/packs/<id>/` load on boot; staff `/jarvis pack` import/list/remove. [STAFF.md](docs/STAFF.md#pacotes-de-conteúdo).
+
 ### Added
+- Supporter cosmetics (US-24): catalog of frames and titles with no stats. Staff gives the **Apoiador** role; `/cerebro visual` lets the supporter set or clear moldura and título. `/perfil` draws them on the PNG card; losing the role clears the card on the next render. Docs in [STAFF.md](docs/STAFF.md#apoiador-cosméticos) and [CONFIG.md](docs/CONFIG.md#roles).
 - Content packs (US-23): shared `pack.yaml` manifest (id, name, version, author + trivia/missions/enemies/items). Folder load under `data/content/packs/<id>/`, all-or-nothing install with differential upgrade (newer semver only) and remove. Staff `/jarvis pack importar` (one preview with per-type new/changed/same counts → Publicar), `lista`, `remover`. Website [pack editor](https://uminocelo.github.io/legion/editor-pacotes.html) builds the file client-side. Docs in [STAFF.md](docs/STAFF.md) and [CONFIG.md](docs/CONFIG.md).
 - Seasons (US-22): `jarvis.season` (off by default; `length` month or 7–90 days; `reset: season_score`; `rewards.top`). `/temporada` shows the season board and the caller's badges. Staff `/jarvis temporada iniciar|encerrar`. Ending writes winners + archive JSON, emits `season.ended` once, and `jarvis.season-rewards` grants place badges idempotently. Lifetime XP is never wiped. Guide [docs/SEASONS.md](docs/SEASONS.md); site pages for J.A.R.V.I.S. and the community playbook.
 - Squad content (US-37): optional `squad` on mission/campaign/trivia YAML; rows store `squad_id`. With `squads.enabled`, only members with an active seat see that content. Founders submit via `/esquadrao conteudo enviar`; staff approve or refuse in the mod queue.
@@ -235,7 +247,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/uminocelo/legion/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/uminocelo/legion/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/uminocelo/legion/compare/v0.10.0...v1.0.0
 [0.10.0]: https://github.com/uminocelo/legion/compare/v0.9.1...v0.10.0

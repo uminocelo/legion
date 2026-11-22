@@ -2,7 +2,7 @@ import { compareSchemas, createIdGenerator, createTestDb, FakeClock, type Legion
 import { afterEach, describe, expect, it } from 'vitest';
 import { CEREBRO_MIGRATIONS_DIR } from '../paths.js';
 import { membersReadModel, mutantsReadModel } from '../read-models.js';
-import { CerebroRepo } from './repo.js';
+import { CerebroRepo, cosmeticsOf } from './repo.js';
 import * as pgSchema from './schema.pg.js';
 import * as sqliteSchema from './schema.sqlite.js';
 
@@ -82,5 +82,23 @@ describe('CerebroRepo', () => {
     clock.advance(11 * 60_000);
     expect(await repo.recordCanonAttempt(a.id, 'Magneto', 10)).toBe(1);
     expect(await repo.recordCanonAttempt(a.id, 'Storm', 10)).toBe(2);
+  });
+
+  it('round-trips supporter cosmetics and treats unknown ids as none', async () => {
+    const { repo } = await setup();
+    const a = (await repo.ensureMember('u1')).row;
+    expect(cosmeticsOf(a)).toEqual({ frameId: null, titleId: null });
+    const saved = await repo.setCosmetics(a.id, { frameId: 'frame-aurora', titleId: 'title-patron' });
+    expect(saved).toBeTruthy();
+    expect(cosmeticsOf(saved ?? a)).toEqual({ frameId: 'frame-aurora', titleId: 'title-patron' });
+    const again = await repo.memberById(a.id);
+    expect(again).toBeTruthy();
+    expect(cosmeticsOf(again ?? a)).toEqual({ frameId: 'frame-aurora', titleId: 'title-patron' });
+    const bad = await repo.setCosmetics(a.id, { frameId: 'nope', titleId: 'title-legend' });
+    expect(bad).toBeTruthy();
+    expect(cosmeticsOf(bad ?? a)).toEqual({ frameId: null, titleId: 'title-legend' });
+    const cleared = await repo.setCosmetics(a.id, { frameId: null, titleId: null });
+    expect(cleared).toBeTruthy();
+    expect(cosmeticsOf(cleared ?? a)).toEqual({ frameId: null, titleId: null });
   });
 });

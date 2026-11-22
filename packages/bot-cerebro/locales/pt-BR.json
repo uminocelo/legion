@@ -120,6 +120,21 @@
       "rivals_duelist": "Duelista",
       "rivals_strategist": "Estrategista"
     },
+    "visual": {
+      "title": "✨ Visual do cartão",
+      "body": "Escolha uma moldura e um título para o cartão do `/perfil`. Só cosmético: não muda atributos nem XP. Precisa do cargo Apoiador.",
+      "frame_field": "Moldura",
+      "title_field": "Título",
+      "frame_placeholder": "Escolha a moldura",
+      "title_placeholder": "Escolha o título",
+      "none": "Nenhuma",
+      "clear_hint": "Tira a moldura ou o título do cartão",
+      "need_supporter": "Só quem tem o cargo **Apoiador** personaliza o cartão. Peça à staff se você apoia o servidor.",
+      "frame_set": "Moldura definida: **{name}**. Veja no `/perfil`.",
+      "title_set": "Título definido: **{name}**. Veja no `/perfil`.",
+      "frame_cleared": "Moldura removida.",
+      "title_cleared": "Título removido."
+    },
     "setup": {
       "dry_run": "🔎 **Simulação** (nada foi alterado). Rode com `aplicar: true` para aplicar.",
       "applied": "✅ **Aplicado.**",
@@ -154,6 +169,7 @@
     "help": {
       "perfil": "Mostra a ficha do seu herói (ou de outro membro).",
       "preferencias": "Liga e desliga cargos opcionais, como Aviso de Live.",
+      "visual": "Escolhe moldura e título do cartão (só Apoiador; só cosmético).",
       "setup": "Sincroniza cargos e, se pedido, a visibilidade dos canais.",
       "status": "Mostra quantos membros estão em cada etapa do registro.",
       "heroi_poderes": "Escolhe poderes do catálogo para um herói já registrado (uma vez)",
@@ -176,6 +192,7 @@
       "cerebro": {
         "description": "Comandos do Cérebro",
         "preferencias": "Liga e desliga cargos opcionais",
+        "visual": "Moldura e título do cartão (Apoiador)",
         "setup": "Sincroniza cargos e canais (staff)",
         "aplicar": "Aplicar as mudanças (padrão: só simular)",
         "canais": "Também ajustar a visibilidade dos canais",

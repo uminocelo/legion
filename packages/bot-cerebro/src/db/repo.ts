@@ -1,6 +1,7 @@
 import type { Clock, Executor, LegionDb, MemberView, MutantView, Rank } from '@legion/core';
 import { and, count, eq, gte, inArray, isNotNull, isNull } from 'drizzle-orm';
 import { z } from 'zod';
+import { resolveCosmeticId } from '../cosmetics.js';
 import { toStep } from '../domain/onboarding.js';
 import { type CerebroTables, cerebroTables } from './tables.js';
 
@@ -95,6 +96,16 @@ const pendingSchema = z
 export const pendingPowersOf = (m: Pick<MemberRow, 'pendingPowers'>): PendingPowers =>
   m.pendingPowers ? pendingSchema.parse(JSON.parse(m.pendingPowers)) : { main: null, secondary: [] };
 
+/** Stored supporter picks with unknown catalog ids treated as none. */
+export interface MemberCosmetics {
+  frameId: string | null;
+  titleId: string | null;
+}
+export const cosmeticsOf = (m: Pick<MemberRow, 'frameId' | 'titleId'>): MemberCosmetics => ({
+  frameId: resolveCosmeticId(m.frameId, 'frame'),
+  titleId: resolveCosmeticId(m.titleId, 'title'),
+});
+
 const optInsSchema = z.array(z.string()).catch([]);
 
 export const toMemberView = (m: MemberRow): MemberView => ({
@@ -188,6 +199,21 @@ export class CerebroRepo {
       .where(eq(m.id, id))
       .returning();
     return row ?? null;
+  }
+
+  /**
+   * Persists supporter frame/title picks. Unknown catalog ids are stored as null (none).
+   * Pass `null` to clear a slot; omit a key to leave it unchanged.
+   */
+  async setCosmetics(
+    memberId: string,
+    pick: { frameId?: string | null; titleId?: string | null },
+    ex: Executor = this.db.orm,
+  ): Promise<MemberRow | null> {
+    const patch: Partial<Pick<MemberRow, 'frameId' | 'titleId'>> = {};
+    if ('frameId' in pick) patch.frameId = resolveCosmeticId(pick.frameId, 'frame');
+    if ('titleId' in pick) patch.titleId = resolveCosmeticId(pick.titleId, 'title');
+    return this.updateMember(memberId, patch, ex);
   }
 
   async mutantByMemberId(memberId: string, ex: Executor = this.db.orm): Promise<MutantRow | null> {

@@ -92,6 +92,12 @@ export function cerebroCommands(
           },
           {
             type: 1,
+            name: 'visual',
+            name_localizations: { 'en-US': 'look' },
+            ...desc(i18n, 'cerebro.commands.cerebro.visual'),
+          },
+          {
+            type: 1,
             name: 'setup',
             ...desc(i18n, 'cerebro.commands.cerebro.setup'),
             options: [
@@ -173,6 +179,8 @@ export function cerebroCommands(
         switch (i.subcommand) {
           case 'preferencias':
             return flow.preferences(i, r);
+          case 'visual':
+            return flow.visual(i, r);
           case 'setup': {
             if (!(await staffOnly(i, r))) return;
             await r.defer(true);

@@ -10,7 +10,7 @@ import {
   fitHeading,
   renderCard,
 } from '../src/card.js';
-import { powerIds } from '../src/index.js';
+import { CerebroFlow, cerebro, cosmeticsOf, powerIds } from '../src/index.js';
 import { FIELDS, join, setupCerebro, USER } from './helpers.js';
 
 let t: TestContext | undefined;
@@ -103,6 +103,58 @@ describe('gear line on the card (v0.10)', () => {
   });
 });
 
+describe('supporter cosmetics on the card (US-24)', () => {
+  it('draws frame and title when set; missing pick keeps the bare card', () => {
+    const bare = cardSvg(card());
+    expect(bare).not.toContain('data-cosmetic="frame"');
+    expect(bare).not.toContain('data-cosmetic="title"');
+    expect(cardSvg(card({ cosmetics: null }))).toBe(bare);
+    expect(cardSvg(card({ cosmetics: {} }))).toBe(bare);
+
+    const framed = cardSvg(card({ cosmetics: { frameStroke: '#A78BFA', frameAccent: '#C4B5FD' } }));
+    expect(framed).toContain('data-cosmetic="frame"');
+    expect(framed).toContain('#A78BFA');
+    expect(framed).not.toBe(bare);
+
+    const titled = cardSvg(
+      card({
+        cosmetics: { titleLabel: 'Patrono', titleFill: '#FDE68A', titleAccent: '#FBBF24' },
+      }),
+    );
+    expect(titled).toContain('data-cosmetic="title"');
+    expect(titled).toContain('Patrono');
+    expect(titled).not.toBe(bare);
+
+    const both = cardSvg(
+      card({
+        cosmetics: {
+          frameStroke: '#F97316',
+          titleLabel: 'Sentinela',
+          titleFill: '#E2E8F0',
+        },
+      }),
+    );
+    expect(both).toContain('data-cosmetic="frame"');
+    expect(both).toContain('Sentinela');
+  });
+
+  it('renders a PNG with cosmetics under Discord limits', async () => {
+    const png = await renderCard(
+      card({
+        cosmetics: {
+          frameStroke: '#A78BFA',
+          frameAccent: '#C4B5FD',
+          titleLabel: 'Lenda Viva',
+          titleFill: '#F9A8D4',
+          titleAccent: '#EC4899',
+        },
+      }),
+    );
+    expect(pngSize(png)).toEqual({ sig: 'PNG', w: CARD_WIDTH, h: CARD_HEIGHT });
+    expect(png.byteLength).toBeLessThan(1024 * 1024);
+  });
+});
+
 describe('/perfil with the card', () => {
   async function registered(config: Record<string, unknown> = {}) {
     t = await setupCerebro(config);
@@ -186,5 +238,42 @@ describe('/perfil with the card', () => {
     const id = await tc.interact({ kind: 'command', userId: USER, commandName: 'perfil' });
     expect(tc.gateway.lastReply(id)?.files).toBeUndefined();
     expect(tc.gateway.lastReply(id)?.embeds?.[0]?.image).toBeUndefined();
+  });
+
+  it('draws cosmetics with the supporter role and clears them when the role is gone', async () => {
+    const tc = await registered();
+    const flow = new CerebroFlow(tc.ctxOf(cerebro));
+    const member = await flow.repo.memberByDiscordId(USER);
+    const mutant = member && (await flow.repo.mutantByMemberId(member.id));
+    if (!member || !mutant) throw new Error('not registered');
+
+    await flow.repo.setCosmetics(member.id, { frameId: 'frame-aurora', titleId: 'title-patron' });
+    const supporter = tc.gateway.roleByName('Apoiador');
+    if (!supporter) throw new Error('missing Apoiador role');
+    await tc.gateway.addMemberRole(USER, supporter.id);
+
+    const withRole = await flow.repo.memberById(member.id);
+    if (!withRole) throw new Error('member missing after setCosmetics');
+    const drawn = await flow.sheet.data(withRole, mutant);
+    expect(drawn.cosmetics?.frameStroke).toBe('#A78BFA');
+    expect(drawn.cosmetics?.titleLabel).toBe('Patrono');
+    const svg = cardSvg(drawn);
+    expect(svg).toContain('data-cosmetic="frame"');
+    expect(svg).toContain('Patrono');
+
+    await tc.gateway.removeMemberRole(USER, supporter.id);
+    const afterStrip = await flow.sheet.data(withRole, mutant);
+    expect(afterStrip.cosmetics).toBeNull();
+    expect(cardSvg(afterStrip)).not.toContain('data-cosmetic="frame"');
+    expect(cardSvg(afterStrip)).not.toContain('Patrono');
+
+    const stored = await flow.repo.memberById(member.id);
+    if (!stored) throw new Error('member missing after strip');
+    expect(cosmeticsOf(stored)).toEqual({ frameId: null, titleId: null });
+
+    // Next render stays clean even if we pass a stale row with old ids.
+    const stale = { ...withRole, frameId: 'frame-aurora', titleId: 'title-patron' };
+    const again = await flow.sheet.data(stale, mutant);
+    expect(again.cosmetics).toBeNull();
   });
 });

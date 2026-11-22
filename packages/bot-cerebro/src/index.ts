@@ -13,6 +13,7 @@ import { squadActions, squadComponents, squadPanels } from './squad-commands.js'
 import { V } from './ui.js';
 
 export * from './config.js';
+export * from './cosmetics.js';
 export * from './db/repo.js';
 export * from './db/tables.js';
 export * from './domain/channels.js';
@@ -23,6 +24,7 @@ export { CEREBRO_CONTENT_DIR } from './paths.js';
 export { type PickMode, PowerFlow, powerIds } from './power-flow.js';
 export * from './powers.js';
 export { CerebroSetup, LAST_ROLE_SYNC_KEY, PERSISTENT_WELCOME_KEY } from './setup.js';
+export { CARD_FILE, SheetCard, SUPPORTER_ROLE_KEY } from './sheet.js';
 export { ids as cerebroIds } from './ui.js';
 
 const pickMode = (m: string | undefined): PickMode => (m === 'e' || m === 'o' ? m : 'r');
@@ -74,6 +76,8 @@ export const cerebro: LegionBot<CerebroConfig> = {
       { action: 'mutant', version: V, handle: (i, r) => flow.submitMutant(i, r) },
       { action: 'optin', version: V, handle: (i, r, [key]) => flow.toggleOptIn(i, r, key ?? '') },
       { action: 'share', version: V, handle: (i, r, [memberId]) => flow.share(i, r, memberId ?? '') },
+      { action: 'frame', version: V, handle: (i, r) => flow.pickCosmetic(i, r, 'frame') },
+      { action: 'title', version: V, handle: (i, r) => flow.pickCosmetic(i, r, 'title') },
       { action: 'pmain', version: V, handle: (i, r, [mode]) => flow.powers.chooseMain(i, r, pickMode(mode)) },
       {
         action: 'psec',
@@ -115,6 +119,11 @@ export const cerebro: LegionBot<CerebroConfig> = {
       bot: 'cerebro',
       command: '/cerebro preferencias',
       descriptionKey: 'cerebro.help.preferencias',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro visual',
+      descriptionKey: 'cerebro.help.visual',
     });
     ctx.help.add({
       bot: 'cerebro',

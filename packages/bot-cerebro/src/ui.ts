@@ -10,10 +10,20 @@ import {
   shownFaction,
 } from '@legion/core';
 import type { CerebroConfig } from './config.js';
-import type { MemberRow, MutantRow } from './db/repo.js';
+import {
+  type Cosmetic,
+  type CosmeticKind,
+  cosmeticById,
+  cosmeticLabel,
+  frames,
+  titles,
+} from './cosmetics.js';
+import type { MemberCosmetics, MemberRow, MutantRow } from './db/repo.js';
 
 /** Custom-id actions (version 1). Bump the version when an action's args change. */
 export const V = 1;
+/** Select value that clears a supporter cosmetic slot. */
+export const COSMETIC_NONE = 'none';
 export const ids = {
   start: () => customId('cerebro', V, 'start'),
   rules: () => customId('cerebro', V, 'rules'),
@@ -32,6 +42,8 @@ export const ids = {
   squadCodeModal: () => customId('cerebro', V, 'squad-code-modal'),
   optin: (roleKey: string) => customId('cerebro', V, 'optin', roleKey),
   share: (memberId: string) => customId('cerebro', V, 'share', memberId),
+  frame: () => customId('cerebro', V, 'frame'),
+  title: () => customId('cerebro', V, 'title'),
 };
 
 export const channelMention = (id: string | null, fallback: string) => (id ? `<#${id}>` : fallback);
@@ -338,6 +350,63 @@ export class CerebroUi {
         { title: this.t('optins.title', {}, locale), description: this.t('optins.body', {}, locale) },
       ],
       components: rows,
+    };
+  }
+
+  /** Supporter frame/title picker (`/cerebro visual`). Catalog only — never stats. */
+  visual(locale: Locale, picks: MemberCosmetics, prefix?: string): OutgoingMessage {
+    const frameName = this.cosmeticSlotLabel(picks.frameId, frames(), locale);
+    const titleName = this.cosmeticSlotLabel(picks.titleId, titles(), locale);
+    return {
+      persona: 'cerebro',
+      ephemeral: true,
+      ...(prefix ? { content: prefix } : {}),
+      embeds: [
+        {
+          title: this.t('visual.title', {}, locale),
+          description: this.t('visual.body', {}, locale),
+          fields: [
+            { name: this.t('visual.frame_field', {}, locale), value: frameName, inline: true },
+            { name: this.t('visual.title_field', {}, locale), value: titleName, inline: true },
+          ],
+        },
+      ],
+      components: [
+        [this.cosmeticSelect('frame', frames(), picks.frameId, locale)],
+        [this.cosmeticSelect('title', titles(), picks.titleId, locale)],
+      ],
+    };
+  }
+
+  /** Localized catalog label, or the "none" string when the id is missing. */
+  cosmeticName(id: string | null | undefined, locale: Locale): string {
+    const c = cosmeticById(id);
+    return c ? cosmeticLabel(c, locale) : this.t('visual.none', {}, locale);
+  }
+
+  private cosmeticSlotLabel(id: string | null, list: Cosmetic[], locale: Locale): string {
+    const c = list.find((x) => x.id === id);
+    return c ? cosmeticLabel(c, locale) : this.t('visual.none', {}, locale);
+  }
+
+  private cosmeticSelect(kind: CosmeticKind, list: Cosmetic[], current: string | null, locale: Locale) {
+    return {
+      type: 'select' as const,
+      customId: kind === 'frame' ? ids.frame() : ids.title(),
+      placeholder: this.t(`visual.${kind}_placeholder`, {}, locale),
+      options: [
+        {
+          value: COSMETIC_NONE,
+          label: this.t('visual.none', {}, locale),
+          description: this.t('visual.clear_hint', {}, locale).slice(0, 100),
+          default: !current,
+        },
+        ...list.map((c) => ({
+          value: c.id,
+          label: cosmeticLabel(c, locale).slice(0, 100),
+          default: c.id === current,
+        })),
+      ],
     };
   }
 

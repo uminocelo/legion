@@ -187,7 +187,7 @@ Detalhes em [Um app por bot](docs/SELF_HOSTING.md#um-app-por-bot-opcional). Lemb
 | Quero… | Faça |
 |---|---|
 | Atualizar | `docker compose pull && docker compose up -d`, depois `/herbie guia publicar` |
-| Fixar uma versão | `LEGION_VERSION=1.1.0` no `.env` |
+| Fixar uma versão | `LEGION_VERSION=1.2.0` no `.env` |
 | Cuidar do servidor pela web | Ligue o [painel da staff](docs/DASHBOARD.md): membros, economia, eventos, guerra e ações com auditoria |
 | Backup | `docker compose stop`, copie a pasta `data/`, `docker compose up -d` |
 | Criar perguntas de trivia | `/jarvis trivia nova`, ou várias no [editor de trivia](https://uminocelo.github.io/legion/editor-trivia.html) e `/jarvis trivia importar` ([docs/STAFF.md](docs/STAFF.md)) |
