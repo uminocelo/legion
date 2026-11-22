@@ -78,6 +78,13 @@
       "when": 1795600000000,
       "tag": "0010_season_badges",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1795700000000,
+      "tag": "0011_content_packs",
+      "breakpoints": true
     }
   ]
 }

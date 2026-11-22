@@ -3,6 +3,7 @@ import type { JarvisConfig } from './config.js';
 import { hasCombat } from './domain/mission.js';
 import { itemDirs, readItems } from './items.js';
 import { campaignDirs, missionDirs, readContent } from './mission-content.js';
+import { packDirs, readPacks } from './packs.js';
 import { jarvisServices } from './services.js';
 
 /** Missions: content, the missions channel and whether fights can run. */
@@ -84,6 +85,29 @@ export function jarvisDoctorChecks(ctx: BotContext<JarvisConfig>): DoctorCheck[]
         return {
           status: 'ok',
           message: `${items.length} item(ns) nos arquivos; ${forSale.size} à venda`,
+        };
+      },
+    },
+    {
+      id: 'jarvis.packs',
+      title: 'Pacotes de conteúdo',
+      run: async (): Promise<DoctorResult> => {
+        const root = packDirs()[0] ?? 'data/content/packs';
+        const { packs, errors } = readPacks(root, {
+          categories: ctx.botConfig.trivia.categories,
+          locale: ctx.config.locale,
+        });
+        if (errors.length)
+          return {
+            status: 'fail',
+            message: `${errors.length} erro(s) nos pacotes (o pacote com erro é ignorado): ${errors.slice(0, 3).join(' · ')}`,
+            fix: 'Corrija os arquivos em data/content/packs (rode legion content validate data/content/packs)',
+          };
+        return {
+          status: 'ok',
+          message: packs.length
+            ? `${packs.length} pacote(s) em data/content/packs`
+            : 'nenhum pacote em data/content/packs',
         };
       },
     },

@@ -350,3 +350,34 @@ export const jarvisSeasonBadges = table(
     index('jarvis_season_badges_member_idx').on(t.memberId),
   ],
 );
+
+/** Installed content packs (US-23). Instance-scoped like staff catalogs (no guild_id). */
+export const jarvisContentPacks = table('jarvis_content_packs', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  version: text('version').notNull(),
+  author: text('author').notNull(),
+  // bot | folder
+  source: text('source').notNull(),
+  installedAt: text('installed_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+  /** JSON summary of content ids in the pack. */
+  definition: text('definition'),
+});
+
+/** Ownership: which content ids belong to which pack (for upgrade/remove). */
+export const jarvisContentPackItems = table(
+  'jarvis_content_pack_items',
+  {
+    packId: text('pack_id').notNull(),
+    // trivia | mission | enemy | item
+    contentType: text('content_type').notNull(),
+    contentId: text('content_id').notNull(),
+    version: text('version').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.packId, t.contentType, t.contentId] }),
+    uniqueIndex('jarvis_content_pack_items_content_uq').on(t.contentType, t.contentId),
+    index('jarvis_content_pack_items_pack_idx').on(t.packId),
+  ],
+);

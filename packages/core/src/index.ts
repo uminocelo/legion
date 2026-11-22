@@ -37,6 +37,7 @@ export * from './events/catalog.js';
 export * from './game/canon.js';
 export * from './game/content-issues.js';
 export * from './game/item.js';
+export * from './game/pack.js';
 export * from './game/origins.js';
 export * from './game/random.js';
 export * from './game/stats.js';
