@@ -6,8 +6,9 @@ const saved = store<{ draft: PackDraft }>('legion.editor.pack');
 const state = saved.load() ?? { draft: emptyPack() };
 if (!state.draft) state.draft = emptyPack();
 
-const root = document.getElementById('editor');
-if (!root) throw new Error('missing #editor');
+const editor = document.getElementById('editor');
+if (!editor) throw new Error('missing #editor');
+const root: HTMLElement = editor;
 
 const out = outputPanel('/jarvis pack importar arquivo:', PACK_FILE);
 
