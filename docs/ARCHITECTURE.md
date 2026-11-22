@@ -78,7 +78,7 @@ stateDiagram-v2
   origin_chosen --> rules_accepted: Trocar origem
   origin_chosen --> registered: envia a ficha válida<br/>(facção inicial, transação + player.created)
   registered --> registered: sai e volta<br/>(cargos restaurados, player.rejoined)
-  registered: Mutante Registrado + 1 facção + Recruta
+  registered: Herói Registrado + 1 facção + Recruta
 ```
 
 Antes da v0.9 o terceiro passo era `faction_chosen`; a migração `0002_hero_origins` muda esses membros para `rules_accepted` (eles escolhem a origem e mantêm a facção). Veja o [ADR 0031](adr/0031-hero-origins.md).

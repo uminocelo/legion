@@ -380,7 +380,7 @@ Defined in `legion.config.yaml` under `roles` (fields: `key`, `name`, `color` he
 | `staff_council` | Staff | Conselho da Legião | #9B59B6 | manual (create if missing, never assign) |
 | `staff_bots` | Staff | Sentinela | #95A5A6 | manual (for Legion bots; create if missing, never assign) |
 | `signal` | Onboarding | Sinal Detectado | none | Cérebro |
-| `registered` | Onboarding | Mutante Registrado | #5DADE2 | Cérebro |
+| `registered` | Onboarding | Herói Registrado | #5DADE2 | Cérebro |
 | `faction_xmen` | Faction (exactly one) | X-Men | #3498DB | Cérebro |
 | `faction_brotherhood` | Faction (exactly one) | Irmandade | #E74C3C | Cérebro |
 | `faction_independent` | Faction (exactly one) | Independente | #2ECC71 | Cérebro |

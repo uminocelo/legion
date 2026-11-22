@@ -14,7 +14,7 @@ export function cerebroDoctorChecks(ctx: BotContext<CerebroConfig>, setup: Cereb
     not_category: 'o ID não é de uma categoria',
     team_cannot_view: 'a equipe não consegue ver',
     open_to_everyone: '@everyone consegue ver',
-    open_to_registered: 'todo Mutante Registrado consegue ver',
+    open_to_registered: 'todo Herói Registrado consegue ver',
     open_to_other_team: 'outra equipe consegue ver',
   };
   return [

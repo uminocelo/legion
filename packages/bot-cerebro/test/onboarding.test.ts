@@ -62,7 +62,7 @@ describe('onboarding', () => {
     });
     expect(t.gateway.repliesTo(m).map((x) => x.kind)).toEqual(['deferReply', 'editReply']);
     expect(t.gateway.lastReply(m)?.embeds?.[0]?.title).toBe('✅ Herói registrado!');
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Independente', 'Mutante Registrado', 'Recruta']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Herói Registrado', 'Independente', 'Recruta']);
 
     const reads = t.runtime.providers.readModels();
     const member = await reads.members.getByDiscordId(USER);
@@ -175,7 +175,7 @@ describe('onboarding', () => {
     await route({ ...base, id: 'r2', kind: 'component', customId: 'cerebro:v1:reopen' });
     expect(t.gateway.repliesTo('r2')[0]?.kind).toBe('showModal');
     await route({ ...base, id: 'r3', kind: 'modal', customId: 'cerebro:v1:mutant', fields: FIELDS });
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Independente', 'Mutante Registrado', 'Recruta']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Herói Registrado', 'Independente', 'Recruta']);
     const [created] = await events(t, 'player.created');
     expect(created).toMatchObject({ archetype: 'Tanque', faction: 'independent', originType: 'inumano' });
   });
@@ -195,7 +195,7 @@ describe('onboarding', () => {
       values: ['Velocista'],
     });
     await t.interact({ kind: 'modal', userId: USER, customId: 'cerebro:v1:mutant', fields: FIELDS });
-    expect(t.gateway.memberRoleNames(USER)).toEqual(['Independente', 'Mutante Registrado', 'Recruta']);
+    expect(t.gateway.memberRoleNames(USER)).toEqual(['Herói Registrado', 'Independente', 'Recruta']);
   });
 
   it('rejects canon names with a reopen button, and flags 3 attempts in 10 minutes once', async () => {
@@ -265,8 +265,8 @@ describe('rejoin', () => {
     await join(t);
     expect(t.gateway.memberRoleNames(USER)).toEqual([
       'Aviso de Live',
+      'Herói Registrado',
       'Independente',
-      'Mutante Registrado',
       'Recruta',
     ]);
     const repo = repoOf(t);

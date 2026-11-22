@@ -57,7 +57,7 @@ const BOT_PERMS = [VIEW, 'SendMessages', 'EmbedLinks', 'ReadMessageHistory'];
 
 /**
  * Pure plan for `/cerebro setup canais:true` (Part B): `@everyone` loses View Channel everywhere
- * except welcome and rules; `Mutante Registrado` gets View Channel on community channels.
+ * except welcome and rules; `Herói Registrado` gets View Channel on community channels.
  *
  * Per channel the order matters: first the bot gets its own member overwrite (otherwise hiding the
  * channel from `@everyone` would lock the bot out mid-way), then Registered is allowed, and only then

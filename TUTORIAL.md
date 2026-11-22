@@ -97,7 +97,7 @@ docker compose run --rm legion legion invite-url
 
 Abra o link, escolha o servidor e autorize. O link já pede só as permissões que os bots ligados usam (cargos, canais, mensagens, tópicos, fixar mensagens e, com o Sentinel, moderar membros).
 
-Agora o passo que mais dá problema: em **Configurações do servidor → Cargos**, arraste o cargo **Cérebro** para **acima** de todos os cargos que o Legion gerencia (facções, ranks, Sinal Detectado, Mutante Registrado e os cargos de aviso). O Discord só deixa um bot dar cargos abaixo do cargo mais alto dele.
+Agora o passo que mais dá problema: em **Configurações do servidor → Cargos**, arraste o cargo **Cérebro** para **acima** de todos os cargos que o Legion gerencia (facções, ranks, Sinal Detectado, Herói Registrado e os cargos de aviso). O Discord só deixa um bot dar cargos abaixo do cargo mais alto dele.
 
 **✅ Confira:** o Cérebro aparece na lista de membros (offline por enquanto) e o cargo dele está no topo dos cargos do Legion.
 
