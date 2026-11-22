@@ -76,6 +76,8 @@ export const cerebro: LegionBot<CerebroConfig> = {
       { action: 'mutant', version: V, handle: (i, r) => flow.submitMutant(i, r) },
       { action: 'optin', version: V, handle: (i, r, [key]) => flow.toggleOptIn(i, r, key ?? '') },
       { action: 'share', version: V, handle: (i, r, [memberId]) => flow.share(i, r, memberId ?? '') },
+      { action: 'frame', version: V, handle: (i, r) => flow.pickCosmetic(i, r, 'frame') },
+      { action: 'title', version: V, handle: (i, r) => flow.pickCosmetic(i, r, 'title') },
       { action: 'pmain', version: V, handle: (i, r, [mode]) => flow.powers.chooseMain(i, r, pickMode(mode)) },
       {
         action: 'psec',
@@ -117,6 +119,11 @@ export const cerebro: LegionBot<CerebroConfig> = {
       bot: 'cerebro',
       command: '/cerebro preferencias',
       descriptionKey: 'cerebro.help.preferencias',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro visual',
+      descriptionKey: 'cerebro.help.visual',
     });
     ctx.help.add({
       bot: 'cerebro',

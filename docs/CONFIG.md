@@ -64,6 +64,7 @@ roles:
 
 Regras: `tiktok_sub` precisa ter `managedBy: integration` (o Legion nunca toca nesse cargo). Cargos `manual` são criados se faltarem, mas nunca dados a ninguém. Os bots nunca apagam cargos nem renomeiam cargos que não gerenciam.
 
+O cargo **Apoiador** (`supporter`, `managedBy: manual`) é cosmético: a staff dá e tira à mão. Quem tem o cargo usa `/cerebro visual` para escolher moldura e título do cartão do `/perfil`. Sem o cargo, o cartão volta ao normal na próxima renderização (e as escolhas gravadas são limpas). Cosméticos **nunca** mudam atributos, XP, créditos ou chances — só a aparência do cartão.
 
 ### `factions`
 
@@ -104,6 +105,7 @@ Escrever `factions` troca a lista inteira: copie as 9 equipes acima e acrescente
 | `welcomePing` | `true` | Menciona o membro na mensagem de boas-vindas |
 | `persistentWelcome` | `true` | Mantém uma mensagem fixa com o botão "Começar" no canal de boas-vindas |
 | `publicRegistryCard` | `true` | Posta um cartão público quando alguém se registra |
+| `profileCard` | `true` | `/perfil` e Compartilhar anexam o cartão em PNG (com moldura/título de apoiador, se houver) |
 | `codename.min` / `codename.max` | `2` / `32` | Tamanho do codinome |
 | `origins` | as 7, nesta ordem | Origens do cadastro: lista de `{ key, emoji }` com `mutante`, `inumano`, `ciencia`, `tecnologia`, `mistico`, `cosmico`, `treinado`. A ordem é a do menu; tire uma para escondê-la. Chave desconhecida ou repetida é erro. Nomes e descrições ficam nos textos (`cerebro.origin.<key>`). Veja [UNIVERSE.md](UNIVERSE.md#origens) |
 | `teams.startFaction` | `independent` | Equipe de quem acaba de se registrar. Se não existir em `factions`, vale a primeira da lista (e o `legion doctor` mostra ❌) |

@@ -12,7 +12,15 @@ import {
 } from '@legion/core';
 import { z } from 'zod';
 import type { CerebroConfig } from './config.js';
-import { CerebroRepo, type MemberRow, type MutantRow, pendingPowersOf, toMemberView } from './db/repo.js';
+import { type CosmeticKind, resolveCosmeticId } from './cosmetics.js';
+import {
+  CerebroRepo,
+  cosmeticsOf,
+  type MemberRow,
+  type MutantRow,
+  pendingPowersOf,
+  toMemberView,
+} from './db/repo.js';
 import { validateCodename } from './domain/codename.js';
 import { expectedRoles, transition } from './domain/onboarding.js';
 import { FactionJoin } from './faction-join.js';
@@ -22,7 +30,7 @@ import { PowerFlow } from './power-flow.js';
 import { CARD_FILE, SheetCard } from './sheet.js';
 import { renderSquadOutcome, Squads } from './squads.js';
 import { TeamMove } from './team-move.js';
-import { CerebroUi, channelMention } from './ui.js';
+import { CerebroUi, COSMETIC_NONE, channelMention } from './ui.js';
 
 const stepOf = (row: MemberRow) => toMemberView(row).onboardingStep;
 
@@ -569,7 +577,7 @@ export class CerebroFlow {
     );
   }
 
-  // ---------- opt-ins, profile ----------
+  // ---------- opt-ins, visual, profile ----------
 
   async toggleOptIn(i: IncomingInteraction, r: Responder, roleKey: string): Promise<void> {
     const locale = await this.locale(i.userId);
@@ -599,6 +607,40 @@ export class CerebroFlow {
     const row = await this.repo.memberByDiscordId(i.userId);
     if (row?.onboardingStep !== 'registered') return r.reply(await this.notRegisteredSelf(locale));
     await r.reply(this.ui.optIns(locale, toMemberView(row).optIns));
+  }
+
+  /** Opens the supporter frame/title picker (`/cerebro visual`). */
+  async visual(i: IncomingInteraction, r: Responder): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.repo.memberByDiscordId(i.userId);
+    if (row?.onboardingStep !== 'registered') return r.reply(await this.notRegisteredSelf(locale));
+    if (!(await this.sheet.hasSupporterRole(i.userId)))
+      return r.reply(this.ui.text(this.t('visual.need_supporter', {}, locale)));
+    await r.reply(this.ui.visual(locale, cosmeticsOf(row)));
+  }
+
+  /** Saves a frame or title pick from the visual selects. */
+  async pickCosmetic(i: IncomingInteraction, r: Responder, kind: CosmeticKind): Promise<void> {
+    const locale = await this.locale(i.userId);
+    const row = await this.repo.memberByDiscordId(i.userId);
+    if (row?.onboardingStep !== 'registered') return r.reply(await this.notRegisteredSelf(locale));
+    if (!(await this.sheet.hasSupporterRole(i.userId)))
+      return r.update(this.ui.text(this.t('visual.need_supporter', {}, locale)));
+
+    const raw = i.values?.[0] ?? '';
+    const id = raw === COSMETIC_NONE || raw === '' ? null : resolveCosmeticId(raw, kind);
+    if (raw !== COSMETIC_NONE && raw !== '' && !id)
+      return r.update(this.ui.visual(locale, cosmeticsOf(row), this.t('errors.invalid_choice', {}, locale)));
+
+    const updated =
+      kind === 'frame'
+        ? await this.repo.setCosmetics(row.id, { frameId: id })
+        : await this.repo.setCosmetics(row.id, { titleId: id });
+    const picks = cosmeticsOf(updated ?? row);
+    const label = id
+      ? this.t(`visual.${kind}_set`, { name: this.ui.cosmeticName(id, locale) }, locale)
+      : this.t(`visual.${kind}_cleared`, {}, locale);
+    await r.update(this.ui.visual(locale, picks, label));
   }
 
   private async notRegisteredSelf(locale: Locale) {

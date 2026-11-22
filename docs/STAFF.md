@@ -118,6 +118,10 @@ Um pacote (`pack.yaml`) junta trivia, missões, inimigos e itens com `id`, `name
 
 Ids que já existem em arquivos, na staff ou em outro pacote são recusados. Pacotes com inimigos precisam do ULTRON ligado (validação e escrita). Confira também o `legion doctor` (linha de pacotes) e `legion content validate` na pasta `data/content/packs`.
 
+## Apoiador (cosméticos)
+
+O cargo **Apoiador** (`supporter` em `roles`) é `managedBy: manual`: o Cérebro cria o cargo se faltar, mas **nunca** atribui. Dê ou tire pelo Discord (ou pelo painel de cargos). Quem tem o cargo usa `/cerebro visual` e escolhe moldura e título do cartão do `/perfil`. Sem o cargo, o próximo `/perfil` já sai sem cosmético. Moldura e título **não** dão atributo, XP nem crédito — só aparência. Detalhe em [CONFIG.md](CONFIG.md#roles).
+
 ## Esquadrões
 
 Desligados por padrão. O passo a passo de ligar, fundar e entrar está em [SQUADS.md](SQUADS.md). A staff aprova, recusa e arquiva; cada uma dessas ações fica em `/audit`.

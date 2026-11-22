@@ -78,7 +78,7 @@ Todo o resto fica em `legion.config.yaml` — veja [docs/CONFIG.md](docs/CONFIG.
 - `docker compose run --rm legion legion content validate data/content` — confere arquivos de conteúdo (trivia, missões, campanhas, inimigos, poderes, itens) com as mesmas regras dos bots, sem usar o banco. Aceita arquivos ou pastas; `--type` força o tipo, `--categories` muda as categorias de trivia aceitas, `--json` para scripts. Sai com 0 (tudo certo), 1 (erros) ou 2 (tipo desconhecido).
 - `docker compose logs -f` — logs.
 
-No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha`, `/carteira`, `/loja`, `/inventario` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`), `/guerra` (placar da guerra, com o ULTRON), `/cerebro preferencias`.
+No servidor: `/trivia`, `/ranking`, `/sequencia`, `/missao`, `/campanha`, `/carteira`, `/loja`, `/inventario` e `/jarvis` (com J.A.R.V.I.S.), `/ajuda`, `/regras`, `/tutorial`, `/idioma` e `/herbie` (com H.E.R.B.I.E.), `/cerebro setup` (staff; simula por padrão, `aplicar:true` para aplicar, `canais:true` para esconder canais de quem não se registrou), `/cerebro status`, `/perfil` (ficha com cartão em imagem), `/heroi` (`ficha`, `poderes`, `origem`), `/guerra` (placar da guerra, com o ULTRON), `/cerebro preferencias`, `/cerebro visual` (moldura e título do cartão, cargo Apoiador).
 
 No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e até dois secundários de um catálogo: veja [docs/POWERS.md](docs/POWERS.md). Com `squads.enabled`, `/esquadrao` cria, entra, sai ou vê um esquadrão ([docs/SQUADS.md](docs/SQUADS.md)); desligado por padrão.
 
@@ -87,7 +87,7 @@ No cadastro, cada membro escolhe um poder principal (que define o arquétipo) e 
 ```bash
 docker compose pull && docker compose up -d
 ```
-As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=1.1.0` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
+As migrações do banco rodam sozinhas ao iniciar. Fixe uma versão com `LEGION_VERSION=1.2.0` no `.env` se preferir. Depois de atualizar, rode `/herbie guia publicar` para o guia fixado acompanhar as novidades.
 
 ## Backup
 
