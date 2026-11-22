@@ -2,7 +2,7 @@
 
 Um **modelo de servidor do Discord** cria as categorias, os canais, os cargos e as permissões de uma vez. O Legion não cria canais: você monta o servidor pelo modelo e depois cola os IDs no `legion.config.yaml`.
 
-**Link do modelo:** _em breve_ (este documento é a lista que o modelo segue).
+**Link do modelo:** [https://discord.new/2atTmU2JHg59](https://discord.new/2atTmU2JHg59) (este documento é a lista que o modelo segue).
 
 ## Usar o modelo
 
