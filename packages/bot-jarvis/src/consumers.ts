@@ -9,6 +9,7 @@ export const XP_GRANT = 'jarvis.xp-grant';
 export const FACTION_RESULT = 'jarvis.faction-result';
 export const WORLD_CREDITS = 'jarvis.world-credits';
 export const WAR_CREDITS = 'jarvis.war-credits';
+export const SEASON_REWARDS = 'jarvis.season-rewards';
 
 /** Event consumers. Delivery is at-least-once, so both are idempotent. */
 export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServices): void {
@@ -33,6 +34,11 @@ export function registerConsumers(ctx: BotContext<JarvisConfig>, s: JarvisServic
   // War winners (US-18, D19). ULTRON emits; J.A.R.V.I.S. is the only writer of the wallet.
   ctx.bus.on('war.ended', WAR_CREDITS, async (e) => {
     await s.wallet.payWar(e.payload);
+  });
+
+  // Season place badges (US-22). Archive is written in SeasonService.end; this grants badges once.
+  ctx.bus.on('season.ended', SEASON_REWARDS, async (e) => {
+    await s.season.grantBadges(e.payload);
   });
 
   ctx.bus.on('xp.grant_requested', XP_GRANT, async (e) => {

@@ -613,6 +613,26 @@
       ]
     },
     {
+      "path": "/jarvis temporada encerrar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Encerra a temporada ativa e agenda a próxima",
+        "en": "End the active season and schedule the next one"
+      },
+      "options": []
+    },
+    {
+      "path": "/jarvis temporada iniciar",
+      "kind": "slash",
+      "staff": true,
+      "description": {
+        "pt-BR": "Começa a temporada agora",
+        "en": "Start the season now"
+      },
+      "options": []
+    },
+    {
       "path": "/jarvis trivia ativar",
       "kind": "slash",
       "staff": true,
@@ -941,6 +961,16 @@
       "description": {
         "pt-BR": "Sua sequência de dias ativos",
         "en": "Your active-day streak"
+      },
+      "options": []
+    },
+    {
+      "path": "/temporada",
+      "kind": "slash",
+      "staff": false,
+      "description": {
+        "pt-BR": "Ranking da temporada e tempo restante",
+        "en": "Season leaderboard and time left"
       },
       "options": []
     },

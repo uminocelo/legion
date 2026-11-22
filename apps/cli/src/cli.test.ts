@@ -353,6 +353,7 @@ describe('several Discord apps', () => {
       'missao',
       'ranking',
       'sequencia',
+      'temporada',
       'trivia',
     ]);
     expect(byApp[APP]).toEqual(['cerebro', 'esquadrao', 'heroi', 'perfil']);

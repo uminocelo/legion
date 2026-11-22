@@ -105,6 +105,15 @@ export const jarvisConfigSchema = z.object({
         .prefault({}),
     })
     .prefault({}),
+  /** Season leaderboard windows (US-22). Off by default so upgrades stay quiet. */
+  season: z
+    .object({
+      enabled: z.boolean().default(false),
+      length: z.union([z.literal('month'), z.number().int().min(7).max(90)]).default('month'),
+      reset: z.literal('season_score').default('season_score'),
+      rewards: z.object({ top: posInt.max(25).default(3) }).prefault({}),
+    })
+    .prefault({}),
 });
 
 export type JarvisConfig = z.infer<typeof jarvisConfigSchema>;

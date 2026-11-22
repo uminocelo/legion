@@ -2,12 +2,14 @@ import type { BotContext } from '@legion/core';
 import { JarvisCampaigns } from './campaigns.js';
 import type { JarvisConfig } from './config.js';
 import { JarvisRepo } from './db/repo.js';
+import { SeasonRepo } from './db/season-repo.js';
 import { JarvisInventory } from './inventory-ui.js';
 import { ItemImports } from './item-imports.js';
 import { InventoryService, ItemCatalog } from './items.js';
 import { JarvisLeaderboard } from './leaderboard.js';
 import { MissionImports } from './mission-imports.js';
 import { JarvisMissions } from './missions.js';
+import { SeasonService } from './season.js';
 import { JarvisShop } from './shop-ui.js';
 import { StaffTrivia } from './staff-trivia.js';
 import { JarvisTrivia } from './trivia.js';
@@ -33,6 +35,7 @@ export interface JarvisServices {
   wallet: WalletService;
   walletUi: JarvisWalletUi;
   shop: JarvisShop;
+  season: SeasonService;
 }
 
 const cache = new WeakMap<object, JarvisServices>();
@@ -42,10 +45,12 @@ export function jarvisServices(ctx: BotContext<JarvisConfig>): JarvisServices {
   let s = cache.get(ctx);
   if (!s) {
     const repo = new JarvisRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
+    const seasonRepo = new SeasonRepo(ctx.db, ctx.guildId, ctx.clock);
     const partial = {
       repo,
       xp: new XpService(ctx, repo),
       wallet: new WalletService(ctx, repo),
+      season: new SeasonService(ctx, seasonRepo),
     } as JarvisServices;
     partial.trivia = new JarvisTrivia(ctx, partial);
     partial.board = new JarvisLeaderboard(ctx, partial, partial.trivia.ui);

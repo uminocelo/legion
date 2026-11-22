@@ -79,6 +79,18 @@ export function jarvisCommands(
       execute: (i, r) => board.command(i, r),
     },
     {
+      name: 'temporada',
+      json: {
+        name: 'temporada',
+        name_localizations: { 'en-US': 'season' },
+        ...desc(i18n, 'jarvis.commands.temporada.description'),
+      },
+      execute: async (i, r) => {
+        const l = await i18n.localeFor(i.userId);
+        await r.reply(await s.season.playerView(i.userId, l));
+      },
+    },
+    {
       name: 'sequencia',
       json: {
         name: 'sequencia',
@@ -560,6 +572,26 @@ export function jarvisCommands(
               },
             ],
           },
+          {
+            type: 2,
+            name: 'temporada',
+            name_localizations: { 'en-US': 'season' },
+            ...desc(i18n, 'jarvis.commands.jarvis.temporada'),
+            options: [
+              {
+                type: 1,
+                name: 'iniciar',
+                name_localizations: { 'en-US': 'start' },
+                ...desc(i18n, 'jarvis.commands.jarvis.temporada_iniciar'),
+              },
+              {
+                type: 1,
+                name: 'encerrar',
+                name_localizations: { 'en-US': 'end' },
+                ...desc(i18n, 'jarvis.commands.jarvis.temporada_encerrar'),
+              },
+            ],
+          },
         ],
       },
       autocomplete: async (i, r) => {
@@ -573,6 +605,8 @@ export function jarvisCommands(
         const l = await i18n.localeFor(i.userId);
         const sub = i.subcommand;
         if (sub === 'xp') return staffXp(ctx, s, i, r, l);
+        if (sub === 'temporada iniciar') return staffSeasonStart(ctx, s, r, l);
+        if (sub === 'temporada encerrar') return staffSeasonEnd(ctx, s, r, l);
         if (sub === 'item dar') return s.inventoryUi.staffGrant(i, r, l);
         if (sub === 'item importar') return s.itemImports.import(i, r);
         if (sub === 'item exportar') return s.itemImports.export(i, r);
@@ -630,6 +664,43 @@ export function jarvisCommands(
     },
   ];
 }
+
+async function staffSeasonStart(
+  ctx: BotContext<JarvisConfig>,
+  s: JarvisServices,
+  r: Responder,
+  l: 'pt-BR' | 'en',
+) {
+  const t = (k: string, v: Record<string, string | number> = {}) => ctx.i18n.t(k, v, l);
+  const res = await s.season.staffStart();
+  if (res === 'disabled')
+    return r.reply({ persona: 'jarvis', ephemeral: true, content: t('jarvis.season.disabled') });
+  if (res === 'active')
+    return r.reply({ persona: 'jarvis', ephemeral: true, content: t('jarvis.season.already_active') });
+  const active = await s.season.repo.findStatus('active');
+  return r.reply({
+    persona: 'jarvis',
+    ephemeral: true,
+    content: t('jarvis.season.started', { at: `<t:${unix(active?.endsAt ?? '')}:F>` }),
+  });
+}
+
+async function staffSeasonEnd(
+  ctx: BotContext<JarvisConfig>,
+  s: JarvisServices,
+  r: Responder,
+  l: 'pt-BR' | 'en',
+) {
+  const t = (k: string, v: Record<string, string | number> = {}) => ctx.i18n.t(k, v, l);
+  const res = await s.season.staffEnd();
+  if (res === 'disabled')
+    return r.reply({ persona: 'jarvis', ephemeral: true, content: t('jarvis.season.disabled') });
+  if (res === 'none')
+    return r.reply({ persona: 'jarvis', ephemeral: true, content: t('jarvis.season.none') });
+  return r.reply({ persona: 'jarvis', ephemeral: true, content: t('jarvis.season.ended') });
+}
+
+const unix = (iso: string) => Math.floor(new Date(iso).getTime() / 1000);
 
 async function staffXp(
   ctx: BotContext<JarvisConfig>,

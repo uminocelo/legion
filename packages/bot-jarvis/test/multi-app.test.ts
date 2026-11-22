@@ -32,6 +32,7 @@ describe('one Discord app per bot', () => {
       'missao',
       'ranking',
       'sequencia',
+      'temporada',
       'trivia',
     ]);
     expect(names(t.gateway)).not.toContain('trivia');

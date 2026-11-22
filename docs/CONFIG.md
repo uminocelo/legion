@@ -161,6 +161,10 @@ As chaves existentes estão em `packages/*/locales/pt-BR.json`.
 | `economy.worldEvents.victory` / `participation` | `30` / `10` | Créditos para cada participante de um evento do mundo que termina em vitória / derrota |
 | `economy.war.winner` | `50` | Créditos para cada herói da facção vencedora que pontuou na guerra. Empate paga todas. `0` não paga. Com a economia desligada, a guerra acontece e ninguém recebe |
 | `economy.gear.statCap` | `2` | Quanto o equipamento soma, no total, a cada atributo (vida: `statCap × 8`). `0` = equipamento só visual ([ECONOMY.md](ECONOMY.md)) |
+| `season.enabled` | `false` | Liga as temporadas. `false` não agenda a próxima; `/temporada` avisa que está desligada. Staff `/jarvis temporada iniciar` também recusa |
+| `season.length` | `month` | `month` (começa no dia 1, no fuso do servidor) ou um número de dias entre 7 e 90 |
+| `season.reset` | `season_score` | Só a pontuação da temporada zera no fim. O XP vitalício (`jarvis_progress.xp`) nunca é apagado |
+| `season.rewards.top` | `3` | Quantos primeiros do ranking da temporada ganham medalha de colocação (1–25). O consumer `jarvis.season-rewards` grava uma vez por membro |
 
 ### Perguntas
 

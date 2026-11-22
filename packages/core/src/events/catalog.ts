@@ -191,6 +191,18 @@ export const eventCatalog = {
     ),
     winnerMemberIds: z.array(id),
   }),
+  /** Season closed. Top places by season XP (ledger in the window). `jarvis.season-rewards` grants badges. */
+  'season.ended': z.object({
+    seasonId: id,
+    winners: z.array(
+      z.object({
+        memberId: id,
+        place: z.number().int().positive(),
+        xp: z.number().int(),
+      }),
+    ),
+    endsAt: isoDate,
+  }),
   'report.flagged': z.object({
     reportId: id,
     reporter: z.union([botId, z.literal('member')]),
