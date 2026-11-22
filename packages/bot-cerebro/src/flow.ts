@@ -19,6 +19,7 @@ import { FactionJoin } from './faction-join.js';
 import { OriginChange } from './origin-change.js';
 import { PowerFlow } from './power-flow.js';
 import { CARD_FILE, SheetCard } from './sheet.js';
+import { Squads } from './squads.js';
 import { TeamMove } from './team-move.js';
 import { CerebroUi, channelMention } from './ui.js';
 
@@ -36,6 +37,7 @@ export class CerebroFlow {
   readonly originChange: OriginChange;
   readonly teamMove: TeamMove;
   readonly factionJoin: FactionJoin;
+  readonly squads: Squads;
 
   constructor(readonly ctx: BotContext<CerebroConfig>) {
     this.repo = new CerebroRepo(ctx.db, ctx.guildId, ctx.clock, ctx.newId);
@@ -48,6 +50,7 @@ export class CerebroFlow {
     this.originChange = new OriginChange(this);
     this.teamMove = new TeamMove(this);
     this.factionJoin = new FactionJoin(this);
+    this.squads = new Squads(this);
   }
 
   /** Origins offered now: configured ones that have at least one power (when the catalog is on). */

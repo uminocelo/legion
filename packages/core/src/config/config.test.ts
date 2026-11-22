@@ -23,6 +23,13 @@ describe('parseConfig', () => {
     expect(cfg.factions.map((f) => f.key)).toEqual([...DEFAULT_FACTION_KEYS]);
     expect(cfg.channels.welcome).toBeNull();
     expect(cfg.scheduler.pollIntervalMs).toBe(5000);
+    expect(cfg.squads).toEqual({
+      enabled: false,
+      founderRole: null,
+      maxPerFounder: 1,
+      maxMembers: 50,
+      maxSquads: 20,
+    });
   });
 
   describe('teams (factions)', () => {

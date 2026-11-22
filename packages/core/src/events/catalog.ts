@@ -44,7 +44,7 @@ export const eventCatalog = {
     discordUserId: id,
     from: z.string().min(1).nullable(),
     to: z.string().min(1),
-    reason: z.enum(['onboarding', 'arc', 'staff']),
+    reason: z.enum(['onboarding', 'arc', 'staff', 'squad']),
     sourceKey: z.string().min(1).max(200),
   }),
   /**
@@ -55,6 +55,25 @@ export const eventCatalog = {
     memberId: id,
     faction: z.string().min(1),
     sourceKey: z.string().min(1).max(200),
+  }),
+  /** A founder asked for a squad. Emitted when the request row is written, before staff decide. */
+  'squad.created': z.object({
+    squadId: id,
+    name: z.string().min(1).max(32),
+    baseFaction: z.string().min(1),
+    founderDiscordId: id,
+  }),
+  /** Someone joined a squad: the founder on approval, or a member by invite link or code. */
+  'squad.joined': z.object({
+    squadId: id,
+    discordUserId: id,
+    via: z.enum(['link', 'code', 'founder']),
+  }),
+  /** Someone left a squad, or the squad was archived and every member was removed. */
+  'squad.left': z.object({
+    squadId: id,
+    discordUserId: id,
+    reason: z.enum(['left', 'team_switch', 'archived', 'left_server']),
   }),
   /** Cérebro refused a join request. `availableAt` (ISO) tells when a `cooldown` ends. */
   'player.faction_change_refused': z.object({

@@ -345,7 +345,7 @@ describe('several Discord apps', () => {
       'sequencia',
       'trivia',
     ]);
-    expect(byApp[APP]).toEqual(['cerebro', 'heroi', 'perfil']);
+    expect(byApp[APP]).toEqual(['cerebro', 'esquadrao', 'heroi', 'perfil']);
   });
 
   it('init writes per-bot tokens to .env', () => {

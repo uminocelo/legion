@@ -9,6 +9,7 @@ import { CEREBRO_LOCALES_DIR, CEREBRO_MIGRATIONS_DIR } from './paths.js';
 import type { PickMode } from './power-flow.js';
 import { membersReadModel, mutantsReadModel } from './read-models.js';
 import { CerebroSetup } from './setup.js';
+import { squadActions, squadComponents, squadPanels } from './squad-commands.js';
 import { V } from './ui.js';
 
 export * from './config.js';
@@ -81,6 +82,7 @@ export const cerebro: LegionBot<CerebroConfig> = {
       },
       { action: 'pnext', version: V, handle: (i, r, [mode]) => flow.powers.next(i, r, pickMode(mode)) },
       { action: 'pback', version: V, handle: (i, r, [mode]) => flow.powers.back(i, r, pickMode(mode)) },
+      ...squadComponents(ctx, flow),
     ];
   },
 
@@ -122,6 +124,37 @@ export const cerebro: LegionBot<CerebroConfig> = {
       descriptionKey: 'cerebro.help.status',
       adminOnly: true,
     });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/esquadrao criar',
+      descriptionKey: 'cerebro.help.esquadrao_criar',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/esquadrao sair',
+      descriptionKey: 'cerebro.help.esquadrao_sair',
+    });
+    ctx.help.add({ bot: 'cerebro', command: '/esquadrao ver', descriptionKey: 'cerebro.help.esquadrao_ver' });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro esquadrao aprovar',
+      descriptionKey: 'cerebro.help.esquadrao_aprovar',
+      adminOnly: true,
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro esquadrao recusar',
+      descriptionKey: 'cerebro.help.esquadrao_recusar',
+      adminOnly: true,
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/cerebro esquadrao arquivar',
+      descriptionKey: 'cerebro.help.esquadrao_arquivar',
+      adminOnly: true,
+    });
+    for (const panel of squadPanels(ctx, flow)) ctx.dashboard.panel(panel);
+    for (const action of squadActions(ctx, flow)) ctx.dashboard.action(action);
   },
 
   onReady: async (ctx) => {

@@ -71,6 +71,6 @@ describe('J.A.R.V.I.S. dashboard panels', () => {
 
   it('registers nothing when J.A.R.V.I.S. is disabled', async () => {
     t = await createTestContext({ bots: [cerebro] });
-    expect(t.runtime.dashboard.list().map((p) => p.bot)).toEqual(['core']);
+    expect(t.runtime.dashboard.list().map((p) => p.bot)).toEqual(['core', 'cerebro']);
   });
 });

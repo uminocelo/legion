@@ -150,6 +150,7 @@ describe('ULTRON dashboard panels', () => {
     t = await createTestContext({ bots: [cerebro, jarvis, sentinel] });
     expect(t.runtime.dashboard.list().map((p) => `${p.bot}/${p.id}`)).toEqual([
       'core/members',
+      'cerebro/squads',
       'jarvis/economy',
       'jarvis/top-balances',
       'jarvis/purchases',

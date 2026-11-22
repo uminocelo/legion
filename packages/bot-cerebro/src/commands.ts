@@ -2,6 +2,7 @@ import type { BotContext, I18n, IncomingInteraction, Responder, SlashCommandDefi
 import type { CerebroConfig } from './config.js';
 import type { CerebroFlow } from './flow.js';
 import { type CerebroSetup, LAST_ROLE_SYNC_KEY, type LastRoleSync } from './setup.js';
+import { cerebroSquadGroup, esquadraoCommand, runCerebroSquad, squadAutocomplete } from './squad-commands.js';
 
 const desc = (i18n: I18n, key: string) => ({
   description: i18n.t(key, {}, 'pt-BR').slice(0, 100),
@@ -57,6 +58,7 @@ export function cerebroCommands(
   });
 
   return [
+    esquadraoCommand(ctx, flow),
     {
       name: 'perfil',
       json: {
@@ -163,8 +165,10 @@ export function cerebroCommands(
               },
             ],
           },
+          cerebroSquadGroup(i18n),
         ],
       },
+      autocomplete: (i, r) => squadAutocomplete(ctx, flow, i, r, true),
       execute: async (i, r) => {
         switch (i.subcommand) {
           case 'preferencias':
@@ -186,6 +190,11 @@ export function cerebroCommands(
           case 'equipe mover':
             if (!(await staffOnly(i, r))) return;
             return flow.teamMove.command(i, r);
+          case 'esquadrao aprovar':
+          case 'esquadrao recusar':
+          case 'esquadrao arquivar':
+            if (!(await staffOnly(i, r))) return;
+            return runCerebroSquad(ctx, flow, i, r);
           default:
             return flow.preferences(i, r);
         }

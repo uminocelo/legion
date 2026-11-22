@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionType,
   type Attachment,
+  ChannelType,
   type Client,
   DiscordAPIError,
   type Guild,
@@ -278,6 +279,73 @@ export class DiscordJsGateway implements DiscordGateway {
     }
   }
 
+  async createInvite(channelId: string, o: { maxAge: 0; maxUses: 0; unique: true; reason?: string }) {
+    try {
+      const guild = await this.guild();
+      const invite = await guild.invites
+        .create(channelId, { maxAge: o.maxAge, maxUses: o.maxUses, unique: o.unique, reason: o.reason })
+        .catch(wrapError);
+      return { code: invite.code, url: invite.url };
+    } catch (err) {
+      return wrapError(err);
+    }
+  }
+  async fetchInvites() {
+    try {
+      const guild = await this.guild();
+      const invites = await guild.invites.fetch().catch(wrapError);
+      return [...invites.values()].map((i) => ({
+        code: i.code,
+        uses: i.uses ?? 0,
+        channelId: i.channelId ?? '',
+      }));
+    } catch (err) {
+      return wrapError(err);
+    }
+  }
+  async deleteInvite(code: string, reason?: string) {
+    try {
+      const guild = await this.guild();
+      await guild.invites.delete(code, reason).catch(wrapError);
+    } catch (err) {
+      return wrapError(err);
+    }
+  }
+  async createPrivateThread(channelId: string, name: string) {
+    try {
+      const ch = await this.client.channels.fetch(channelId);
+      if (!ch || !('threads' in ch) || ch.isThread())
+        throw new GatewayError('Channel cannot host threads', 50024);
+      // biome-ignore lint/suspicious/noExplicitAny: text channels share this API; news channels do not host private threads
+      const t = await (ch.threads as any).create({
+        name,
+        type: ChannelType.PrivateThread,
+        invitable: false,
+      });
+      return { threadId: t.id as string };
+    } catch (err) {
+      return wrapError(err);
+    }
+  }
+  async addThreadMember(threadId: string, userId: string) {
+    try {
+      const ch = await this.client.channels.fetch(threadId);
+      if (!ch?.isThread()) throw new GatewayError('Unknown Channel', 10003);
+      await ch.members.add(userId).catch(wrapError);
+    } catch (err) {
+      return wrapError(err);
+    }
+  }
+  async removeThreadMember(threadId: string, userId: string) {
+    try {
+      const ch = await this.client.channels.fetch(threadId);
+      if (!ch?.isThread()) throw new GatewayError('Unknown Channel', 10003);
+      await ch.members.remove(userId).catch(wrapError);
+    } catch (err) {
+      return wrapError(err);
+    }
+  }
+
   async reply(id: string, msg: OutgoingMessage) {
     await this.interaction(id)
       .reply(toDiscordPayload(msg) as InteractionReplyOptions)
@@ -365,6 +433,19 @@ export class DiscordJsGateway implements DiscordGateway {
       })
       .catch(wrapError);
     return { id: r.id, name: r.name, color: role.color, position: r.position, managed: r.managed };
+  }
+  async deleteRole(roleId: string, reason?: string): Promise<void> {
+    const guild = await this.guild();
+    await guild.roles.delete(roleId, reason).catch(wrapError);
+  }
+  async deleteChannel(channelId: string, reason?: string): Promise<void> {
+    try {
+      const ch = await this.client.channels.fetch(channelId);
+      if (!ch || !('delete' in ch)) throw new GatewayError('Unknown Channel', 10003);
+      await ch.delete(reason).catch(wrapError);
+    } catch (err) {
+      return wrapError(err);
+    }
   }
   async editRole(roleId: string, patch: Partial<RoleCreate>): Promise<void> {
     const guild = await this.guild();

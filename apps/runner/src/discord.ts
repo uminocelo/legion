@@ -7,12 +7,18 @@ import {
   type PartialGuildMember,
 } from 'discord.js';
 
-export function intentsFor(bots: AnyLegionBot[]): GatewayIntentBits[] {
-  return [...new Set([GatewayIntentBits.Guilds, ...bots.flatMap((b) => b.intents)])];
+/**
+ * Union of the enabled bots' intents. `GuildInvites` is added only when `squads.enabled`,
+ * because invite create/delete events are how a squad link is guessed.
+ */
+export function intentsFor(bots: AnyLegionBot[], squadsEnabled = false): GatewayIntentBits[] {
+  const bits = [GatewayIntentBits.Guilds, ...bots.flatMap((b) => b.intents)];
+  if (squadsEnabled) bits.push(GatewayIntentBits.GuildInvites);
+  return [...new Set(bits)];
 }
 
-export function createClient(bots: AnyLegionBot[]): Client {
-  return new Client({ intents: intentsFor(bots), allowedMentions: { parse: [] } });
+export function createClient(bots: AnyLegionBot[], squadsEnabled = false): Client {
+  return new Client({ intents: intentsFor(bots, squadsEnabled), allowedMentions: { parse: [] } });
 }
 
 const toMember = (m: DjsMember) => ({

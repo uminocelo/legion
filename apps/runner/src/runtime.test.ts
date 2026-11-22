@@ -101,6 +101,7 @@ describe('buildRuntime', () => {
     expect(consumed).toMatchObject([{ consumerId: 'cerebro.rank-roles', status: 'done' }]);
     expect(gateway.registeredCommands?.map((c) => (c as { name: string }).name)).toEqual([
       'cerebro',
+      'esquadrao',
       'heroi',
       'perfil',
     ]);
@@ -114,6 +115,16 @@ describe('buildRuntime', () => {
     expect(intentsFor(bots).sort()).toEqual(
       [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers].sort(),
     );
+  });
+
+  it('adds GuildInvites only when squads are enabled', async () => {
+    const { bots, config } = await loadConfigAndBots(write('bots: [cerebro]\nsquads:\n  enabled: true\n'));
+    expect(config.squads.enabled).toBe(true);
+    expect(intentsFor(bots)).not.toContain(GatewayIntentBits.GuildInvites);
+    expect(intentsFor(bots, config.squads.enabled)).toContain(GatewayIntentBits.GuildInvites);
+    const off = await loadConfigAndBots(write('bots: [cerebro]\n'));
+    expect(off.config.squads.enabled).toBe(false);
+    expect(intentsFor(off.bots, off.config.squads.enabled)).not.toContain(GatewayIntentBits.GuildInvites);
   });
 });
 

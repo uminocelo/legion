@@ -16,6 +16,8 @@ export const members = pgTable(
     pendingPowers: text('pending_powers'),
     /** Last team switch (arc or staff); null = never switched. Registration is not a switch. */
     factionChangedAt: text('faction_changed_at'),
+    /** Squad invite hint until onboarding ends (US-35). Cleared when the member joins or skips. */
+    pendingSquadId: text('pending_squad_id'),
     rank: text('rank').notNull().default('recruta'),
     optIns: text('opt_ins').notNull().default('[]'),
     leftAt: text('left_at'),
@@ -92,7 +94,7 @@ export const cerebroFactionChanges = pgTable(
     memberId: text('member_id').notNull(),
     fromFaction: text('from_faction'),
     toFaction: text('to_faction').notNull(),
-    // onboarding | arc | staff
+    // onboarding | arc | staff | squad
     reason: text('reason').notNull(),
     sourceKey: text('source_key').notNull(),
     /** Staff Discord id for `staff`, else null. */
@@ -103,4 +105,50 @@ export const cerebroFactionChanges = pgTable(
     uniqueIndex('cerebro_faction_changes_source_unique').on(t.guildId, t.sourceKey),
     index('cerebro_faction_changes_member_idx').on(t.memberId, t.createdAt),
   ],
+);
+
+/**
+ * A squad under a base team (US-35). `name_key` is the lowercased name, unique per guild.
+ * `code` and `invite_code` stay null until staff approve. One pending or active squad per founder
+ * is enforced in code (SQLite has no partial unique index we can share with Postgres).
+ */
+export const cerebroSquads = pgTable(
+  'cerebro_squads',
+  {
+    id: text('id').primaryKey(),
+    guildId: text('guild_id').notNull(),
+    name: text('name').notNull(),
+    nameKey: text('name_key').notNull(),
+    baseFaction: text('base_faction').notNull(),
+    founderMemberId: text('founder_member_id').notNull(),
+    // requested | active | refused | archived
+    status: text('status').notNull(),
+    code: text('code'),
+    inviteCode: text('invite_code'),
+    roleId: text('role_id'),
+    threadId: text('thread_id'),
+    requestedAt: text('requested_at').notNull(),
+    decidedAt: text('decided_at'),
+    decidedBy: text('decided_by'),
+    refuseReason: text('refuse_reason'),
+  },
+  (t) => [
+    uniqueIndex('cerebro_squads_guild_name_unique').on(t.guildId, t.nameKey),
+    uniqueIndex('cerebro_squads_code_unique').on(t.code),
+    uniqueIndex('cerebro_squads_invite_code_unique').on(t.inviteCode),
+    index('cerebro_squads_guild_status_idx').on(t.guildId, t.status),
+  ],
+);
+
+/** One squad per member: `member_id` is the primary key. */
+export const cerebroSquadMembers = pgTable(
+  'cerebro_squad_members',
+  {
+    memberId: text('member_id').primaryKey(),
+    squadId: text('squad_id').notNull(),
+    joinedAt: text('joined_at').notNull(),
+    // link | code | founder
+    via: text('via').notNull(),
+  },
+  (t) => [index('cerebro_squad_members_squad_idx').on(t.squadId)],
 );
