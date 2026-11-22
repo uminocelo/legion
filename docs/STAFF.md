@@ -114,7 +114,7 @@ Um pacote (`pack.yaml`) junta trivia, missões, inimigos e itens com `id`, `name
 |---|---|
 | `/jarvis pack importar arquivo` | Anexe o `.yaml`. A prévia mostra id, nome, versão, autor e contagens 🆕/✏️/＝ por tipo (trivia, missões, inimigos, itens); **Publicar** instala ou atualiza; **Cancelar** não muda nada |
 | `/jarvis pack lista` | Lista os pacotes instalados (id, nome, versão, autor) |
-| `/jarvis pack remover id` | Remove o pacote e desativa o conteúdo dele |
+| `/jarvis pack remover id` | Remove o pacote e desativa o conteúdo dele (se a pasta `data/content/packs/<id>/` continuar no disco, o boot/reload reinstala) |
 
 Ids que já existem em arquivos, na staff ou em outro pacote são recusados. Pacotes com inimigos precisam do ULTRON ligado (validação e escrita). Confira também o `legion doctor` (linha de pacotes) e `legion content validate` na pasta `data/content/packs`.
 
