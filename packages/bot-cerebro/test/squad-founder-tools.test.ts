@@ -411,3 +411,96 @@ describe('server-left and team-switch transfer', () => {
     expect(transfers.some((a) => JSON.parse(a.details).reason === 'team_switch')).toBe(true);
   });
 });
+
+describe('founder-tool commands', () => {
+  it('registers renomear, coleader and arquivar on /esquadrao', async () => {
+    await world();
+    const defs = cerebro.commands?.(t.ctxOf(cerebro)) ?? [];
+    const opts = (
+      defs.find((d) => d.name === 'esquadrao')?.json.options as { name: string }[] | undefined
+    )?.map((o) => o.name);
+    expect(opts).toEqual(
+      expect.arrayContaining([
+        'criar',
+        'entrar',
+        'sair',
+        'ver',
+        'renomear',
+        'coleader',
+        'arquivar',
+        'conteudo',
+      ]),
+    );
+  });
+
+  it('renomear renames through the slash command', async () => {
+    await world();
+    await approve('Noite');
+    const id = await cmd(USER, 'esquadrao', 'renomear', { nome: 'Aurora' });
+    expect(reply(id)).toBe('Esquadrão renomeado para **Aurora**.');
+    expect((await rowNamed('Aurora')).name).toBe('Aurora');
+  });
+
+  it('coleader sets and clears through the slash command', async () => {
+    await world();
+    const row = await approve('Noite');
+    const other = await memberOnSquad(OTHER, 'Luz Norte', row.code ?? '');
+    const set = await cmd(USER, 'esquadrao', 'coleader', { membro: OTHER });
+    expect(reply(set)).toBe('Co-líder de **Noite** atualizado.');
+    expect((await rowNamed('Noite')).coLeaderMemberId).toBe(other.id);
+    const cleared = await cmd(USER, 'esquadrao', 'coleader');
+    expect(reply(cleared)).toBe('Co-líder de **Noite** removido.');
+    expect((await rowNamed('Noite')).coLeaderMemberId).toBeNull();
+  });
+
+  it('arquivar archives through the player slash command', async () => {
+    await world();
+    const row = await approve('Noite');
+    const id = await cmd(USER, 'esquadrao', 'arquivar', { motivo: 'fim de temporada' });
+    expect(reply(id)).toBe('Esquadrão **Noite** arquivado. Os membros continuam na equipe.');
+    expect((await rowNamed('Noite')).status).toBe('archived');
+    expect(await seats(row.id)).toHaveLength(0);
+  });
+});
+
+describe('co-leader surfaces', () => {
+  it('shows co-leader on /esquadrao ver and lets the co-leader see the invite', async () => {
+    await world();
+    const row = await approve('Noite');
+    await memberOnSquad(OTHER, 'Luz Norte', row.code ?? '');
+    const empty = await cmd(USER, 'esquadrao', 'ver');
+    expect(t.gateway.lastReply(empty)?.embeds?.[0]?.description ?? '').toContain('Co-líder: —');
+
+    await squads().setCoLeader({ discordUserId: USER, targetDiscordUserId: OTHER });
+    const filled = await cmd(USER, 'esquadrao', 'ver');
+    const filledText = t.gateway.lastReply(filled)?.embeds?.[0]?.description ?? '';
+    expect(filledText).toContain('Co-líder: Luz Norte');
+    expect(filledText).toContain(row.code ?? 'missing');
+
+    const asCo = await cmd(OTHER, 'esquadrao', 'ver');
+    const coText = t.gateway.lastReply(asCo)?.embeds?.[0]?.description ?? '';
+    expect(coText).toContain(`https://discord.gg/${row.inviteCode}`);
+    expect(coText).toContain(row.code ?? 'missing');
+  });
+
+  it('adds a co-leader column on the cerebro/squads dashboard panel', async () => {
+    await world();
+    const row = await approve('Noite');
+    await memberOnSquad(OTHER, 'Luz Norte', row.code ?? '');
+    const before = await t.runtime.dashboard.get('cerebro', 'squads')?.render();
+    expect(before?.kind).toBe('table');
+    if (before?.kind === 'table') {
+      expect(before.columns).toContain('Co-líder');
+      const night = before.rows.find((r) => r[0] === 'Noite');
+      expect(night?.[3]).toBe('—');
+    }
+
+    await squads().setCoLeader({ discordUserId: USER, targetDiscordUserId: OTHER });
+    const after = await t.runtime.dashboard.get('cerebro', 'squads')?.render();
+    expect(after?.kind).toBe('table');
+    if (after?.kind === 'table') {
+      const night = after.rows.find((r) => r[0] === 'Noite');
+      expect(night?.[3]).toBe('Luz Norte');
+    }
+  });
+});

@@ -31,7 +31,7 @@ import {
   templateStatus,
 } from './server-template.js';
 
-const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('1.2.0');
+const program = new Command('legion').description('Legion: kit de bots de RPG para Discord').version('1.3.0');
 const configOpt = ['-c, --config <path>', 'legion.config.yaml', DEFAULT_CONFIG_PATH] as const;
 
 program

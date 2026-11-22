@@ -15,7 +15,7 @@ Com uma quinta conta dá para testar o "grupo cheio" no passo 4.
 
 ## Antes (só o dono, uns 15 minutos)
 
-1. Atualize para a versão mais nova: `LEGION_VERSION=1.2.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
+1. Atualize para a versão mais nova: `LEGION_VERSION=1.3.0` (ou `latest`) no `.env`, depois `docker compose pull && docker compose up -d`.
 2. No `legion.config.yaml`, para esta sessão:
    ```yaml
    channels:
@@ -203,7 +203,7 @@ Antes: no `legion.config.yaml`, `squads.enabled: true`, `founderRole: staff_coun
 | 13.4 | Quinta conta, já herói em Independente: `/esquadrao entrar` com o código (ou o botão **Tenho um código** no cadastro) | Entra no mesmo esquadrão e nos Vingadores | | |
 | 13.5 | Staff 2 (herói): `/esquadrao criar` com base Irmandade, e aprova. Uma conta com origem Tecnologia tenta entrar | "**Irmandade** não aceita essa origem". O cadastro segue. A pessoa não entra no esquadrão | | |
 | 13.6 | J2, já em outra equipe: `/esquadrao entrar` com o código de Noite Norte | "Troque de equipe primeiro". A equipe de J2 não muda | | |
-| 13.7 | A quinta conta: `/esquadrao sair`. J1 tenta `/esquadrao sair` | Quem saiu continua nos Vingadores, sem o cargo. J1 ouve que o líder não pode sair | | |
+| 13.7 | A quinta conta: `/esquadrao sair`. J1 tenta `/esquadrao sair` | Quem saiu continua nos Vingadores, sem o cargo. J1 ouve que o líder não pode sair (dica: nomear co-líder ou `/esquadrao arquivar`) | | |
 | 13.8 | Staff 2: `/cerebro esquadrao arquivar` em Noite Norte, com motivo | Esquadrão arquivado. Os membros continuam na equipe. Somem o cargo, o tópico e o convite. A linha está em `/audit` | | |
 
 ## Depois

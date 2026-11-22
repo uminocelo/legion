@@ -43,7 +43,7 @@ async function staffOrRefuse(
   return false;
 }
 
-/** `/esquadrao criar|sair|ver`. */
+/** `/esquadrao criar|entrar|sair|ver|renomear|coleader|arquivar`. */
 export function esquadraoCommand(ctx: BotContext<CerebroConfig>, flow: CerebroFlow): SlashCommandDefinition {
   const { i18n } = ctx;
   return {
@@ -117,6 +117,54 @@ export function esquadraoCommand(ctx: BotContext<CerebroConfig>, flow: CerebroFl
             },
           ],
         },
+        {
+          type: 1,
+          name: 'renomear',
+          name_localizations: { 'en-US': 'rename' },
+          ...desc(i18n, 'cerebro.commands.esquadrao.renomear'),
+          options: [
+            {
+              type: 3,
+              name: 'nome',
+              name_localizations: { 'en-US': 'name' },
+              required: true,
+              min_length: 3,
+              max_length: 32,
+              ...desc(i18n, 'cerebro.commands.esquadrao.nome'),
+            },
+          ],
+        },
+        {
+          type: 1,
+          name: 'coleader',
+          name_localizations: { 'en-US': 'coleader' },
+          ...desc(i18n, 'cerebro.commands.esquadrao.coleader'),
+          options: [
+            {
+              type: 6,
+              name: 'membro',
+              name_localizations: { 'en-US': 'member' },
+              required: false,
+              ...desc(i18n, 'cerebro.commands.esquadrao.membro'),
+            },
+          ],
+        },
+        {
+          type: 1,
+          name: 'arquivar',
+          name_localizations: { 'en-US': 'archive' },
+          ...desc(i18n, 'cerebro.commands.esquadrao.arquivar'),
+          options: [
+            {
+              type: 3,
+              name: 'motivo',
+              name_localizations: { 'en-US': 'reason' },
+              required: true,
+              max_length: 200,
+              ...desc(i18n, 'cerebro.commands.esquadrao.motivo'),
+            },
+          ],
+        },
         squadContentGroup({
           description: desc(i18n, 'cerebro.commands.esquadrao.conteudo'),
           enviar: desc(i18n, 'cerebro.commands.esquadrao.conteudo_enviar'),
@@ -155,6 +203,36 @@ export function esquadraoCommand(ctx: BotContext<CerebroConfig>, flow: CerebroFl
         );
       if (i.subcommand === 'sair')
         return say(ctx, flow, i, r, await flow.squads.leave({ discordUserId: i.userId }));
+      if (i.subcommand === 'renomear')
+        return say(
+          ctx,
+          flow,
+          i,
+          r,
+          await flow.squads.rename({ discordUserId: i.userId, name: String(i.options?.nome ?? '') }),
+        );
+      if (i.subcommand === 'coleader') {
+        const raw = i.options?.membro;
+        const targetDiscordUserId = raw == null || raw === '' ? null : String(raw);
+        return say(
+          ctx,
+          flow,
+          i,
+          r,
+          await flow.squads.setCoLeader({ discordUserId: i.userId, targetDiscordUserId }),
+        );
+      }
+      if (i.subcommand === 'arquivar')
+        return say(
+          ctx,
+          flow,
+          i,
+          r,
+          await flow.squads.archiveOwn({
+            discordUserId: i.userId,
+            reason: String(i.options?.motivo ?? ''),
+          }),
+        );
       if (i.subcommand === 'conteudo enviar') return submitSquadContent(ctx, flow, i, r);
       return r.reply(await viewMessage(ctx, flow, i));
     },
@@ -290,6 +368,8 @@ async function viewMessage(ctx: BotContext<CerebroConfig>, flow: CerebroFlow, i:
   if (!squad) return text(token ? 'view_missing' : 'view_none', token ? { name: token } : undefined);
   const founder = await flow.repo.memberById(squad.founderMemberId);
   const mutant = founder ? await flow.repo.mutantByMemberId(founder.id) : null;
+  const coLeader = squad.coLeaderMemberId ? await flow.repo.memberById(squad.coLeaderMemberId) : null;
+  const coMutant = coLeader ? await flow.repo.mutantByMemberId(coLeader.id) : null;
   const count = await flow.squads.memberCount(squad.id);
   let description = squadText(
     ctx.i18n,
@@ -297,16 +377,20 @@ async function viewMessage(ctx: BotContext<CerebroConfig>, flow: CerebroFlow, i:
     {
       team: flow.ui.factionLabel(squad.baseFaction, locale),
       leader: mutant?.codename ?? '—',
+      coleader: coMutant?.codename ?? '—',
       count,
       max: ctx.config.squads.maxMembers,
     },
     locale,
   );
   const mine = await flow.squads.membershipOf(i.userId);
-  const isLeader = Boolean(mine && mine.squad.id === squad.id && squad.founderMemberId === mine.member.id);
+  const onSquad = Boolean(mine && mine.squad.id === squad.id);
+  const isLeader = Boolean(onSquad && squad.founderMemberId === mine?.member.id);
+  const isCoLeader = Boolean(onSquad && squad.coLeaderMemberId === mine?.member.id);
   const staff = await ctx.isStaff(i);
-  const shown = isLeader || staff ? await flow.squads.repairInvite(squad) : squad;
-  if ((isLeader || staff) && shown.inviteCode && shown.code) {
+  const canSeeSecret = isLeader || isCoLeader || staff;
+  const shown = canSeeSecret ? await flow.squads.repairInvite(squad) : squad;
+  if (canSeeSecret && shown.inviteCode && shown.code) {
     description += `\n${squadText(
       ctx.i18n,
       'view_secret',
@@ -407,11 +491,14 @@ export function squadPanels(ctx: BotContext<CerebroConfig>, flow: CerebroFlow): 
         for (const row of rows) {
           const founder = await flow.repo.memberById(row.founderMemberId);
           const mutant = founder ? await flow.repo.mutantByMemberId(founder.id) : null;
+          const coLeader = row.coLeaderMemberId ? await flow.repo.memberById(row.coLeaderMemberId) : null;
+          const coMutant = coLeader ? await flow.repo.mutantByMemberId(coLeader.id) : null;
           const statusKey = `status_${row.status}`;
           body.push([
             row.name,
             flow.ui.factionLabel(row.baseFaction, ctx.config.locale),
             mutant?.codename ?? '—',
+            coMutant?.codename ?? '—',
             `${await flow.squads.memberCount(row.id)}/${ctx.config.squads.maxMembers}`,
             t(statusKey) === `cerebro.squads.${statusKey}` ? row.status : t(statusKey),
             when().format(new Date(row.requestedAt)),
@@ -423,6 +510,7 @@ export function squadPanels(ctx: BotContext<CerebroConfig>, flow: CerebroFlow): 
             t('dash_name'),
             t('dash_base'),
             t('dash_leader'),
+            t('dash_coleader'),
             t('dash_members'),
             t('dash_status'),
             t('dash_requested'),

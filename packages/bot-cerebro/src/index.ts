@@ -161,6 +161,21 @@ export const cerebro: LegionBot<CerebroConfig> = {
     ctx.help.add({ bot: 'cerebro', command: '/esquadrao ver', descriptionKey: 'cerebro.help.esquadrao_ver' });
     ctx.help.add({
       bot: 'cerebro',
+      command: '/esquadrao renomear',
+      descriptionKey: 'cerebro.help.esquadrao_renomear',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/esquadrao coleader',
+      descriptionKey: 'cerebro.help.esquadrao_coleader',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
+      command: '/esquadrao arquivar',
+      descriptionKey: 'cerebro.help.esquadrao_arquivar_proprio',
+    });
+    ctx.help.add({
+      bot: 'cerebro',
       command: '/esquadrao conteudo enviar',
       descriptionKey: 'cerebro.help.esquadrao_conteudo',
     });

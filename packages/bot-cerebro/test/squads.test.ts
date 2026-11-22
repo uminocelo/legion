@@ -299,7 +299,7 @@ describe('leave and archive', () => {
     await cmd(STAFF, 'cerebro', 'esquadrao aprovar', { esquadrao: row.id });
     const blocked = await cmd(USER, 'esquadrao', 'sair');
     expect(reply(blocked)).toBe(
-      'O líder de **Noite** não pode sair. Peça à staff para arquivar o esquadrão.',
+      'O líder de **Noite** não pode sair. Nomeie um co-líder com `/esquadrao coleader`, ou arquive com `/esquadrao arquivar`.',
     );
     await register(t, OTHER, { fields: { codinome: 'Luz Norte' } });
     const other = await repo().memberByDiscordId(OTHER);
@@ -352,7 +352,7 @@ describe('leave and archive', () => {
     expect(embed).not.toContain('Convite:');
   });
 
-  it('shows the invite only to the leader and to staff', async () => {
+  it('shows the invite only to the leader, co-leader and staff', async () => {
     await world();
     await criar(USER, 'Noite');
     const row = await rowNamed('Noite');
@@ -362,6 +362,7 @@ describe('leave and archive', () => {
     const leaderText = t.gateway.lastReply(leader)?.embeds?.[0]?.description ?? '';
     expect(leaderText).toContain(`https://discord.gg/${saved?.inviteCode}`);
     expect(leaderText).toContain(saved?.code ?? 'missing');
+    expect(leaderText).toContain('Co-líder: —');
     await register(t, OTHER, { fields: { codinome: 'Luz Norte' } });
     const hidden = await cmd(OTHER, 'esquadrao', 'ver', { nome: 'Noite' });
     expect(t.gateway.lastReply(hidden)?.embeds?.[0]?.description ?? '').not.toContain('Código:');
