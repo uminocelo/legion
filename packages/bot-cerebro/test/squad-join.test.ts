@@ -226,6 +226,19 @@ describe('joining by code', () => {
     expect((await repo().memberByDiscordId(THIRD))?.faction).toBe('xmen');
   });
 
+  it('refuses a hero who is already in a squad', async () => {
+    await world({ maxPerFounder: 2 });
+    const noite = await approve('Noite');
+    const aurora = await approve('Aurora');
+    await register(t, OTHER, { fields: { codinome: 'Luz Norte' } });
+    expect(reply(await entrar(OTHER, noite.code ?? ''))).toBe('Você entrou em **Noite** (Vingadores).');
+    const again = await entrar(OTHER, aurora.code ?? '');
+    expect(reply(again)).toBe('Você já está em um esquadrão.');
+    expect((await repo().memberByDiscordId(OTHER))?.faction).toBe('avengers');
+    expect(await seats(aurora.id)).toHaveLength(0);
+    expect(await seats(noite.id)).toHaveLength(2);
+  });
+
   it('gives the last seat to one of two joins', async () => {
     await world({ maxMembers: 2 });
     const row = await approve('Noite');
