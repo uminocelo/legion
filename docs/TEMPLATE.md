@@ -1,6 +1,6 @@
 # Modelo de servidor do Legion
 
-Um **modelo de servidor do Discord** cria as categorias, os canais, os cargos e as permissões de uma vez. O Legion não cria canais: você monta o servidor pelo modelo e depois cola os IDs no `legion.config.yaml`.
+Um **modelo de servidor do Discord** cria as categorias, os canais, os cargos e as permissões de uma vez. O Legion não cria canais: você monta o servidor pelo modelo; o `legion init` (e `legion init --fill-channels`) preenche os IDs no `legion.config.yaml` pelos nomes desta lista.
 
 **Link do modelo:** [https://discord.new/2atTmU2JHg59](https://discord.new/2atTmU2JHg59) (este documento é a lista que o modelo segue).
 
@@ -8,8 +8,8 @@ Um **modelo de servidor do Discord** cria as categorias, os canais, os cargos e 
 
 1. Abra o link do modelo e escolha **Criar servidor**.
 2. Instale o Legion ([SELF_HOSTING.md](SELF_HOSTING.md)) e convide os bots.
-3. Ligue o modo desenvolvedor (Configurações → Avançado), clique com o botão direito em cada canal → **Copiar ID** e cole na chave indicada abaixo.
-4. Rode `/cerebro setup aplicar:true canais:true` e depois `legion doctor`.
+3. Rode `legion init` (ou `legion init --fill-channels` se o YAML já existir). Confira o relatório (preenchido / mantido / ausente / ambíguo) e rode `legion doctor`. Se algum nome não bater, o fallback continua sendo copiar o ID à mão (modo desenvolvedor → botão direito no canal → **Copiar ID**).
+4. Rode `/cerebro setup aplicar:true canais:true` e depois `legion doctor` de novo se precisar.
 
 O modelo copia estrutura, cargos e permissões. Mensagens e bots não vêm junto.
 

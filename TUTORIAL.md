@@ -31,9 +31,9 @@ Crie (ou escolha) estes canais. Os nomes são livres; o Legion usa os IDs.
 | `#eventos` | Invasões e raids do ULTRON | Registrados |
 | `#fila-moderacao` | Denúncias para a staff | **Só a staff** |
 
-Com o botão direito em cada canal → **Copiar ID**, anote os IDs num bloco de notas.
+O `legion init` (passo 3) preenche esses IDs pelos nomes do modelo. Anote o ID do servidor (botão direito no ícone → **Copiar ID**); copiar cada canal à mão só é necessário se o relatório do init marcar ausente ou ambíguo.
 
-**✅ Confira:** você tem 6 ou 7 IDs (números longos, como `1572018586715824168`) e o ID do servidor (botão direito no ícone do servidor → **Copiar ID**).
+**✅ Confira:** você tem o ID do servidor (número longo, como `1572018586715824168`) e os canais da tabela existem no servidor com esses nomes (ou você já anotou os IDs à mão).
 
 ## 2. Crie o app do Cérebro no Discord
 
@@ -55,12 +55,14 @@ git clone https://github.com/uminocelo/legion && cd legion
 ```
 (Sem git: no GitHub, **Code → Download ZIP** e abra um terminal na pasta.)
 
-O jeito mais fácil é responder às perguntas do `legion init`, que cria o `.env` e o `legion.config.yaml`:
+O jeito mais fácil é responder às perguntas do `legion init`, que cria o `.env`, lê os canais do servidor e preenche o `legion.config.yaml`:
 
 ```bash
 docker run --rm -it -v "$PWD:/out" ghcr.io/uminocelo/legion legion init --out /out
 ```
 (No PowerShell: `"${PWD}:/out"`.)
+
+Confira o relatório (preenchido / mantido / ausente / ambíguo) e rode `legion doctor`. YAML antigo com IDs nulos: `legion init --fill-channels`.
 
 Se preferir à mão, copie `.env.example` para `.env` e preencha:
 
@@ -72,7 +74,7 @@ DISCORD_GUILD_ID=     # ID do servidor
 
 > Instalou uma versão antiga? `DISCORD_TOKEN` e `DISCORD_CLIENT_ID` ainda funcionam, mas o `legion doctor` vai pedir para renomear para `CEREBRO_TOKEN` e `CEREBRO_CLIENT_ID` (mesmos valores).
 
-Depois copie `legion.config.example.yaml` para `legion.config.yaml` e ajuste duas partes:
+Depois copie `legion.config.example.yaml` para `legion.config.yaml` (ou deixe o `init` criar) e, se for à mão, ajuste:
 
 ```yaml
 bots: [cerebro, jarvis, herbie, sentinel, ultron]
@@ -187,7 +189,7 @@ Detalhes em [Um app por bot](docs/SELF_HOSTING.md#um-app-por-bot-opcional). Lemb
 | Quero… | Faça |
 |---|---|
 | Atualizar | `docker compose pull && docker compose up -d`, depois `/herbie guia publicar` |
-| Fixar uma versão | `LEGION_VERSION=1.3.0` no `.env` |
+| Fixar uma versão | `LEGION_VERSION=1.4.0` no `.env` |
 | Cuidar do servidor pela web | Ligue o [painel da staff](docs/DASHBOARD.md): membros, economia, eventos, guerra e ações com auditoria |
 | Backup | `docker compose stop`, copie a pasta `data/`, `docker compose up -d` |
 | Criar perguntas de trivia | `/jarvis trivia nova`, ou várias no [editor de trivia](https://uminocelo.github.io/legion/editor-trivia.html) e `/jarvis trivia importar` ([docs/STAFF.md](docs/STAFF.md)) |

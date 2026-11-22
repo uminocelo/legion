@@ -4,6 +4,18 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-22
+
+`legion init` fills channel and faction-area IDs from the Discord template channel names.
+
+### Upgrade notes
+- **No migration.** Config only.
+- **Fresh `legion init`** writes the full `channels.*` map and default `factions` with area IDs when the guild matches [docs/TEMPLATE.md](docs/TEMPLATE.md). Review the filled/kept/skipped/ambiguous report, then run `legion doctor`.
+- **Existing servers:** `legion init --fill-channels` fills null keys; `--force-fill-channels` overwrites without confirm. Manual Copy ID remains the fallback for missing or ambiguous names.
+
+### Added
+- Init channel fill (US-39): after prompts, REST `guildChannels` + `fillChannelIds` write D44-shaped YAML (all `channels.*`, `DEFAULT_FACTIONS` with `categoryId` / `newsChannelId` / `squadChannelId`, optional `herbie.tips.channelId` for `#guia`). `--fill-channels` / `--force-fill-channels` for existing configs. Docs in [docs/TEMPLATE.md](docs/TEMPLATE.md) and [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md).
+
 ## [1.3.0] - 2026-11-22
 
 Squad founder tools: rename, co-leader, and self-archive.
@@ -259,7 +271,8 @@ Includes the work planned for 0.5.0 (missions) and 0.6.0 (staff content), which 
 - Docker image (amd64, arm64), `docker-compose.yml` with optional Postgres profile, CI and release workflows.
 - Docs: README, self-hosting guide, architecture, config, events, ADRs 0001–0011.
 
-[Unreleased]: https://github.com/uminocelo/legion/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/uminocelo/legion/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/uminocelo/legion/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/uminocelo/legion/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/uminocelo/legion/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/uminocelo/legion/compare/v1.0.0...v1.1.0

@@ -1,16 +1,24 @@
-import { mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { cerebro } from '@legion/bot-cerebro';
-import { createTestDb, parseEnv } from '@legion/core';
-import { PermissionFlagsBits } from 'discord.js';
+import { createTestDb, parseConfigText, parseEnv } from '@legion/core';
+import { ChannelType, PermissionFlagsBits } from 'discord.js';
 import { describe, expect, it } from 'vitest';
 import { doctorExitCode, formatDoctor, runDoctor } from './doctor.js';
-import { configFile, envFile, isSnowflake, writeInitFiles } from './init.js';
+import {
+  configFile,
+  envFile,
+  isSnowflake,
+  runFillChannels,
+  runFreshInitFill,
+  writeInitFiles,
+} from './init.js';
 import { invitePermissions, inviteUrl, SQUAD_INVITE_PERMISSIONS } from './invite.js';
 import { channelPermissions } from './permissions.js';
 import { registerCommands } from './register.js';
 import { type ApiChannel, type ApiRole, type DiscordRest, RestError } from './rest.js';
+import { TEAMS } from './server-template.js';
 
 const GUILD = '100000000000000001';
 const BOT = '200000000000000001';
@@ -246,6 +254,34 @@ describe('legion init', () => {
     locale: 'pt-BR' as const,
     bots: ['cerebro' as const, 'ultron' as const],
   };
+  const fillAnswers = {
+    token: 'tok',
+    clientId: APP,
+    guildId: GUILD,
+    locale: 'pt-BR' as const,
+    bots: ['cerebro' as const, 'jarvis' as const],
+  };
+  const sid = (n: number) => String(400000000000000000 + n);
+  const templateChannels: ApiChannel[] = [
+    { id: sid(1), name: 'boas-vindas', type: ChannelType.GuildText },
+    { id: sid(2), name: 'regras', type: ChannelType.GuildText },
+    { id: sid(3), name: 'registro', type: ChannelType.GuildText },
+    { id: sid(4), name: 'eventos', type: ChannelType.GuildText },
+    { id: sid(5), name: 'missoes', type: ChannelType.GuildText },
+    { id: sid(6), name: 'combate', type: ChannelType.GuildText },
+    { id: sid(7), name: 'tutorial', type: ChannelType.GuildText },
+    { id: sid(8), name: 'fila-moderacao', type: ChannelType.GuildText },
+    { id: sid(9), name: 'guia', type: ChannelType.GuildText },
+    ...TEAMS.flatMap((t, i) => {
+      const base = 100 + i * 10;
+      return [
+        { id: sid(base), name: t.category, type: ChannelType.GuildCategory },
+        { id: sid(base + 1), name: `noticias-${t.slug}`, type: ChannelType.GuildText },
+        { id: sid(base + 2), name: `esquadroes-${t.slug}`, type: ChannelType.GuildText },
+      ];
+    }),
+  ];
+
   it('writes .env (0600) and a config with only available bots', async () => {
     const dir = tmp();
     const r = await writeInitFiles(dir, answers, async () => false);
@@ -267,6 +303,131 @@ describe('legion init', () => {
   it('validates snowflakes', () => {
     expect(isSnowflake(APP)).toBe(true);
     expect(isSnowflake('abc')).toBe(false);
+  });
+
+  it('fresh init writes parseable YAML with filled welcome and factions', async () => {
+    const dir = tmp();
+    const result = await runFreshInitFill({
+      dir,
+      answers: fillAnswers,
+      overwrite: async () => true,
+      createRest: () => fakeRest({ channels: templateChannels }),
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.envWritten).toBe(true);
+    expect(result.configWritten).toBe(true);
+    const yaml = readFileSync(join(dir, 'legion.config.yaml'), 'utf8');
+    const cfg = parseConfigText(yaml);
+    expect(cfg.channels.welcome).toBe(sid(1));
+    expect(cfg.channels.rules).toBe(sid(2));
+    expect(cfg.channels.trivia).toBeNull();
+    expect(cfg.factions.find((f) => f.key === 'xmen')).toMatchObject({
+      categoryId: sid(100),
+      newsChannelId: sid(101),
+      squadChannelId: sid(102),
+    });
+    expect(cfg.factions.find((f) => f.key === 'independent')?.categoryId).toBeUndefined();
+    expect(result.report.some((l) => l.startsWith('filled  channels.welcome'))).toBe(true);
+  });
+
+  it('--fill-channels keeps non-null IDs', async () => {
+    const dir = tmp();
+    const keepWelcome = '399999999999999001';
+    writeFileSync(
+      join(dir, '.env'),
+      `CEREBRO_TOKEN=x\nCEREBRO_CLIENT_ID=${APP}\nDISCORD_GUILD_ID=${GUILD}\n`,
+    );
+    writeFileSync(
+      join(dir, 'legion.config.yaml'),
+      `bots: [cerebro]\nchannels:\n  welcome: '${keepWelcome}'\n  rules: null\n`,
+    );
+    const result = await runFillChannels({
+      dir,
+      force: false,
+      confirmReplace: async () => false,
+      createRest: () => fakeRest({ channels: templateChannels }),
+      envSource: {
+        CEREBRO_TOKEN: 'x',
+        CEREBRO_CLIENT_ID: APP,
+        DISCORD_GUILD_ID: GUILD,
+      },
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const cfg = parseConfigText(readFileSync(join(dir, 'legion.config.yaml'), 'utf8'));
+    expect(cfg.channels.welcome).toBe(keepWelcome);
+    expect(cfg.channels.rules).toBe(sid(2));
+    expect(result.report).toContain('kept    channels.welcome (already set)');
+  });
+
+  it('--force-fill-channels overwrites non-null IDs', async () => {
+    const dir = tmp();
+    writeFileSync(
+      join(dir, 'legion.config.yaml'),
+      `bots: [cerebro]\nchannels:\n  welcome: '399999999999999001'\n  rules: null\n`,
+    );
+    const result = await runFillChannels({
+      dir,
+      force: true,
+      confirmReplace: async () => {
+        throw new Error('should not confirm when force');
+      },
+      createRest: () => fakeRest({ channels: templateChannels }),
+      envSource: {
+        CEREBRO_TOKEN: 'x',
+        CEREBRO_CLIENT_ID: APP,
+        DISCORD_GUILD_ID: GUILD,
+      },
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const cfg = parseConfigText(readFileSync(join(dir, 'legion.config.yaml'), 'utf8'));
+    expect(cfg.channels.welcome).toBe(sid(1));
+    expect(result.report.some((l) => l.startsWith('kept    '))).toBe(false);
+  });
+
+  it('REST error on fresh init skips YAML write after .env', async () => {
+    const dir = tmp();
+    const rest = fakeRest();
+    rest.guildChannels = async () => {
+      throw new RestError(401, 'unauthorized');
+    };
+    const result = await runFreshInitFill({
+      dir,
+      answers: fillAnswers,
+      overwrite: async () => true,
+      createRest: () => rest,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.envWritten).toBe(true);
+    expect(existsSync(join(dir, '.env'))).toBe(true);
+    expect(existsSync(join(dir, 'legion.config.yaml'))).toBe(false);
+    expect(result.error).toContain('401');
+  });
+
+  it('REST error on --fill-channels does not change YAML', async () => {
+    const dir = tmp();
+    const before = `bots: [cerebro]\nchannels:\n  welcome: null\n`;
+    writeFileSync(join(dir, 'legion.config.yaml'), before);
+    const rest = fakeRest();
+    rest.guildChannels = async () => {
+      throw new RestError(403, 'missing access');
+    };
+    const result = await runFillChannels({
+      dir,
+      force: false,
+      confirmReplace: async () => false,
+      createRest: () => rest,
+      envSource: {
+        CEREBRO_TOKEN: 'x',
+        CEREBRO_CLIENT_ID: APP,
+        DISCORD_GUILD_ID: GUILD,
+      },
+    });
+    expect(result.ok).toBe(false);
+    expect(readFileSync(join(dir, 'legion.config.yaml'), 'utf8')).toBe(before);
   });
 });
 
