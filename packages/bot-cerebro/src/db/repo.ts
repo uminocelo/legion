@@ -1,8 +1,41 @@
 import type { Clock, Executor, LegionDb, MemberView, MutantView, Rank } from '@legion/core';
-import { and, count, eq, gte, isNotNull, isNull } from 'drizzle-orm';
+import { and, count, eq, gte, inArray, isNotNull, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 import { toStep } from '../domain/onboarding.js';
 import { type CerebroTables, cerebroTables } from './tables.js';
+
+/** Active squad seat for a member, or null. Used by ULTRON war scoring (US-36). */
+export async function activeSquadOf(
+  db: LegionDb,
+  memberId: string,
+  ex: Executor = db.orm,
+): Promise<{ id: string; name: string; baseFaction: string } | null> {
+  const t = cerebroTables(db);
+  const m = t.cerebroSquadMembers;
+  const s = t.cerebroSquads;
+  const [row] = await ex
+    .select({ id: s.id, name: s.name, baseFaction: s.baseFaction })
+    .from(m)
+    .innerJoin(s, eq(s.id, m.squadId))
+    .where(and(eq(m.memberId, memberId), eq(s.status, 'active')))
+    .limit(1);
+  return row ?? null;
+}
+
+/** Display names for squad ids (including archived). Missing ids are omitted. */
+export async function squadNamesOf(
+  db: LegionDb,
+  ids: readonly string[],
+  ex: Executor = db.orm,
+): Promise<Map<string, string>> {
+  if (!ids.length) return new Map();
+  const s = cerebroTables(db).cerebroSquads;
+  const rows = await ex
+    .select({ id: s.id, name: s.name })
+    .from(s)
+    .where(inArray(s.id, [...ids]));
+  return new Map(rows.map((r) => [r.id, r.name]));
+}
 
 export type MemberRow = CerebroTables['members']['$inferSelect'];
 export type MutantRow = CerebroTables['mutants']['$inferSelect'];

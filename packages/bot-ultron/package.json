@@ -18,6 +18,7 @@
     "db:generate": "sh -c 'drizzle-kit generate --config drizzle.sqlite.config.ts \"$@\" && drizzle-kit generate --config drizzle.pg.config.ts \"$@\"' --"
   },
   "dependencies": {
+    "@legion/bot-cerebro": "workspace:*",
     "@legion/core": "workspace:*",
     "drizzle-orm": "^0.45.4",
     "yaml": "^2.8.1",

@@ -91,7 +91,7 @@ O vencedor é a facção com mais pontos, entre as que têm mais de zero. Empate
 
 No fim, o ULTRON posta o resultado em `channels.events` e emite `war.ended`. O J.A.R.V.I.S. paga `jarvis.economy.war.winner` (padrão 50) uma vez a cada herói da facção vencedora que pontuou (`war:<guerra>:<membro>`). Economia desligada ou J.A.R.V.I.S. desligado: a guerra acontece e ninguém recebe créditos. A próxima guerra é agendada em seguida.
 
-- `/guerra`: placar, tempo restante, seus pontos e os da sua facção. Sem guerra ativa, diz quando a próxima começa.
+- `/guerra`: placar, tempo restante, seus pontos e os da sua facção. Com `squads.enabled` e o herói num esquadrão ativo, também mostra os pontos do esquadrão e a colocação dele dentro da equipe (os pontos ficam no esquadrão se a pessoa sair). Sem guerra ativa, diz quando a próxima começa.
 - Staff: `/ultron guerra iniciar`, `/ultron guerra encerrar`, `/ultron guerra pontos`.
 - `ultron.war.enabled: false` não agenda nem pontua. Uma guerra já marcada ainda encerra.
 - `legion doctor` mostra se há guerra ativa ou agendada. `legion playtest-report` tem a seção **Guerra** (pontos por facção e motivo, ajustes da staff) e acusa facção desconhecida ou chave de origem repetida. Também sai no `--json`.
